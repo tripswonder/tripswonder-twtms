@@ -586,31 +586,39 @@ body{
 
     .register-page{
 
-        padding:20px;
+    min-height:auto;
 
-        align-items:flex-start;
+    display:block;
 
-    }
+    padding:20px;
+
+    overflow-y:auto;
+
+    -webkit-overflow-scrolling:touch;
+
+}
 
     .register-container{
 
-        justify-content:center;
+    width:100%;
 
-    }
+    display:block;
 
-    .register-card{
+}
+   
+   .register-card{
 
-        max-width:100%;
+    width:100%;
 
-        padding:28px;
+    max-width:100%;
 
-        border-radius:22px;
+    max-height:none;
 
-        max-height:none;
+    overflow:visible;
 
-        overflow:visible;
+    margin:20px auto;
 
-    }
+}
 
     .register-logo img{
 
