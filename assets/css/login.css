@@ -603,12 +603,6 @@
 
 }
 
-.mobile-logo{
-    display:none;
-    width:110px;
-    margin:0 auto 20px;
-}
-
 @media(max-width:768px){
 
     body{
