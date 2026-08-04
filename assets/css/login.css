@@ -14,6 +14,10 @@
 
 }
 
+.mobile-logo{
+    display:none;
+}
+
 /* ==========================================================
    LEFT PANEL
 ========================================================== */
@@ -590,11 +594,6 @@
 /* ==========================================================
    MOBILE
 ========================================================== */
-.mobile-logo{
-    display:none;
-    width:110px;
-    margin:0 auto 20px;
-}
 
 @media (max-width:768px){
 
@@ -602,6 +601,12 @@
         display:block;
     }
 
+}
+
+.mobile-logo{
+    display:none;
+    width:110px;
+    margin:0 auto 20px;
 }
 
 @media(max-width:768px){
