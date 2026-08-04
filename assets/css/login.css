@@ -590,6 +590,19 @@
 /* ==========================================================
    MOBILE
 ========================================================== */
+.mobile-logo{
+    display:none;
+    width:110px;
+    margin:0 auto 20px;
+}
+
+@media (max-width:768px){
+
+    .mobile-logo{
+        display:block;
+    }
+
+}
 
 @media(max-width:768px){
 
