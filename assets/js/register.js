@@ -65,6 +65,112 @@ registerForm.addEventListener("submit", function(event){
 });
 
 /* =================================================
+   VALIDATE FORM
+================================================= */
+
+function validateForm(){
+
+    if(username.value.trim()===""){
+
+        alert("Please enter your username.");
+
+        username.focus();
+
+        return false;
+
+    }
+
+    if(email.value.trim()===""){
+
+        alert("Please enter your email.");
+
+        email.focus();
+
+        return false;
+
+    }
+
+    if(password.value===""){
+
+        alert("Please enter your password.");
+
+        password.focus();
+
+        return false;
+
+    }
+
+    if(confirmPassword.value===""){
+
+        alert("Please confirm your password.");
+
+        confirmPassword.focus();
+
+        return false;
+
+    }
+
+    if(password.value!==confirmPassword.value){
+
+        alert("Passwords do not match.");
+
+        confirmPassword.focus();
+
+        return false;
+
+    }
+
+    if(firstName.value.trim()===""){
+
+        alert("Please enter your first name.");
+
+        firstName.focus();
+
+        return false;
+
+    }
+
+    if(lastName.value.trim()===""){
+
+        alert("Please enter your last name.");
+
+        lastName.focus();
+
+        return false;
+
+    }
+
+    if(contactNumber.value.trim()===""){
+
+        alert("Please enter your contact number.");
+
+        contactNumber.focus();
+
+        return false;
+
+    }
+
+    if(!terms.checked){
+
+        alert("Please accept the Terms & Conditions.");
+
+        return false;
+
+    }
+
+    if(!privacy.checked){
+
+        alert("Please accept the Privacy Policy.");
+
+        return false;
+
+    }
+
+    return true;
+
+}
+
+/* =================================================
    REGISTER USER
 ================================================= */
 
