@@ -41,15 +41,7 @@
 
 .left-overlay{
 
-    position:absolute;
-
-    inset:0;
-
-    background:linear-gradient(
-        135deg,
-        rgba(5,33,77,.82),
-        rgba(10,61,145,.58)
-    );
+    display:none;
 
 }
 
