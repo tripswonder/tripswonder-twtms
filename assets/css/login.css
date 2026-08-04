@@ -1,0 +1,784 @@
+/* ==========================================================
+   LOGIN PAGE
+========================================================== */
+
+.login-page{
+
+    width:100%;
+
+    height:100dvh;
+
+    display:flex;
+
+    overflow:hidden;
+
+}
+
+/* ==========================================================
+   LEFT PANEL
+========================================================== */
+
+.login-left{
+
+    position:relative;
+
+    flex:1;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    padding:80px;
+
+    background:url("../images/desktop-bg.jpg")
+               center center / cover no-repeat;
+
+    animation:bgZoom 18s ease-in-out infinite alternate;
+
+}
+
+/* ==========================================================
+   OVERLAY
+========================================================== */
+
+.left-overlay{
+
+    position:absolute;
+
+    inset:0;
+
+    background:linear-gradient(
+        135deg,
+        rgba(5,33,77,.80),
+        rgba(10,61,145,.55)
+    );
+
+}
+
+/* ==========================================================
+   CONTENT
+========================================================== */
+
+.left-content{
+
+    position:relative;
+
+    z-index:10;
+
+    max-width:650px;
+
+    color:#FFFFFF;
+
+}
+
+.logo{
+
+    width:320px;
+
+    margin-bottom:30px;
+
+}
+
+.system-badge{
+
+    display:inline-block;
+
+    padding:10px 22px;
+
+    border-radius:50px;
+
+    background:rgba(255,255,255,.18);
+
+    backdrop-filter:blur(18px);
+
+    margin-bottom:30px;
+
+    font-size:14px;
+
+    font-weight:600;
+
+}
+
+.left-content h1{
+
+    font-size:64px;
+
+    font-weight:800;
+
+    line-height:1.15;
+
+    margin-bottom:18px;
+
+}
+
+.left-content p{
+
+    font-size:20px;
+
+    line-height:1.8;
+
+    opacity:.92;
+
+}/* ==========================================================
+   RIGHT PANEL
+========================================================== */
+
+.login-right{
+
+    width:520px;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    padding:40px;
+
+    background:transparent;
+
+}
+
+/* ==========================================================
+   LOGIN CARD
+========================================================== */
+
+.login-card{
+
+    width:100%;
+
+    max-width:460px;
+
+    padding:45px;
+
+    border-radius:28px;
+
+    background:rgba(255,255,255,.18);
+
+    backdrop-filter:blur(25px);
+
+    border:1px solid rgba(255,255,255,.25);
+
+    box-shadow:
+
+        0 25px 70px rgba(0,0,0,.25);
+
+    animation:
+
+        fadeIn .8s ease,
+
+        floating 6s ease-in-out infinite;
+
+}
+.login-card{
+
+    position:relative;
+
+    overflow:hidden;
+
+}
+.login-card::before{
+
+    content:"";
+
+    position:absolute;
+
+    top:-50%;
+
+    left:-80%;
+
+    width:180px;
+
+    height:250%;
+
+    background:rgba(255,255,255,.12);
+
+    transform:rotate(25deg);
+
+    transition:1.2s;
+
+}
+
+.login-card:hover::before{
+
+    left:130%;
+
+}
+
+/* ==========================================================
+   HEADER
+========================================================== */
+
+.login-header{
+
+    margin-bottom:35px;
+
+}
+
+.login-header h2{
+
+    font-size:36px;
+
+    font-weight:700;
+
+    color:#0A3D91;
+
+    margin-bottom:8px;
+
+}
+
+.login-header p{
+
+    color:#64748B;
+
+    font-size:15px;
+
+    line-height:1.6;
+
+}
+
+/* ==========================================================
+   INPUT GROUP
+========================================================== */
+
+.input-group{
+
+    margin-bottom:22px;
+
+}
+
+.input-group label{
+
+    display:block;
+
+    margin-bottom:10px;
+
+    font-size:14px;
+
+    font-weight:600;
+
+    color:#1E293B;
+
+}
+
+.input-group input{
+
+    width:100%;
+
+    height:58px;
+
+    padding:0 18px;
+
+    border-radius:16px;
+
+    border:1px solid #DCE3EB;
+
+    background:#FFFFFF;
+
+    transition:
+
+        border .3s,
+
+        box-shadow .3s,
+
+        transform .3s;
+
+}
+
+.input-group input:focus{
+
+    border-color:#1E88E5;
+
+    box-shadow:0 0 0 5px rgba(30,136,229,.18);
+
+     transform:translateY(-2px);
+
+}.input-group input:hover{
+
+    border-color:#64B5F6;
+
+}
+
+/* ==========================================================
+    INPUT ICON
+========================================================== */
+
+.input-icon{
+
+    position:relative;
+
+}
+
+.input-icon i{
+
+    position:absolute;
+
+    left:18px;
+
+    top:50%;
+
+    transform:translateY(-50%);
+
+    color:#94A3B8;
+
+}
+
+.input-icon input{
+
+    padding-left:50px;
+
+}
+/* ==========================================================
+   PASSWORD
+========================================================== */
+
+.password-box{
+
+    position:relative;
+
+}
+
+.password-box input{
+
+    padding-right:60px;
+
+}
+
+.toggle-password{
+
+    position:absolute;
+
+    top:50%;
+
+    right:18px;
+
+    transform:translateY(-50%);
+
+    background:none;
+
+    color:#94A3B8;
+
+    cursor:pointer;
+
+    transition:.30s;
+
+}
+
+.toggle-password:hover{
+
+    color:#0A3D91;
+
+}.input-lock{
+
+    position:absolute;
+
+    left:18px;
+
+    top:50%;
+
+    transform:translateY(-50%);
+
+    color:#94A3B8;
+
+}
+
+.password-box input{
+
+    padding-left:50px;
+
+}
+
+/* ==========================================================
+   LOGIN OPTIONS
+========================================================== */
+
+.login-options{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin:25px 0 35px;
+
+    font-size:14px;
+
+}
+
+.remember-me{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+}
+
+.forgot-password{
+
+    color:#0A3D91;
+
+    font-weight:600;
+
+}
+
+.forgot-password:hover{
+
+    color:#1E88E5;
+
+}
+
+/* ==========================================================
+   LOGIN BUTTON
+========================================================== */
+
+.login-btn{
+
+    width:100%;
+
+    height:58px;
+
+    border-radius:16px;
+
+    border:none;
+
+    cursor:pointer;
+
+    font-size:16px;
+
+    font-weight:600;
+
+    color:#FFFFFF;
+
+    background:linear-gradient(
+        135deg,
+        #0A3D91,
+        #1E88E5
+    );
+
+    transition:.35s ease;
+
+}.login-btn{
+
+    position:relative;
+
+    overflow:hidden;
+
+}
+
+.login-btn:hover{
+
+    transform:translateY(-3px);
+
+    box-shadow:0 20px 45px rgba(10,61,145,.35);
+
+}.login-btn::before{
+
+    content:"";
+
+    position:absolute;
+
+    left:-100%;
+
+    top:0;
+
+    width:100%;
+
+    height:100%;
+
+    background:rgba(255,255,255,.25);
+
+    transform:skewX(-25deg);
+
+    transition:.6s;
+
+}
+
+.login-btn:hover::before{
+
+    left:120%;
+
+}
+
+/* ==========================================================
+   FOOTER
+========================================================== */
+
+.login-footer{
+
+    margin-top:28px;
+
+    text-align:center;
+
+    color:#64748B;
+
+    font-size:13px;
+
+}
+
+/* ==========================================================
+   ANIMATION
+========================================================== */
+
+@keyframes fadeIn{
+
+    from{
+
+        opacity:0;
+
+        transform:translateY(35px);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:none;
+
+    }
+
+}/* ==========================================================
+   TABLET
+========================================================== */
+
+@media (max-width:992px){
+
+    .login-right{
+
+        width:480px;
+
+        padding:30px;
+
+    }
+
+    .left-content h1{
+
+        font-size:48px;
+
+    }
+
+    .left-content p{
+
+        font-size:18px;
+
+    }
+
+    .logo{
+
+        width:250px;
+
+    }
+
+    .logo{
+
+    transition:.40s ease;
+
+}
+
+.logo:hover{
+
+    transform:scale(1.05);
+
+}
+
+}/* ==========================================================
+   MOBILE
+========================================================== */
+
+@media (max-width:768px){
+
+    html,
+    body{
+
+        overflow:hidden;
+
+    }
+
+    .login-page{
+
+        width:100%;
+
+        height:100dvh;
+
+        display:flex;
+
+        justify-content:center;
+
+        align-items:center;
+
+        background:url("../images/mobile-bg.jpg")
+                   center center / cover no-repeat;
+
+    }
+
+    /* Hide Desktop Banner */
+
+    .login-left{
+
+        display:none;
+
+    }
+
+    /* Center Login */
+
+    .login-right{
+
+        width:100%;
+
+        height:100%;
+
+        display:flex;
+
+        justify-content:center;
+
+        align-items:center;
+
+        padding:20px;
+
+    }
+
+    .login-card{
+
+        width:100%;
+
+        max-width:360px;
+
+        padding:30px;
+
+        border-radius:24px;
+
+        background:rgba(255,255,255,.18);
+
+        backdrop-filter:blur(25px);
+
+    }
+
+    .login-header{
+
+        text-align:center;
+
+    }
+
+    .login-header h2{
+
+        font-size:30px;
+
+    }
+
+    .login-header p{
+
+        font-size:14px;
+
+    }
+
+    .login-options{
+
+        margin:20px 0;
+
+    }
+
+    .login-footer{
+
+        display:none;
+
+    }
+
+}/* ==========================================================
+   SMALL PHONES
+========================================================== */
+
+@media (max-width:380px){
+
+    .login-card{
+
+        max-width:320px;
+
+        padding:24px;
+
+    }
+
+    .login-header h2{
+
+        font-size:26px;
+
+    }
+
+    .input-group input{
+
+        height:52px;
+
+    }
+
+    .login-btn{
+
+        height:54px;
+
+    }
+
+}@keyframes bgZoom{
+
+    from{
+
+        background-size:100%;
+
+    }
+
+    to{
+
+        background-size:110%;
+
+    }
+
+}@keyframes floating{
+
+    0%{
+
+        transform:translateY(0);
+
+    }
+
+    50%{
+
+        transform:translateY(-8px);
+
+    }
+
+    100%{
+
+        transform:translateY(0);
+
+    }
+
+}/* ==========================================
+   SHOW / HIDE PASSWORD
+========================================== */
+
+const togglePassword = document.getElementById("togglePassword");
+const password = document.getElementById("password");
+
+if (togglePassword && password) {
+
+    togglePassword.addEventListener("click", () => {
+
+        const icon = togglePassword.querySelector("i");
+
+        if (password.type === "password") {
+
+            password.type = "text";
+            icon.classList.replace("fa-eye", "fa-eye-slash");
+
+        } else {
+
+            password.type = "password";
+            icon.classList.replace("fa-eye-slash", "fa-eye");
+
+        }
+
+    });
+
+}
