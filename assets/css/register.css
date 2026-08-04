@@ -23,11 +23,7 @@ body{
 
     min-height:100%;
 
-    font-family:"Inter",sans-serif;
-
-    background:#F4F7FB;
-
-    color:#1F2937;
+    overflow-x:hidden;
 
 }
 
@@ -586,7 +582,7 @@ body{
 
     .register-page{
 
-    min-height:auto;
+    min-height:100dvh;
 
     display:block;
 
@@ -595,6 +591,8 @@ body{
     overflow-y:auto;
 
     -webkit-overflow-scrolling:touch;
+
+    background-attachment:scroll;
 
 }
 
@@ -616,7 +614,7 @@ body{
 
     overflow:visible;
 
-    margin:20px auto;
+    margin:0 auto;
 
 }
 
