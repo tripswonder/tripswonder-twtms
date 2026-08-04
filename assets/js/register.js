@@ -5,6 +5,12 @@
  * register.js
  * =================================================
  *************************************************/
+/* =================================================
+   WEB APP URL
+================================================= */
+
+const WEB_APP_URL =
+"https://script.google.com/macros/s/AKfycbzuLrAiwUKLSwQcisfnghepngM2a4pjVLUJY6WW5Y59gn5lt5v3GgYqlgay0uaKbz9g/exec";
 
 /* =================================================
    DOM ELEMENTS
@@ -56,7 +62,9 @@ registerForm.addEventListener("submit", function(event){
 
     registerUser();
 
-});/* =================================================
+});
+
+/* =================================================
    REGISTER USER
 ================================================= */
 
@@ -64,30 +72,62 @@ async function registerUser(){
 
     const userData = {
 
-        username: username.value.trim(),
+        action:"register",
 
-        email: email.value.trim(),
+        username:username.value.trim(),
 
-        password: password.value,
+        email:email.value.trim(),
 
-        firstName: firstName.value.trim(),
+        password:password.value,
 
-        middleName: middleName.value.trim(),
+        firstName:firstName.value.trim(),
 
-        lastName: lastName.value.trim(),
+        middleName:middleName.value.trim(),
 
-        suffix: suffix.value.trim(),
+        lastName:lastName.value.trim(),
 
-        contactNumber: contactNumber.value.trim(),
+        suffix:suffix.value.trim(),
 
-        birthDate: birthDate.value,
+        contactNumber:contactNumber.value.trim(),
 
-        gender: gender.value,
+        birthDate:birthDate.value,
 
-        address: address.value.trim()
+        gender:gender.value,
+
+        address:address.value.trim()
 
     };
 
-    console.log(userData);
+    try{
+
+        const response = await fetch(WEB_APP_URL,{
+
+            method:"POST",
+
+            body:JSON.stringify(userData)
+
+        });
+
+        const result = await response.json();
+
+        if(result.success){
+
+            alert("Registration Successful!");
+
+            window.location.href="index.html";
+
+        }else{
+
+            alert(result.message);
+
+        }
+
+    }catch(error){
+
+        alert("Unable to connect to server.");
+
+        console.error(error);
+
+    }
 
 }
