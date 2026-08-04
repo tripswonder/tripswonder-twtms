@@ -8,40 +8,169 @@
     box-sizing:border-box;
 }
 
-html,
-body{
-    width:100%;
-    min-height:100%;
-    font-family:"Poppins",sans-serif;
-    background:var(--bg-body);
-    color:var(--text-dark);
+/* ==========================================================
+   HTML & BODY
+========================================================== */
+
+html{
+
+    font-size:16px;
+
+    scroll-behavior:smooth;
+
 }
 
 body{
+
+    min-height:100vh;
+
+    font-family:"Poppins",sans-serif;
+
+    background:var(--bg-body);
+
+    color:var(--text-dark);
+
     overflow:hidden;
+
+    -webkit-font-smoothing:antialiased;
+
+    -moz-osx-font-smoothing:grayscale;
+
 }
+
+/* ==========================================================
+   MEDIA
+========================================================== */
 
 img{
+
     display:block;
+
     max-width:100%;
+
+    user-select:none;
+
 }
+
+svg{
+
+    display:block;
+
+}
+
+/* ==========================================================
+   LINKS
+========================================================== */
 
 a{
-    text-decoration:none;
+
     color:inherit;
+
+    text-decoration:none;
+
 }
 
-button,
-input{
-    font:inherit;
-    border:none;
-    outline:none;
-}
+/* ==========================================================
+   BUTTONS
+========================================================== */
 
 button{
+
+    font:inherit;
+
+    border:none;
+
+    outline:none;
+
+    background:none;
+
     cursor:pointer;
+
 }
 
-ul{
+/* ==========================================================
+   INPUTS
+========================================================== */
+
+input,
+textarea,
+select{
+
+    font:inherit;
+
+    outline:none;
+
+    border:none;
+
+    background:none;
+
+}
+
+input::placeholder{
+
+    color:#94A3B8;
+
+}
+
+/* ==========================================================
+   LIST
+========================================================== */
+
+ul,
+ol{
+
     list-style:none;
+
+}
+
+/* ==========================================================
+   FORM
+========================================================== */
+
+form{
+
+    width:100%;
+
+}
+
+/* ==========================================================
+   SELECTION
+========================================================== */
+
+::selection{
+
+    background:var(--primary);
+
+    color:#FFFFFF;
+
+}
+
+/* ==========================================================
+   SCROLLBAR
+========================================================== */
+
+::-webkit-scrollbar{
+
+    width:8px;
+
+}
+
+::-webkit-scrollbar-track{
+
+    background:#EEF2F7;
+
+}
+
+::-webkit-scrollbar-thumb{
+
+    background:#C5CED8;
+
+    border-radius:50px;
+
+}
+
+::-webkit-scrollbar-thumb:hover{
+
+    background:#AEB8C2;
+
 }
