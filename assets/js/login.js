@@ -2,93 +2,106 @@
    TWTMS LOGIN
 ========================================================== */
 
-const loginForm = document.getElementById("loginForm");
-const username = document.getElementById("username");
-const password = document.getElementById("password");
-const togglePassword = document.getElementById("togglePassword");
+document.addEventListener("DOMContentLoaded", () => {
 
-/* ==========================================================
-   SHOW / HIDE PASSWORD
-========================================================== */
+    const loginForm = document.getElementById("loginForm");
 
-if (togglePassword) {
+    const username = document.getElementById("username");
 
-    togglePassword.addEventListener("click", () => {
+    const password = document.getElementById("password");
 
-        const icon = togglePassword.querySelector("i");
+    const togglePassword = document.getElementById("togglePassword");
 
-        if (password.type === "password") {
+    const loginButton = document.querySelector(".login-btn");
 
-            password.type = "text";
+    /* ======================================================
+       SHOW / HIDE PASSWORD
+    ====================================================== */
 
-            icon.classList.remove("fa-eye");
-            icon.classList.add("fa-eye-slash");
+    if (togglePassword && password) {
 
-        } else {
+        togglePassword.addEventListener("click", () => {
 
-            password.type = "password";
+            const icon = togglePassword.querySelector("i");
 
-            icon.classList.remove("fa-eye-slash");
-            icon.classList.add("fa-eye");
+            if (password.type === "password") {
 
-        }
+                password.type = "text";
 
-    });
+                icon.classList.remove("fa-eye");
 
-}
+                icon.classList.add("fa-eye-slash");
 
-/* ==========================================================
-   LOGIN
-========================================================== */
+            } else {
 
-if (loginForm) {
+                password.type = "password";
 
-    loginForm.addEventListener("submit", function(e){
+                icon.classList.remove("fa-eye-slash");
 
-        e.preventDefault();
+                icon.classList.add("fa-eye");
 
-        if(username.value.trim()===""){
+            }
 
-            alert("Please enter your username.");
-            username.focus();
-            return;
+        });
 
-        }
+    }
 
-        if(password.value.trim()===""){
+    /* ======================================================
+       LOGIN
+    ====================================================== */
 
-            alert("Please enter your password.");
-            password.focus();
-            return;
+    if (loginForm) {
 
-        }
+        loginForm.addEventListener("submit", (e) => {
 
-        login();
+            e.preventDefault();
 
-    });
+            if (username.value.trim() === "") {
 
-}
+                alert("Please enter your username.");
 
-/* ==========================================================
-   LOGIN FUNCTION
-========================================================== */
+                username.focus();
 
-function login(){
+                return;
 
-    const button=document.querySelector(".login-btn");
+            }
 
-    button.disabled=true;
+            if (password.value.trim() === "") {
 
-    button.innerHTML=
-    `<i class="fa-solid fa-spinner fa-spin"></i> Signing In...`;
+                alert("Please enter your password.");
 
-    setTimeout(()=>{
+                password.focus();
 
-        alert("Login Successful!");
+                return;
 
-        // NEXT:
-        // window.location.href="admin/dashboard.html";
+            }
 
-    },1500);
+            loginButton.disabled = true;
 
-}
+            loginButton.innerHTML = `
+                <i class="fa-solid fa-spinner fa-spin"></i>
+                <span>Signing In...</span>
+            `;
+
+            setTimeout(() => {
+
+                alert("Login Successful!");
+
+                /* NEXT STEP */
+
+                // window.location.href = "dashboard/index.html";
+
+                loginButton.disabled = false;
+
+                loginButton.innerHTML = `
+                    <i class="fa-solid fa-right-to-bracket"></i>
+                    <span>Login</span>
+                `;
+
+            }, 1500);
+
+        });
+
+    }
+
+});
