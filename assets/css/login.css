@@ -661,3 +661,63 @@
     }
 
 }
+
+/* ==========================================================
+   SOCIAL DIVIDER
+========================================================== */
+
+.social-divider{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    margin:28px 0 22px;
+
+    position:relative;
+
+}
+
+.social-divider::before,
+
+.social-divider::after{
+
+    content:"";
+
+    flex:1;
+
+    height:1px;
+
+    background:#E5E7EB;
+
+}
+
+.social-divider span{
+
+    padding:0 18px;
+
+    font-size:13px;
+
+    font-weight:600;
+
+    color:#94A3B8;
+
+    letter-spacing:.08em;
+
+}
+
+/* ==========================================================
+   SOCIAL LOGIN
+========================================================== */
+
+.social-login{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:14px;
+
+}
