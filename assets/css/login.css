@@ -721,3 +721,174 @@
     gap:14px;
 
 }
+
+/* ==========================================================
+   GOOGLE & FACEBOOK BUTTONS
+========================================================== */
+
+.google-btn,
+.facebook-btn{
+
+    width:100%;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:12px;
+
+    padding:15px 18px;
+
+    border:1px solid #E5E7EB;
+
+    border-radius:14px;
+
+    background:#FFFFFF;
+
+    color:#374151;
+
+    font-size:15px;
+
+    font-weight:600;
+
+    cursor:pointer;
+
+    transition:.30s ease;
+
+}
+
+.google-btn i{
+
+    color:#EA4335;
+
+    font-size:18px;
+
+}
+
+.facebook-btn i{
+
+    color:#1877F2;
+
+    font-size:18px;
+
+}
+
+.google-btn:hover,
+.facebook-btn:hover{
+
+    transform:translateY(-2px);
+
+    border-color:#0F3D91;
+
+    box-shadow:
+
+        0 12px 24px rgba(15,61,145,.12);
+
+}
+
+.google-btn:active,
+.facebook-btn:active{
+
+    transform:scale(.98);
+
+}
+
+/* ==========================================================
+   CREATE ACCOUNT
+========================================================== */
+
+.create-account{
+
+    margin-top:24px;
+
+    text-align:center;
+
+}
+
+.create-account p{
+
+    font-size:14px;
+
+    color:#64748B;
+
+    line-height:1.6;
+
+}
+
+.create-account a{
+
+    color:#0F3D91;
+
+    font-weight:700;
+
+    text-decoration:none;
+
+    transition:.25s ease;
+
+}
+
+.create-account a:hover{
+
+    text-decoration:underline;
+
+}
+
+/* ==========================================================
+   SECURE LOGIN
+========================================================== */
+
+.secure-login{
+
+    margin-top:20px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:8px;
+
+    font-size:13px;
+
+    color:#22C55E;
+
+    font-weight:600;
+
+}
+
+.secure-login i{
+
+    font-size:15px;
+
+}
+
+/* ==========================================================
+   LOGIN FOOTER
+========================================================== */
+
+.login-footer{
+
+    margin-top:28px;
+
+    text-align:center;
+
+    border-top:1px solid #E5E7EB;
+
+    padding-top:18px;
+
+}
+
+.login-footer small{
+
+    display:block;
+
+    color:#94A3B8;
+
+    font-size:12px;
+
+    line-height:1.7;
+
+}
