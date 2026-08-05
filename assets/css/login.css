@@ -99,7 +99,7 @@ RIGHT PANEL
 
     align-items:center;
 
-    padding:60px;
+    padding:30px;
 
     position:relative;
 
@@ -189,7 +189,7 @@ FEATURE LIST
 
     align-items:flex-start;
 
-    gap:18px;
+    gap:20px;
 
 }
 
@@ -247,11 +247,11 @@ TAGLINE
 
     margin-top:20px;
 
-    font-size:26px;
+    font-size:22px;
 
     font-weight:600;
 
-    line-height:1.5;
+    line-height:1.4;
 
     color:#FFFFFF;
 
@@ -716,7 +716,7 @@ TABLET
 
     .logo{
 
-        width:140px;
+        width:170px;
 
     }
 
