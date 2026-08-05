@@ -98,3 +98,53 @@ function validateLogin(){
     return true;
 
 }
+
+/* =================================================
+   LOGIN USER
+================================================= */
+
+async function loginUser(){
+
+    const loginData = {
+
+        action:"login",
+
+        username:username.value.trim(),
+
+        password:password.value
+
+    };
+
+    try{
+
+        const response = await fetch(WEB_APP_URL,{
+
+            method:"POST",
+
+            body:JSON.stringify(loginData)
+
+        });
+
+        const result = await response.json();
+
+        if(result.success){
+
+            alert(result.message);
+
+            window.location.href = result.redirect;
+
+        }else{
+
+            alert(result.message);
+
+        }
+
+    }catch(error){
+
+        alert("Unable to connect to server.");
+
+        console.error(error);
+
+    }
+
+}
