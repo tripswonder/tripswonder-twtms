@@ -28,7 +28,7 @@
 
     position:relative;
 
-    flex:0 0 45%;
+    flex:0 0 42%;
 
     display:flex;
 
@@ -36,7 +36,7 @@
 
     padding:80px;
 
-    background:url("../images/login-bg.jpg") center center/cover no-repeat;
+    background:url("../images/desktop-bg.jpeg") center center/cover no-repeat;
 
     overflow:hidden;
 
@@ -196,7 +196,7 @@
 
 .login-right{
 
-    flex:0 0 55%;
+    flex:0 0 58%;
 
     display:flex;
 
@@ -652,9 +652,11 @@
 
     .logo{
 
-        width:250px;
+    width:240px;
 
-    }
+    margin-bottom:40px;
+
+}
 
 }
 
