@@ -145,7 +145,7 @@ WELCOME
 
     line-height:1.15;
 
-    margin-bottom:18px;
+    margin-bottom:25px;
 
     color:#FFFFFF;
 
@@ -163,7 +163,7 @@ INTRO
 
     color:rgba(255,255,255,.92);
 
-    margin-bottom:35px;
+    margin-bottom:45px;
 
 }
 
@@ -177,7 +177,7 @@ FEATURE LIST
 
     flex-direction:column;
 
-    gap:26px;
+    gap:30px;
 
     margin-bottom:50px;
 
@@ -245,7 +245,7 @@ TAGLINE
 
 .tagline{
 
-    margin-top:30px;
+    margin-top:20px;
 
     font-size:26px;
 
