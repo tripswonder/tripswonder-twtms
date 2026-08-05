@@ -143,9 +143,9 @@
 
     width:100%;
 
-    max-width:460px;
+    max-width:420px;
 
-    padding:46px;
+    padding:32px;
 
     border-radius:30px;
 
@@ -199,7 +199,7 @@
 
 .login-header{
 
-    margin-bottom:35px;
+    margin-bottom:24px;
 
 }
 
@@ -207,7 +207,9 @@
 
     color:var(--primary);
 
-    font-size:36px;
+    font-size:52px;
+   
+    line-height:1.1;
 
     font-weight:700;
 
@@ -219,9 +221,9 @@
 
     color:var(--text-light);
 
-    font-size:15px;
+    font-size:16px;
 
-    line-height:1.6;
+    line-height:1.5;
 
 }
 
