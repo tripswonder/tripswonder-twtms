@@ -10,9 +10,22 @@
 
     display:flex;
 
-    gap:50px;
+    justify-content:center;
 
-    overflow:hidden;
+    align-items:center;
+
+    padding:40px;
+
+    background:
+    linear-gradient(
+        rgba(15,61,145,.45),
+        rgba(15,61,145,.45)
+    ),
+    url("../images/desktop-bg.jpeg")
+    center center / cover
+    no-repeat;
+
+    background-attachment:fixed;
 
 }
 
