@@ -150,13 +150,13 @@ WELCOME
 
 .left-content h1{
 
-    font-size:48px;
+    font-size:42px;
 
     font-weight:700;
 
-    line-height:1.2;
+    line-height:1.15;
 
-    margin-bottom:20px;
+    margin-bottom:18px;
 
     color:#FFFFFF;
 
@@ -168,13 +168,13 @@ INTRO
 
 .intro{
 
-    font-size:18px;
+    font-size:16px;
 
-    line-height:1.8;
+    line-height:1.7;
 
     color:rgba(255,255,255,.92);
 
-    margin-bottom:45px;
+    margin-bottom:35px;
 
 }
 
@@ -206,9 +206,9 @@ FEATURE LIST
 
 .feature-item i{
 
-    width:52px;
+    width:44px;
 
-    height:52px;
+    height:44px;
 
     display:flex;
 
@@ -216,13 +216,13 @@ FEATURE LIST
 
     align-items:center;
 
-    border-radius:16px;
+    border-radius:12px;
 
     background:rgba(255,255,255,.15);
 
     color:#FFFFFF;
 
-    font-size:20px;
+    font-size:18px;
 
     flex-shrink:0;
 
@@ -230,7 +230,7 @@ FEATURE LIST
 
 .feature-item h3{
 
-    font-size:18px;
+    font-size:16px;
 
     font-weight:600;
 
@@ -242,9 +242,9 @@ FEATURE LIST
 
 .feature-item p{
 
-    font-size:15px;
+    font-size:14px;
 
-    line-height:1.6;
+    line-height:1.5;
 
     color:rgba(255,255,255,.85);
 
@@ -280,7 +280,7 @@ LOGIN CARD
 
     max-width:460px;
 
-    padding:42px;
+    padding:34px;
 
     border-radius:28px;
 
@@ -336,7 +336,7 @@ LOGIN HEADER
 
 .login-header h2{
 
-    font-size:42px;
+    font-size:34px;
 
     font-weight:700;
 
@@ -400,7 +400,7 @@ FORM
 
     width:100%;
 
-    height:50px;
+    height:46px;
 
     border:none;
 
@@ -513,7 +513,7 @@ LOGIN BUTTON
 
     width:100%;
 
-    height:50px;
+    height:46px;
 
     border:none;
 
@@ -606,7 +606,7 @@ SOCIAL LOGIN
 
     width:100%;
 
-    height:50px;
+    height:46px;
 
     border:none;
 
