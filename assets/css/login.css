@@ -28,22 +28,25 @@
 
     display:flex;
 
-    justify-content:center;
-
     align-items:center;
 
     padding:80px;
 
-    background:url("../images/desktop-bg.jpeg")
-               center center / cover no-repeat;
+    background:url("../images/login-bg.jpg") center center/cover no-repeat;
 
-    animation:bgZoom 18s ease-in-out infinite alternate;
+    overflow:hidden;
 
 }
 
 .left-overlay{
 
-    display:none;
+    position:absolute;
+
+    inset:0;
+
+    background:rgba(0,0,0,.35);
+
+    backdrop-filter:blur(2px);
 
 }
 
@@ -51,65 +54,43 @@
 
     position:relative;
 
-    z-index:5;
+    z-index:2;
 
-    max-width:650px;
+    max-width:520px;
 
-    color:#FFFFFF;
+    color:#fff;
 
 }
 
 .logo{
 
-    width:250px;
+    width:90px;
 
-    margin-bottom:28px;
-
-}
-
-.system-badge{
-
-    display:inline-flex;
-
-    align-items:center;
-
-    gap:10px;
-
-    padding:10px 24px;
-
-    border-radius:999px;
-
-    background:rgba(255,255,255,.16);
-
-    backdrop-filter:blur(18px);
-
-    margin-bottom:30px;
-
-    font-size:14px;
-
-    font-weight:600;
+    margin-bottom:32px;
 
 }
 
 .left-content h1{
 
-    font-size:64px;
+    font-size:52px;
 
-    line-height:1.15;
+    font-weight:700;
 
-    font-weight:800;
+    margin-bottom:20px;
 
-    margin-bottom:18px;
+    line-height:1.2;
 
 }
 
-.left-content p{
+.intro{
 
-    font-size:20px;
+    font-size:18px;
 
     line-height:1.8;
 
-    opacity:.92;
+    margin-bottom:40px;
+
+    color:rgba(255,255,255,.90);
 
 }
 
