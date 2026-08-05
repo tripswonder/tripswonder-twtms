@@ -143,9 +143,9 @@
 
     width:100%;
 
-    max-width:420px;
+    max-width:400px;
 
-    padding:32px;
+    padding:30px;
 
     border-radius:30px;
 
@@ -207,7 +207,7 @@
 
     color:var(--primary);
 
-    font-size:52px;
+    font-size:48px;
    
     line-height:1.1;
 
@@ -233,7 +233,7 @@
 
 .input-group{
 
-    margin-bottom:22px;
+    margin-bottom:18px;
 
 }
 
@@ -275,7 +275,7 @@
 
     width:100%;
 
-    height:58px;
+    height:54px;
 
     padding:0 18px 0 50px;
 
@@ -433,7 +433,7 @@
 
     width:100%;
 
-    height:58px;
+    height:54px;
 
     border-radius:16px;
 
@@ -676,7 +676,7 @@
 
     justify-content:center;
 
-    margin:28px 0 22px;
+    margin:22px 0 22px;
 
     position:relative;
 
@@ -803,7 +803,7 @@
 
 .create-account{
 
-    margin-top:24px;
+    margin-top:18px;
 
     text-align:center;
 
@@ -843,7 +843,7 @@
 
 .secure-login{
 
-    margin-top:20px;
+    margin-top:12px;
 
     display:flex;
 
@@ -853,7 +853,7 @@
 
     gap:8px;
 
-    font-size:13px;
+    font-size:14px;
 
     color:#22C55E;
 
@@ -873,7 +873,7 @@
 
 .login-footer{
 
-    margin-top:28px;
+    margin-top:18px;
 
     text-align:center;
 
