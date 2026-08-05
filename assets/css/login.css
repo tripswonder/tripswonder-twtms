@@ -201,7 +201,7 @@
 
 .login-header{
 
-    margin-bottom:24px;
+    margin-bottom:20px;
 
 }
 
@@ -235,7 +235,7 @@
 
 .input-group{
 
-    margin-bottom:18px;
+    margin-bottom:16px;
 
 }
 
@@ -877,7 +877,7 @@
 
 .login-footer{
 
-    margin-top:18px;
+    margin-top:16px;
 
     text-align:center;
 
@@ -958,7 +958,7 @@
 
         max-width:480px;
 
-        margin:18;
+        margin:16px;
 
         border-radius:24px;
 
