@@ -60,9 +60,9 @@ LOGIN PAGE
 
         linear-gradient(
 
-            rgba(0,0,0,.38),
+            rgba(0,0,0,.18),
 
-            rgba(0,0,0,.38)
+            rgba(0,0,0,.18)
 
         ),
 
@@ -150,7 +150,7 @@ WELCOME
 
 .left-content h1{
 
-    font-size:52px;
+    font-size:48px;
 
     font-weight:700;
 
@@ -278,25 +278,21 @@ LOGIN CARD
 
     width:100%;
 
-    max-width:400px;
+    max-width:460px;
 
-    padding:32px;
+    padding:42px;
 
-    border-radius:24px;
+    border-radius:28px;
 
-    background:rgba(255,255,255,.18);
+    background:rgba(255,255,255,.16);
 
-    border:1px solid rgba(255,255,255,.25);
+    backdrop-filter:blur(28px);
 
-    backdrop-filter:blur(20px);
+    -webkit-backdrop-filter:blur(28px);
 
-    -webkit-backdrop-filter:blur(20px);
+    border:1px solid rgba(255,255,255,.30);
 
-    box-shadow:0 20px 60px rgba(0,0,0,.20);
-
-    position:relative;
-
-    overflow:hidden;
+    box-shadow:0 25px 70px rgba(0,0,0,.28);
 
 }
 
@@ -745,7 +741,7 @@ TABLET
 
     .login-right{
 
-        padding:40px;
+        padding:80px 120px;
 
     }
 
@@ -763,7 +759,7 @@ TABLET
 
     .logo{
 
-        width:180px;
+        width:260px;
 
     }
 
