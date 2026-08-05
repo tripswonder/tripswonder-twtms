@@ -266,22 +266,20 @@ LOGIN CARD
 .login-card{
 
     width:100%;
+    max-width:500px;
 
-    max-width:460px;
-
-    padding:34px;
+    padding:40px;
 
     border-radius:28px;
 
-    background:rgba(255,255,255,.16);
+    background:rgba(255,255,255,.15);
 
-    backdrop-filter:blur(28px);
+    backdrop-filter:blur(22px);
+    -webkit-backdrop-filter:blur(22px);
 
-    -webkit-backdrop-filter:blur(28px);
+    border:1px solid rgba(255,255,255,.25);
 
-    border:1px solid rgba(255,255,255,.30);
-
-    box-shadow:0 25px 70px rgba(0,0,0,.28);
+    box-shadow:0 25px 60px rgba(0,0,0,.20);
 
 }
 
