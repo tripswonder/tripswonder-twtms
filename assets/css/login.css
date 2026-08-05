@@ -283,34 +283,6 @@ LOGIN CARD
 
 }
 
-.login-card::before{
-
-    content:"";
-
-    position:absolute;
-
-    top:-40%;
-
-    left:-80%;
-
-    width:180px;
-
-    height:220%;
-
-    background:rgba(255,255,255,.10);
-
-    transform:rotate(25deg);
-
-    transition:1s;
-
-}
-
-.login-card:hover::before{
-
-    left:130%;
-
-}
-
 /*************************************************
 LOGIN HEADER
 *************************************************/
