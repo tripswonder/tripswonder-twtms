@@ -832,3 +832,35 @@ SMALL MOBILE
     }
 
 }
+
+/*************************************************
+SECURE INFO
+*************************************************/
+
+.secure-info{
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    gap:8px;
+
+    margin-top:18px;
+
+    color:#334155;
+
+    font-size:15px;
+
+    font-weight:500;
+
+}
+
+.secure-info i{
+
+    color:#22C55E;
+
+    font-size:18px;
+
+}
