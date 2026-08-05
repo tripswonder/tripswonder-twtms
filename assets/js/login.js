@@ -1,107 +1,100 @@
-/* ==========================================================
-   TWTMS LOGIN
-========================================================== */
+/*************************************************
+ * =================================================
+ * TWTMS v1.1.0
+ * Customer Login Module
+ * login.js
+ * =================================================
+ *************************************************/
 
-document.addEventListener("DOMContentLoaded", () => {
+/* =================================================
+   WEB APP URL
+================================================= */
 
-    const loginForm = document.getElementById("loginForm");
+const WEB_APP_URL =
+"https://script.google.com/macros/s/AKfycbzuLrAiwUKLSwQcisfnghepngM2a4pjVLUJY6WW5Y59gn5lt5v3GgYqlgay0uaKbz9g/exec";
 
-    const username = document.getElementById("username");
+/* =================================================
+   DOM ELEMENTS
+================================================= */
 
-    const password = document.getElementById("password");
+const loginForm = document.getElementById("loginForm");
 
-    const togglePassword = document.getElementById("togglePassword");
+const username = document.getElementById("username");
 
-    const loginButton = document.querySelector(".login-btn");
+const password = document.getElementById("password");
 
-    /* ======================================================
-       SHOW / HIDE PASSWORD
-    ====================================================== */
+const rememberMe = document.getElementById("rememberMe");
 
-    if (togglePassword && password) {
+const togglePassword = document.getElementById("togglePassword");
 
-        togglePassword.addEventListener("click", () => {
+/* =================================================
+   TOGGLE PASSWORD
+================================================= */
 
-            const icon = togglePassword.querySelector("i");
+togglePassword.addEventListener("click", function(){
 
-            if (password.type === "password") {
+    if(password.type==="password"){
 
-                password.type = "text";
+        password.type="text";
 
-                icon.classList.remove("fa-eye");
+        togglePassword.innerHTML=
+        '<i class="fa-solid fa-eye-slash"></i>';
 
-                icon.classList.add("fa-eye-slash");
+    }else{
 
-            } else {
+        password.type="password";
 
-                password.type = "password";
-
-                icon.classList.remove("fa-eye-slash");
-
-                icon.classList.add("fa-eye");
-
-            }
-
-        });
-
-    }
-
-    /* ======================================================
-       LOGIN
-    ====================================================== */
-
-    if (loginForm) {
-
-        loginForm.addEventListener("submit", (e) => {
-
-            e.preventDefault();
-
-            if (username.value.trim() === "") {
-
-                alert("Please enter your username.");
-
-                username.focus();
-
-                return;
-
-            }
-
-            if (password.value.trim() === "") {
-
-                alert("Please enter your password.");
-
-                password.focus();
-
-                return;
-
-            }
-
-            loginButton.disabled = true;
-
-            loginButton.innerHTML = `
-                <i class="fa-solid fa-spinner fa-spin"></i>
-                <span>Signing In...</span>
-            `;
-
-            setTimeout(() => {
-
-                alert("Login Successful!");
-
-                /* NEXT STEP */
-
-                // window.location.href = "dashboard/index.html";
-
-                loginButton.disabled = false;
-
-                loginButton.innerHTML = `
-                    <i class="fa-solid fa-right-to-bracket"></i>
-                    <span>Login</span>
-                `;
-
-            }, 1500);
-
-        });
+        togglePassword.innerHTML=
+        '<i class="fa-solid fa-eye"></i>';
 
     }
 
 });
+
+/* =================================================
+   FORM SUBMIT
+================================================= */
+
+loginForm.addEventListener("submit", function(event){
+
+    event.preventDefault();
+
+    if(!validateLogin()){
+
+        return;
+
+    }
+
+    loginUser();
+
+});
+
+/* =================================================
+   VALIDATE LOGIN
+================================================= */
+
+function validateLogin(){
+
+    if(username.value.trim()===""){
+
+        alert("Please enter your username or email.");
+
+        username.focus();
+
+        return false;
+
+    }
+
+    if(password.value===""){
+
+        alert("Please enter your password.");
+
+        password.focus();
+
+        return false;
+
+    }
+
+    return true;
+
+}
