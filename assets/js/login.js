@@ -11,7 +11,7 @@
 ================================================ */
 
 const WEB_APP_URL =
-"https://script.google.com/macros/s/AKfycbzuLrAiwUKLSwQcisfnghepngM2a4pjVLUJY6WW5Y59gn5lt5v3GgYqlgay0uaKbz9g/exec";
+"https://script.google.com/macros/s/AKfycby-2ETVEomJoh805zjHn1BU7Jcjj9gje3t0dO1sFtdX0xRep_MuxkODUl5URJybdrz_/exec";
 
 /* ================================================
    DOM ELEMENTS
