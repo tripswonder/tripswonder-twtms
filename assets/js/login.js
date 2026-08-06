@@ -1,81 +1,82 @@
 /*************************************************
- * =================================================
- * TWTMS v1.1.0
+ * ================================================
+ * TWTMS v1.2.0
  * Customer Login Module
  * login.js
- * =================================================
+ * ================================================
  *************************************************/
 
-/* =================================================
+/* ================================================
    WEB APP URL
-================================================= */
+================================================ */
 
 const WEB_APP_URL =
 "https://script.google.com/macros/s/AKfycbzuLrAiwUKLSwQcisfnghepngM2a4pjVLUJY6WW5Y59gn5lt5v3GgYqlgay0uaKbz9g/exec";
 
-/* =================================================
+/* ================================================
    DOM ELEMENTS
-================================================= */
+================================================ */
 
 const loginForm = document.getElementById("loginForm");
-
 const username = document.getElementById("username");
-
 const password = document.getElementById("password");
-
 const rememberMe = document.getElementById("rememberMe");
-
 const togglePassword = document.getElementById("togglePassword");
 
-/* =================================================
+const loginButton =
+    loginForm.querySelector("button[type='submit']");
+
+const originalButtonHTML = loginButton.innerHTML;
+
+let isProcessing = false;
+
+/* ================================================
    TOGGLE PASSWORD
-================================================= */
+================================================ */
 
-togglePassword.addEventListener("click", function(){
+togglePassword.addEventListener("click", () => {
 
-    if(password.type==="password"){
+    if (password.type === "password") {
 
-        password.type="text";
+        password.type = "text";
 
-        togglePassword.innerHTML=
-        '<i class="fa-solid fa-eye-slash"></i>';
+        togglePassword.innerHTML =
+            '<i class="fa-solid fa-eye-slash"></i>';
 
-    }else{
+    } else {
 
-        password.type="password";
+        password.type = "password";
 
-        togglePassword.innerHTML=
-        '<i class="fa-solid fa-eye"></i>';
+        togglePassword.innerHTML =
+            '<i class="fa-solid fa-eye"></i>';
 
     }
 
 });
 
-/* =================================================
+/* ================================================
    FORM SUBMIT
-================================================= */
+================================================ */
 
-loginForm.addEventListener("submit", function(event){
+loginForm.addEventListener("submit", function (event) {
 
     event.preventDefault();
 
-    if(!validateLogin()){
+    if (isProcessing) return;
 
-        return;
-
-    }
+    if (!validateLogin()) return;
 
     loginUser();
 
 });
 
-/* =================================================
+/* ================================================
    VALIDATE LOGIN
-================================================= */
+================================================ */
 
-function validateLogin(){
+function validateLogin() {
 
-    if(username.value.trim()===""){
+    if (username.value.trim() === "") {
 
         alert("Please enter your username or email.");
 
@@ -85,7 +86,7 @@ function validateLogin(){
 
     }
 
-    if(password.value===""){
+    if (password.value.trim() === "") {
 
         alert("Please enter your password.");
 
@@ -99,47 +100,89 @@ function validateLogin(){
 
 }
 
-/* =================================================
-   LOGIN USER
-================================================= */
+/* ================================================
+   BUTTON STATE
+================================================ */
 
-async function loginUser(){
+function startLoading() {
+
+    isProcessing = true;
+
+    loginButton.disabled = true;
+
+    loginButton.innerHTML = `
+        <i class="fa-solid fa-spinner fa-spin"></i>
+        Signing In...
+    `;
+
+}
+
+function stopLoading() {
+
+    isProcessing = false;
+
+    loginButton.disabled = false;
+
+    loginButton.innerHTML = originalButtonHTML;
+
+}
+
+/* ================================================
+   LOGIN USER
+================================================ */
+
+async function loginUser() {
+
+    startLoading();
 
     const loginData = {
 
-        action:"login",
+        action: "login",
 
-        username:username.value.trim(),
+        username: username.value.trim(),
 
-        password:password.value
+        password: password.value,
+
+        remember: rememberMe.checked
 
     };
 
-    try{
+    try {
 
-        const response = await fetch(WEB_APP_URL,{
+        const response = await fetch(WEB_APP_URL, {
 
-            method:"POST",
+            method: "POST",
 
-            body:JSON.stringify(loginData)
+            body: JSON.stringify(loginData)
 
         });
 
         const result = await response.json();
 
-        if(result.success){
+        if (result.success) {
 
-            alert(result.message);
+            loginButton.innerHTML = `
+                <i class="fa-solid fa-circle-check"></i>
+                Success
+            `;
 
-            window.location.href = result.redirect;
+            setTimeout(() => {
 
-        }else{
+                window.location.href = result.redirect;
+
+            }, 500);
+
+        } else {
+
+            stopLoading();
 
             alert(result.message);
 
         }
 
-    }catch(error){
+    } catch (error) {
+
+        stopLoading();
 
         alert("Unable to connect to server.");
 
