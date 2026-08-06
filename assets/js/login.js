@@ -151,11 +151,17 @@ async function loginUser() {
 
         const response = await fetch(WEB_APP_URL, {
 
-            method: "POST",
+    method: "POST",
 
-            body: JSON.stringify(loginData)
+    headers: {
 
-        });
+        "Content-Type":"application/x-www-form-urlencoded"
+
+    },
+
+    body: new URLSearchParams(loginData)
+
+});
 
         const result = await response.json();
 
