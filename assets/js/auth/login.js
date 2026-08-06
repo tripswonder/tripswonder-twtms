@@ -86,7 +86,7 @@ form.addEventListener("submit", async (e) => {
 
         }
 
-        window.location.href="/pages/customer/dashboard.html";
+        window.location.href="/pages/customer/home.html";
 
     }
 
