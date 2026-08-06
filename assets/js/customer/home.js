@@ -9,3 +9,15 @@ const customerName = document.getElementById("customerName");
 ========================================================== */
 
 customerName.textContent = "Eric";
+
+/* ==========================================================
+   SEARCH
+========================================================== */
+
+const searchInput = document.getElementById("searchInput");
+
+searchInput.addEventListener("input", () => {
+
+    console.log(searchInput.value);
+
+});
