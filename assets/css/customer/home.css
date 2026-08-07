@@ -22,10 +22,6 @@
    HEADER
 ========================================================== */
 
-/* ==========================================================
-   HEADER
-========================================================== */
-
 .home-header{
 
     display:flex;
@@ -120,35 +116,31 @@
 
 .greeting{
 
-    margin-bottom:28px;
+    margin-top:6px;
 
 }
 
-.greeting-title{
+.greeting h1{
 
     font-size:38px;
 
     font-weight:700;
 
-    color:var(--text-dark);
-
     line-height:1.1;
-
-}
-
-.greeting-title span{
 
     color:var(--primary);
 
 }
 
-.greeting-subtitle{
+.greeting p{
 
     margin-top:8px;
 
-    font-size:18px;
+    font-size:17px;
 
     color:var(--text-light);
+
+    line-height:1.5;
 
 }
 
