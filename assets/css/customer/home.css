@@ -227,10 +227,6 @@
     font-size:17px;
 
 }
-/* ==========================================================
-   UPCOMING TRIP CARD
-========================================================== */
-
 
 /* ==========================================================
    HOME APP LAYOUT
@@ -289,5 +285,165 @@
         rgba(255,255,255,.95) 70%,
         #FFFFFF 100%
     );
+
+}
+
+/* ==========================================================
+   UPCOMING TRIP
+========================================================== */
+
+.upcoming-trip{
+
+    margin-top:20px;
+
+}
+
+.trip-card{
+
+    display:grid;
+
+    grid-template-columns:38% 62%;
+
+    background:#FFFFFF;
+
+    border-radius:20px;
+
+    overflow:hidden;
+
+    min-height:210px;
+
+    box-shadow:0 10px 30px rgba(15,23,42,.08);
+
+}
+
+.trip-image{
+
+    height:100%;
+
+}
+
+.trip-image img{
+
+    width:100%;
+
+    height:100%;
+
+    object-fit:cover;
+
+    display:block;
+
+}
+
+.trip-content{
+
+    padding:18px;
+
+    display:flex;
+
+    flex-direction:column;
+
+}
+
+.trip-status{
+
+    display:inline-flex;
+
+    align-self:flex-start;
+
+    padding:5px 12px;
+
+    border-radius:999px;
+
+    background:#DCFCE7;
+
+    color:#15803D;
+
+    font-size:12px;
+
+    font-weight:600;
+
+}
+
+.trip-title{
+
+    margin-top:12px;
+
+    font-size:20px;
+
+    font-weight:700;
+
+    color:var(--text-dark);
+
+}
+
+.trip-date{
+
+    margin-top:6px;
+
+    font-size:13px;
+
+    color:var(--text-light);
+
+}
+
+.trip-stats{
+
+    display:flex;
+
+    gap:10px;
+
+    margin-top:16px;
+
+}
+
+.stat-box{
+
+    width:58px;
+
+    height:58px;
+
+    border-radius:14px;
+
+    background:#F8FAFC;
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    justify-content:center;
+
+}
+
+.stat-box strong{
+
+    font-size:16px;
+
+    color:var(--primary);
+
+}
+
+.stat-box small{
+
+    font-size:11px;
+
+    color:var(--text-light);
+
+}
+
+.trip-button{
+
+    margin-top:auto;
+
+    height:42px;
+
+    border-radius:14px;
+
+    background:var(--primary);
+
+    color:#FFFFFF;
+
+    font-weight:600;
 
 }
