@@ -242,17 +242,19 @@
 
     display:grid;
 
-    grid-template-columns:38% 62%;
+    grid-template-columns:34% 66%;
 
-    background:#FFFFFF;
+    align-items:center;
+
+    background:#fff;
 
     border-radius:20px;
 
+    min-height:175px;
+
     overflow:hidden;
 
-    min-height:210px;
-
-    box-shadow:0 10px 30px rgba(15,23,42,.08);
+    box-shadow:0 6px 18px rgba(0,0,0,.08);
 
 }
 
@@ -266,7 +268,7 @@
 
     width:100%;
 
-    height:100%;
+    height:175px;
 
     object-fit:cover;
 
@@ -276,11 +278,15 @@
 
 .trip-content{
 
-    padding:18px;
+    padding:14px;
 
     display:flex;
 
     flex-direction:column;
+
+    justify-content:center;
+
+    gap:6px;
 
 }
 
@@ -306,23 +312,23 @@
 
 .trip-title{
 
-    margin-top:12px;
-
-    font-size:20px;
+    font-size:18px;
 
     font-weight:700;
 
-    color:var(--text-dark);
+    line-height:1.2;
+
+    margin:0;
 
 }
 
 .trip-date{
 
-    margin-top:6px;
-
     font-size:13px;
 
-    color:var(--text-light);
+    color:#64748B;
+
+    margin:0;
 
 }
 
@@ -330,19 +336,19 @@
 
     display:flex;
 
-    gap:10px;
+    gap:8px;
 
-    margin-top:16px;
+    margin-top:8px;
 
 }
 
 .stat-box{
 
-    width:58px;
+    width:48px;
 
-    height:58px;
+    height:48px;
 
-    border-radius:14px;
+    border-radius:12px;
 
     background:#F8FAFC;
 
@@ -350,9 +356,9 @@
 
     flex-direction:column;
 
-    align-items:center;
-
     justify-content:center;
+
+    align-items:center;
 
 }
 
@@ -374,16 +380,24 @@
 
 .trip-button{
 
-    margin-top:auto;
+    margin-top:10px;
 
-    height:42px;
+    width:140px;
 
-    border-radius:14px;
+    height:36px;
 
-    background:var(--primary);
+    border:none;
 
-    color:#FFFFFF;
+    border-radius:12px;
+
+    background:#1846A3;
+
+    color:#fff;
+
+    font-size:14px;
 
     font-weight:600;
+
+    cursor:pointer;
 
 }
