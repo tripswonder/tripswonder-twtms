@@ -116,7 +116,7 @@
 
 .greeting{
 
-    margin-top:6px;
+    margin-top:4px;
 
 }
 
@@ -134,9 +134,9 @@
 
 .greeting p{
 
-    margin-top:8px;
+    margin-top:6px;
 
-    font-size:17px;
+    font-size:15px;
 
     color:var(--text-light);
 
@@ -154,7 +154,7 @@
 
     align-items:center;
 
-    gap:12px;
+    gap:10px;
 
     height:40px;
 
