@@ -4,11 +4,11 @@
 
 const customerName = document.getElementById("customerName");
 
-/* ==========================================================
-   TEMP USER
-========================================================== */
+if (customerName) {
 
-customerName.textContent = "Eric";
+    customerName.textContent = "Eric";
+
+}
 
 /* ==========================================================
    SEARCH
@@ -16,8 +16,12 @@ customerName.textContent = "Eric";
 
 const searchInput = document.getElementById("searchInput");
 
-searchInput.addEventListener("input", () => {
+if (searchInput) {
 
-    console.log(searchInput.value);
+    searchInput.addEventListener("input", () => {
 
-});
+        console.log(searchInput.value);
+
+    });
+
+}
