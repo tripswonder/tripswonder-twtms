@@ -118,13 +118,13 @@
 .greeting{
 
     margin:0px;
-    padding:10px;
+    padding:5px;
 
 }
 
 .greeting h1{
 
-    font-size:20px;
+    font-size:18px;
 
     font-weight:700;
 
@@ -136,9 +136,9 @@
 
 .greeting p{
 
-    margin-top:6px;
+    margin-top:0px;
 
-    font-size:15px;
+    font-size:13px;
 
     color:var(--text-light);
 
@@ -471,7 +471,7 @@
 ========================================================== */
 
 .featured-tours{
-    margin-top:24px;
+    margin-top:5px;
 }
 
 
@@ -482,13 +482,13 @@
     justify-content:space-between;
     align-items:center;
 
-    margin-bottom:14px;
+    margin-bottom:10px;
 }
 
 .section-title{
     margin:0;
 
-    font-size:22px;
+    font-size:18px;
     font-weight:700;
 
     color:#0F172A;
@@ -591,7 +591,7 @@
 .tour-title{
     margin:0 0 3px;
 
-    font-size:15px;
+    font-size:12px;
     line-height:1.2;
 
     font-weight:700;
@@ -610,4 +610,268 @@
     line-height:1.3;
 
     color:#64748B;
+}
+
+/* ==========================================================
+   PROMO BANNER
+========================================================== */
+
+.promo-banner{
+    width:100%;
+    height:60px;
+
+    margin-top:14px;
+
+    border-radius:18px;
+
+    overflow:hidden;
+}
+
+.promo-banner img{
+    width:100%;
+    height:100%;
+    display:block;
+    object-fit:cover;
+    object-position:center;
+}
+
+/* ==========================================================
+   POPULAR DESTINATION
+========================================================== */
+
+.popular-destination{
+    margin-top:12px;
+}
+
+
+/* DESTINATION CAROUSEL */
+
+.destination-wrapper{
+
+    display:flex;
+
+    gap:12px;
+
+    overflow-x:auto;
+
+    scroll-snap-type:x mandatory;
+
+    padding-bottom:6px;
+
+    scrollbar-width:none;
+}
+
+.destination-wrapper::-webkit-scrollbar{
+    display:none;
+}
+
+
+/* DESTINATION CARD */
+
+.destination-card{
+
+    flex:0 0 140px;
+
+    background:#FFFFFF;
+
+    border-radius:18px;
+
+    overflow:hidden;
+
+    box-shadow:0 8px 24px rgba(15,23,42,.08);
+
+    scroll-snap-align:start;
+}
+
+
+/* IMAGE */
+
+.destination-image{
+
+    width:100%;
+
+    height:95px;
+
+    overflow:hidden;
+}
+
+.destination-image img{
+
+    width:100%;
+
+    height:100%;
+
+    object-fit:cover;
+
+    display:block;
+}
+
+
+/* CONTENT */
+
+.destination-content{
+
+    padding:9px 10px 10px;
+}
+
+
+/* TITLE */
+
+.destination-title{
+
+    margin:0 0 3px;
+
+    font-size:15px;
+
+    line-height:1.2;
+
+    font-weight:700;
+
+    color:#0F172A;
+}
+
+
+/* LOCATION */
+
+.destination-location{
+
+    margin:0;
+
+    font-size:10px;
+
+    line-height:1.3;
+
+    color:#64748B;
+}
+
+/* ==========================================================
+   BOOK AGAIN
+========================================================== */
+
+.book-again{
+
+    margin-top:18px;
+}
+
+
+/* BOOK AGAIN WRAPPER */
+
+.book-again-wrapper{
+
+    display:flex;
+
+    gap:12px;
+
+    overflow-x:auto;
+
+    scroll-snap-type:x mandatory;
+
+    padding-bottom:6px;
+
+    scrollbar-width:none;
+}
+
+.book-again-wrapper::-webkit-scrollbar{
+    display:none;
+}
+
+
+/* CARD */
+
+.book-card{
+
+    flex:0 0 140px;
+
+    background:#FFFFFF;
+
+    border-radius:18px;
+
+    overflow:hidden;
+
+    box-shadow:0 8px 24px rgba(15,23,42,.08);
+
+    scroll-snap-align:start;
+}
+
+
+/* IMAGE */
+
+.book-image{
+
+    width:100%;
+
+    height:90px;
+
+    overflow:hidden;
+}
+
+.book-image img{
+
+    width:100%;
+
+    height:100%;
+
+    object-fit:cover;
+
+    display:block;
+}
+
+
+/* CONTENT */
+
+.book-content{
+
+    padding:9px 10px 10px;
+}
+
+
+/* TITLE */
+
+.book-title{
+
+    margin:0 0 3px;
+
+    font-size:15px;
+
+    line-height:1.2;
+
+    font-weight:700;
+
+    color:#0F172A;
+}
+
+
+/* DATE */
+
+.book-date{
+
+    margin:0 0 8px;
+
+    font-size:10px;
+
+    color:#64748B;
+}
+
+
+/* BUTTON */
+
+.book-button{
+
+    width:100%;
+
+    border:0;
+
+    border-radius:8px;
+
+    padding:6px 4px;
+
+    background:var(--primary);
+
+    color:#FFFFFF;
+
+    font-size:10px;
+
+    font-weight:700;
+
+    cursor:pointer;
 }
