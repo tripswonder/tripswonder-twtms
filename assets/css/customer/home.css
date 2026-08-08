@@ -19,7 +19,7 @@
 }
 
 /* ==========================================================
-    HEADER
+   HEADER
 ========================================================== */
 .home-header{
 
@@ -501,6 +501,7 @@ body{
     overflow-x:hidden;
 
     overflow-y:auto;
+    
 
 }
 
@@ -512,23 +513,49 @@ body{
 }
 
 /* ==========================================================
-   ALL TOUR PACKAGES
+   EXPLORE OUR TOURS
 ========================================================== */
 
-.all-packages{
+.explore-tours{
 
-    margin-top:10px;
+    margin-top:0;
 
-    padding:0 10px;
+    padding:0 10px 20px;
+
+}
+
+
+.explore-tours .section-header{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    margin-bottom:10px;
+
+}
+
+
+.explore-tours .section-title{
+
+    margin:0;
+
+    font-size:20px;
+
+    font-weight:700;
+
+    color:#0F172A;
 
 }
 
 
 /* ==========================================================
-   PACKAGE GRID
+   TOUR GRID
 ========================================================== */
 
-.packages-wrapper{
+.explore-wrapper{
 
     display:grid;
 
@@ -536,44 +563,46 @@ body{
 
     gap:8px;
 
+    width:100%;
+
 }
 
 
 /* ==========================================================
-   PACKAGE CARD
+   TOUR CARD
 ========================================================== */
 
-.package-card{
+.explore-card{
 
     min-width:0;
 
     background:#FFFFFF;
 
-    border-radius:16px;
+    border-radius:14px;
 
     overflow:hidden;
 
-    box-shadow:0 8px 24px rgba(15,23,42,.08);
+    box-shadow:0 5px 16px rgba(15,23,42,.08);
 
 }
 
 
 /* ==========================================================
-   PACKAGE IMAGE
+   TOUR IMAGE
 ========================================================== */
 
-.package-image{
+.explore-image{
 
     width:100%;
 
-    height:90px;
+    height:86px;
 
     overflow:hidden;
 
 }
 
 
-.package-image img{
+.explore-image img{
 
     width:100%;
 
@@ -587,141 +616,455 @@ body{
 
 
 /* ==========================================================
-   PACKAGE CONTENT
+   TOUR CONTENT
 ========================================================== */
 
-.package-content{
+.explore-content{
 
     padding:8px;
 
 }
 
 
-/* ==========================================================
-   PACKAGE CATEGORY
-========================================================== */
-
-.package-category{
+.explore-category{
 
     display:block;
+
+    margin-bottom:3px;
 
     font-size:9px;
 
     font-weight:700;
 
-    line-height:1.2;
-
-    margin-bottom:4px;
+    color:#2563EB;
 
 }
 
 
-/* BEACH */
-
-.package-category.beach{
-
-    color:#0284C7;
-
-}
-
-
-/* CITY */
-
-.package-category.city{
-
-    color:#7C3AED;
-
-}
-
-
-/* HIKING */
-
-.package-category.hiking{
-
-    color:#16A34A;
-
-}
-
-
-/* ISLAND */
-
-.package-category.island{
-
-    color:#0891B2;
-
-}
-
-
-/* CAMPING */
-
-.package-category.camping{
-
-    color:#15803D;
-
-}
-
-
-/* HOME STAY */
-
-.package-category.homestay{
-
-    color:#D97706;
-
-}
-
-
-/* ==========================================================
-   PACKAGE PRICE
-========================================================== */
-
-.package-price{
+.explore-price{
 
     display:block;
 
-    font-size:11px;
+    margin-bottom:3px;
+
+    font-size:10px;
 
     font-weight:700;
 
     color:#2563EB;
 
-    line-height:1.2;
-
-    margin-bottom:3px;
-
 }
 
 
-/* ==========================================================
-   PACKAGE TITLE
-========================================================== */
-
-.package-title{
-
-    font-size:14px;
-
-    font-weight:700;
-
-    line-height:1.15;
-
-    color:#0F172A;
+.explore-title{
 
     margin:0 0 3px;
 
+    font-size:13px;
+
+    line-height:1.15;
+
+    font-weight:700;
+
+    color:#0F172A;
+
+}
+
+
+.explore-duration{
+
+    margin:0;
+
+    font-size:9px;
+
+    line-height:1.2;
+
+    color:#64748B;
+
 }
 
 
 /* ==========================================================
-   PACKAGE DURATION
+   MOBILE
 ========================================================== */
 
-.package-duration{
+@media (max-width:480px){
+
+    .explore-wrapper{
+
+        grid-template-columns:repeat(3, minmax(0, 1fr));
+
+        gap:8px;
+
+    }
+
+}
+
+/* ==========================================================
+   BOTTOM NAVIGATION
+========================================================== */
+
+.bottom-nav{
+
+    position:fixed;
+
+    left:50%;
+
+    bottom:0;
+
+    transform:translateX(-50%);
+
+    width:100%;
+
+    max-width:430px;
+
+    height:74px;
+
+    background:#FFFFFF;
+
+    border-top:1px solid #E5E7EB;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-around;
+
+    padding:4px 3px 6px;
+
+    z-index:9999;
+
+}
+
+
+/* ==========================================================
+   NAV ITEM
+========================================================== */
+
+.bottom-nav-item{
+
+    position:relative;
+
+    flex:1;
+
+    height:100%;
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:3px;
+
+    text-decoration:none;
+
+    color:#111827;
+
+}
+
+
+/* ==========================================================
+   ICON
+========================================================== */
+
+.bottom-icon{
+
+    position:relative;
+
+    width:32px;
+
+    height:32px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    font-size:24px;
+
+}
+
+
+/* ==========================================================
+   LABEL
+========================================================== */
+
+.bottom-label{
+
+    font-size:11px;
+
+    font-weight:600;
+
+    line-height:14px;
+
+    white-space:nowrap;
+
+}
+
+
+/* ==========================================================
+   ACTIVE
+========================================================== */
+
+.bottom-nav-item.active{
+
+    color:#2563EB;
+
+}
+
+
+/* ==========================================================
+   ACTIVE INDICATOR
+========================================================== */
+
+.bottom-nav-item.active::before{
+
+    content:"";
+
+    position:absolute;
+
+    top:0;
+
+    left:18%;
+
+    right:18%;
+
+    height:4px;
+
+    background:#2563EB;
+
+    border-radius:0 0 5px 5px;
+
+}
+
+
+/* ==========================================================
+   NOTIFICATION BADGE
+========================================================== */
+
+.notification-badge{
+
+    position:absolute;
+
+    top:-5px;
+
+    right:-7px;
+
+    min-width:19px;
+
+    height:19px;
+
+    padding:0 5px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    background:#EF3340;
+
+    color:#FFFFFF;
+
+    border:2px solid #FFFFFF;
+
+    border-radius:50px;
 
     font-size:10px;
 
-    color:#64748B;
+    font-weight:700;
 
-    line-height:1.2;
+}
 
-    margin:0;
 
+/* ==========================================================
+   HOVER
+========================================================== */
+
+.bottom-nav-item:hover{
+
+    color:#2563EB;
+
+}
+
+/* ==========================================================
+   FINAL CUSTOMER BOTTOM NAV
+========================================================== */
+
+.bottom-nav{
+
+    position:fixed !important;
+
+    left:50% !important;
+
+    bottom:0 !important;
+
+    transform:translateX(-50%) !important;
+
+    width:100% !important;
+
+    max-width:430px !important;
+
+    height:74px !important;
+
+    margin:0 !important;
+
+    padding:4px 3px 6px !important;
+
+    box-sizing:border-box !important;
+
+    display:flex !important;
+
+    align-items:center !important;
+
+    justify-content:space-around !important;
+
+    background:#FFFFFF !important;
+
+    border-top:1px solid #E5E7EB !important;
+
+    z-index:999999 !important;
+
+}
+
+
+/* ITEMS */
+
+.bottom-nav-item{
+
+    position:relative !important;
+
+    flex:1 !important;
+
+    height:100% !important;
+
+    display:flex !important;
+
+    flex-direction:column !important;
+
+    align-items:center !important;
+
+    justify-content:center !important;
+
+    gap:2px !important;
+
+    text-decoration:none !important;
+
+    color:#111827 !important;
+
+}
+
+
+/* ICON */
+
+.bottom-icon{
+
+    position:relative !important;
+
+    width:32px !important;
+
+    height:30px !important;
+
+    display:flex !important;
+
+    align-items:center !important;
+
+    justify-content:center !important;
+
+    font-size:23px !important;
+
+}
+
+
+/* LABEL */
+
+.bottom-label{
+
+    display:block !important;
+
+    font-size:11px !important;
+
+    line-height:14px !important;
+
+    font-weight:600 !important;
+
+    white-space:nowrap !important;
+
+}
+
+
+/* ACTIVE */
+
+.bottom-nav-item.active{
+
+    color:#2563EB !important;
+
+}
+
+
+/* ACTIVE LINE */
+
+.bottom-nav-item.active::before{
+
+    content:"";
+
+    position:absolute;
+
+    top:0;
+
+    left:18%;
+
+    right:18%;
+
+    height:4px;
+
+    background:#2563EB;
+
+    border-radius:0 0 5px 5px;
+
+}
+
+
+/* NOTIFICATION */
+
+.notification-badge{
+
+    position:absolute !important;
+
+    top:-5px !important;
+
+    right:-7px !important;
+
+    min-width:19px !important;
+
+    height:19px !important;
+
+    padding:0 4px !important;
+
+    display:flex !important;
+
+    align-items:center !important;
+
+    justify-content:center !important;
+
+    background:#EF3340 !important;
+
+    color:#FFFFFF !important;
+
+    border:2px solid #FFFFFF !important;
+
+    border-radius:50px !important;
+
+    font-size:10px !important;
+
+    font-weight:700 !important;
+
+}
+
+body{
+    padding-bottom:80px !important;
 }
