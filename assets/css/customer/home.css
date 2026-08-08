@@ -875,3 +875,10 @@
 
     cursor:pointer;
 }
+
+/* TEMPORARY PAGE SCROLL TEST */
+
+html,
+body{
+    overflow-y:auto !important;
+ 
