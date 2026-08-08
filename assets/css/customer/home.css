@@ -1065,6 +1065,128 @@ body{
 
 }
 
+/* ==========================================================
+   FORCE CUSTOMER BOTTOM NAV ON MOBILE
+========================================================== */
+
+.home-page .bottom-nav {
+    position: fixed !important;
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+
+    left: 50% !important;
+    bottom: 0 !important;
+    transform: translateX(-50%) !important;
+
+    width: 100% !important;
+    max-width: 430px !important;
+    height: 74px !important;
+
+    margin: 0 !important;
+    padding: 4px 3px 6px !important;
+
+    box-sizing: border-box !important;
+
+    align-items: center !important;
+    justify-content: space-around !important;
+
+    background: #fff !important;
+
+    border-top: 1px solid #e5e7eb !important;
+
+    z-index: 999999 !important;
+}
+
+
+/* Each button */
+
+.home-page .bottom-nav .bottom-nav-item {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+
+    flex: 1 !important;
+    height: 100% !important;
+
+    align-items: center !important;
+    justify-content: center !important;
+    flex-direction: column !important;
+
+    text-decoration: none !important;
+}
+
+
+/* Icon */
+
+.home-page .bottom-nav .bottom-icon {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    width: 32px !important;
+    height: 30px !important;
+
+    font-size: 23px !important;
+}
+
+
+/* Text */
+
+.home-page .bottom-nav .bottom-label {
+    display: block !important;
+
+    font-size: 11px !important;
+    line-height: 14px !important;
+    font-weight: 600 !important;
+
+    white-space: nowrap !important;
+}
+
+
+/* Active */
+
+.home-page .bottom-nav .bottom-nav-item.active {
+    color: #2563eb !important;
+}
+
+
+/* Notification badge */
+
+.home-page .bottom-nav .notification-badge {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+
+    position: absolute !important;
+
+    top: -5px !important;
+    right: -7px !important;
+
+    min-width: 19px !important;
+    height: 19px !important;
+
+    align-items: center !important;
+    justify-content: center !important;
+
+    padding: 0 4px !important;
+
+    background: #ef3340 !important;
+    color: white !important;
+
+    border: 2px solid white !important;
+    border-radius: 50px !important;
+
+    font-size: 10px !important;
+    font-weight: 700 !important;
+}
+
+
+/* Space for fixed navigation */
+
+.home-page {
+    padding-bottom: 80px !important;
+}
 
 body{
     padding-bottom:80px !important;
