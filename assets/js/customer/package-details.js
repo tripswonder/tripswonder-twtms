@@ -1,6 +1,6 @@
 /* ==========================================================
    TRIPS WONDER - CUSTOMER PACKAGE DETAILS
-   FIREBASE VERSION
+      FIREBASE VERSION
    ========================================================== */
 
 import {
