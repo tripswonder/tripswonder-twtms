@@ -1,1 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
 
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Packages | Trips Wonder Admin</title>
+
+
+    <!-- GLOBAL CSS -->
+    <link
+        rel="stylesheet"
+        href="../../assets/css/global.css"
+    >
+
+
+    <!-- ADMIN PACKAGES CSS -->
+    <link
+        rel="stylesheet"
+        href="../../assets/css/admin-packages.css"
+    >
+
+
+    <!-- POPPINS -->
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+</head>
+
+
+<body>
+
+
+<div class="admin-page">
+
+
+    <!-- =====================================================
+         HEADER
+         ===================================================== -->
+
+    <header class="admin-header">
+
+        <div class="admin-title">
+
+            <h1>Packages</h1>
+
+            <p>
+                Manage your travel packages and tour offerings.
+            </p>
+
+        </div>
+
+
+        <button
+            class="btn-primary"
+            id="addPackageButton"
+            type="button"
+        >
+
+            <span>＋</span>
+
+            Add Package
+
+        </button>
+
+    </header>
+
+
+
+    <!-- =====================================================
+         TOOLBAR
+         ===================================================== -->
+
+    <section class="package-toolbar">
+
+
+        <input
+            type="search"
+            id="packageSearch"
+            class="package-search"
+            placeholder="Search package..."
+        >
+
+
+        <select
+            id="packageFilter"
+            class="package-filter"
+        >
+
+            <option value="all">
+                All Categories
+            </option>
+
+            <option value="Beach Tour">
+                Beach Tour
+            </option>
+
+            <option value="Island Tour">
+                Island Tour
+            </option>
+
+            <option value="City Tour">
+                City Tour
+            </option>
+
+            <option value="Hiking">
+                Hiking
+            </option>
+
+            <option value="Chill Camp">
+                Chill Camp
+            </option>
+
+        </select>
+
+
+    </section>
+
+
+
+    <!-- =====================================================
+         PACKAGE LIST
+         ===================================================== -->
+
+    <main>
+
+        <div
+            class="package-grid"
+            id="packageGrid"
+        >
+
+            <!-- Packages will be loaded here -->
+
+        </div>
+
+    </main>
+
+
+</div>
+
+<!-- =========================================================
+     ADD PACKAGE MODAL
+     ========================================================= -->
+
+<div class="package-modal" id="packageModal">
+
+    <div class="package-modal-overlay" id="packageModalOverlay"></div>
+
+    <div class="package-modal-box">
+
+        <!-- HEADER -->
+
+        <div class="package-modal-header">
+
+            <div>
+                <h2>Add New Package</h2>
+
+                <p>
+                    Create a new travel package.
+                </p>
+            </div>
+
+            <button
+                type="button"
+                class="modal-close"
+                id="closePackageModal"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <!-- FORM -->
+
+        <form id="packageForm">
+
+
+            <!-- =================================================
+                 BASIC INFORMATION
+                 ================================================= -->
+
+            <section class="form-section">
+
+                <div class="form-section-title">
+                    <span>01</span>
+
+                    <div>
+                        <h3>Basic Information</h3>
+
+                        <p>
+                            Basic details of the tour package.
+                        </p>
+                    </div>
+                </div>
+
+
+                <div class="form-grid">
+
+                    <div class="form-group full">
+
+                        <label>
+                            Package Name
+                        </label>
+
+                        <input
+                            type="text"
+                            id="formPackageName"
+                            placeholder="e.g. Jomalig Island"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Category
+                        </label>
+
+                        <select
+                            id="formCategory"
+                            required
+                        >
+
+                            <option value="">
+                                Select category
+                            </option>
+
+                            <option value="Beach Tour">
+                                Beach Tour
+                            </option>
+
+                            <option value="Island Tour">
+                                Island Tour
+                            </option>
+
+                            <option value="City Tour">
+                                City Tour
+                            </option>
+
+                            <option value="Hiking">
+                                Hiking
+                            </option>
+
+                            <option value="Chill Camp">
+                                Chill Camp
+                            </option>
+
+                            <option value="Home Stay">
+                                Home Stay
+                            </option>
+
+                            <option value="Domestic">
+                                Domestic
+                            </option>
+
+                            <option value="Other">
+                                Other
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Location
+                        </label>
+
+                        <input
+                            type="text"
+                            id="formLocation"
+                            placeholder="e.g. Quezon, Philippines"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Starting Price
+                        </label>
+
+                        <input
+                            type="text"
+                            id="formPrice"
+                            placeholder="e.g. ₱4,699"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Duration
+                        </label>
+
+                        <input
+                            type="text"
+                            id="formDuration"
+                            placeholder="e.g. 3 Days • 2 Nights"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Status
+                        </label>
+
+                        <select id="formStatus">
+
+                            <option value="active">
+                                Active
+                            </option>
+
+                            <option value="hidden">
+                                Hidden
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 GALLERY
+                 ================================================= -->
+
+            <section class="form-section">
+
+                <div class="form-section-title">
+
+                    <span>02</span>
+
+                    <div>
+
+                        <h3>Package Gallery</h3>
+
+                        <p>
+                            Add up to 10 photos.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="upload-box">
+
+                    <input
+                        type="file"
+                        id="packagePhotos"
+                        accept="image/*"
+                        multiple
+                        hidden
+                    >
+
+                    <button
+                        type="button"
+                        class="upload-button"
+                        id="uploadPhotosButton"
+                    >
+
+                        📷
+
+                        <strong>
+                            Add Package Photos
+                        </strong>
+
+                        <small>
+                            Up to 10 photos
+                        </small>
+
+                    </button>
+
+                </div>
+
+
+                <div
+                    class="photo-preview-grid"
+                    id="photoPreviewGrid"
+                ></div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 ABOUT
+                 ================================================= -->
+
+            <section class="form-section">
+
+                <div class="form-section-title">
+
+                    <span>03</span>
+
+                    <div>
+
+                        <h3>About the Tour</h3>
+
+                        <p>
+                            Describe the package.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <textarea
+                        id="formDescription"
+                        rows="5"
+                        placeholder="Describe this tour package..."
+                    ></textarea>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 INCLUSIONS
+                 ================================================= -->
+
+            <section class="form-section">
+
+                <div class="form-section-title">
+
+                    <span>04</span>
+
+                    <div>
+
+                        <h3>Package Inclusions</h3>
+
+                        <p>
+                            What is included in the package?
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    class="dynamic-list"
+                    id="inclusionsList"
+                >
+
+                    <div class="dynamic-row">
+
+                        <input
+                            type="text"
+                            placeholder="e.g. Roundtrip transportation"
+                        >
+
+                        <button
+                            type="button"
+                            class="remove-row"
+                        >
+                            ×
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="add-row-button"
+                    id="addInclusion"
+                >
+                    + Add Inclusion
+                </button>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 EXCLUSIONS
+                 ================================================= -->
+
+            <section class="form-section">
+
+                <div class="form-section-title">
+
+                    <span>05</span>
+
+                    <div>
+
+                        <h3>Package Exclusions</h3>
+
+                        <p>
+                            What is not included?
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    class="dynamic-list"
+                    id="exclusionsList"
+                >
+
+                    <div class="dynamic-row">
+
+                        <input
+                            type="text"
+                            placeholder="e.g. Personal expenses"
+                        >
+
+                        <button
+                            type="button"
+                            class="remove-row"
+                        >
+                            ×
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="add-row-button"
+                    id="addExclusion"
+                >
+                    + Add Exclusion
+                </button>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 ACCOMMODATION
+                 ================================================= -->
+
+            <section class="form-section">
+
+                <div class="form-section-title">
+
+                    <span>06</span>
+
+                    <div>
+
+                        <h3>Accommodation</h3>
+
+                        <p>
+                            Add as many accommodation options as needed.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    class="accommodation-list"
+                    id="accommodationList"
+                >
+
+                    <!-- Accommodation cards will appear here -->
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="add-accommodation-button"
+                    id="addAccommodation"
+                >
+
+                    + Add Accommodation
+
+                </button>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 SCHEDULE
+                 ================================================= -->
+
+            <section class="form-section">
+
+                <div class="form-section-title">
+
+                    <span>07</span>
+
+                    <div>
+
+                        <h3>Schedule / Itinerary</h3>
+
+                        <p>
+                            Add the tour schedule or itinerary.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <textarea
+                        id="formSchedule"
+                        rows="7"
+                        placeholder="Example:
+
+DAY 1
+Departure from Manila
+Boat transfer
+Check-in
+Lunch
+Island tour
+
+DAY 2
+Breakfast
+Island activities
+Free time
+
+DAY 3
+Breakfast
+Check-out
+Boat transfer
+Return to Manila"
+                    ></textarea>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 FOOTER
+                 ================================================= -->
+
+            <div class="package-form-footer">
+
+                <button
+                    type="button"
+                    class="btn-secondary"
+                    id="cancelPackage"
+                >
+                    Cancel
+                </button>
+
+
+                <button
+                    type="submit"
+                    class="btn-primary"
+                >
+                    Save Package
+                </button>
+
+            </div>
+
+
+        </form>
+
+    </div>
+
+</div>
+
+
+
+<!-- =========================================================
+     JAVASCRIPT
+     ========================================================= -->
+
+  <script type="module" src="../../assets/js/admin/packages.js"></script>
+></scrip>
+
+
+</body>
+
+</html>
