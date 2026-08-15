@@ -48,16 +48,25 @@
 
     <section class="package-details">
 
-        <!-- IMAGE -->
+        <!-- PACKAGE PHOTO GALLERY -->
 
-        <div class="package-hero">
+<div class="package-gallery">
 
-            <img
-                id="packageImage"
-                src="../../assets/images/jomalig.jpeg"
-                alt="Tour Package">
+    <!-- MAIN PHOTO -->
+    <div class="package-main-photo">
+        <img
+            id="packageMainImage"
+            src=""
+            alt="Package Photo">
+    </div>
 
-        </div>
+    <!-- THUMBNAILS -->
+    <div
+        class="package-thumbnails"
+        id="packageGallery">
+    </div>
+
+</div>
 
 
         <!-- CONTENT -->
@@ -87,7 +96,7 @@
 
                 <span>From</span>
 
-                    <strong id="packagePrice">
+                <strong id="packagePrice">
                     ₱4,699
                 </strong>
 
@@ -130,15 +139,49 @@
             </div>
 
 
-            <!-- INCLUSIONS -->
+            <!-- ======================================================
+     INCLUSIONS
+====================================================== -->
 
-            <div class="package-section">
+<div class="package-section">
 
-                <h3>Package Inclusions</h3>
+    <h3>Package Inclusions</h3>
 
-                <ul id="packageInclusions"></ul>
+    <ul id="packageInclusions"></ul>
 
-            </div>
+</div>
+
+
+<!-- ======================================================
+     EXCLUSIONS
+====================================================== -->
+
+<div class="package-section">
+
+    <h3>Package Exclusions</h3>
+
+    <ul
+        id="packageExclusions"
+        class="package-exclusions">
+    </ul>
+
+</div>
+
+
+<!-- ======================================================
+     ACCOMMODATION
+====================================================== -->
+
+<div class="package-section">
+
+    <h3>Accommodation</h3>
+
+    <div
+        id="packageAccommodations"
+        class="package-accommodations">
+    </div>
+
+</div>
 
 
             <!-- SCHEDULE -->
@@ -173,6 +216,7 @@
 
 
 <script
+    type="module"
     src="../../assets/js/customer/package-details.js">
 </script>
 
