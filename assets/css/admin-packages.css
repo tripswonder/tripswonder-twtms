@@ -1,0 +1,1003 @@
+/* ==========================================================
+   TRIPS WONDER ADMIN — PACKAGES MODULE
+   FINAL CSS
+   ========================================================== */
+
+/* ---------- RESET ---------- */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    min-height: 100%;
+}
+
+body {
+    background: #f5f7fb;
+    color: #0f172a;
+    overflow-x: hidden;
+}
+
+/* ==========================================================
+   ADMIN PAGE
+   ========================================================== */
+
+.admin-page {
+    width: 100%;
+    min-height: 100vh;
+    height: 100vh;
+    padding: 28px 34px;
+    background: #f5f7fb;
+    overflow: hidden;
+}
+
+/* ==========================================================
+   HEADER
+   ========================================================== */
+
+.admin-header {
+    width: 100%;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+.admin-title h1 {
+    margin: 0;
+    color: #12203a;
+    font-size: 32px;
+    line-height: 1.15;
+    font-weight: 750;
+    letter-spacing: -0.5px;
+}
+
+.admin-title p {
+    margin: 7px 0 0;
+    color: #6b7890;
+    font-size: 15px;
+    line-height: 1.4;
+}
+
+/* ==========================================================
+   ADD PACKAGE BUTTON
+   ========================================================== */
+
+.btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    min-height: 54px;
+    padding: 0 25px;
+    border: 0;
+    border-radius: 12px;
+    background: #1769e0;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 7px 18px rgba(23, 105, 224, .18);
+    transition: background .18s ease, transform .18s ease, box-shadow .18s ease;
+}
+
+.btn-primary:hover {
+    background: #1259c4;
+    transform: translateY(-1px);
+    box-shadow: 0 9px 22px rgba(23, 105, 224, .22);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+/* ==========================================================
+   PACKAGE TOOLBAR
+   ========================================================== */
+
+.package-toolbar {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 18px;
+    margin-bottom: 24px;
+    background: #fff;
+    border: 1px solid #e0e6ef;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, .025);
+}
+
+.package-search {
+    flex: 1 1 auto;
+    width: 100%;
+    height: 48px;
+    padding: 0 17px;
+    border: 1px solid #dfe5ee;
+    border-radius: 11px;
+    outline: none;
+    background: #f8fafc;
+    color: #17213b;
+    font-size: 15px;
+    transition: border-color .18s ease, box-shadow .18s ease, background .18s ease;
+}
+
+.package-search::placeholder {
+    color: #91a0b5;
+}
+
+.package-search:focus {
+    background: #fff;
+    border-color: #7daaf1;
+    box-shadow: 0 0 0 3px rgba(23, 105, 224, .09);
+}
+
+.package-filter {
+    flex: 0 0 210px;
+    width: 210px;
+    height: 48px;
+    padding: 0 15px;
+    border: 1px solid #dfe5ee;
+    border-radius: 11px;
+    outline: none;
+    background: #f8fafc;
+    color: #17213b;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.package-filter:focus {
+    border-color: #7daaf1;
+    box-shadow: 0 0 0 3px rgba(23, 105, 224, .09);
+}
+
+/* ==========================================================
+   PACKAGE LIST AREA
+   IMPORTANT: THIS IS THE VERTICAL SCROLL CONTAINER
+   ========================================================== */
+
+.package-grid {
+    width: 100%;
+    height: calc(100vh - 238px);
+    min-height: 260px;
+
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-auto-rows: max-content;
+    align-content: start;
+    align-items: start;
+    gap: 18px;
+
+    padding: 2px 10px 24px 2px;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    scrollbar-width: thin;
+    scrollbar-color: #aebbd0 transparent;
+}
+
+/* Chrome / Edge scrollbar */
+.package-grid::-webkit-scrollbar {
+    width: 9px;
+}
+
+.package-grid::-webkit-scrollbar-track {
+    background: transparent;
+    margin: 4px 0 16px;
+}
+
+.package-grid::-webkit-scrollbar-thumb {
+    background: #b6c2d4;
+    border-radius: 20px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+}
+
+.package-grid::-webkit-scrollbar-thumb:hover {
+    background: #8fa0b9;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+}
+
+/* ==========================================================
+   PACKAGE CARD
+   ========================================================== */
+
+.package-card {
+    width: 100%;
+    min-width: 0;
+    background: #fff;
+    border: 1px solid #e0e6ef;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 13px rgba(15, 23, 42, .055);
+
+    /* prevents grid stretching / row overlap */
+    align-self: start;
+    height: auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+
+    transition:
+        transform .18s ease,
+        box-shadow .18s ease,
+        border-color .18s ease;
+}
+
+.package-card:hover {
+    transform: translateY(-2px);
+    border-color: #d5deeb;
+    box-shadow: 0 9px 24px rgba(15, 23, 42, .09);
+}
+
+/* ==========================================================
+   PACKAGE IMAGE
+   ========================================================== */
+
+.package-card-image {
+    display: block;
+    width: 100%;
+    height: 154px;
+    min-height: 154px;
+    object-fit: cover;
+    object-position: center;
+    background: #e8edf4;
+}
+
+/* Broken / missing image fallback */
+.package-card-image[src=""] {
+    background:
+        linear-gradient(135deg, #eef2f7, #dfe6ef);
+}
+
+/* ==========================================================
+   PACKAGE CARD CONTENT
+   ========================================================== */
+
+.package-card-content {
+    padding: 14px 15px 13px;
+    height: auto;
+    min-height: 0;
+    flex: 0 0 auto;
+}
+
+/* ==========================================================
+   CATEGORY
+   ========================================================== */
+
+.package-category {
+    display: inline-flex;
+    align-items: center;
+    max-width: 100%;
+    min-height: 24px;
+    padding: 0 9px;
+    border-radius: 7px;
+    background: #eef5ff;
+    color: #1769e0;
+    font-size: 11px;
+    line-height: 1;
+    font-weight: 750;
+    white-space: nowrap;
+}
+
+/* ==========================================================
+   PACKAGE NAME
+   ========================================================== */
+
+.package-card h3 {
+    margin: 10px 0 3px;
+    color: #17213b;
+    font-size: 17px;
+    line-height: 1.25;
+    font-weight: 750;
+    letter-spacing: -.15px;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ==========================================================
+   LOCATION
+   ========================================================== */
+
+.package-card .package-location {
+    margin: 0;
+    color: #7b8799;
+    font-size: 12px;
+    line-height: 1.4;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ==========================================================
+   PRICE
+   ========================================================== */
+
+.package-card .package-price {
+    margin-top: 12px;
+    padding-bottom: 12px;
+    color: #1769e0;
+    font-size: 20px;
+    line-height: 1.15;
+    font-weight: 800;
+    letter-spacing: -.25px;
+}
+
+/* ==========================================================
+   CARD FOOTER
+   ========================================================== */
+
+.package-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #e5e9f0;
+    height: auto;
+    min-height: 38px;
+    flex: 0 0 auto;
+}
+
+/* ==========================================================
+   STATUS
+   ========================================================== */
+
+.status {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    min-height: 25px;
+    padding: 0 9px;
+    border-radius: 20px;
+    font-size: 10px;
+    line-height: 1;
+    font-weight: 750;
+    white-space: nowrap;
+}
+
+.status.active {
+    background: #e9faf3;
+    color: #14956c;
+}
+
+.status:not(.active) {
+    background: #f1f3f6;
+    color: #7a8597;
+}
+
+/* ==========================================================
+   CARD ACTIONS
+   ========================================================== */
+
+.card-actions {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.card-action {
+    width: 38px;
+    height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 1px solid #e0e6ef;
+    border-radius: 10px;
+    background: #fff;
+    color: #526077;
+    font-size: 17px;
+    line-height: 1;
+    cursor: pointer;
+    transition: background .16s ease, border-color .16s ease, transform .16s ease;
+}
+
+.card-action:hover {
+    background: #f7f9fc;
+    border-color: #cbd5e1;
+    transform: translateY(-1px);
+}
+
+.card-action:active {
+    transform: translateY(0);
+}
+
+/* ==========================================================
+   EMPTY STATE
+   ========================================================== */
+
+.empty-state {
+    grid-column: 1 / -1;
+    min-height: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    text-align: center;
+    background: #fff;
+    border: 1px dashed #d7dee9;
+    border-radius: 16px;
+}
+
+.empty-state-icon {
+    font-size: 34px;
+    margin-bottom: 8px;
+}
+
+.empty-state h3 {
+    margin: 0;
+    color: #17213b;
+    font-size: 17px;
+}
+
+.empty-state p {
+    margin: 7px 0 0;
+    color: #7b8799;
+    font-size: 13px;
+}
+
+/* ==========================================================
+   PACKAGE MODAL
+   Existing working modal — preserved and improved
+   ========================================================== */
+
+.package-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+
+    display: none;
+    align-items: center;
+    justify-content: center;
+
+    padding: 16px;
+}
+
+.package-modal.show {
+    display: flex;
+}
+
+.package-modal-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(15, 23, 42, .56);
+    backdrop-filter: blur(3px);
+}
+
+.package-modal-box {
+    position: relative;
+    z-index: 1;
+
+    width: min(900px, calc(100vw - 32px));
+    max-height: calc(100vh - 32px);
+
+    display: flex;
+    flex-direction: column;
+
+    background: #fff;
+    border-radius: 18px;
+
+    overflow: hidden;
+
+    box-shadow: 0 25px 70px rgba(15, 23, 42, .25);
+}
+
+/* Modal header stays visible */
+.package-modal-header {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+
+    flex: 0 0 auto;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+
+    padding: 20px 24px;
+
+    background: #fff;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.package-modal-header h2 {
+    margin: 0;
+    color: #111827;
+    font-size: 21px;
+    line-height: 1.2;
+}
+
+.package-modal-header p {
+    margin: 4px 0 0;
+    color: #64748b;
+    font-size: 12px;
+}
+
+.modal-close {
+    width: 40px;
+    height: 40px;
+    flex: 0 0 40px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+    border: 0;
+    border-radius: 10px;
+
+    background: #f1f5f9;
+    color: #475569;
+
+    font-size: 23px;
+    cursor: pointer;
+}
+
+.modal-close:hover {
+    background: #e2e8f0;
+}
+
+/* Modal content scroll */
+.package-modal-box form,
+#packageForm {
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    scrollbar-width: thin;
+    scrollbar-color: #b6c2d4 transparent;
+}
+
+.package-modal-box form::-webkit-scrollbar,
+#packageForm::-webkit-scrollbar {
+    width: 8px;
+}
+
+.package-modal-box form::-webkit-scrollbar-track,
+#packageForm::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.package-modal-box form::-webkit-scrollbar-thumb,
+#packageForm::-webkit-scrollbar-thumb {
+    background: #b6c2d4;
+    border-radius: 20px;
+}
+
+/* ==========================================================
+   FORM SECTIONS
+   ========================================================== */
+
+.form-section {
+    padding: 24px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.form-section-title {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.form-section-title > span {
+    width: 30px;
+    height: 30px;
+    flex: 0 0 30px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 8px;
+    background: #eff6ff;
+    color: #1769e0;
+
+    font-size: 11px;
+    font-weight: 750;
+}
+
+.form-section-title h3 {
+    margin: 0 0 2px;
+    color: #17213b;
+    font-size: 16px;
+    line-height: 1.3;
+}
+
+.form-section-title p {
+    margin: 0;
+    color: #64748b;
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+/* ==========================================================
+   FORM GRID
+   ========================================================== */
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.form-group {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.form-group.full-width {
+    grid-column: 1 / -1;
+}
+
+.form-group label {
+    color: #25324a;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    min-height: 44px;
+    padding: 10px 12px;
+
+    border: 1px solid #dfe5ee;
+    border-radius: 10px;
+    outline: none;
+
+    background: #f8fafc;
+    color: #17213b;
+
+    font: inherit;
+    font-size: 13px;
+
+    transition: border-color .18s ease, box-shadow .18s ease, background .18s ease;
+}
+
+.form-group textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    background: #fff;
+    border-color: #7daaf1;
+    box-shadow: 0 0 0 3px rgba(23, 105, 224, .08);
+}
+
+/* ==========================================================
+   DYNAMIC ROWS
+   ========================================================== */
+
+.dynamic-list {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+}
+
+.dynamic-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.dynamic-row input {
+    flex: 1;
+    min-width: 0;
+    height: 42px;
+    padding: 0 12px;
+    border: 1px solid #dfe5ee;
+    border-radius: 9px;
+    background: #f8fafc;
+    outline: none;
+}
+
+.dynamic-row input:focus {
+    background: #fff;
+    border-color: #7daaf1;
+    box-shadow: 0 0 0 3px rgba(23, 105, 224, .08);
+}
+
+.remove-row {
+    width: 40px;
+    height: 40px;
+    flex: 0 0 40px;
+
+    border: 1px solid #e0e6ef;
+    border-radius: 9px;
+
+    background: #fff;
+    color: #e05252;
+
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.remove-row:hover {
+    background: #fff4f4;
+    border-color: #f0c5c5;
+}
+
+/* ==========================================================
+   MODAL FOOTER / SAVE
+   ========================================================== */
+
+.package-modal-footer,
+.modal-footer {
+    position: sticky;
+    bottom: 0;
+    z-index: 6;
+
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
+
+    padding: 14px 24px;
+
+    background: rgba(255, 255, 255, .98);
+    border-top: 1px solid #e2e8f0;
+}
+
+.btn-secondary,
+.cancel-button {
+    min-height: 44px;
+    padding: 0 18px;
+
+    border: 1px solid #dfe5ee;
+    border-radius: 10px;
+
+    background: #f8fafc;
+    color: #526077;
+
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.btn-secondary:hover,
+.cancel-button:hover {
+    background: #f1f5f9;
+}
+
+.save-button,
+#savePackage {
+    min-height: 44px;
+    padding: 0 20px;
+
+    border: 0;
+    border-radius: 10px;
+
+    background: #1769e0;
+    color: #fff;
+
+    font-size: 13px;
+    font-weight: 750;
+    cursor: pointer;
+}
+
+.save-button:hover,
+#savePackage:hover {
+    background: #1259c4;
+}
+
+.save-button:disabled,
+#savePackage:disabled {
+    opacity: .7;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* ==========================================================
+   SAVE LOADING
+   ========================================================== */
+
+.save-loading-spinner {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    margin-right: 7px;
+
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+
+    vertical-align: -2px;
+
+    animation: saveSpin .7s linear infinite;
+}
+
+@keyframes saveSpin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ==========================================================
+   RESPONSIVE — 4 CARDS
+   ========================================================== */
+
+@media (max-width: 1450px) {
+
+    .package-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+}
+
+/* ==========================================================
+   RESPONSIVE — 3 CARDS
+   ========================================================== */
+
+@media (max-width: 1150px) {
+
+    .admin-page {
+        padding: 24px;
+    }
+
+    .package-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+}
+
+/* ==========================================================
+   RESPONSIVE — 2 CARDS
+   ========================================================== */
+
+@media (max-width: 800px) {
+
+    .admin-page {
+        padding: 20px;
+    }
+
+    .admin-header {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .btn-primary {
+        width: 100%;
+    }
+
+    .package-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .package-filter {
+        width: 100%;
+        flex-basis: auto;
+    }
+
+    .package-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        height: calc(100vh - 310px);
+        gap: 14px;
+    }
+
+    .package-card-image {
+        height: 140px;
+        min-height: 140px;
+    }
+
+}
+
+/* ==========================================================
+   RESPONSIVE — MOBILE
+   ========================================================== */
+
+@media (max-width: 560px) {
+
+    .admin-page {
+        padding: 16px;
+    }
+
+    .admin-title h1 {
+        font-size: 27px;
+    }
+
+    .admin-title p {
+        font-size: 13px;
+    }
+
+    .package-toolbar {
+        padding: 12px;
+        border-radius: 13px;
+    }
+
+    .package-grid {
+        grid-template-columns: 1fr;
+        height: calc(100vh - 330px);
+        padding-right: 7px;
+    }
+
+    .package-card-image {
+        height: 190px;
+        min-height: 190px;
+    }
+
+    .package-card-content {
+        padding: 13px 14px;
+    }
+
+    .package-card h3 {
+        font-size: 17px;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .form-group.full-width {
+        grid-column: auto;
+    }
+
+    .package-modal {
+        padding: 8px;
+    }
+
+    .package-modal-box {
+        width: 100%;
+        max-height: calc(100vh - 16px);
+        border-radius: 15px;
+    }
+
+    .package-modal-header,
+    .form-section {
+        padding: 18px;
+    }
+
+    .package-modal-footer,
+    .modal-footer {
+        padding: 12px 18px;
+    }
+
+}
+
+/* ==========================================================
+   SMALL MOBILE
+   ========================================================== */
+
+@media (max-width: 380px) {
+
+    .admin-page {
+        padding: 12px;
+    }
+
+    .package-card-image {
+        height: 170px;
+        min-height: 170px;
+    }
+
+    .package-card-footer {
+        gap: 6px;
+    }
+
+    .card-action {
+        width: 35px;
+        height: 35px;
+    }
+
+}
