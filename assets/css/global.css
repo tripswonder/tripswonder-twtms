@@ -9,7 +9,7 @@
 }
 
 /* ==========================================================
-   HTML & BODY
+   HTML
 ========================================================== */
 
 html{
@@ -18,11 +18,38 @@ html{
 
     scroll-behavior:smooth;
 
+    /*
+        Desktop:
+        Keeps the customer interface centered
+        with the surrounding page using the
+        global background.
+    */
+
+    background:var(--bg-body);
+
 }
+
+
+/* ==========================================================
+   BODY
+========================================================== */
 
 body{
 
+    /*
+        CUSTOMER APP VIEWPORT
+        ---------------------
+        Desktop = maximum 430px
+        Mobile  = full available width
+    */
+
+    width:100%;
+
+    max-width:430px;
+
     min-height:100vh;
+
+    margin:0 auto;
 
     font-family:"Poppins",sans-serif;
 
@@ -37,6 +64,38 @@ body{
     -moz-osx-font-smoothing:grayscale;
 
 }
+
+
+/* ==========================================================
+   CUSTOMER APP SAFETY
+========================================================== */
+
+/*
+   Prevent horizontal overflow from cards,
+   images, buttons and modules.
+*/
+
+body > *{
+
+    max-width:100%;
+
+}
+
+
+/*
+   Long customer pages can still use their own
+   internal scrolling containers without creating
+   horizontal overflow.
+*/
+
+main,
+section,
+article{
+
+    max-width:100%;
+
+}
+
 
 /* ==========================================================
    MEDIA
@@ -58,6 +117,7 @@ svg{
 
 }
 
+
 /* ==========================================================
    LINKS
 ========================================================== */
@@ -69,6 +129,7 @@ a{
     text-decoration:none;
 
 }
+
 
 /* ==========================================================
    BUTTONS
@@ -87,6 +148,7 @@ button{
     cursor:pointer;
 
 }
+
 
 /* ==========================================================
    INPUTS
@@ -112,6 +174,7 @@ input::placeholder{
 
 }
 
+
 /* ==========================================================
    LIST
 ========================================================== */
@@ -123,6 +186,7 @@ ol{
 
 }
 
+
 /* ==========================================================
    FORM
 ========================================================== */
@@ -132,6 +196,7 @@ form{
     width:100%;
 
 }
+
 
 /* ==========================================================
    SELECTION
@@ -144,6 +209,7 @@ form{
     color:#FFFFFF;
 
 }
+
 
 /* ==========================================================
    SCROLLBAR
@@ -172,5 +238,145 @@ form{
 ::-webkit-scrollbar-thumb:hover{
 
     background:#AEB8C2;
+
+}
+
+
+/* ==========================================================
+   MOBILE RESPONSIVE
+========================================================== */
+
+/*
+   On smaller screens the customer app should
+   naturally occupy the entire screen width.
+*/
+
+@media (max-width:430px){
+
+    html{
+
+        width:100%;
+
+    }
+
+    body{
+
+        width:100%;
+
+        max-width:430px;
+
+        margin:0 auto;
+
+    }
+
+}
+
+
+/* ==========================================================
+   DESKTOP CUSTOMER APP VIEW
+========================================================== */
+
+/*
+   When opened on a desktop browser:
+
+        ┌─────────────────────────────┐
+        │                             │
+        │       CUSTOMER APP          │
+        │          430px              │
+        │                             │
+        └─────────────────────────────┘
+
+   This keeps the customer interface looking
+   like a mobile application.
+*/
+
+@media (min-width:431px){
+
+    body{
+
+        width:430px;
+
+        max-width:430px;
+
+        min-height:100vh;
+
+        margin-left:auto;
+
+        margin-right:auto;
+
+        box-shadow:
+
+            0 0 0 1px rgba(15,23,42,0.05),
+
+            0 10px 40px rgba(15,23,42,0.08);
+
+    }
+
+}
+
+/* ==========================================================
+   CUSTOMER APP DESKTOP CENTERING
+========================================================== */
+
+@media (min-width: 431px){
+
+    html{
+        display:flex;
+        justify-content:center;
+        min-height:100vh;
+        background:var(--bg-body);
+    }
+
+    body{
+        width:430px;
+        max-width:430px;
+        min-height:100vh;
+        margin:0;
+    }
+
+}
+
+/* ==========================================================
+   CUSTOMER APP FRAME
+   Desktop = Mobile Width
+========================================================== */
+
+@media (min-width: 431px) {
+
+    html {
+        background: #EEF2F7 !important;
+    }
+
+    body {
+        width: 430px !important;
+        max-width: 430px !important;
+        min-width: 430px !important;
+
+        margin-left: auto !important;
+        margin-right: auto !important;
+
+        background: var(--bg-body) !important;
+
+        overflow-x: hidden !important;
+    }
+
+}
+
+
+/* ==========================================================
+   REAL MOBILE
+========================================================== */
+
+@media (max-width: 430px) {
+
+    body {
+        width: 100% !important;
+        max-width: 430px !important;
+        min-width: 0 !important;
+
+        margin: 0 !important;
+
+        overflow-x: hidden !important;
+    }
 
 }
