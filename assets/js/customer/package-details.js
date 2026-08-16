@@ -1,6 +1,6 @@
 /* ==========================================================
    TRIPS WONDER - CUSTOMER PACKAGE DETAILS
-      FIREBASE VERSION
+   FIREBASE VERSION
    ========================================================== */
 
 import {
@@ -733,17 +733,16 @@ function formatItinerary(itinerary) {
     /*
      * MAIN TITLE
      */
-html += `
 
-    <div class="itinerary-title">
+    html += `
 
-        🌲 ${escapeItineraryHTML(
-            packageData.name || "Tour Itinerary"
-        )}
+        <div class="itinerary-title">
 
-    </div>
+            🌲 BAGUIO CITY TOUR — 2D1N
 
-`;
+        </div>
+
+    `;
 
 
     /*
@@ -940,9 +939,10 @@ function splitItineraryActivities(
     return activities;
 
 }
-    /* ======================================================
+
+/* ======================================================
        GALLERY
-    ====================================================== */
+====================================================== */
 
     renderGallery(
         packageData
@@ -955,17 +955,16 @@ function splitItineraryActivities(
 
     if (bookButton) {
 
-        bookButton.onclick =
-            () => {
+    bookButton.onclick = () => {
 
-                window.location.href =
-                    `booking.html?package=${encodeURIComponent(
-                        packageId
-                    )}`;
+        window.location.href =
+            `booking.html?id=${encodeURIComponent(
+                packageId
+            )}`;
 
-            };
+    };
 
-    }
+}
 
 }
 
