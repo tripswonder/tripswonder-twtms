@@ -9,21 +9,39 @@
 <meta name="viewport"
 content="width=device-width, initial-scale=1.0">
 
- <title>TWTMS Customer Home</title>
+<title>TWTMS Customer Home</title>
+
+<!-- ==========================================================
+     GLOBAL CSS
+========================================================== -->
 
 <link rel="stylesheet" href="../../assets/css/variables.css">
+
 <link rel="stylesheet" href="../../assets/css/global.css">
+
 <link rel="stylesheet" href="../../assets/css/customer/home.css">
 
-<link rel="preconnect"
-href="https://fonts.googleapis.com">
+
+<!-- ==========================================================
+     GOOGLE FONT
+========================================================== -->
 
 <link rel="preconnect"
-href="https://fonts.gstatic.com"
-crossorigin>
+      href="https://fonts.googleapis.com">
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-rel="stylesheet">
+<link rel="preconnect"
+      href="https://fonts.googleapis.com"
+      crossorigin>
+
+<link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+
+
+<!-- ==========================================================
+     FONT AWESOME
+     Used for search + filter
+========================================================== -->
 
 <link
     rel="stylesheet"
@@ -31,18 +49,25 @@ rel="stylesheet">
 
 </head>
 
+
 <body>
 
+
 <!-- ==========================================================
-    HEADER
+     HEADER
 ========================================================== -->
+
 <header class="home-header">
 
-    <button class="menu-btn">
+    <button
+        class="menu-btn"
+        type="button"
+        aria-label="Open menu">
 
         ☰
 
     </button>
+
 
     <img
         src="../../assets/images/logo.png"
@@ -50,7 +75,11 @@ rel="stylesheet">
         class="header-logo"
     >
 
-    <button class="notification-btn">
+
+    <button
+        class="notification-btn"
+        type="button"
+        aria-label="Notifications">
 
         🔔
 
@@ -64,17 +93,24 @@ rel="stylesheet">
 
 </header>
 
+
+
 <!-- ==========================================================
      GREETING
 ========================================================== -->
 
 <section class="greeting">
 
-   <h1>
+    <h1>
 
-    Hi, <span id="customerName">Eric</span>! 👋
+        Hi,
+        <span id="customerName">
+            Eric
+        </span>!
+        👋
 
-   </h1>
+    </h1>
+
 
     <p>
 
@@ -84,19 +120,30 @@ rel="stylesheet">
 
 </section>
 
+
+
+<!-- ==========================================================
+     SEARCH
+========================================================== -->
+
 <section class="search-section">
 
     <div class="search-box">
 
         <i class="fa-solid fa-magnifying-glass"></i>
 
-           <input
+
+        <input
             id="searchInput"
             type="text"
             placeholder="Search destination, tour code or keyword..."
         >
 
-        <button class="filter-btn">
+
+        <button
+            class="filter-btn"
+            type="button"
+            aria-label="Filter tours">
 
             <i class="fa-solid fa-sliders"></i>
 
@@ -105,91 +152,177 @@ rel="stylesheet">
     </div>
 
 </section>
-    
-<body>
+
+
 
 <div class="home">
 
 </div>
 
+
+
 <!-- ==========================================================
      UPCOMING TRIP
 ========================================================== -->
 
-<section class="upcoming-trip">
+<section
+    class="upcoming-trip"
+    id="upcomingTripSection">
 
-    <article class="trip-card">
 
-        <img
-            src="../../assets/images/jomalig.jpeg"
-            alt="Jomalig Island"    
-            class="trip-image">
+    <!-- ======================================================
+         DYNAMIC BOOKING CARD
+    ======================================================= -->
 
-                            <div class="trip-overlay">
+    <article
+        class="trip-card"
+        id="upcomingTripCard">
 
-                    <div class="trip-top">
 
-                        <span class="trip-badge">📅 Upcoming Trip</span>
+        <div class="trip-card-background">
 
-                        <h2 class="trip-title">JOMALIG ISLAND</h2>
+        </div>
 
-                        <p class="trip-date">Sep 5 – 7, 2026 • 3D2N</p>
 
-                        <span class="trip-status">✔ Confirmed</span>
+        <div class="trip-card-content">
 
-                    </div>
 
-                    <div class="trip-bottom">
+            <!-- TRIP IMAGE -->
 
-                    <div class="trip-stats">
+            <div class="trip-card-image">
 
-                        <div class="trip-stat">
+                <img
+                    id="upcomingTripImage"
+                    src="../../assets/images/logo.png"
+                    alt="Upcoming Trip">
 
-                            <strong>45</strong>
-                            <small>Days</small>
+            </div>
 
-                        </div>
 
-                        <div class="trip-stat">
 
-                            <strong>2</strong>
-                            <small>Pax</small>
+            <!-- TRIP INFORMATION -->
 
-                        </div>
+            <div class="trip-card-info">
 
-                        <div class="trip-stat">
 
-                            <strong>75%</strong>
-                            <small>Paid</small>
+                <span
+                    id="upcomingTripCategory"
+                    class="trip-category">
 
-                        </div>
+                    Tour
 
-                    </div>
+                </span>
 
-                    <button class="trip-button">
 
-                        My Trip →
+                <h2 id="upcomingTripName">
 
-                    </button>
+                    Upcoming Trip
+
+                </h2>
+
+
+                <p id="upcomingTripLocation">
+
+                    No upcoming booking yet.
+
+                </p>
+
+
+                <p
+                    id="upcomingTripSchedule"
+                    class="trip-schedule">
+
+                    Explore our tours and book your next adventure.
+
+                </p>
+
+
+                <div class="trip-card-price">
+
+                    <span>
+
+                        From
+
+                    </span>
+
+
+                    <strong id="upcomingTripPrice">
+
+                        —
+
+                    </strong>
 
                 </div>
-                </div>
+
+            </div>
+
+
+
+            <!-- MY TRIP BUTTON -->
+
+            <button
+                type="button"
+                id="upcomingTripButton"
+                class="trip-button">
+
+                My Trip →
+
+            </button>
+
+        </div>
 
     </article>
 
+
+
+    <!-- ======================================================
+         NO UPCOMING BOOKING STATE
+    ======================================================= -->
+
+    <div
+        class="no-upcoming-trip"
+        id="noUpcomingTrip"
+        hidden>
+
+
+        <div class="no-trip-icon">
+
+            🧳
+
+        </div>
+
+
+        <div>
+
+            <h3>
+
+                Ready for your next adventure?
+
+            </h3>
+
+
+            <p>
+
+                You don't have an upcoming trip yet.
+
+            </p>
+
+        </div>
+
+
+        <button
+            type="button"
+            id="exploreTripButton">
+
+            Explore Tours →
+
+        </button>
+
+    </div>
+
 </section>
-    
-<!-- ==========================================================
-     PROMO BANNER
-========================================================== -->
 
-<section class="promo-banner">
 
-    <img
-        src="../../assets/images/promo-banner.png"
-        alt="Trips Wonder Travel Promo">
-
-</section>
 
 <!-- ==========================================================
      EXPLORE OUR TOURS
@@ -197,57 +330,110 @@ rel="stylesheet">
 
 <section class="explore-tours">
 
-    <div class="section-header">
+    <div
+        class="explore-wrapper"
+        id="exploreTours">
 
-        <h2 class="section-title">
-            Explore Our Tours
-        </h2>
-
-    </div>
-
-    <div class="explore-wrapper" id="exploreTours">
-
-        <!-- Tour packages will be loaded automatically -->
+        <!--
+            Tour packages will be loaded automatically
+            by home.js
+        -->
 
     </div>
 
 </section>
-</main>
+
+
+
+<!-- ==========================================================
+     BOTTOM NAVIGATION
+========================================================== -->
 
 <nav class="bottom-nav">
 
-    <a href="home.html" class="bottom-nav-item active">
-        <span class="bottom-icon">🏠</span>
-        <span class="bottom-label">Home</span>
-    </a>
+    <!-- HOME -->
+    <a href="home.html"
+       class="bottom-nav-item active"
+       aria-label="Home">
 
-    <a href="my-trip.html" class="bottom-nav-item">
-        <span class="bottom-icon">🧳</span>
-        <span class="bottom-label">My Trip</span>
-    </a>
-
-    <a href="#" class="bottom-nav-item">
-        <span class="bottom-icon">💬</span>
-        <span class="bottom-label">Message</span>
-    </a>
-
-    <a href="#" class="bottom-nav-item notification-item">
         <span class="bottom-icon">
-            🔔
-            <span class="notification-badge">7</span>
+            <i class="fa-solid fa-house"></i>
         </span>
-        <span class="bottom-label">Notification</span>
+
     </a>
 
-    <a href="profile.html" class="bottom-nav-item">
-        <span class="bottom-icon">👤</span>
-        <span class="bottom-label">Profile</span>
+
+    <!-- MY TRIP -->
+    <a href="my-trip.html"
+       class="bottom-nav-item"
+       aria-label="My Trip">
+
+        <span class="bottom-icon">
+            <i class="fa-solid fa-suitcase"></i>
+        </span>
+
+    </a>
+
+
+    <!-- MESSAGE -->
+    <a href="message.html"
+       class="bottom-nav-item"
+       aria-label="Message">
+
+        <span class="bottom-icon">
+            <i class="fa-regular fa-comment"></i>
+        </span>
+
+    </a>
+
+
+    <!-- PROMO -->
+    <a href="promo.html"
+       class="bottom-nav-item"
+       aria-label="Promo">
+
+        <span class="bottom-icon">
+            <i class="fa-solid fa-tags"></i>
+        </span>
+
+    </a>
+
+
+    <!-- PROFILE -->
+    <a href="profile.html"
+       class="bottom-nav-item"
+       aria-label="Profile">
+
+        <span class="bottom-icon">
+            <i class="fa-regular fa-user"></i>
+        </span>
+
     </a>
 
 </nav>
 
-<script src="../../assets/data/package.js"></script>
-<script type="module" src="../../assets/js/customer/home.js"></script>
+
+
+<!-- ==========================================================
+     DATA
+========================================================== -->
+
+<script
+    src="../../assets/data/package.js">
+</script>
+
+
+
+<!-- ==========================================================
+     CUSTOMER HOME JAVASCRIPT
+========================================================== -->
+
+<script
+    type="module"
+    src="../../assets/js/customer/home.js">
+</script>
+
+
 </body>
 
 </html>
