@@ -3,19 +3,29 @@
    FIREBASE PACKAGE VERSION
    ========================================================== */
 
+
+/* ==========================================================
+   FIREBASE
+========================================================== */
+
 import {
+
     db,
     collection,
-    getDocs
+    getDocs,
+    doc,
+    getDoc
+
 } from "../../js/firebase/firebase-db.js";
 
 
 /* ==========================================================
-    CUSTOMER NAME
+   CUSTOMER NAME
 ========================================================== */
 
 const customerName =
     document.getElementById("customerName");
+
 
 if (customerName) {
 
@@ -32,6 +42,7 @@ if (customerName) {
 const searchInput =
     document.getElementById("searchInput");
 
+
 const exploreTours =
     document.getElementById("exploreTours");
 
@@ -45,12 +56,15 @@ let customerPackages = [];
 
 /* ==========================================================
    LOAD PACKAGES FROM FIREBASE
+   Admin Packages → Firestore → Customer Home
 ========================================================== */
 
 async function loadCustomerPackages() {
 
     if (!exploreTours) {
+
         return;
+
     }
 
 
@@ -167,6 +181,7 @@ function formatPrice(
 
 /* ==========================================================
    GET PACKAGE IMAGE
+   Supports Admin Package Gallery
 ========================================================== */
 
 function getPackageImage(
@@ -231,10 +246,6 @@ function getPackageImage(
     }
 
 
-    /*
-     * No image.
-     */
-
     return "";
 
 }
@@ -260,6 +271,7 @@ function getPackageDuration(
     const days =
         packageItem.days ||
         "";
+
 
     const nights =
         packageItem.nights ||
@@ -545,7 +557,9 @@ function createPackageCard(
 function renderCustomerPackages() {
 
     if (!exploreTours) {
+
         return;
+
     }
 
 
@@ -693,7 +707,9 @@ searchInput?.addEventListener(
 function showEmptyPackages() {
 
     if (!exploreTours) {
+
         return;
+
     }
 
 
@@ -704,18 +720,24 @@ function showEmptyPackages() {
             <div
                 class="packages-empty-icon"
             >
+
                 🧳
+
             </div>
 
 
             <h3>
+
                 No tours available
+
             </h3>
 
 
             <p>
+
                 New travel packages
                 will be available soon.
+
             </p>
 
         </div>
@@ -732,7 +754,9 @@ function showEmptyPackages() {
 function showPackageError() {
 
     if (!exploreTours) {
+
         return;
+
     }
 
 
@@ -743,17 +767,23 @@ function showPackageError() {
             <div
                 class="packages-empty-icon"
             >
+
                 ⚠️
+
             </div>
 
 
             <h3>
+
                 Unable to load tours
+
             </h3>
 
 
             <p>
+
                 Please try again later.
+
             </p>
 
         </div>
@@ -764,7 +794,555 @@ function showPackageError() {
 
 
 /* ==========================================================
+   UPCOMING TRIP
+========================================================== */
+
+const upcomingTripCard =
+    document.getElementById(
+        "upcomingTripCard"
+    );
+
+
+const noUpcomingTrip =
+    document.getElementById(
+        "noUpcomingTrip"
+    );
+
+
+const upcomingTripImage =
+    document.getElementById(
+        "upcomingTripImage"
+    );
+
+
+const upcomingTripCategory =
+    document.getElementById(
+        "upcomingTripCategory"
+    );
+
+
+const upcomingTripName =
+    document.getElementById(
+        "upcomingTripName"
+    );
+
+
+const upcomingTripLocation =
+    document.getElementById(
+        "upcomingTripLocation"
+    );
+
+
+const upcomingTripSchedule =
+    document.getElementById(
+        "upcomingTripSchedule"
+    );
+
+
+const upcomingTripPrice =
+    document.getElementById(
+        "upcomingTripPrice"
+    );
+
+
+const upcomingTripButton =
+    document.getElementById(
+        "upcomingTripButton"
+    );
+
+
+/* ==========================================================
+   FORMAT UPCOMING DATE
+========================================================== */
+
+function formatUpcomingDate(
+    value
+) {
+
+    if (!value) {
+
+        return "";
+
+    }
+
+
+    /*
+       Firestore Timestamp
+    */
+
+    if (
+        typeof value.toDate ===
+        "function"
+    ) {
+
+        return value
+            .toDate()
+            .toLocaleDateString(
+                "en-US",
+                {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric"
+                }
+            );
+
+    }
+
+
+    /*
+       JavaScript Date
+    */
+
+    if (
+        value instanceof Date
+    ) {
+
+        return value.toLocaleDateString(
+            "en-US",
+            {
+                month: "short",
+                day: "numeric",
+                year: "numeric"
+            }
+        );
+
+    }
+
+
+    /*
+       String date
+    */
+
+    const date =
+        new Date(value);
+
+
+    if (
+        Number.isNaN(
+            date.getTime()
+        )
+    ) {
+
+        return String(value);
+
+    }
+
+
+    return date.toLocaleDateString(
+        "en-US",
+        {
+            month: "short",
+            day: "numeric",
+            year: "numeric"
+        }
+    );
+
+}
+
+
+/* ==========================================================
+   GET BOOKING PACKAGE
+   Uses package data already loaded from Admin
+========================================================== */
+
+function findBookedPackage(
+    booking
+) {
+
+    const packageId =
+        booking.packageId ||
+        booking.packageID ||
+        booking.package_id;
+
+
+    if (!packageId) {
+
+        return null;
+
+    }
+
+
+    return customerPackages.find(
+        packageItem =>
+            packageItem.id ===
+            packageId
+    ) || null;
+
+}
+
+
+/* ==========================================================
+   LOAD UPCOMING TRIP
+========================================================== */
+
+async function loadUpcomingTrip() {
+
+    /*
+       If the new Upcoming Trip HTML
+       does not exist yet, simply stop.
+    */
+
+    if (!upcomingTripCard) {
+
+        return;
+
+    }
+
+
+    const bookingId =
+        localStorage.getItem(
+            "latestBookingId"
+        );
+
+
+    /*
+       No booking yet
+    */
+
+    if (!bookingId) {
+
+        upcomingTripCard.hidden =
+            true;
+
+
+        if (noUpcomingTrip) {
+
+            noUpcomingTrip.hidden =
+                false;
+
+        }
+
+
+        return;
+
+    }
+
+
+    try {
+
+        console.log(
+            "Loading upcoming booking:",
+            bookingId
+        );
+
+
+        const bookingReference =
+            doc(
+                db,
+                "bookings",
+                bookingId
+            );
+
+
+        const bookingSnapshot =
+            await getDoc(
+                bookingReference
+            );
+
+
+        if (
+            !bookingSnapshot.exists()
+        ) {
+
+            console.warn(
+                "Booking not found:",
+                bookingId
+            );
+
+
+            upcomingTripCard.hidden =
+                true;
+
+
+            if (noUpcomingTrip) {
+
+                noUpcomingTrip.hidden =
+                    false;
+
+            }
+
+
+            return;
+
+        }
+
+
+        const booking = {
+
+            id:
+                bookingSnapshot.id,
+
+            ...bookingSnapshot.data()
+
+        };
+
+
+        console.log(
+            "CUSTOMER UPCOMING BOOKING:",
+            booking
+        );
+
+
+        /*
+           Find the same package from
+           Admin Packages / Firestore.
+        */
+
+        const bookedPackage =
+            findBookedPackage(
+                booking
+            );
+
+
+        /*
+           Use booking data first.
+           Fallback to the package
+           from Admin Packages.
+        */
+
+        const packageName =
+            booking.packageName ||
+            bookedPackage?.name ||
+            "Upcoming Trip";
+
+
+        const packageCategory =
+            booking.packageCategory ||
+            bookedPackage?.category ||
+            "Tour";
+
+
+        const packageLocation =
+            booking.packageLocation ||
+            bookedPackage?.location ||
+            "";
+
+
+        const packageImage =
+            booking.packageImage ||
+            getPackageImage(
+                bookedPackage || {}
+            );
+
+
+        const packagePrice =
+            booking.packagePrice ||
+            bookedPackage?.price ||
+            "";
+
+
+        const packageDuration =
+            booking.packageDuration ||
+            booking.duration ||
+            getPackageDuration(
+                bookedPackage || {}
+            );
+
+
+        /* ==================================================
+           IMAGE
+        ================================================== */
+
+        if (upcomingTripImage) {
+
+            upcomingTripImage.src =
+                packageImage ||
+                "../../assets/images/logo.png";
+
+
+            upcomingTripImage.alt =
+                packageName;
+
+        }
+
+
+        /* ==================================================
+           CATEGORY
+        ================================================== */
+
+        if (upcomingTripCategory) {
+
+            upcomingTripCategory.textContent =
+                packageCategory;
+
+        }
+
+
+        /* ==================================================
+           NAME
+        ================================================== */
+
+        if (upcomingTripName) {
+
+            upcomingTripName.textContent =
+                packageName;
+
+        }
+
+
+        /* ==================================================
+           LOCATION
+        ================================================== */
+
+        if (upcomingTripLocation) {
+
+            upcomingTripLocation.textContent =
+                packageLocation;
+
+        }
+
+
+        /* ==================================================
+           TRAVEL DATE
+        ================================================== */
+
+        const startDate =
+            formatUpcomingDate(
+                booking.startTravelDate ||
+                booking.travelDate
+            );
+
+
+        const endDate =
+            formatUpcomingDate(
+                booking.endTravelDate
+            );
+
+
+        let schedule = "";
+
+
+        if (
+            startDate &&
+            endDate
+        ) {
+
+            schedule =
+                `${startDate} – ${endDate}`;
+
+        } else if (startDate) {
+
+            schedule =
+                startDate;
+
+        }
+
+
+        if (packageDuration) {
+
+            schedule +=
+                ` • ${packageDuration}`;
+
+        }
+
+
+        if (upcomingTripSchedule) {
+
+            upcomingTripSchedule.textContent =
+                schedule ||
+                "Upcoming trip";
+
+        }
+
+
+        /* ==================================================
+           PRICE
+        ================================================== */
+
+        if (upcomingTripPrice) {
+
+            upcomingTripPrice.textContent =
+                formatPrice(
+                    packagePrice
+                )
+                    .replace(
+                        "FROM ",
+                        ""
+                    );
+
+        }
+
+
+        /* ==================================================
+           SHOW
+        ================================================== */
+
+        upcomingTripCard.hidden =
+            false;
+
+
+        if (noUpcomingTrip) {
+
+            noUpcomingTrip.hidden =
+                true;
+
+        }
+
+
+    } catch (error) {
+
+        console.error(
+            "FAILED TO LOAD UPCOMING TRIP:",
+            error
+        );
+
+
+        upcomingTripCard.hidden =
+            true;
+
+
+        if (noUpcomingTrip) {
+
+            noUpcomingTrip.hidden =
+                false;
+
+        }
+
+    }
+
+}
+
+
+/* ==========================================================
+   MY TRIP BUTTON
+========================================================== */
+
+if (upcomingTripButton) {
+
+    upcomingTripButton.addEventListener(
+        "click",
+        () => {
+
+            window.location.href =
+                "my-trip.html";
+
+        }
+    );
+
+}
+
+
+/* ==========================================================
    INITIAL LOAD
 ========================================================== */
 
-loadCustomerPackages();
+async function initializeHome() {
+
+    /*
+       IMPORTANT:
+       Load Admin Packages FIRST.
+       Then load Upcoming Trip.
+
+       This allows the Upcoming Trip
+       to find the package from the
+       same Firestore package collection.
+    */
+
+    await loadCustomerPackages();
+
+    await loadUpcomingTrip();
+
+}
+
+
+initializeHome();
