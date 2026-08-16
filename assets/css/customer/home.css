@@ -1,843 +1,122 @@
 /* ==========================================================
-    HOME
+   TRIPS WONDER — CUSTOMER HOME
+   CLEANED HOME.CSS
+   Based on the current Home CSS
 ========================================================== */
 
-.home-page{
 
-    width:100%;
+/* ==========================================================
+   GLOBAL
+========================================================== */
 
-    max-width:390px;
-
-    min-height:100vh;
-
-    margin:0 auto;
-
-    padding:16px;
-
-    background:var(--bg-body);
-
+* {
+    box-sizing: border-box;
 }
+
+html,
+body {
+    width: 100%;
+    min-height: 100%;
+    margin: 0;
+    padding: 0;
+
+    overflow-x: hidden;
+    overflow-y: auto;
+
+    -webkit-overflow-scrolling: touch;
+}
+
+body {
+    height: auto;
+    background: var(--bg-body);
+}
+
+
+/* ==========================================================
+   HOME PAGE
+========================================================== */
+
+.home-page {
+    width: 100%;
+    max-width: 390px;
+
+    min-height: 0;
+    height: auto;
+
+    margin: 0 auto;
+
+    padding: 8px 8px 82px;
+
+    background: var(--bg-body);
+
+    overflow: visible;
+}
+
 
 /* ==========================================================
    HEADER
 ========================================================== */
-.home-header{
 
-    margin:0px;
-    padding:0px;
+.home-header {
+    width: 100%;
 
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin: 0 0 3px;
+    padding: 0;
 }
 
-.home-header{
+.menu-btn {
+    width: 42px;
+    height: 42px;
 
-    display:flex;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-    align-items:center;
+    padding: 0;
 
-    justify-content:space-between;
+    border: 0;
+    border-radius: 0;
 
-    margin-bottom:none;
+    background: none;
+    color: var(--primary);
 
+    font-size: 22px;
+
+    cursor: pointer;
 }
 
-.menu-btn{
+.header-logo {
+    width: 170px;
+    max-width: 55%;
 
-    width:42px;
-
-    height:42px;
-
-    border-radius:none;
-
-    background:none;
-
-    font-size:22px;
-
-    color:var(--primary);
-    
-
+    object-fit: contain;
 }
 
-.header-logo{
+.notification-btn {
+    position: relative;
 
-    width:170px;
+    width: 42px;
+    height: 42px;
 
-    object-fit:contain;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-}
+    padding: 0;
 
-.notification-btn{
+    border: 0;
+    border-radius: 50%;
 
-    width:42px;
+    background: none;
+    color: var(--primary);
 
-    height:42px;
+    font-size: 22px;
 
-    border-radius:50%;
-
-    position:relative;
-
-    font-size:22px;
-
-    color:var(--primary);
-
-}
-
-.notification-badge{
-
-    position:absolute;
-
-    top:-4px;
-
-    right:-4px;
-
-    width:20px;
-
-    height:20px;
-
-    border-radius:50%;
-
-    background:#EF4444;
-
-    color:#FFFFFF;
-
-    font-size:11px;
-
-    font-weight:600;
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-}
-
-/* ==========================================================
-   GREETING
-========================================================== */
-
-.greeting{
-
-    margin:0px;
-    padding:5px;
-
-}
-
-.greeting h1{
-
-    font-size:16px;
-
-    font-weight:600;
-
-    line-height:1.1;
-
-    color:var(--primary);
-
-}
-
-.greeting p{
-
-    margin-top:0px;
-
-    font-size:12px;
-
-    color:var(--text-light);
-
-    line-height:1.5;
-
-}
-
-/* ==========================================================
-   SEARCH BAR
-========================================================== */
-.search-section {
-    margin:0px;
-    padding:4px;
-
-}
-
-.search-box{
-
-    display:flex;
-
-    align-items:center;
-
-    gap:px;
-
-    height:30px;
-
-    background:#FFFFFF;
-
-    border:1px solid #E8EDF5;
-
-    border-radius:12px;
-
-    box-shadow:0 8px 24px rgba(15,23,42,.05);
-    
-
-}
-
-.search-box i{
-
-    font-size:14px;
-
-    color:#94A3B8;
-
-}
-
-.search-box input{
-
-    flex:1;
-
-    font-size:14px;
-
-    color:var(--text-dark);
-    padding:2px;
-
-}
-
-.search-box input::placeholder{
-
-    color:#94A3B8;
-
-}
-
-.filter-btn{
-
-    width:25px;
-
-    height:25px;
-
-    border-radius:12px;
-
-    background:#F8FAFC;
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    transition:.25s ease;
-
-    padding:5px;
-
-}
-
-.filter-btn:hover{
-
-    background:#EEF4FF;
-
-}
-
-.filter-btn i{
-
-    color:var(--primary);
-
-    font-size:16px;
-
-}
-
-/* ==========================================
-   UPCOMING TRIP
-========================================== */
-
-.upcoming-trip{
-    margin:px;
-    padding:4px;
-}
-
-.trip-card{
-
-    position:relative;
-    
-    width:100%;
-
-    height:110px;
-
-    border-radius:10px;
-
-    overflow:hidden;
-
-    background:#ddd;
-
-    box-shadow:0 12px 30px rgba(0,0,0,.12);
-
-}
-
-.trip-image{
-
-    width:100%;
-    height:100%;
-
-    object-fit:cover;
-
-    object-position:right center;
-
-}
-
-.trip-overlay{
-
-    position:absolute;
-    inset:0;
-
-    display:flex;
-    flex-direction:column;
-    justify-content:space-between;
-
-    padding:3px 3px;
-
-    background:
-    linear-gradient(
-        90deg,
-        rgba(255,255,255,.95) 0%,
-        rgba(255,255,255,.85) 40%,
-        rgba(255,255,255,.35) 60%,
-        rgba(255,255,255,0) 85%
-    );
-
-}
-
-.trip-badge{
-
-    padding:1px 2px;
-
-    font-size:10px;
-
-    border-radius:10px;
-
-    background:#EAF2FF;
-
-    color:#2563EB;
-
-    font-weight:600;
-
-}
-
-.trip-title{
-
-    font-size:11px;
-
-    font-weight:700;
-
-    color:#0F172A;
-
-    margin:0;
-
-}
-
-.trip-date{
-
-    font-size:10px;
-
-    color:#475569;
-
-    margin:0;
-
-}
-
-.trip-status{
-
-    padding:none;
-
-    border-radius:10px;
-
-    background:none;
-
-    color:#15803D;
-
-    font-size:10px;
-
-    font-weight:600;
-
-}
-
-.trip-footer{
-
-    margin-top:0px;
-
-    display:flex;
-
-    justify-content:space-between;
-
-    align-items:flex-end;
-
-}
-
-.trip-stats{
-
-    display:flex;
-
-    gap:12px;
-
-}
-
-.trip-stat{
-
-    width:auto;
-
-    height:auto;
-
-    border: radius 0px;
-
-    background:transparent;
-
-    backdrop-filter:blur(00px);
-
-    display:flex;
-
-    flex-direction:column;
-
-    justify-content:center;
-
-    align-items:center;
-
-    padding:0;
-
-}
-
-.trip-stat strong{
-
-    color:#0F172A;
-
-    font-size:13px;
-
-    font-weight:700;
-
-}
-
-.trip-stat small{
-
-    color:#242424;
-
-    font-size:10px;
-
-}
-
-.trip-button{
-
-    border:none;
-
-    padding:0 19px;
-
-    border-radius:14px;
-
-    background:#0d47a1;
-
-    color:#fff;
-
-    font-size:12px;
-
-    font-weight:800;
-
-    cursor:pointer;
-
-    transition:.25s;
-
-    height:30px;
-}
-
-.trip-button:hover{
-
-    background:#1565c0;
-
-}
-
-.trip-top{
-
-    display:flex;
-    flex-direction:column;
-    align-items:flex-start;
-    gap:2px;
-
-}
-
-.trip-bottom{
-
-    display:flex;
-
-    justify-content:space-between;
-
-    width:100%;
-
-    margin-top:auto;
-
-    align-self:flex-end;
-
-}
-
-/* ==========================================================
-   PROMO BANNER
-========================================================== */
-
-.promo-banner{
-    margin-top:0px;
-    padding:4px 20px;
-
-    width:100%;
-    height:70px;
-
-    border-radius:10px;
-    overflow:hidden;
-
-    background:#050505;
-}
-
-.promo-banner img{
-    width:100%;
-    height:100%;
-    display:block;
-    object-fit:cover;
-    object-position:center;
-}
-
-/* ==========================================================
-   HOME PAGE SCROLL
-========================================================== */
-
-html,
-body{
-
-    min-height:100%;
-
-    overflow-x:hidden;
-
-    overflow-y:auto;
-
-}
-
-body{
-
-    height:auto;
-
-}
-
-/* ==========================================================
-   EXPLORE OUR TOURS
-========================================================== */
-
-.explore-tours{
-
-    margin-top:0;
-
-    padding:4px
-
-}
-
-
-.explore-tours .section-header{
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:space-between;
-
-    margin-bottom:0px;
-
-}
-
-
-.explore-tours .section-title{
-
-    margin:0;
-
-    font-size:14px;
-
-    font-weight:700;
-
-    color:#051741;
-
-}
-
-
-/* ==========================================================
-   TOUR GRID
-========================================================== */
-
-.explore-wrapper{
-
-    display:grid;
-
-    grid-template-columns:repeat(3, minmax(0, 1fr));
-
-    gap:8px;
-
-    width:100%;
-
-}
-
-
-/* ==========================================================
-   TOUR CARD
-========================================================== */
-
-.explore-card{
-
-    min-width:0;
-
-    background:#FFFFFF;
-
-    border-radius:14px;
-
-    overflow:hidden;
-
-    box-shadow:0 5px 16px rgba(15,23,42,.08);
-
-}
-
-
-/* ==========================================================
-   TOUR IMAGE
-========================================================== */
-
-.explore-image{
-
-    width:100%;
-
-    height:80px;
-
-    overflow:hidden;
-
-}
-
-
-.explore-image img{
-
-    width:100%;
-
-    height:100%;
-
-    object-fit:cover;
-
-    display:block;
-
-}
-
-
-/* ==========================================================
-   TOUR CONTENT
-========================================================== */
-
-.explore-content{
-
-    padding:8px;
-
-}
-
-
-.explore-category{
-
-    display:block;
-
-    margin-bottom:3px;
-
-    font-size:9px;
-
-    font-weight:700;
-
-    color:#2563EB;
-
-}
-
-
-.explore-price{
-
-    display:block;
-
-    margin-bottom:3px;
-
-    font-size:10px;
-
-    font-weight:700;
-
-    color:#2563EB;
-
-}
-
-
-.explore-title{
-
-    margin:0 0 3px;
-
-    font-size:13px;
-
-    line-height:1.15;
-
-    font-weight:700;
-
-    color:#0F172A;
-
-}
-
-
-.explore-duration{
-
-    margin:0;
-
-    font-size:9px;
-
-    line-height:1.2;
-
-    color:#64748B;
-
-}
-
-
-/* ==========================================================
-   MOBILE
-========================================================== */
-
-@media (max-width:480px){
-
-    .explore-wrapper{
-
-        grid-template-columns:repeat(3, minmax(0, 1fr));
-
-        gap:8px;
-
-    }
-
-}
-
-/* ==========================================================
-   BOTTOM NAVIGATION
-========================================================== */
-
-.bottom-nav{
-
-    position:fixed;
-
-    left:50%;
-
-    bottom:0;
-
-    transform:translateX(-50%);
-
-    width:100%;
-
-    max-width:430px;
-
-    height:74px;
-
-    background:#FFFFFF;
-
-    border-top:1px solid #E5E7EB;
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:space-around;
-
-    padding:4px 3px 6px;
-
-    z-index:9999;
-
-}
-
-
-/* ==========================================================
-   NAV ITEM
-========================================================== */
-
-.bottom-nav-item{
-
-    position:relative;
-
-    flex:1;
-
-    height:100%;
-
-    display:flex;
-
-    flex-direction:column;
-
-    align-items:center;
-
-    justify-content:center;
-
-    gap:3px;
-
-    text-decoration:none;
-
-    color:#111827;
-
-}
-
-
-/* ==========================================================
-   ICON
-========================================================== */
-
-.bottom-icon{
-
-    position:relative;
-
-    width:32px;
-
-    height:32px;
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    font-size:24px;
-
-}
-
-
-/* ==========================================================
-   LABEL
-========================================================== */
-
-.bottom-label{
-
-    font-size:11px;
-
-    font-weight:600;
-
-    line-height:14px;
-
-    white-space:nowrap;
-
-}
-
-
-/* ==========================================================
-   ACTIVE
-========================================================== */
-
-.bottom-nav-item.active{
-
-    color:#2563EB;
-
-}
-
-
-/* ==========================================================
-   ACTIVE INDICATOR
-========================================================== */
-
-.bottom-nav-item.active::before{
-
-    content:"";
-
-    position:absolute;
-
-    top:0;
-
-    left:18%;
-
-    right:18%;
-
-    height:4px;
-
-    background:#2563EB;
-
-    border-radius:0 0 5px 5px;
-
+    cursor: pointer;
 }
 
 
@@ -845,348 +124,897 @@ body{
    NOTIFICATION BADGE
 ========================================================== */
 
-.notification-badge{
+.notification-badge {
+    position: absolute;
 
-    position:absolute;
+    top: -5px;
+    right: -7px;
 
-    top:-5px;
+    min-width: 19px;
+    height: 19px;
 
-    right:-7px;
+    padding: 0 4px;
 
-    min-width:19px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-    height:19px;
+    background: #EF3340;
+    color: #FFFFFF;
 
-    padding:0 5px;
+    border: 2px solid #FFFFFF;
+    border-radius: 50px;
 
-    display:flex;
+    font-size: 10px;
+    font-weight: 700;
 
-    align-items:center;
-
-    justify-content:center;
-
-    background:#EF3340;
-
-    color:#FFFFFF;
-
-    border:2px solid #FFFFFF;
-
-    border-radius:50px;
-
-    font-size:10px;
-
-    font-weight:700;
-
+    line-height: 1;
 }
 
 
 /* ==========================================================
-   HOVER
+   GREETING
 ========================================================== */
 
-.bottom-nav-item:hover{
-
-    color:#2563EB;
-
+.greeting {
+    margin: 0;
+    padding: 2px 3px 3px;
 }
+
+.greeting h1 {
+    margin: 0;
+
+    color: var(--primary);
+
+    font-size: 16px;
+    font-weight: 600;
+
+    line-height: 1.1;
+}
+
+.greeting p {
+    margin: 2px 0 0;
+
+    color: var(--text-light);
+
+    font-size: 12px;
+    line-height: 1.5;
+}
+
 
 /* ==========================================================
-   FINAL CUSTOMER BOTTOM NAV
+   SEARCH
 ========================================================== */
 
-.bottom-nav{
+.search-section {
+    width: 100%;
 
-    position:fixed !important;
-
-    left:50% !important;
-
-    bottom:0 !important;
-
-    transform:translateX(-50%) !important;
-
-    width:100% !important;
-
-    max-width:430px !important;
-
-    height:74px !important;
-
-    margin:0 !important;
-
-    padding:4px 3px 6px !important;
-
-    box-sizing:border-box !important;
-
-    display:flex !important;
-
-    align-items:center !important;
-
-    justify-content:space-around !important;
-
-    background:#FFFFFF !important;
-
-    border-top:1px solid #E5E7EB !important;
-
-    z-index:999999 !important;
-
+    margin: 0;
+    padding: 2px;
 }
 
+.search-box {
+    width: 100%;
+    height: 30px;
 
-/* ITEMS */
+    display: flex;
+    align-items: center;
 
-.bottom-nav-item{
+    gap: 6px;
 
-    position:relative !important;
+    padding: 0 5px;
 
-    flex:1 !important;
+    background: #FFFFFF;
 
-    height:100% !important;
+    border: 1px solid #E8EDF5;
+    border-radius: 12px;
 
-    display:flex !important;
-
-    flex-direction:column !important;
-
-    align-items:center !important;
-
-    justify-content:center !important;
-
-    gap:2px !important;
-
-    text-decoration:none !important;
-
-    color:#111827 !important;
-
+    box-shadow:
+        0 8px 24px rgba(15, 23, 42, .05);
 }
 
+.search-box i {
+    flex-shrink: 0;
 
-/* ICON */
-
-.bottom-icon{
-
-    position:relative !important;
-
-    width:32px !important;
-
-    height:30px !important;
-
-    display:flex !important;
-
-    align-items:center !important;
-
-    justify-content:center !important;
-
-    font-size:23px !important;
-
+    color: #94A3B8;
+    font-size: 14px;
 }
 
+.search-box input {
+    flex: 1;
+    min-width: 0;
 
-/* LABEL */
+    height: 100%;
+    padding: 2px;
 
-.bottom-label{
+    border: 0;
+    outline: none;
 
-    display:block !important;
+    background: transparent;
+    color: var(--text-dark);
 
-    font-size:11px !important;
-
-    line-height:14px !important;
-
-    font-weight:600 !important;
-
-    white-space:nowrap !important;
-
+    font-size: 14px;
 }
 
-
-/* ACTIVE */
-
-.bottom-nav-item.active{
-
-    color:#2563EB !important;
-
+.search-box input::placeholder {
+    color: #94A3B8;
 }
 
+.filter-btn {
+    width: 25px;
+    height: 25px;
 
-/* ACTIVE LINE */
+    flex-shrink: 0;
 
-.bottom-nav-item.active::before{
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-    content:"";
+    padding: 5px;
 
-    position:absolute;
+    border: 0;
+    border-radius: 12px;
 
-    top:0;
+    background: #F8FAFC;
 
-    left:18%;
+    transition: .25s ease;
 
-    right:18%;
-
-    height:4px;
-
-    background:#2563EB;
-
-    border-radius:0 0 5px 5px;
-
+    cursor: pointer;
 }
 
-
-/* NOTIFICATION */
-
-.notification-badge{
-
-    position:absolute !important;
-
-    top:-5px !important;
-
-    right:-7px !important;
-
-    min-width:19px !important;
-
-    height:19px !important;
-
-    padding:0 4px !important;
-
-    display:flex !important;
-
-    align-items:center !important;
-
-    justify-content:center !important;
-
-    background:#EF3340 !important;
-
-    color:#FFFFFF !important;
-
-    border:2px solid #FFFFFF !important;
-
-    border-radius:50px !important;
-
-    font-size:10px !important;
-
-    font-weight:700 !important;
-
+.filter-btn:hover {
+    background: #EEF4FF;
 }
+
+.filter-btn i {
+    color: var(--primary);
+    font-size: 16px;
+}
+
 
 /* ==========================================================
-   FORCE CUSTOMER BOTTOM NAV ON MOBILE
+   UPCOMING TRIP
 ========================================================== */
 
-.home-page .bottom-nav {
-    position: fixed !important;
-    display: flex !important;
-    visibility: visible !important;
-    opacity: 1 !important;
+.upcoming-trip {
+    width: 100%;
 
-    left: 50% !important;
-    bottom: 0 !important;
-    transform: translateX(-50%) !important;
+    margin: 8px 0;
+    padding: 0;
+}
 
-    width: 100% !important;
-    max-width: 430px !important;
-    height: 74px !important;
+.trip-card {
+    position: relative;
 
-    margin: 0 !important;
-    padding: 4px 3px 6px !important;
+    width: 100%;
+    min-height: 105px;
 
-    box-sizing: border-box !important;
+    overflow: hidden;
 
-    align-items: center !important;
-    justify-content: space-around !important;
+    border-radius: 14px;
 
-    background: #fff !important;
+    background: #EAF3FB;
 
-    border-top: 1px solid #e5e7eb !important;
+    box-shadow:
+        0 5px 18px rgba(23, 33, 59, 0.10);
+}
 
-    z-index: 999999 !important;
+.trip-card-background {
+    position: absolute;
+    inset: 0;
+
+    z-index: 0;
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(255, 255, 255, 0.96) 0%,
+            rgba(255, 255, 255, 0.88) 45%,
+            rgba(23, 105, 224, 0.12) 100%
+        );
+}
+
+.trip-card-content {
+    position: relative;
+    z-index: 1;
+
+    min-height: 105px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 9px;
+
+    padding: 8px;
+}
+
+.trip-card-image {
+    width: 78px;
+    min-width: 78px;
+    height: 88px;
+
+    overflow: hidden;
+
+    border-radius: 10px;
+
+    background: #EEF2F7;
+}
+
+.trip-card-image img {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+}
+
+.trip-card-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.trip-category {
+    display: inline-flex;
+
+    padding: 3px 8px;
+
+    border-radius: 999px;
+
+    background: rgba(238, 245, 255, 0.95);
+    color: #1769E0;
+
+    font-size: 8px;
+    font-weight: 700;
+}
+
+.trip-card-info h2 {
+    margin: 5px 0 2px;
+
+    overflow: hidden;
+
+    color: #17213B;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    line-height: 1.2;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.trip-card-info p {
+    margin: 0;
+
+    color: #697586;
+
+    font-size: 8px;
+    line-height: 1.3;
+}
+
+.trip-schedule {
+    margin-top: 2px !important;
+}
+
+.trip-card-price {
+    display: flex;
+    align-items: baseline;
+
+    gap: 3px;
+
+    margin-top: 4px;
+}
+
+.trip-card-price span {
+    color: #7D8796;
+    font-size: 7px;
+}
+
+.trip-card-price strong {
+    color: #1769E0;
+    font-size: 12px;
+}
+
+.trip-button {
+    flex-shrink: 0;
+
+    padding: 7px 9px;
+
+    border: 0;
+    border-radius: 999px;
+
+    background: #1769E0;
+    color: #FFFFFF;
+
+    font-size: 8px;
+    font-weight: 700;
+
+    box-shadow:
+        0 4px 10px rgba(23, 105, 224, 0.20);
+
+    cursor: pointer;
 }
 
 
-/* Each button */
+/* ==========================================================
+   NO UPCOMING TRIP
+========================================================== */
 
-.home-page .bottom-nav .bottom-nav-item {
-    display: flex !important;
-    visibility: visible !important;
-    opacity: 1 !important;
+.no-upcoming-trip {
+    width: 100%;
+    min-height: 52px;
 
-    flex: 1 !important;
-    height: 100% !important;
+    display: flex;
+    align-items: center;
 
-    align-items: center !important;
-    justify-content: center !important;
-    flex-direction: column !important;
+    gap: 9px;
 
-    text-decoration: none !important;
+    margin: 6px 0 7px;
+    padding: 7px 8px;
+
+    background: #FFFFFF;
+
+    border: 1px solid #E8EDF5;
+    border-radius: 12px;
+
+    box-shadow:
+        0 3px 10px rgba(15, 23, 42, 0.05);
+
+    overflow: hidden;
+}
+
+.no-trip-icon {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #EEF5FF;
+
+    border-radius: 9px;
+
+    color: #1769E0;
+
+    font-size: 15px;
+    line-height: 1;
+}
+
+.no-upcoming-trip > div:nth-child(2) {
+    flex: 1;
+    min-width: 0;
+}
+
+.no-upcoming-trip h3 {
+    margin: 0 0 2px;
+
+    color: #17213B;
+
+    font-size: 9.5px;
+    font-weight: 700;
+
+    line-height: 1.25;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.no-upcoming-trip p {
+    margin: 0;
+
+    color: #8A94A6;
+
+    font-size: 7px;
+    font-weight: 400;
+
+    line-height: 1.3;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.no-upcoming-trip button,
+#exploreTripButton {
+    flex-shrink: 0;
+
+    height: 28px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0 10px;
+
+    border: 0;
+    border-radius: 8px;
+
+    background: #1769E0;
+    color: #FFFFFF;
+
+    font-size: 7px;
+    font-weight: 700;
+
+    line-height: 1;
+    white-space: nowrap;
+
+    box-shadow:
+        0 3px 8px rgba(23, 105, 224, 0.18);
+
+    cursor: pointer;
+
+    transition:
+        transform 0.15s ease,
+        background 0.15s ease;
+}
+
+.no-upcoming-trip button:hover,
+#exploreTripButton:hover {
+    background: #0F5FD1;
+}
+
+.no-upcoming-trip button:active,
+#exploreTripButton:active {
+    transform: scale(0.96);
 }
 
 
-/* Icon */
+/* ==========================================================
+   PROMO BANNER
+   Hidden for now
+========================================================== */
 
-.home-page .bottom-nav .bottom-icon {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
+.promo-banner {
+    display: none;
+}
 
-    width: 32px !important;
-    height: 30px !important;
+.promo-banner img {
+    width: 100%;
+    height: 100%;
 
-    font-size: 23px !important;
+    display: block;
+
+    object-fit: cover;
+    object-position: center;
 }
 
 
-/* Text */
+/* ==========================================================
+   EXPLORE OUR TOURS
+========================================================== */
 
-.home-page .bottom-nav .bottom-label {
-    display: block !important;
+.explore-tours {
+    width: 100%;
 
-    font-size: 11px !important;
-    line-height: 14px !important;
-    font-weight: 600 !important;
+    margin: 0;
+    padding: 0;
+}
 
-    white-space: nowrap !important;
+.explore-tours .section-header {
+    display: none;
+}
+
+.explore-tours .section-title {
+    margin: 0;
+
+    color: #051741;
+
+    font-size: 14px;
+    font-weight: 700;
 }
 
 
-/* Active */
+/* ==========================================================
+   TOUR GRID
+========================================================== */
 
-.home-page .bottom-nav .bottom-nav-item.active {
-    color: #2563eb !important;
+.explore-wrapper {
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 7px;
+
+    margin: 0;
+    padding: 0;
 }
 
 
-/* Notification badge */
+/* ==========================================================
+   TOUR CARD
+========================================================== */
 
-.home-page .bottom-nav .notification-badge {
-    display: flex !important;
-    visibility: visible !important;
-    opacity: 1 !important;
+.explore-card {
+    width: 100%;
+    min-width: 0;
 
-    position: absolute !important;
+    overflow: hidden;
 
-    top: -5px !important;
-    right: -7px !important;
+    background: #FFFFFF;
 
-    min-width: 19px !important;
-    height: 19px !important;
+    border-radius: 11px;
 
-    align-items: center !important;
-    justify-content: center !important;
+    box-shadow:
+        0 5px 16px rgba(15, 23, 42, .08);
 
-    padding: 0 4px !important;
+    cursor: pointer;
 
-    background: #ef3340 !important;
-    color: white !important;
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease;
+}
 
-    border: 2px solid white !important;
-    border-radius: 50px !important;
+.explore-card:hover {
+    transform: translateY(-2px);
 
-    font-size: 10px !important;
-    font-weight: 700 !important;
+    box-shadow:
+        0 8px 20px rgba(15, 23, 42, .12);
+}
+
+.explore-card:active {
+    transform: scale(.98);
 }
 
 
-/* Space for fixed navigation */
+/* ==========================================================
+   TOUR IMAGE
+========================================================== */
 
-.home-page {
-    padding-bottom: 80px !important;
+.explore-image {
+    width: 100%;
+    height: 70px;
+
+    overflow: hidden;
 }
 
-body{
-    padding-bottom:80px !important;
+.explore-image img {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+}
+
+
+/* ==========================================================
+   TOUR CONTENT
+========================================================== */
+
+.explore-content {
+    padding: 6px;
+}
+
+.explore-category {
+    display: block;
+
+    margin-bottom: 2px;
+
+    color: #2563EB;
+
+    font-size: 8px;
+    font-weight: 700;
+
+    line-height: 1.2;
+}
+
+.explore-price {
+    display: block;
+
+    margin-bottom: 3px;
+
+    color: #2563EB;
+
+    font-size: 9px;
+    font-weight: 700;
+
+    line-height: 1.2;
+}
+
+.explore-title {
+    margin: 0 0 3px;
+
+    overflow: hidden;
+
+    color: #0F172A;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    line-height: 1.15;
+}
+
+.explore-location {
+    margin: 0 0 3px;
+
+    overflow: hidden;
+
+    color: #64748B;
+
+    font-size: 8px;
+
+    line-height: 1.2;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.explore-duration {
+    margin: 0;
+
+    color: #64748B;
+
+    font-size: 8px;
+
+    line-height: 1.2;
+}
+
+.explore-image-placeholder {
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #EEF5FF;
+
+    color: #1769E0;
+
+    font-size: 22px;
+}
+
+
+/* ==========================================================
+   BOTTOM NAVIGATION
+   ICON ONLY
+========================================================== */
+
+.bottom-nav {
+    position: fixed;
+
+    left: 50%;
+    bottom: 0;
+
+    transform: translateX(-50%);
+
+    width: 100%;
+    max-width: 430px;
+    height: 64px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+
+    padding: 5px 8px 6px;
+
+    background: #FFFFFF;
+
+    border-top: 1px solid #E7EBF2;
+
+    box-shadow:
+        0 -3px 14px rgba(15, 23, 42, 0.06);
+
+    z-index: 9999;
+}
+
+
+/* ==========================================================
+   NAV ITEM
+========================================================== */
+
+.bottom-nav-item {
+    position: relative;
+
+    flex: 1;
+    height: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    text-decoration: none;
+
+    color: #18253D;
+
+    -webkit-tap-highlight-color: transparent;
+
+    transition: transform .18s ease;
+}
+
+
+/* ==========================================================
+   ICON HOLDER
+========================================================== */
+
+.bottom-icon {
+    width: 46px;
+    height: 46px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    transition:
+        background .18s ease,
+        transform .18s ease,
+        box-shadow .18s ease;
+}
+
+
+/* ==========================================================
+   ICON
+========================================================== */
+
+.bottom-icon i {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 30px;
+    height: 30px;
+
+    font-size: 22px;
+
+    color: #18253D;
+
+    line-height: 1;
+
+    transition:
+        color .18s ease,
+        transform .18s ease;
+}
+
+
+/* ==========================================================
+   ACTIVE MODULE
+========================================================== */
+
+.bottom-nav-item.active .bottom-icon {
+    background: #EEF5FF;
+
+    box-shadow:
+        0 5px 14px rgba(37, 99, 235, 0.12);
+
+    transform: translateY(-1px);
+}
+
+
+.bottom-nav-item.active .bottom-icon i {
+    color: #1769E0;
+
+    transform: scale(1.08);
+}
+
+
+/* ==========================================================
+   BLUE ACTIVE INDICATOR
+========================================================== */
+
+.bottom-nav-item.active::before {
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    width: 28px;
+    height: 3px;
+
+    background: none;
+
+    border-radius:
+        0
+        0
+        5px
+        5px;
+}
+
+
+/* ==========================================================
+   PRESS EFFECT
+========================================================== */
+
+.bottom-nav-item:active .bottom-icon {
+    transform: scale(.92);
+}
+
+
+/* ==========================================================
+   REMOVE OLD LABELS
+========================================================== */
+
+.bottom-label {
+    display: none;
+}
+
+
+/* ==========================================================
+   MOBILE
+========================================================== */
+
+@media (max-width: 430px) {
+
+    .bottom-nav {
+        height: 64px;
+
+        padding:
+            5px
+            6px
+            6px;
+    }
+
+    .bottom-icon {
+        width: 48px;
+        height: 48px;
+    }
+
+    .bottom-icon i {
+        width: 32px;
+        height: 32px;
+
+        font-size: 23px;
+    }
+}
+
+
+/* ==========================================================
+   SMALL MOBILE
+========================================================== */
+
+@media (max-width: 360px) {
+
+    .bottom-nav {
+        height: 62px;
+    }
+
+    .bottom-icon {
+        width: 45px;
+        height: 45px;
+    }
+
+    .bottom-icon i {
+        width: 30px;
+        height: 30px;
+
+        font-size: 21px;
+    }
+
+    .bottom-nav-item.active::before {
+        width: 26px;
+    }
+}
+
+
+/* ==========================================================
+   VERY SMALL SCREEN — 320px
+========================================================== */
+
+@media (max-width: 320px) {
+
+    .bottom-nav {
+        height: 58px !important;
+    }
+
+    .bottom-icon {
+        width: 35px !important;
+        height: 35px !important;
+    }
+
+    .bottom-icon img {
+        width: 25px !important;
+        height: 25px !important;
+    }
 }
