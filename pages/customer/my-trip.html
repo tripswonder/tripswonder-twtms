@@ -1,1 +1,902 @@
+<!DOCTYPE html>
+<html lang="en">
 
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>My Trip | Trips Wonder</title>
+
+    <!-- GLOBAL CSS -->
+    <link
+        rel="stylesheet"
+        href="../../assets/css/variables.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="../../assets/css/global.css"
+    >
+
+    <!-- MY TRIP CSS -->
+    <link
+        rel="stylesheet"
+        href="../../assets/css/customer/my-trip.css"
+    >
+
+    <!-- GOOGLE FONT -->
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <!-- FONT AWESOME -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+
+</head>
+
+
+<body>
+
+<div class="my-trip-page">
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <header class="my-trip-header">
+
+        <button
+            type="button"
+            class="back-btn"
+            id="backBtn"
+            aria-label="Go back"
+        >
+            <i class="fa-solid fa-arrow-left"></i>
+        </button>
+
+        <div class="header-title">
+
+            <h1>My Trip</h1>
+
+            <p>
+                All the details about your upcoming adventure.
+            </p>
+
+        </div>
+
+        <button
+            type="button"
+            class="notification-btn"
+            aria-label="Notifications"
+        >
+
+            <i class="fa-regular fa-bell"></i>
+
+            <span class="notification-count">
+                2
+            </span>
+
+        </button>
+
+    </header>
+
+
+    <!-- =====================================================
+         LOADING
+    ====================================================== -->
+
+    <section
+        class="trip-loading"
+        id="tripLoading"
+    >
+
+        <div class="loading-spinner"></div>
+
+        <p>
+            Loading your trip...
+        </p>
+
+    </section>
+
+
+    <!-- =====================================================
+         NO TRIP
+    ====================================================== -->
+
+    <section
+        class="no-trip-state"
+        id="noTripState"
+        hidden
+    >
+
+        <div class="no-trip-icon">
+            <i class="fa-solid fa-suitcase-rolling"></i>
+        </div>
+
+        <h2>
+            No Upcoming Trip
+        </h2>
+
+        <p>
+            You don't have an upcoming booking yet.
+        </p>
+
+        <button
+            type="button"
+            id="exploreBtn"
+            class="primary-btn"
+        >
+            Explore Tours
+        </button>
+
+    </section>
+
+
+    <!-- =====================================================
+         TRIP CONTENT
+    ====================================================== -->
+
+    <main
+        class="trip-content"
+        id="tripContent"
+        hidden
+    >
+
+
+        <!-- =================================================
+             TRIP HERO CARD
+        ================================================== -->
+
+        <section class="trip-hero">
+
+            <div
+                class="trip-hero-background"
+                id="tripHeroBackground"
+            ></div>
+
+            <div class="trip-hero-overlay"></div>
+
+
+            <div class="trip-hero-content">
+
+                <div class="trip-status-row">
+
+                    <span
+                        class="status-badge"
+                        id="bookingStatus"
+                    >
+                        <i class="fa-solid fa-circle-check"></i>
+                        CONFIRMED
+                    </span>
+
+                </div>
+
+
+                <h2 id="tripName">
+                    Jomalig Island 🌴
+                </h2>
+
+
+                <p
+                    class="trip-duration"
+                    id="tripDuration"
+                >
+                    3D2N · Island Getaway
+                </p>
+
+
+                <div class="trip-meta">
+
+                    <div>
+
+                        <i class="fa-regular fa-calendar"></i>
+
+                        <span id="tripDate">
+                            Sep 5 – 7, 2026
+                        </span>
+
+                    </div>
+
+
+                    <div>
+
+                        <i class="fa-solid fa-location-dot"></i>
+
+                        <span id="tripLocation">
+                            Real, Quezon – Jomalig Island
+                        </span>
+
+                    </div>
+
+
+                    <div>
+
+                        <span class="booking-id-label">
+                            Booking ID:
+                        </span>
+
+                        <strong id="bookingId">
+                            —
+                        </strong>
+
+                        <button
+                            type="button"
+                            class="copy-btn"
+                            id="copyBookingId"
+                            title="Copy Booking ID"
+                        >
+                            <i class="fa-regular fa-copy"></i>
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             TAB NAVIGATION
+        ================================================== -->
+
+        <nav class="trip-tabs">
+
+            <button
+                type="button"
+                class="trip-tab active"
+                data-tab="details"
+            >
+
+                <i class="fa-regular fa-file-lines"></i>
+
+                <span>
+                    Trip Details
+                </span>
+
+            </button>
+
+
+            <button
+                type="button"
+                class="trip-tab"
+                data-tab="itinerary"
+            >
+
+                <i class="fa-regular fa-calendar-days"></i>
+
+                <span>
+                    Itinerary
+                </span>
+
+            </button>
+
+
+            <button
+                type="button"
+                class="trip-tab"
+                data-tab="pickup"
+            >
+
+                <i class="fa-solid fa-van-shuttle"></i>
+
+                <span>
+                    Pickup Details
+                </span>
+
+            </button>
+
+
+            <button
+                type="button"
+                class="trip-tab"
+                data-tab="accommodation"
+            >
+
+                <i class="fa-solid fa-house"></i>
+
+                <span>
+                    Accommodation
+                </span>
+
+            </button>
+
+
+            <button
+                type="button"
+                class="trip-tab"
+                data-tab="coordinator"
+            >
+
+                <i class="fa-regular fa-user"></i>
+
+                <span>
+                    Coordinator
+                </span>
+
+            </button>
+
+
+            <button
+                type="button"
+                class="trip-tab"
+                data-tab="van"
+            >
+
+                <i class="fa-solid fa-car-side"></i>
+
+                <span>
+                    Van Details
+                </span>
+
+            </button>
+
+        </nav>
+
+
+        <!-- =================================================
+             TAB: TRIP DETAILS
+        ================================================== -->
+
+        <section
+            class="tab-panel active"
+            id="tab-details"
+        >
+
+            <div class="info-card">
+
+                <h3>
+                    Booking Information
+                </h3>
+
+
+                <div class="info-list">
+
+                    <div class="info-row">
+
+                        <div class="info-label">
+                            <i class="fa-regular fa-calendar-check"></i>
+                            <span>Package</span>
+                        </div>
+
+                        <strong id="infoPackage">
+                            —
+                        </strong>
+
+                    </div>
+
+
+                    <div class="info-row">
+
+                        <div class="info-label">
+                            <i class="fa-regular fa-calendar"></i>
+                            <span>Travel Date</span>
+                        </div>
+
+                        <strong id="infoTravelDate">
+                            —
+                        </strong>
+
+                    </div>
+
+
+                    <div class="info-row">
+
+                        <div class="info-label">
+                            <i class="fa-regular fa-user"></i>
+                            <span>Number of Pax</span>
+                        </div>
+
+                        <strong id="infoPax">
+                            —
+                        </strong>
+
+                    </div>
+
+
+                    <div class="info-row">
+
+                        <div class="info-label">
+                            <i class="fa-regular fa-id-card"></i>
+                            <span>Guest Name</span>
+                        </div>
+
+                        <strong id="infoGuest">
+                            —
+                        </strong>
+
+                    </div>
+
+
+                    <div class="info-row">
+
+                        <div class="info-label">
+                            <i class="fa-regular fa-circle-check"></i>
+                            <span>Booking Status</span>
+                        </div>
+
+                        <strong
+                            class="inline-status"
+                            id="infoBookingStatus"
+                        >
+                            CONFIRMED
+                        </strong>
+
+                    </div>
+
+
+                    <div class="info-row">
+
+                        <div class="info-label">
+                            <i class="fa-regular fa-credit-card"></i>
+                            <span>Payment Status</span>
+                        </div>
+
+                        <strong
+                            class="payment-status"
+                            id="infoPaymentStatus"
+                        >
+                            Unpaid
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 INCLUDED
+            ================================================== -->
+
+            <div class="info-card">
+
+                <h3>
+                    What's Included
+                </h3>
+
+                <div
+                    class="included-grid"
+                    id="includedList"
+                >
+
+                    <div class="included-item">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <span>Package inclusions</span>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 QR PASS
+            ================================================== -->
+
+            <div class="qr-card">
+
+                <div class="qr-background"></div>
+
+                <div class="qr-content">
+
+                    <h3>
+                        QR Pass
+                    </h3>
+
+                    <div class="qr-main">
+
+                        <div class="qr-image-wrapper">
+
+                            <img
+                                id="qrImage"
+                                src=""
+                                alt="Travel QR Pass"
+                            >
+
+                        </div>
+
+
+                        <div class="qr-info">
+
+                            <h4>
+                                Your Travel QR Pass
+                            </h4>
+
+                            <p>
+                                Show this QR code to your coordinator
+                                at the meet-up and during the trip.
+                            </p>
+
+                            <button
+                                type="button"
+                                class="qr-fullscreen-btn"
+                                id="qrFullscreenBtn"
+                            >
+
+                                <i class="fa-solid fa-expand"></i>
+
+                                View Full Screen
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 REMINDERS
+            ================================================== -->
+
+            <div class="reminder-card">
+
+                <h3>
+
+                    <i class="fa-solid fa-bell"></i>
+
+                    Important Reminders
+
+                </h3>
+
+
+                <ul>
+
+                    <li>
+                        Please arrive at the meet-up location
+                        30 minutes early.
+                    </li>
+
+                    <li>
+                        Bring valid ID and a copy of your booking.
+                    </li>
+
+                    <li>
+                        Keep your QR pass ready for verification.
+                    </li>
+
+                </ul>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             TAB: ITINERARY
+        ================================================== -->
+
+        <section
+            class="tab-panel"
+            id="tab-itinerary"
+        >
+
+            <div class="info-card">
+
+                <h3>
+                    <i class="fa-regular fa-calendar-days"></i>
+                    Itinerary
+                </h3>
+
+                <div
+                    id="itineraryContent"
+                    class="empty-tab-content"
+                >
+
+                    Itinerary details will appear here.
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             TAB: PICKUP
+        ================================================== -->
+
+        <section
+            class="tab-panel"
+            id="tab-pickup"
+        >
+
+            <div class="info-card">
+
+                <h3>
+                    <i class="fa-solid fa-location-dot"></i>
+                    Pickup Details
+                </h3>
+
+                <div class="detail-box">
+
+                    <span>
+                        Pickup Point
+                    </span>
+
+                    <strong id="pickupPoint">
+                        —
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             TAB: ACCOMMODATION
+        ================================================== -->
+
+        <section
+            class="tab-panel"
+            id="tab-accommodation"
+        >
+
+            <div class="info-card">
+
+                <h3>
+                    <i class="fa-solid fa-house"></i>
+                    Accommodation
+                </h3>
+
+                <div class="detail-box">
+
+                    <span>
+                        Accommodation
+                    </span>
+
+                    <strong id="accommodation">
+                        —
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             TAB: COORDINATOR
+        ================================================== -->
+
+        <section
+            class="tab-panel"
+            id="tab-coordinator"
+        >
+
+            <div class="info-card">
+
+                <h3>
+                    <i class="fa-regular fa-user"></i>
+                    Coordinator
+                </h3>
+
+                <div class="detail-box">
+
+                    <span>
+                        Tour Coordinator
+                    </span>
+
+                    <strong id="coordinatorName">
+                        To be assigned
+                    </strong>
+
+                </div>
+
+                <div class="detail-box">
+
+                    <span>
+                        Contact Number
+                    </span>
+
+                    <strong id="coordinatorContact">
+                        To be assigned
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             TAB: VAN
+        ================================================== -->
+
+        <section
+            class="tab-panel"
+            id="tab-van"
+        >
+
+            <div class="info-card">
+
+                <h3>
+                    <i class="fa-solid fa-van-shuttle"></i>
+                    Van Details
+                </h3>
+
+                <div class="detail-box">
+
+                    <span>
+                        Vehicle
+                    </span>
+
+                    <strong id="vanDetails">
+                        To be assigned
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+    </main>
+
+
+    <!-- =====================================================
+         BOTTOM NAVIGATION
+    ====================================================== -->
+
+    <nav class="bottom-nav">
+
+        <a
+            href="home.html"
+            class="bottom-nav-item"
+        >
+
+            <span class="bottom-icon">
+                <i class="fa-solid fa-house"></i>
+            </span>
+
+            <span class="bottom-label">
+                Home
+            </span>
+
+        </a>
+
+
+        <a
+            href="my-trip.html"
+            class="bottom-nav-item active"
+        >
+
+            <span class="bottom-icon">
+                <i class="fa-solid fa-suitcase"></i>
+            </span>
+
+            <span class="bottom-label">
+                My Trip
+            </span>
+
+        </a>
+
+
+        <a
+            href="#"
+            class="bottom-nav-item"
+        >
+
+            <span class="bottom-icon">
+                <i class="fa-regular fa-comment"></i>
+            </span>
+
+            <span class="bottom-label">
+                Message
+            </span>
+
+        </a>
+
+
+        <a
+            href="#"
+            class="bottom-nav-item notification-item"
+        >
+
+            <span class="bottom-icon">
+
+                <i class="fa-regular fa-bell"></i>
+
+                <span class="notification-badge">
+                    7
+                </span>
+
+            </span>
+
+            <span class="bottom-label">
+                Notification
+            </span>
+
+        </a>
+
+
+        <a
+            href="profile.html"
+            class="bottom-nav-item"
+        >
+
+            <span class="bottom-icon">
+                <i class="fa-regular fa-user"></i>
+            </span>
+
+            <span class="bottom-label">
+                Profile
+            </span>
+
+        </a>
+
+    </nav>
+
+</div>
+
+
+<!-- =========================================================
+     QR FULLSCREEN MODAL
+========================================================= -->
+
+<div
+    class="qr-modal"
+    id="qrModal"
+    hidden
+>
+
+    <button
+        type="button"
+        class="qr-modal-close"
+        id="qrModalClose"
+    >
+        <i class="fa-solid fa-xmark"></i>
+    </button>
+
+    <img
+        id="qrModalImage"
+        src=""
+        alt="Travel QR Pass"
+    >
+
+</div>
+
+
+<!-- =========================================================
+     JAVASCRIPT
+========================================================= -->
+
+<script
+    type="module"
+    src="../../assets/js/customer/my-trip.js"
+></script>
+
+</body>
+
+</html>
