@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Account Security | Trips Wonder</title>
+
+
+    <!-- GLOBAL CSS -->
+
+    <link
+        rel="stylesheet"
+        href="../../assets/css/variables.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="../../assets/css/global.css"
+    >
+
+
+    <!-- ACCOUNT SECURITY CSS -->
+
+    <link
+        rel="stylesheet"
+        href="../../assets/css/customer/account-security.css"
+    >
+
+
+    <!-- SHARED CUSTOMER NAV -->
+
+    <link
+        rel="stylesheet"
+        href="../../assets/css/customer/customer-nav.css"
+    >
+
+
+    <!-- GOOGLE FONT -->
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+
+    <!-- FONT AWESOME -->
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+
+</head>
+
+
+<body>
+
+
+<main class="account-security-page">
+
+
+    <!-- ======================================================
+         HEADER
+    ======================================================= -->
+
+    <header class="account-security-header">
+
+        <div class="account-security-header-left">
+
+            <a
+                href="account.html"
+                class="account-back-button"
+                aria-label="Back to account"
+            >
+
+                <i class="fa-solid fa-arrow-left"></i>
+
+            </a>
+
+
+            <div>
+
+                <span class="account-security-eyebrow">
+                    My Account
+                </span>
+
+                <h1>
+                    Account Security
+                </h1>
+
+                <p>
+                    Manage your personal information and account security.
+                </p>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- ======================================================
+         PERSONAL INFORMATION
+    ======================================================= -->
+
+    <section class="security-section">
+
+
+        <div class="security-section-heading">
+
+            <span>
+                PERSONAL INFORMATION
+            </span>
+
+            <h2>
+                Your Details
+            </h2>
+
+        </div>
+
+
+        <div class="security-card">
+
+
+            <!-- DISPLAY NAME -->
+
+            <div class="security-field">
+
+                <label for="displayName">
+                    Display Name / Nickname
+                </label>
+
+                <div class="security-input-wrapper">
+
+                    <i class="fa-regular fa-user"></i>
+
+                    <input
+                        id="displayName"
+                        type="text"
+                        value="Eric Ramirez"
+                        placeholder="Enter your display name"
+                    >
+
+                </div>
+
+            </div>
+
+
+
+            <!-- GENDER -->
+
+            <div class="security-field">
+
+                <label for="gender">
+                    Gender
+                </label>
+
+                <div class="security-input-wrapper">
+
+                    <i class="fa-solid fa-venus-mars"></i>
+
+                    <select id="gender">
+
+                        <option value="">
+                            Select gender
+                        </option>
+
+                        <option value="male">
+                            Male
+                        </option>
+
+                        <option value="female">
+                            Female
+                        </option>
+
+                        <option value="prefer-not">
+                            Prefer not to say
+                        </option>
+
+                    </select>
+
+                    <i class="fa-solid fa-chevron-down select-arrow"></i>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- CONTACT NUMBER -->
+
+            <div class="security-field">
+
+                <label for="contactNumber">
+                    Contact Number
+                </label>
+
+                <div class="security-input-wrapper">
+
+                    <i class="fa-solid fa-phone"></i>
+
+                    <input
+                        id="contactNumber"
+                        type="tel"
+                        placeholder="Enter contact number"
+                    >
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ======================================================
+         LINKED EMAIL
+    ======================================================= -->
+
+    <section class="security-section">
+
+
+        <div class="security-section-heading">
+
+            <span>
+                ACCOUNT ACCESS
+            </span>
+
+            <h2>
+                Linked Email
+            </h2>
+
+        </div>
+
+
+        <div class="security-card">
+
+
+            <div class="security-email-row">
+
+                <div class="security-row-icon">
+
+                    <i class="fa-regular fa-envelope"></i>
+
+                </div>
+
+
+                <div class="security-row-content">
+
+                    <strong>
+                        tripswondertour@gmail.com
+                    </strong>
+
+                    <small>
+                        Your linked email address
+                    </small>
+
+                </div>
+
+
+                <span class="verified-badge">
+
+                    <i class="fa-solid fa-check"></i>
+
+                    Verified
+
+                </span>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ======================================================
+         PASSWORD
+    ======================================================= -->
+
+    <section class="security-section">
+
+
+        <div class="security-section-heading">
+
+            <span>
+                SECURITY
+            </span>
+
+            <h2>
+                Password
+            </h2>
+
+        </div>
+
+
+        <div class="security-card">
+
+
+            <button
+                type="button"
+                class="security-action"
+                id="resetPasswordButton"
+            >
+
+                <span class="security-row-icon">
+
+                    <i class="fa-solid fa-lock"></i>
+
+                </span>
+
+
+                <span class="security-row-content">
+
+                    <strong>
+                        Reset Password
+                    </strong>
+
+                    <small>
+                        Change your account password
+                    </small>
+
+                </span>
+
+
+                <i class="fa-solid fa-chevron-right security-arrow"></i>
+
+            </button>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ======================================================
+         EMERGENCY CONTACT
+    ======================================================= -->
+
+    <section class="security-section">
+
+
+        <div class="security-section-heading">
+
+            <span>
+                SAFETY
+            </span>
+
+            <h2>
+                Emergency Contact
+            </h2>
+
+        </div>
+
+
+        <div class="security-card">
+
+
+            <!-- NAME -->
+
+            <div class="security-field">
+
+                <label for="emergencyName">
+                    Emergency Contact Name
+                </label>
+
+                <div class="security-input-wrapper">
+
+                    <i class="fa-regular fa-user"></i>
+
+                    <input
+                        id="emergencyName"
+                        type="text"
+                        placeholder="Enter emergency contact name"
+                    >
+
+                </div>
+
+            </div>
+
+
+
+            <!-- NUMBER -->
+
+            <div class="security-field">
+
+                <label for="emergencyNumber">
+                    Emergency Contact Number
+                </label>
+
+                <div class="security-input-wrapper">
+
+                    <i class="fa-solid fa-phone"></i>
+
+                    <input
+                        id="emergencyNumber"
+                        type="tel"
+                        placeholder="Enter emergency contact number"
+                    >
+
+                </div>
+
+            </div>
+
+
+
+            <!-- RELATIONSHIP -->
+
+            <div class="security-field">
+
+                <label for="emergencyRelationship">
+                    Relationship
+                </label>
+
+                <div class="security-input-wrapper">
+
+                    <i class="fa-solid fa-people-arrows"></i>
+
+                    <input
+                        id="emergencyRelationship"
+                        type="text"
+                        placeholder="e.g. Parent, Spouse, Sibling"
+                    >
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ======================================================
+         SAVE
+    ======================================================= -->
+
+    <button
+        type="button"
+        class="save-account-button"
+        id="saveAccountButton"
+    >
+
+        <i class="fa-solid fa-check"></i>
+
+        Save Changes
+
+    </button>
+
+
+    <div
+        class="account-save-message"
+        id="accountSaveMessage"
+        hidden
+    >
+
+        <i class="fa-solid fa-circle-check"></i>
+
+        Your account details have been saved.
+
+    </div>
+
+
+</main>
+
+
+
+<!-- ==========================================================
+     SHARED CUSTOMER NAVIGATION
+========================================================== -->
+
+<nav class="bottom-nav">
+
+
+    <!-- HOME -->
+
+    <a
+        href="home.html"
+        class="bottom-nav-item"
+        aria-label="Home"
+    >
+
+        <span class="bottom-icon">
+
+            <i class="fa-solid fa-house"></i>
+
+        </span>
+
+        <span class="bottom-nav-label">
+            Home
+        </span>
+
+    </a>
+
+
+
+    <!-- MY TRIP -->
+
+    <a
+        href="my-trip.html"
+        class="bottom-nav-item"
+        aria-label="My Trip"
+    >
+
+        <span class="bottom-icon">
+
+            <i class="fa-solid fa-suitcase"></i>
+
+        </span>
+
+        <span class="bottom-nav-label">
+            My Trip
+        </span>
+
+    </a>
+
+
+
+    <!-- MESSAGE -->
+
+    <a
+        href="message.html"
+        class="bottom-nav-item"
+        aria-label="Message"
+    >
+
+        <span class="bottom-icon">
+
+            <i class="fa-regular fa-comment"></i>
+
+        </span>
+
+        <span class="bottom-nav-label">
+            Message
+        </span>
+
+    </a>
+
+
+
+    <!-- PROMO -->
+
+    <a
+        href="promo.html"
+        class="bottom-nav-item"
+        aria-label="Promo"
+    >
+
+        <span class="bottom-icon">
+
+            <i class="fa-solid fa-tags"></i>
+
+        </span>
+
+        <span class="bottom-nav-label">
+            Promo
+        </span>
+
+    </a>
+
+
+
+    <!-- ACCOUNT -->
+
+    <a
+        href="account.html"
+        class="bottom-nav-item active"
+        aria-label="Account"
+    >
+
+        <span class="bottom-icon">
+
+            <i class="fa-regular fa-user"></i>
+
+        </span>
+
+        <span class="bottom-nav-label">
+            Account
+        </span>
+
+    </a>
+
+
+</nav>
+
+
+</body>
+
+</html>
