@@ -1,0 +1,842 @@
+/* ==========================================================
+   ACCOUNT MODULE
+   Trips Wonder Customer
+========================================================== */
+
+
+/* ==========================================================
+   PAGE
+========================================================== */
+
+.account-page{
+
+    width:100%;
+
+    max-width:550px;
+
+    min-height:100vh;
+
+    margin:0 auto;
+
+    padding:18px 14px 95px;
+
+    background:var(--bg-body);
+
+    color:var(--text-dark);
+
+    overflow-y:auto;
+
+    -webkit-overflow-scrolling:touch;
+
+}
+
+
+/* ==========================================================
+   HEADER
+========================================================== */
+
+.account-header{
+
+    width:100%;
+
+    display:flex;
+
+    align-items:flex-start;
+
+    justify-content:space-between;
+
+    margin-bottom:18px;
+
+}
+
+
+.account-header-left{
+
+    min-width:0;
+
+}
+
+
+.account-eyebrow{
+
+    display:block;
+
+    margin-bottom:2px;
+
+    color:#64748B;
+
+    font-size:10px;
+
+    font-weight:500;
+
+    line-height:1.3;
+
+}
+
+
+.account-header h1{
+
+    margin:0;
+
+    color:#102A56;
+
+    font-size:24px;
+
+    font-weight:700;
+
+    line-height:1.2;
+
+}
+
+
+.account-header p{
+
+    max-width:290px;
+
+    margin-top:5px;
+
+    color:#64748B;
+
+    font-size:11px;
+
+    font-weight:400;
+
+    line-height:1.45;
+
+}
+
+
+/* ==========================================================
+   HEADER ICON
+========================================================== */
+
+.account-header-icon{
+
+    width:40px;
+
+    height:40px;
+
+    flex-shrink:0;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    margin-top:1px;
+
+    border-radius:14px;
+
+    background:#EEF5FF;
+
+    color:#1769E0;
+
+    font-size:16px;
+
+}
+
+
+/* ==========================================================
+   ACCOUNT SUMMARY
+========================================================== */
+
+.account-summary{
+
+    width:100%;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    padding:14px;
+
+    margin-bottom:12px;
+
+    border:1px solid #DCE7F5;
+
+    border-radius:18px;
+
+    background:#FFFFFF;
+
+    box-shadow:0 4px 14px rgba(15,23,42,0.05);
+
+}
+
+
+.account-avatar{
+
+    width:54px;
+
+    height:54px;
+
+    flex-shrink:0;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    border-radius:17px;
+
+    background:#EAF2FF;
+
+    color:#1769E0;
+
+    font-size:21px;
+
+}
+
+
+.account-summary-info{
+
+    min-width:0;
+
+    flex:1;
+
+}
+
+
+.account-summary-info h2{
+
+    margin:0;
+
+    overflow:hidden;
+
+    color:#102A56;
+
+    font-size:14px;
+
+    font-weight:700;
+
+    line-height:1.3;
+
+    text-overflow:ellipsis;
+
+    white-space:nowrap;
+
+}
+
+
+.account-summary-info p{
+
+    margin-top:3px;
+
+    overflow:hidden;
+
+    color:#64748B;
+
+    font-size:9px;
+
+    font-weight:400;
+
+    line-height:1.4;
+
+    text-overflow:ellipsis;
+
+    white-space:nowrap;
+
+}
+
+
+.account-member{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    gap:4px;
+
+    margin-top:5px;
+
+    color:#16A34A;
+
+    font-size:8px;
+
+    font-weight:600;
+
+}
+
+
+.account-member i{
+
+    font-size:8px;
+
+}
+
+
+/* ==========================================================
+   MANAGE ACCOUNT CARD
+========================================================== */
+
+.account-manage-card{
+
+    width:100%;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    gap:12px;
+
+    padding:14px;
+
+    margin-bottom:22px;
+
+    border-radius:17px;
+
+    background:#1769E0;
+
+    box-shadow:0 6px 16px rgba(23,105,224,0.18);
+
+}
+
+
+.account-manage-content{
+
+    min-width:0;
+
+    flex:1;
+
+}
+
+
+.account-manage-label{
+
+    display:block;
+
+    margin-bottom:3px;
+
+    color:rgba(255,255,255,0.72);
+
+    font-size:7px;
+
+    font-weight:700;
+
+    letter-spacing:.5px;
+
+}
+
+
+.account-manage-content h2{
+
+    margin:0;
+
+    color:#FFFFFF;
+
+    font-size:13px;
+
+    font-weight:700;
+
+    line-height:1.3;
+
+}
+
+
+.account-manage-content p{
+
+    max-width:245px;
+
+    margin-top:4px;
+
+    color:rgba(255,255,255,0.78);
+
+    font-size:8px;
+
+    font-weight:400;
+
+    line-height:1.45;
+
+}
+
+
+.account-manage-button{
+
+    flex-shrink:0;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:5px;
+
+    padding:8px 9px;
+
+    border-radius:9px;
+
+    background:#FFFFFF;
+
+    color:#1769E0;
+
+    font-size:8px;
+
+    font-weight:600;
+
+    white-space:nowrap;
+
+}
+
+
+.account-manage-button i{
+
+    font-size:7px;
+
+}
+
+
+/* ==========================================================
+   SECTION
+========================================================== */
+
+.account-section{
+
+    width:100%;
+
+    margin-bottom:21px;
+
+}
+
+
+.account-section-heading{
+
+    margin-bottom:9px;
+
+}
+
+
+.account-section-heading > span{
+
+    display:block;
+
+    margin-bottom:2px;
+
+    color:#94A3B8;
+
+    font-size:8px;
+
+    font-weight:600;
+
+    letter-spacing:.5px;
+
+}
+
+
+.account-section-heading h2{
+
+    margin:0;
+
+    color:#102A56;
+
+    font-size:16px;
+
+    font-weight:700;
+
+    line-height:1.3;
+
+}
+
+
+/* ==========================================================
+   ACCOUNT MENU
+========================================================== */
+
+.account-menu{
+
+    width:100%;
+
+    overflow:hidden;
+
+    border:1px solid #E1EAF5;
+
+    border-radius:16px;
+
+    background:#FFFFFF;
+
+    box-shadow:0 2px 8px rgba(15,23,42,0.03);
+
+}
+
+
+/* ==========================================================
+   MENU ITEM
+========================================================== */
+
+.account-menu-item{
+
+    width:100%;
+
+    min-height:62px;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    padding:10px 11px;
+
+    border:none;
+
+    border-bottom:1px solid #EDF2F7;
+
+    background:#FFFFFF;
+
+    color:inherit;
+
+    font-family:inherit;
+
+    text-align:left;
+
+    cursor:pointer;
+
+}
+
+
+.account-menu-item:last-child{
+
+    border-bottom:none;
+
+}
+
+
+/* ==========================================================
+   MENU ICON
+========================================================== */
+
+.account-menu-icon{
+
+    width:36px;
+
+    height:36px;
+
+    flex-shrink:0;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    border-radius:11px;
+
+    background:#EEF5FF;
+
+    color:#1769E0;
+
+    font-size:13px;
+
+}
+
+
+/* ==========================================================
+   MENU CONTENT
+========================================================== */
+
+.account-menu-content{
+
+    min-width:0;
+
+    flex:1;
+
+    display:flex;
+
+    flex-direction:column;
+
+}
+
+
+.account-menu-content strong{
+
+    overflow:hidden;
+
+    color:#102A56;
+
+    font-size:10px;
+
+    font-weight:600;
+
+    line-height:1.35;
+
+    text-overflow:ellipsis;
+
+    white-space:nowrap;
+
+}
+
+
+.account-menu-content small{
+
+    margin-top:2px;
+
+    overflow:hidden;
+
+    color:#94A3B8;
+
+    font-size:8px;
+
+    font-weight:400;
+
+    line-height:1.35;
+
+    text-overflow:ellipsis;
+
+    white-space:nowrap;
+
+}
+
+
+/* ==========================================================
+   MENU ARROW
+========================================================== */
+
+.account-menu-arrow{
+
+    flex-shrink:0;
+
+    color:#94A3B8;
+
+    font-size:8px;
+
+}
+
+
+/* ==========================================================
+   LOGOUT
+========================================================== */
+
+.account-action-section{
+
+    padding-bottom:10px;
+
+}
+
+
+.account-logout{
+
+    width:100%;
+
+    height:42px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:7px;
+
+    border:1px solid #F1D6D6;
+
+    border-radius:12px;
+
+    background:#FFF7F7;
+
+    color:#DC2626;
+
+    font-family:inherit;
+
+    font-size:10px;
+
+    font-weight:600;
+
+    cursor:pointer;
+
+}
+
+
+.account-logout i{
+
+    font-size:10px;
+
+}
+
+
+/* ==========================================================
+   HOVER / ACTIVE
+========================================================== */
+
+.account-menu-item:hover{
+
+    background:#FAFCFF;
+
+}
+
+
+.account-menu-item:active{
+
+    background:#F4F8FD;
+
+}
+
+
+.account-manage-button:hover{
+
+    background:#F4F8FF;
+
+}
+
+
+.account-logout:hover{
+
+    background:#FFF1F1;
+
+}
+
+
+/* ==========================================================
+   MOBILE
+========================================================== */
+
+@media (max-width:360px){
+
+    .account-page{
+
+        padding:16px 10px 88px;
+
+    }
+
+
+    .account-header{
+
+        margin-bottom:15px;
+
+    }
+
+
+    .account-header h1{
+
+        font-size:22px;
+
+    }
+
+
+    .account-header p{
+
+        font-size:10px;
+
+    }
+
+
+    .account-header-icon{
+
+        width:36px;
+
+        height:36px;
+
+        border-radius:12px;
+
+        font-size:15px;
+
+    }
+
+
+    .account-summary{
+
+        padding:12px;
+
+        gap:10px;
+
+        border-radius:16px;
+
+    }
+
+
+    .account-avatar{
+
+        width:48px;
+
+        height:48px;
+
+        border-radius:15px;
+
+        font-size:19px;
+
+    }
+
+
+    .account-summary-info h2{
+
+        font-size:13px;
+
+    }
+
+
+    .account-manage-card{
+
+        padding:12px;
+
+        gap:8px;
+
+        border-radius:15px;
+
+    }
+
+
+    .account-manage-content h2{
+
+        font-size:12px;
+
+    }
+
+
+    .account-manage-content p{
+
+        font-size:7px;
+
+    }
+
+
+    .account-manage-button{
+
+        padding:7px 8px;
+
+        font-size:7px;
+
+    }
+
+
+    .account-menu-item{
+
+        min-height:58px;
+
+        padding:9px;
+
+    }
+
+
+    .account-menu-icon{
+
+        width:34px;
+
+        height:34px;
+
+        border-radius:10px;
+
+    }
+
+}
+
+
+/* ==========================================================
+   DESKTOP
+   KEEP MOBILE APP WIDTH
+========================================================== */
+
+@media (min-width:600px){
+
+    .account-page{
+
+        width:100%;
+
+        max-width:550px;
+
+        margin:0 auto;
+
+    }
+
+}
