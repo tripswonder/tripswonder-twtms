@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Messages | Trips Wonder</title>
+
+
+    <!-- GLOBAL CSS -->
+    <link
+        rel="stylesheet"
+        href="../../assets/css/variables.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="../../assets/css/global.css"
+    >
+
+    <!-- MESSAGE CSS -->
+    <link
+        rel="stylesheet"
+        href="../../assets/css/customer/message.css"
+    >
+
+    <!-- SHARED CUSTOMER NAV -->
+    <link
+    rel="stylesheet"
+    href="../../assets/css/customer/customer-nav.css"
+    >
+
+
+    <!-- GOOGLE FONT -->
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+
+    <!-- FONT AWESOME -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+
+</head>
+
+
+<body>
+
+
+<!-- ==========================================================
+     MESSAGE PAGE
+========================================================== -->
+
+<main class="message-page">
+
+
+    <!-- ======================================================
+         HEADER
+    ======================================================= -->
+
+    <header class="message-header">
+
+        <div class="message-header-left">
+
+            <span class="message-eyebrow">
+                Trips Wonder
+            </span>
+
+            <h1>
+                Messages
+            </h1>
+
+            <p>
+                Stay updated with your trips and bookings.
+            </p>
+
+        </div>
+
+
+        <button
+            type="button"
+            class="message-header-button"
+            aria-label="Messages"
+        >
+
+            <i class="fa-regular fa-comment"></i>
+
+        </button>
+
+    </header>
+
+
+
+    <!-- ======================================================
+         MESSAGE LIST
+    ======================================================= -->
+
+    <section class="message-list">
+
+
+        <!-- MESSAGE 1 -->
+
+        <button
+            type="button"
+            class="message-card unread"
+        >
+
+            <div class="message-avatar">
+
+                <i class="fa-solid fa-building"></i>
+
+            </div>
+
+
+            <div class="message-content">
+
+                <div class="message-top">
+
+                    <strong>
+                        Trips Wonder
+                    </strong>
+
+                    <span>
+                        2m
+                    </span>
+
+                </div>
+
+
+                <h2>
+                    Booking Confirmation
+                </h2>
+
+
+                <p>
+                    Your booking has been received and is now being processed.
+                </p>
+
+            </div>
+
+
+            <span class="message-unread-dot"></span>
+
+        </button>
+
+
+
+        <!-- MESSAGE 2 -->
+
+        <button
+            type="button"
+            class="message-card unread"
+        >
+
+            <div class="message-avatar">
+
+                <i class="fa-solid fa-credit-card"></i>
+
+            </div>
+
+
+            <div class="message-content">
+
+                <div class="message-top">
+
+                    <strong>
+                        Trips Wonder
+                    </strong>
+
+                    <span>
+                        1h
+                    </span>
+
+                </div>
+
+
+                <h2>
+                    Payment Update
+                </h2>
+
+
+                <p>
+                    Your payment status has been updated. Check your booking for details.
+                </p>
+
+            </div>
+
+
+            <span class="message-unread-dot"></span>
+
+        </button>
+
+
+
+        <!-- MESSAGE 3 -->
+
+        <button
+            type="button"
+            class="message-card"
+        >
+
+            <div class="message-avatar">
+
+                <i class="fa-solid fa-bus"></i>
+
+            </div>
+
+
+            <div class="message-content">
+
+                <div class="message-top">
+
+                    <strong>
+                        Trips Wonder
+                    </strong>
+
+                    <span>
+                        Yesterday
+                    </span>
+
+                </div>
+
+
+                <h2>
+                    Pickup Reminder
+                </h2>
+
+
+                <p>
+                    Please be ready at your selected pickup point 30 minutes before departure.
+                </p>
+
+            </div>
+
+        </button>
+
+
+
+        <!-- MESSAGE 4 -->
+
+        <button
+            type="button"
+            class="message-card"
+        >
+
+            <div class="message-avatar">
+
+                <i class="fa-solid fa-calendar-check"></i>
+
+            </div>
+
+
+            <div class="message-content">
+
+                <div class="message-top">
+
+                    <strong>
+                        Trips Wonder
+                    </strong>
+
+                    <span>
+                        Aug 12
+                    </span>
+
+                </div>
+
+
+                <h2>
+                    Upcoming Trip
+                </h2>
+
+
+                <p>
+                    Your upcoming Baguio City trip is coming soon. Check your My Trip page for details.
+                </p>
+
+            </div>
+
+        </button>
+
+
+    </section>
+
+
+
+    <!-- ======================================================
+         EMPTY STATE
+         Hidden for now because we have sample messages.
+    ======================================================= -->
+
+    <section
+        class="message-empty"
+        hidden
+    >
+
+        <div class="message-empty-icon">
+
+            <i class="fa-regular fa-comments"></i>
+
+        </div>
+
+
+        <h2>
+            No messages yet
+        </h2>
+
+
+        <p>
+            You don't have any messages at the moment.
+        </p>
+
+    </section>
+
+
+</main>
+
+
+
+<!-- ==========================================================
+     BOTTOM NAVIGATION
+========================================================== -->
+
+<nav class="bottom-nav">
+
+
+    <!-- HOME -->
+
+    <a
+        href="home.html"
+        class="bottom-nav-item"
+        aria-label="Home"
+    >
+
+        <span class="bottom-icon">
+
+            <i class="fa-solid fa-house"></i>
+
+        </span>
+
+        <span class="bottom-nav-label">
+            Home
+        </span>
+
+    </a>
+
+
+
+    <!-- MY TRIP -->
+
+    <a
+        href="my-trip.html"
+        class="bottom-nav-item"
+        aria-label="My Trip"
+    >
+
+        <span class="bottom-icon">
+
+            <i class="fa-solid fa-suitcase"></i>
+
+        </span>
+
+        <span class="bottom-nav-label">
+            My Trip
+        </span>
+
+    </a>
+
+
+
+    <!-- MESSAGE -->
+
+    <a
+        href="message.html"
+        class="bottom-nav-item active"
+        aria-label="Message"
+    >
+
+        <span class="bottom-icon">
+
+            <i class="fa-regular fa-comment"></i>
+
+        </span>
+
+        <span class="bottom-nav-label">
+            Message
+        </span>
+
+    </a>
+
+
+
+    <!-- PROMO -->
+
+    <a
+        href="promo.html"
+        class="bottom-nav-item"
+        aria-label="Promo"
+    >
+
+        <span class="bottom-icon">
+
+            <i class="fa-solid fa-tags"></i>
+
+        </span>
+
+        <span class="bottom-nav-label">
+            Promo
+        </span>
+
+    </a>
+
+
+
+    <!-- ACCOUNT -->
+
+    <a
+        href="account.html"
+        class="bottom-nav-item"
+        aria-label="Account"
+    >
+
+        <span class="bottom-icon">
+
+            <i class="fa-regular fa-user"></i>
+
+        </span>
+
+        <span class="bottom-nav-label">
+            Account
+        </span>
+
+    </a>
+
+
+</nav>
+
+
+</body>
+
+</html>
