@@ -52,6 +52,10 @@
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
     >
 
+    <link
+    rel="stylesheet"
+    href="../../assets/css/customer/customer-nav.css"
+    >
 </head>
 
 
@@ -765,101 +769,11 @@
     </main>
 
 
-    <!-- =====================================================
-         BOTTOM NAVIGATION
-    ====================================================== -->
+<!-- ==========================================================
+     SHARED CUSTOMER BOTTOM NAVIGATION
+========================================================== -->
 
-    <nav class="bottom-nav">
-
-        <a
-            href="home.html"
-            class="bottom-nav-item"
-        >
-
-            <span class="bottom-icon">
-                <i class="fa-solid fa-house"></i>
-            </span>
-
-            <span class="bottom-label">
-                Home
-            </span>
-
-        </a>
-
-
-        <a
-            href="my-trip.html"
-            class="bottom-nav-item active"
-        >
-
-            <span class="bottom-icon">
-                <i class="fa-solid fa-suitcase"></i>
-            </span>
-
-            <span class="bottom-label">
-                My Trip
-            </span>
-
-        </a>
-
-
-        <a
-            href="#"
-            class="bottom-nav-item"
-        >
-
-            <span class="bottom-icon">
-                <i class="fa-regular fa-comment"></i>
-            </span>
-
-            <span class="bottom-label">
-                Message
-            </span>
-
-        </a>
-
-
-        <a
-            href="#"
-            class="bottom-nav-item notification-item"
-        >
-
-            <span class="bottom-icon">
-
-                <i class="fa-regular fa-bell"></i>
-
-                <span class="notification-badge">
-                    7
-                </span>
-
-            </span>
-
-            <span class="bottom-label">
-                Notification
-            </span>
-
-        </a>
-
-
-        <a
-            href="profile.html"
-            class="bottom-nav-item"
-        >
-
-            <span class="bottom-icon">
-                <i class="fa-regular fa-user"></i>
-            </span>
-
-            <span class="bottom-label">
-                Profile
-            </span>
-
-        </a>
-
-    </nav>
-
-</div>
-
+<div id="customerBottomNav"></div>
 
 <!-- =========================================================
      QR FULLSCREEN MODAL
@@ -895,6 +809,11 @@
 <script
     type="module"
     src="../../assets/js/customer/my-trip.js"
+></script>
+
+<script
+    type="module"
+    src="../../assets/js/customer/customer-nav.js"
 ></script>
 
 </body>
