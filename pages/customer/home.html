@@ -21,6 +21,8 @@ content="width=device-width, initial-scale=1.0">
 
 <link rel="stylesheet" href="../../assets/css/customer/home.css">
 
+<link rel="stylesheet" href="../../assets/css/customer/customer-nav.css">
+
 
 <!-- ==========================================================
      GOOGLE FONT
@@ -346,73 +348,10 @@ content="width=device-width, initial-scale=1.0">
 
 
 <!-- ==========================================================
-     BOTTOM NAVIGATION
+     SHARED CUSTOMER BOTTOM NAVIGATION
 ========================================================== -->
 
-<nav class="bottom-nav">
-
-    <!-- HOME -->
-    <a href="home.html"
-       class="bottom-nav-item active"
-       aria-label="Home">
-
-        <span class="bottom-icon">
-            <i class="fa-solid fa-house"></i>
-        </span>
-
-    </a>
-
-
-    <!-- MY TRIP -->
-    <a href="my-trip.html"
-       class="bottom-nav-item"
-       aria-label="My Trip">
-
-        <span class="bottom-icon">
-            <i class="fa-solid fa-suitcase"></i>
-        </span>
-
-    </a>
-
-
-    <!-- MESSAGE -->
-    <a href="message.html"
-       class="bottom-nav-item"
-       aria-label="Message">
-
-        <span class="bottom-icon">
-            <i class="fa-regular fa-comment"></i>
-        </span>
-
-    </a>
-
-
-    <!-- PROMO -->
-    <a href="promo.html"
-       class="bottom-nav-item"
-       aria-label="Promo">
-
-        <span class="bottom-icon">
-            <i class="fa-solid fa-tags"></i>
-        </span>
-
-    </a>
-
-
-    <!-- PROFILE -->
-    <a href="profile.html"
-       class="bottom-nav-item"
-       aria-label="Profile">
-
-        <span class="bottom-icon">
-            <i class="fa-regular fa-user"></i>
-        </span>
-
-    </a>
-
-</nav>
-
-
+<div id="customerBottomNav"></div>
 
 <!-- ==========================================================
      DATA
@@ -431,6 +370,15 @@ content="width=device-width, initial-scale=1.0">
 <script
     type="module"
     src="../../assets/js/customer/home.js">
+</script>
+
+<!-- ==========================================================
+     SHARED CUSTOMER NAVIGATION
+========================================================== -->
+
+<script
+    type="module"
+    src="../../assets/js/customer/customer-nav.js">
 </script>
 
 
