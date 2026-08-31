@@ -1,689 +1,337 @@
 /* ==========================================================
-   ACCOUNT SECURITY
-   Trips Wonder Customer
+   CUSTOMER ACCOUNT SECURITY
 ========================================================== */
 
-
-.account-security-page{
-
-    width:100%;
-
-    max-width:550px;
-
-    min-height:100vh;
-
-    margin:0 auto;
-
-    padding:18px 14px 105px;
-
-    background:var(--bg-body);
-
-    color:var(--text-dark);
-
-    overflow-y:auto;
-
-    -webkit-overflow-scrolling:touch;
-
+* {
+    box-sizing: border-box;
 }
 
-
-/* ==========================================================
-   HEADER
-========================================================== */
-
-.account-security-header{
-
-    margin-bottom:22px;
-
+html,
+body {
+    margin: 0;
+    min-height: 100%;
 }
 
-
-.account-security-header-left{
-
-    display:flex;
-
-    align-items:flex-start;
-
-    gap:11px;
-
+body {
+    background: #eef3f9;
+    color: #102a56;
+    font-family: "Poppins", sans-serif;
 }
 
-
-.account-back-button{
-
-    width:34px;
-
-    height:34px;
-
-    flex-shrink:0;
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    margin-top:2px;
-
-    border-radius:11px;
-
-    background:#EEF5FF;
-
-    color:#1769E0;
-
-    text-decoration:none;
-
-    font-size:13px;
-
+button,
+input {
+    font: inherit;
 }
 
-
-.account-security-eyebrow{
-
-    display:block;
-
-    margin-bottom:2px;
-
-    color:#64748B;
-
-    font-size:8px;
-
-    font-weight:500;
-
+.account-security-page {
+    width: 100%;
+    max-width: 550px;
+    min-height: 100vh;
+    margin: 0 auto;
+    padding: 16px 13px 92px;
+    background: #f4f7fb;
 }
 
-
-.account-security-header h1{
-
-    margin:0;
-
-    color:#102A56;
-
-    font-size:21px;
-
-    font-weight:700;
-
-    line-height:1.25;
-
+.security-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 11px;
+    padding: 2px 0 18px;
 }
 
-
-.account-security-header p{
-
-    max-width:300px;
-
-    margin-top:4px;
-
-    color:#64748B;
-
-    font-size:9px;
-
-    line-height:1.45;
-
+.security-back {
+    width: 38px;
+    height: 38px;
+    flex: 0 0 38px;
+    display: grid;
+    place-items: center;
+    border: 1px solid #dce7f5;
+    border-radius: 12px;
+    background: #fff;
+    color: #1769e0;
+    text-decoration: none;
 }
 
-
-/* ==========================================================
-   SECTION
-========================================================== */
-
-.security-section{
-
-    width:100%;
-
-    margin-bottom:20px;
-
+.security-header-copy {
+    min-width: 0;
 }
 
-
-.security-section-heading{
-
-    margin-bottom:8px;
-
+.security-header h1 {
+    margin: 0;
+    font-size: 22px;
+    line-height: 1.2;
+    font-weight: 700;
 }
 
-
-.security-section-heading > span{
-
-    display:block;
-
-    margin-bottom:2px;
-
-    color:#94A3B8;
-
-    font-size:7px;
-
-    font-weight:600;
-
-    letter-spacing:.55px;
-
+.security-header p {
+    margin: 4px 0 0;
+    color: #64748b;
+    font-size: 10px;
+    line-height: 1.45;
 }
 
-
-.security-section-heading h2{
-
-    margin:0;
-
-    color:#102A56;
-
-    font-size:15px;
-
-    font-weight:700;
-
+.security-status {
+    margin-bottom: 12px;
+    padding: 10px 12px;
+    border-radius: 11px;
+    font-size: 9px;
+    font-weight: 600;
 }
 
-
-/* ==========================================================
-   CARD
-========================================================== */
-
-.security-card{
-
-    width:100%;
-
-    overflow:hidden;
-
-    border:1px solid #E1EAF5;
-
-    border-radius:16px;
-
-    background:#FFFFFF;
-
-    box-shadow:0 3px 10px rgba(15,23,42,.035);
-
+.security-status.success {
+    background: #e9f8ef;
+    color: #15803d;
+    border: 1px solid #c7ecd3;
 }
 
-
-/* ==========================================================
-   FORM FIELD
-========================================================== */
-
-.security-field{
-
-    padding:12px;
-
-    border-bottom:1px solid #EDF2F7;
-
+.security-status.error {
+    background: #fff2f2;
+    color: #c62828;
+    border: 1px solid #f2d0d0;
 }
 
-
-.security-field:last-child{
-
-    border-bottom:none;
-
+.security-card {
+    margin-bottom: 13px;
+    padding: 15px;
+    border: 1px solid #e1eaf5;
+    border-radius: 17px;
+    background: #fff;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, .04);
 }
 
-
-.security-field label{
-
-    display:block;
-
-    margin-bottom:6px;
-
-    color:#334155;
-
-    font-size:9px;
-
-    font-weight:600;
-
+.security-card-heading {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
 }
 
-
-/* ==========================================================
-   INPUT
-========================================================== */
-
-.security-input-wrapper{
-
-    position:relative;
-
-    width:100%;
-
-    display:flex;
-
-    align-items:center;
-
+.security-card-icon {
+    width: 39px;
+    height: 39px;
+    flex: 0 0 39px;
+    display: grid;
+    place-items: center;
+    border-radius: 12px;
+    background: #eef5ff;
+    color: #1769e0;
+    font-size: 14px;
 }
 
-
-.security-input-wrapper > i:first-child{
-
-    position:absolute;
-
-    left:11px;
-
-    z-index:1;
-
-    color:#1769E0;
-
-    font-size:11px;
-
-    pointer-events:none;
-
+.security-card-heading h2 {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.3;
 }
 
-
-.security-input-wrapper input,
-.security-input-wrapper select{
-
-    width:100%;
-
-    height:38px;
-
-    padding:0 11px 0 32px;
-
-    border:1px solid #DCE6F2;
-
-    border-radius:10px;
-
-    outline:none;
-
-    background:#F9FBFE;
-
-    color:#102A56;
-
-    font-family:inherit;
-
-    font-size:9px;
-
+.security-card-heading p {
+    margin: 3px 0 0;
+    color: #64748b;
+    font-size: 8px;
+    line-height: 1.45;
 }
 
-
-.security-input-wrapper input::placeholder{
-
-    color:#A0AEC0;
-
+.security-form {
+    display: flex;
+    flex-direction: column;
+    gap: 11px;
 }
 
-
-.security-input-wrapper input:focus,
-.security-input-wrapper select:focus{
-
-    border-color:#1769E0;
-
-    background:#FFFFFF;
-
-    box-shadow:0 0 0 3px rgba(23,105,224,.08);
-
+.security-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 9px;
 }
 
-
-.security-input-wrapper select{
-
-    appearance:none;
-
-    -webkit-appearance:none;
-
-    cursor:pointer;
-
+.security-field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-width: 0;
 }
 
-
-.security-input-wrapper .select-arrow{
-
-    position:absolute;
-
-    right:11px;
-
-    color:#94A3B8;
-
-    font-size:8px;
-
-    pointer-events:none;
-
+.security-field > span {
+    color: #52657e;
+    font-size: 8px;
+    font-weight: 600;
 }
 
-
-/* ==========================================================
-   EMAIL
-========================================================== */
-
-.security-email-row{
-
-    min-height:68px;
-
-    display:flex;
-
-    align-items:center;
-
-    gap:10px;
-
-    padding:12px;
-
+.security-field input {
+    width: 100%;
+    height: 42px;
+    padding: 0 11px;
+    border: 1px solid #dbe5f0;
+    border-radius: 10px;
+    outline: 0;
+    background: #fff;
+    color: #102a56;
+    font-size: 10px;
 }
 
-
-.security-row-icon{
-
-    width:35px;
-
-    height:35px;
-
-    flex-shrink:0;
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    border-radius:10px;
-
-    background:#EEF5FF;
-
-    color:#1769E0;
-
-    font-size:12px;
-
+.security-field input:focus {
+    border-color: #7db0f4;
+    box-shadow: 0 0 0 3px rgba(23, 105, 224, .08);
 }
 
-
-.security-row-content{
-
-    min-width:0;
-
-    flex:1;
-
-    display:flex;
-
-    flex-direction:column;
-
+.security-field input[readonly] {
+    background: #f8fafc;
+    color: #64748b;
 }
 
-
-.security-row-content strong{
-
-    overflow:hidden;
-
-    color:#102A56;
-
-    font-size:9px;
-
-    font-weight:600;
-
-    line-height:1.4;
-
-    text-overflow:ellipsis;
-
-    white-space:nowrap;
-
+.password-field {
+    position: relative;
 }
 
-
-.security-row-content small{
-
-    margin-top:2px;
-
-    color:#94A3B8;
-
-    font-size:7px;
-
-    line-height:1.4;
-
+.password-field input {
+    padding-right: 42px;
 }
 
-
-/* ==========================================================
-   VERIFIED
-========================================================== */
-
-.verified-badge{
-
-    display:inline-flex;
-
-    align-items:center;
-
-    gap:3px;
-
-    flex-shrink:0;
-
-    color:#16A34A;
-
-    font-size:7px;
-
-    font-weight:600;
-
+.password-toggle {
+    position: absolute;
+    top: 50%;
+    right: 5px;
+    width: 32px;
+    height: 32px;
+    transform: translateY(-50%);
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: #64748b;
+    cursor: pointer;
 }
 
-
-.verified-badge i{
-
-    font-size:7px;
-
+.security-primary-button,
+.security-secondary-button {
+    min-height: 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    border-radius: 10px;
+    font-size: 9px;
+    font-weight: 700;
+    cursor: pointer;
 }
 
-
-/* ==========================================================
-   SECURITY ACTION
-========================================================== */
-
-.security-action{
-
-    width:100%;
-
-    min-height:68px;
-
-    display:flex;
-
-    align-items:center;
-
-    gap:10px;
-
-    padding:12px;
-
-    border:none;
-
-    background:#FFFFFF;
-
-    font-family:inherit;
-
-    text-align:left;
-
-    cursor:pointer;
-
+.security-primary-button {
+    border: 0;
+    background: #1769e0;
+    color: #fff;
 }
 
-
-.security-action:hover{
-
-    background:#FAFCFF;
-
+.security-secondary-button {
+    border: 1px solid #cfe0f6;
+    background: #eef5ff;
+    color: #1769e0;
 }
 
-
-.security-action:active{
-
-    background:#F4F8FD;
-
+.security-primary-button:disabled,
+.security-secondary-button:disabled {
+    cursor: wait;
+    opacity: .65;
 }
 
-
-.security-arrow{
-
-    flex-shrink:0;
-
-    color:#94A3B8;
-
-    font-size:8px;
-
+@media (max-width: 390px) {
+    .security-form-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
-
-/* ==========================================================
-   SAVE BUTTON
-========================================================== */
-
-.save-account-button{
-
-    width:100%;
-
-    height:44px;
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    gap:7px;
-
-    margin-top:4px;
-
-    border:none;
-
-    border-radius:12px;
-
-    background:#1769E0;
-
-    color:#FFFFFF;
-
-    font-family:inherit;
-
-    font-size:10px;
-
-    font-weight:600;
-
-    cursor:pointer;
-
-    box-shadow:0 5px 14px rgba(23,105,224,.18);
-
-}
-
-
-.save-account-button:hover{
-
-    background:#1260D2;
-
-}
-
-
-.save-account-button:active{
-
-    transform:translateY(1px);
-
-}
-
-
-.save-account-button i{
-
-    font-size:9px;
-
-}
-
-
-/* ==========================================================
-   SAVE MESSAGE
-========================================================== */
-
-.account-save-message{
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    gap:5px;
-
-    margin-top:9px;
-
-    color:#16A34A;
-
-    font-size:8px;
-
-    font-weight:500;
-
-}
-
-
-.account-save-message i{
-
-    font-size:9px;
-
-}
-
-
-/* ==========================================================
-   MOBILE
-========================================================== */
-
-@media (max-width:360px){
-
-    .account-security-page{
-
-        padding:16px 10px 100px;
-
+@media (min-width: 900px) {
+    html,
+    body {
+        width: 100%;
+        height: 100%;
     }
 
-
-    .account-security-header{
-
-        margin-bottom:18px;
-
+    body {
+        overflow: hidden;
+        background: #f4f7fb;
     }
 
-
-    .account-security-header h1{
-
-        font-size:19px;
-
+    #customerBottomNav {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: auto !important;
+        bottom: 0 !important;
+        width: 240px !important;
+        min-width: 240px !important;
+        max-width: 240px !important;
+        height: 100vh !important;
+        min-height: 100vh !important;
+        margin: 0 !important;
+        z-index: 1000;
     }
 
-
-    .account-security-header p{
-
-        font-size:8px;
-
+    .account-security-page {
+        width: calc(100% - 240px);
+        max-width: none;
+        height: 100vh;
+        min-height: 100vh;
+        margin: 0 0 0 240px;
+        padding: 26px 32px 40px;
+        overflow-y: auto;
     }
 
-
-    .security-section{
-
-        margin-bottom:17px;
-
+    .security-header {
+        padding-bottom: 22px;
     }
 
-
-    .security-field{
-
-        padding:10px;
-
+    .security-header h1 {
+        font-size: 27px;
     }
 
-
-    .security-input-wrapper input,
-    .security-input-wrapper select{
-
-        height:36px;
-
-        font-size:8px;
-
+    .security-header p {
+        font-size: 10.5px;
     }
 
-
-    .security-row-content strong{
-
-        font-size:8px;
-
+    .security-card {
+        padding: 19px 21px;
+        margin-bottom: 16px;
     }
 
+    .security-card-heading h2 {
+        font-size: 15px;
+    }
+
+    .security-card-heading p {
+        font-size: 9px;
+    }
+
+    .security-form {
+        max-width: 920px;
+    }
+
+    .security-field > span {
+        font-size: 9px;
+    }
+
+    .security-field input {
+        height: 44px;
+        font-size: 10.5px;
+    }
+
+    .security-primary-button,
+    .security-secondary-button {
+        width: fit-content;
+        min-width: 205px;
+        padding: 0 17px;
+        min-height: 44px;
+    }
 }
 
-
-/* ==========================================================
-   DESKTOP
-========================================================== */
-
-@media (min-width:600px){
-
-    .account-security-page{
-
-        width:100%;
-
-        max-width:550px;
-
-        margin:0 auto;
-
+@media (min-width: 1400px) {
+    #customerBottomNav {
+        width: 250px !important;
+        min-width: 250px !important;
+        max-width: 250px !important;
     }
 
+    .account-security-page {
+        width: calc(100% - 250px);
+        margin-left: 250px;
+        padding-left: 38px;
+        padding-right: 38px;
+    }
 }

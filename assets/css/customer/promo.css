@@ -143,12 +143,7 @@ button {
 
 .promo-card-top {
     padding: 16px 16px 13px;
-    background:
-        linear-gradient(
-            135deg,
-            #f9fbff 0%,
-            #edf5ff 100%
-        );
+    background: linear-gradient(135deg, #f9fbff 0%, #edf5ff 100%);
 }
 
 .promo-card-badge {
@@ -357,34 +352,13 @@ button {
     line-height: 1.5;
 }
 
-/* SHARED NAV SLOT */
-
-.customer-bottom-nav-slot {
-    width: 100%;
-    height: 68px;
-    min-height: 68px;
-    flex: 0 0 68px;
-    position: relative;
-    z-index: 100;
-}
-
-.customer-bottom-nav-slot .bottom-nav {
-    width: 100%;
-    max-width: none;
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    transform: none;
-}
-
 /* COPY TOAST */
 
 .copy-toast {
     position: fixed;
     left: 50%;
     bottom: 82px;
-    z-index: 300;
+    z-index: 1300;
     transform: translate(-50%, 18px);
     min-width: 150px;
     padding: 9px 13px;
@@ -424,5 +398,161 @@ button {
     .promo-card-body {
         padding-left: 13px;
         padding-right: 13px;
+    }
+}
+
+/* ==========================================================
+   FINAL DESKTOP PROMO WORKSPACE
+========================================================== */
+
+@media (min-width: 900px) {
+    html,
+    body {
+        width: 100%;
+        height: 100%;
+        min-height: 100vh;
+    }
+
+    body {
+        overflow: hidden;
+        background: #f4f7fb;
+    }
+
+    #customerBottomNav {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: auto !important;
+        bottom: 0 !important;
+        width: 240px !important;
+        min-width: 240px !important;
+        max-width: 240px !important;
+        height: 100vh !important;
+        min-height: 100vh !important;
+        margin: 0 !important;
+        z-index: 1000;
+    }
+
+    .promo-page {
+        width: calc(100% - 240px);
+        max-width: none;
+        height: 100vh;
+        margin: 0 0 0 240px;
+        background: #f4f7fb;
+    }
+
+    .promo-header {
+        min-height: 92px;
+        flex-basis: 92px;
+        padding: 20px 30px 14px;
+        align-items: center;
+        background: rgba(255, 255, 255, .94);
+        border-bottom: 1px solid #e2e8f0;
+        backdrop-filter: blur(10px);
+    }
+
+    .promo-header h1 {
+        font-size: 28px;
+    }
+
+    .promo-header p {
+        font-size: 11px;
+    }
+
+    .promo-header-icon {
+        width: 42px;
+        height: 42px;
+        flex-basis: 42px;
+        font-size: 17px;
+    }
+
+    .promo-content {
+        padding: 24px 30px 34px;
+        scrollbar-width: thin;
+    }
+
+    .promo-content::-webkit-scrollbar {
+        display: initial;
+        width: 7px;
+    }
+
+    .promo-list {
+        width: 100%;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+        align-items: start;
+        padding-bottom: 20px;
+    }
+
+    .promo-card {
+        border-radius: 18px;
+    }
+
+    .promo-card-top {
+        padding: 20px 20px 16px;
+    }
+
+    .promo-card-body {
+        padding: 17px 20px 20px;
+    }
+
+    .promo-card-top h2 {
+        font-size: 18px;
+    }
+
+    .promo-discount {
+        font-size: 26px;
+    }
+
+    .promo-description {
+        font-size: 10.5px;
+    }
+
+    .promo-meta-row {
+        font-size: 9.5px;
+    }
+
+    .promo-code-copy strong {
+        font-size: 14px;
+    }
+
+    .promo-loading,
+    .promo-empty {
+        min-height: calc(100vh - 150px);
+    }
+
+    .copy-toast {
+        left: calc(50% + 120px);
+        bottom: 28px;
+    }
+}
+
+@media (min-width: 1250px) {
+    .promo-list {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (min-width: 1550px) {
+    .promo-list {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+}
+
+@media (min-width: 1400px) {
+    #customerBottomNav {
+        width: 250px !important;
+        min-width: 250px !important;
+        max-width: 250px !important;
+    }
+
+    .promo-page {
+        width: calc(100% - 250px);
+        margin-left: 250px;
+    }
+
+    .copy-toast {
+        left: calc(50% + 125px);
     }
 }

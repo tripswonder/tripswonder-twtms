@@ -16,7 +16,6 @@ import {
     onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
 
-
 const promoLoading =
     document.getElementById("promoLoading");
 
@@ -29,28 +28,22 @@ const promoList =
 const copyToast =
     document.getElementById("copyToast");
 
-
 let unsubscribePromos =
     null;
-
 
 onAuthStateChanged(
     auth,
     user => {
 
         if (!user) {
-
             window.location.href =
-                "../login.html";
-
+                "../../index.html";
             return;
         }
 
         subscribeActivePromos();
-
     }
 );
-
 
 function subscribeActivePromos() {
 
@@ -68,7 +61,6 @@ function subscribeActivePromos() {
                 "active"
             )
         );
-
 
     unsubscribePromos =
         onSnapshot(
@@ -99,7 +91,6 @@ function subscribeActivePromos() {
                 renderPromos(
                     promos
                 );
-
             },
             error => {
 
@@ -124,11 +115,9 @@ function subscribeActivePromos() {
                 promoEmpty.querySelector("p")
                     .textContent =
                     "Please refresh the page and try again.";
-
             }
         );
 }
-
 
 function isPromoCurrentlyAvailable(
     promo
@@ -159,14 +148,12 @@ function isPromoCurrentlyAvailable(
             0
         );
 
-
     if (
         validFrom &&
         now < validFrom
     ) {
         return false;
     }
-
 
     if (
         validUntil &&
@@ -175,7 +162,6 @@ function isPromoCurrentlyAvailable(
         return false;
     }
 
-
     if (
         usageLimit > 0 &&
         usedCount >= usageLimit
@@ -183,10 +169,8 @@ function isPromoCurrentlyAvailable(
         return false;
     }
 
-
     return true;
 }
-
 
 function renderPromos(
     promos
@@ -194,7 +178,6 @@ function renderPromos(
 
     promoLoading.hidden =
         true;
-
 
     if (!promos.length) {
 
@@ -207,13 +190,11 @@ function renderPromos(
         return;
     }
 
-
     promoEmpty.hidden =
         true;
 
     promoList.hidden =
         false;
-
 
     promoList.innerHTML =
         promos
@@ -222,7 +203,6 @@ function renderPromos(
             )
             .join("");
 }
-
 
 function renderPromoCard(
     promo
@@ -238,7 +218,6 @@ function renderPromoCard(
                 promo.discountValue
             )} OFF`;
 
-
     const applicableText =
         promo.applicableTo ===
         "package"
@@ -247,7 +226,6 @@ function renderPromoCard(
                 "Selected package"
             )
             : "All Trips Wonder packages";
-
 
     const minimumText =
         Number(
@@ -258,7 +236,6 @@ function renderPromoCard(
                 promo.minimumAmount
             )}`
             : "No minimum booking amount";
-
 
     const maxDiscount =
         promo.discountType ===
@@ -282,13 +259,11 @@ function renderPromoCard(
             `
             : "";
 
-
     const terms =
         String(
             promo.terms ||
             ""
         ).trim();
-
 
     return `
         <article class="promo-card">
@@ -413,8 +388,7 @@ function renderPromoCard(
     `;
 }
 
-
-promoList.addEventListener(
+promoList?.addEventListener(
     "click",
     async event => {
 
@@ -427,7 +401,6 @@ promoList.addEventListener(
             return;
         }
 
-
         const code =
             button.dataset.promoCode ||
             "";
@@ -435,7 +408,6 @@ promoList.addEventListener(
         if (!code) {
             return;
         }
-
 
         try {
 
@@ -473,14 +445,11 @@ promoList.addEventListener(
             textarea.remove();
         }
 
-
         showCopyToast(
             `${code} copied`
         );
-
     }
 );
-
 
 function showCopyToast(
     text
@@ -490,7 +459,6 @@ function showCopyToast(
         return;
     }
 
-
     copyToast.textContent =
         text;
 
@@ -498,11 +466,9 @@ function showCopyToast(
         "show"
     );
 
-
     clearTimeout(
         showCopyToast.timer
     );
-
 
     showCopyToast.timer =
         setTimeout(
@@ -515,7 +481,6 @@ function showCopyToast(
         );
 }
 
-
 function getTimestamp(
     value
 ) {
@@ -523,7 +488,6 @@ function getTimestamp(
     if (!value) {
         return 0;
     }
-
 
     if (
         typeof value.toDate ===
@@ -535,12 +499,10 @@ function getTimestamp(
             .getTime();
     }
 
-
     const parsed =
         Date.parse(
             value
         );
-
 
     return Number.isNaN(
         parsed
@@ -548,7 +510,6 @@ function getTimestamp(
         ? 0
         : parsed;
 }
-
 
 function formatDate(
     value
@@ -559,11 +520,9 @@ function formatDate(
             value
         );
 
-
     if (!timestamp) {
         return "No expiry";
     }
-
 
     return new Date(
         timestamp
@@ -581,7 +540,6 @@ function formatDate(
         }
     );
 }
-
 
 function formatMoney(
     value
@@ -609,7 +567,6 @@ function formatMoney(
         );
 }
 
-
 function formatNumber(
     value
 ) {
@@ -629,7 +586,6 @@ function formatNumber(
             )
         );
 }
-
 
 function escapeHTML(
     value
@@ -658,7 +614,6 @@ function escapeHTML(
         })[char]
     );
 }
-
 
 function escapeAttr(
     value

@@ -285,33 +285,6 @@ body {
     cursor: not-allowed;
 }
 
-.customer-bottom-nav-slot {
-    width: 100%;
-    flex: 0 0 72px;
-    height: 72px;
-    min-height: 72px;
-    position: relative;
-    z-index: 10;
-}
-
-.customer-bottom-nav-slot .bottom-nav {
-    width: 100%;
-    max-width: none;
-
-    height: 72px;
-
-    position: absolute;
-
-    left: 0;
-    right: 0;
-    bottom: 0;
-
-    /* Reset the shared fixed-nav centering rule.
-       Without this, translateX(-50%) shifts the nav left
-       inside the 430px message shell. */
-    transform: none;
-}
-
 @media (min-width: 431px) {
     .message-shell {
         border-left: 1px solid #e2e9f1;
@@ -510,3 +483,186 @@ body {
     flex: 0 0 42px;
 }
 
+
+/* ==========================================================
+   MESSAGE — FINAL DESKTOP WORKSPACE
+   Shared customer-nav.css remains the navigation source.
+========================================================== */
+
+@media (min-width: 900px) {
+
+    html,
+    body {
+        width: 100%;
+        height: 100%;
+        min-height: 100vh;
+    }
+
+    body {
+        display: block;
+        overflow: hidden;
+        background: #f4f7fb;
+    }
+
+    #customerBottomNav {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: auto !important;
+        bottom: 0 !important;
+
+        width: 240px !important;
+        min-width: 240px !important;
+        max-width: 240px !important;
+
+        height: 100vh !important;
+        min-height: 100vh !important;
+
+        margin: 0 !important;
+        z-index: 1000;
+    }
+
+    .message-shell {
+        width: calc(100% - 240px);
+        max-width: none;
+        height: 100vh;
+        max-height: 100vh;
+        margin: 0 0 0 240px;
+
+        border: 0;
+        box-shadow: none;
+        background: #f4f7fb;
+    }
+
+    .customer-message-page {
+        width: 100%;
+        height: 100vh;
+        min-height: 0;
+        background: #ffffff;
+    }
+
+    .customer-message-header {
+        height: 84px;
+        min-height: 84px;
+        flex: 0 0 84px;
+
+        padding: 0 28px;
+
+        border-bottom: 1px solid #e2e8f0;
+        background: rgba(255, 255, 255, .96);
+
+        -webkit-backdrop-filter: blur(10px);
+        backdrop-filter: blur(10px);
+    }
+
+    .support-avatar {
+        width: 46px;
+        height: 46px;
+        flex-basis: 46px;
+    }
+
+    .support-avatar img {
+        width: 36px;
+        height: 36px;
+    }
+
+    .customer-message-header h1 {
+        font-size: 16px;
+    }
+
+    .customer-message-header p {
+        font-size: 10px;
+    }
+
+    .customer-message-stream {
+        width: min(100%, 1180px);
+        margin: 0 auto;
+
+        padding: 22px 34px 26px;
+
+        background:
+            linear-gradient(
+                180deg,
+                #f8fafc 0%,
+                #f4f7fb 100%
+            );
+    }
+
+    .customer-message-content {
+        max-width: min(66%, 760px);
+    }
+
+    .customer-message-avatar {
+        width: 30px;
+        height: 30px;
+        flex-basis: 30px;
+    }
+
+    .customer-message-avatar img {
+        width: 24px;
+        height: 24px;
+    }
+
+    .customer-message-bubble {
+        padding: 10px 14px;
+        font-size: 12.5px;
+        line-height: 1.5;
+        border-radius: 18px;
+    }
+
+    .customer-message-meta {
+        margin-top: 4px;
+        font-size: 9px;
+    }
+
+    .customer-message-read {
+        font-size: 9px;
+    }
+
+    .customer-message-composer {
+        width: min(100%, 1180px);
+        margin: 0 auto;
+
+        padding: 13px 34px 16px;
+
+        background: #ffffff;
+        border-top: 1px solid #e2e8f0;
+    }
+
+    .customer-message-composer textarea {
+        min-height: 46px;
+        max-height: 130px;
+
+        padding: 12px 17px;
+
+        border-radius: 24px;
+        font-size: 12.5px;
+    }
+
+    .customer-message-composer button {
+        width: 46px;
+        height: 46px;
+        flex: 0 0 46px;
+
+        font-size: 15px;
+    }
+}
+
+@media (min-width: 1400px) {
+
+    #customerBottomNav {
+        width: 250px !important;
+        min-width: 250px !important;
+        max-width: 250px !important;
+    }
+
+    .message-shell {
+        width: calc(100% - 250px);
+        margin-left: 250px;
+    }
+
+    .customer-message-stream,
+    .customer-message-composer {
+        width: min(100%, 1280px);
+    }
+}

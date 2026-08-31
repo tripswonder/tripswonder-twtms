@@ -25,6 +25,10 @@
         href="../../assets/css/customer/home.css">
 
     <link
+        rel="stylesheet"
+        href="../../assets/css/customer/customer-nav.css">
+
+    <link
         rel="preconnect"
         href="https://fonts.googleapis.com">
 
@@ -45,6 +49,11 @@
 <body>
 
 <div class="mobile-shell">
+
+    <!-- ==========================================================
+         SHARED CUSTOMER NAVIGATION
+    ========================================================== -->
+    <div id="customerBottomNav"></div>
 
     <main class="home-page">
 
@@ -469,106 +478,17 @@
 
     </div>
 
-    <!-- ==========================================================
-         BOTTOM NAVIGATION
-    ========================================================== -->
-
-    <nav
-        class="bottom-nav"
-        aria-label="Customer navigation">
-
-        <a
-            href="home.html"
-            class="bottom-nav-item active">
-
-            <span class="bottom-icon">
-
-                <i class="fa-solid fa-house"></i>
-
-            </span>
-
-            <span class="bottom-label">
-                Home
-            </span>
-
-        </a>
-
-
-        <a
-            href="my-trip.html"
-            class="bottom-nav-item">
-
-            <span class="bottom-icon">
-
-                <i class="fa-solid fa-suitcase"></i>
-
-            </span>
-
-            <span class="bottom-label">
-                My Trip
-            </span>
-
-        </a>
-
-
-        <a
-            href="message.html"
-            class="bottom-nav-item">
-
-            <span class="bottom-icon">
-
-                <i class="fa-regular fa-comment"></i>
-
-            </span>
-
-            <span class="bottom-label">
-                Message
-            </span>
-
-        </a>
-
-
-        <a
-            href="promo.html"
-            class="bottom-nav-item">
-
-            <span class="bottom-icon">
-
-                <i class="fa-solid fa-tags"></i>
-
-            </span>
-
-            <span class="bottom-label">
-                Promo
-            </span>
-
-        </a>
-
-
-        <a
-            href="profile.html"
-            class="bottom-nav-item">
-
-            <span class="bottom-icon">
-
-                <i class="fa-regular fa-user"></i>
-
-            </span>
-
-            <span class="bottom-label">
-                Profile
-            </span>
-
-        </a>
-
-    </nav>
-
 </div>
 
 
 <script
     type="module"
     src="../../assets/js/customer/home.js">
+</script>
+
+<script
+    type="module"
+    src="../../assets/js/customer/customer-nav.js">
 </script>
 
 </body>

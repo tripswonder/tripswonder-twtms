@@ -1,6 +1,6 @@
 /* ==========================================================
-   CUSTOMER SHARED NAVIGATION
-   Trips Wonder Customer Modules
+   TRIPS WONDER — CUSTOMER SHARED NAVIGATION
+   FINAL RESPONSIVE VERSION
 ========================================================== */
 
 const CUSTOMER_NAV_ITEMS = [
@@ -28,74 +28,165 @@ const CUSTOMER_NAV_ITEMS = [
         href: "promo.html",
         icon: "fa-solid fa-tags"
     },
-    {
-        id: "profile",
-        label: "Account",
-        href: "profile.html",
-        icon: "fa-regular fa-user"
-    }
+        {
+    id: "account",
+    label: "Account",
+    href: "account.html",
+    icon: "fa-regular fa-user"
+}
 ];
+
 
 function getCurrentCustomerModule() {
 
-    const fileName = window.location.pathname
-        .split("/")
-        .pop()
+    const fileName =
+        (
+            window.location.pathname
+                .split("/")
+                .pop() ||
+            "home.html"
+        )
         .toLowerCase();
 
-    const current = CUSTOMER_NAV_ITEMS.find(item =>
-        item.href.toLowerCase() === fileName
-    );
+    const current =
+        CUSTOMER_NAV_ITEMS.find(
+            item =>
+                item.href.toLowerCase() ===
+                fileName
+        );
 
-    return current ? current.id : "";
+    return current
+        ? current.id
+        : "";
 }
 
 
-function renderCustomerNav(containerId = "customerBottomNav") {
+function renderCustomerNav(
+    containerId = "customerBottomNav"
+) {
 
-    const container = document.getElementById(containerId);
+    const container =
+        document.getElementById(
+            containerId
+        );
 
     if (!container) {
+
         console.warn(
             `Customer navigation container "#${containerId}" was not found.`
         );
+
         return;
     }
 
-    const currentModule = getCurrentCustomerModule();
+
+    const currentModule =
+        getCurrentCustomerModule();
+
 
     container.innerHTML = `
-        <nav class="bottom-nav" aria-label="Customer navigation">
 
-            ${CUSTOMER_NAV_ITEMS.map(item => `
+        <nav
+            class="bottom-nav"
+            aria-label="Customer navigation"
+        >
 
-                <a
-                    href="${item.href}"
-                    class="bottom-nav-item${item.id === currentModule ? " active" : ""}"
-                    aria-label="${item.label}"
-                    title="${item.label}"
-                    data-module="${item.id}"
+            <a
+                href="home.html"
+                class="customer-nav-brand"
+                aria-label="Trips Wonder Home"
+            >
+
+                <img
+                    src="../../assets/images/logo.png"
+                    alt="Trips Wonder"
+                    class="customer-nav-logo"
                 >
 
-                    <span class="bottom-icon">
-                        <i class="${item.icon}" aria-hidden="true"></i>
+                <span class="customer-nav-brand-copy">
+
+                    <strong>
+                        Trips Wonder
+                    </strong>
+
+                    <span>
+                        Travel & Tours
                     </span>
 
-                    <span class="bottom-label">
-                        ${item.label}
-                    </span>
+                </span>
 
-                </a>
+            </a>
 
-            `).join("")}
+
+            <div class="customer-nav-menu">
+
+                ${CUSTOMER_NAV_ITEMS
+                    .map(
+                        item => `
+
+                            <a
+                                href="${item.href}"
+                                class="bottom-nav-item${
+                                    item.id === currentModule
+                                        ? " active"
+                                        : ""
+                                }"
+                                aria-label="${item.label}"
+                                title="${item.label}"
+                                data-module="${item.id}"
+                                ${
+                                    item.id === currentModule
+                                        ? 'aria-current="page"'
+                                        : ""
+                                }
+                            >
+
+                                <span class="bottom-icon">
+
+                                    <i
+                                        class="${item.icon}"
+                                        aria-hidden="true"
+                                    ></i>
+
+                                </span>
+
+                                <span class="bottom-label">
+                                    ${item.label}
+                                </span>
+
+                            </a>
+
+                        `
+                    )
+                    .join("")}
+
+            </div>
 
         </nav>
+
     `;
 }
 
 
-document.addEventListener("DOMContentLoaded", () => {
+function initCustomerNav() {
 
     renderCustomerNav();
 
-});
+}
+
+
+if (
+    document.readyState ===
+    "loading"
+) {
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        initCustomerNav
+    );
+
+} else {
+
+    initCustomerNav();
+
+}

@@ -1964,3 +1964,334 @@ body {
     left: 7px;
     right: 7px;
 }
+
+
+/* ==========================================================
+   MY TRIP — FINAL DESKTOP WORKSPACE
+   Mobile design above remains unchanged.
+   Shared customer-nav.css owns all customer navigation.
+========================================================== */
+
+@media (min-width: 900px) {
+
+    html,
+    body {
+        width: 100%;
+        min-height: 100%;
+    }
+
+    body {
+        min-height: 100vh;
+        overflow: hidden;
+        background: #f4f7fb;
+    }
+
+    /* The shared navigation occupies the fixed desktop sidebar. */
+    #customerBottomNav {
+        position: fixed;
+        inset: 0 auto 0 0;
+        width: 240px;
+        height: 100vh;
+        z-index: 1000;
+    }
+
+    .my-trip-page {
+        width: calc(100% - 240px);
+        max-width: none;
+        height: 100vh;
+        min-height: 100vh;
+        margin: 0 0 0 240px;
+        overflow: hidden;
+        background: #f4f7fb;
+    }
+
+    .my-trip-header {
+        width: 100%;
+        height: 88px;
+        padding: 20px 32px 14px;
+        align-items: center;
+        background: rgba(255, 255, 255, 0.88);
+        border-bottom: 1px solid #e3eaf3;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+    }
+
+    .header-title h1 {
+        font-size: 25px;
+    }
+
+    .header-title p {
+        margin-top: 3px;
+        font-size: 11px;
+    }
+
+    .trip-content {
+        width: 100%;
+        height: calc(100vh - 88px);
+        overflow-y: auto;
+        padding: 24px 32px 44px;
+        scrollbar-width: thin;
+        scrollbar-color: #c9d5e4 transparent;
+    }
+
+    .trip-content::-webkit-scrollbar {
+        display: block;
+        width: 7px;
+    }
+
+    .trip-content::-webkit-scrollbar-thumb {
+        background: #c9d5e4;
+        border-radius: 999px;
+    }
+
+    .trip-loading,
+    .no-trip-state {
+        width: calc(100% - 240px);
+        height: calc(100vh - 88px);
+        min-height: 0;
+        margin-left: 240px;
+    }
+
+    .trip-hero {
+        min-height: 285px;
+        border-radius: 20px;
+    }
+
+    .trip-hero-content {
+        width: min(58%, 720px);
+        padding: 30px 32px;
+    }
+
+    .trip-hero-overlay {
+        background: linear-gradient(90deg, rgba(255,255,255,.98) 0%, rgba(255,255,255,.94) 34%, rgba(255,255,255,.68) 55%, rgba(255,255,255,.12) 78%, rgba(255,255,255,.02) 100%);
+    }
+
+    .trip-hero h2 {
+        font-size: 34px;
+    }
+
+    .trip-duration {
+        font-size: 13px;
+    }
+
+    .trip-meta {
+        gap: 10px;
+    }
+
+    .trip-meta > div {
+        font-size: 11px;
+    }
+
+    .trip-tabs {
+        margin-top: 16px;
+        min-height: 78px;
+        background: #fff;
+        border-radius: 16px;
+    }
+
+    .trip-tab {
+        height: 78px;
+        font-size: 10px;
+    }
+
+    .trip-tab span {
+        font-size: 10px;
+        white-space: nowrap;
+    }
+
+    .trip-tab i {
+        font-size: 20px;
+    }
+
+    .tab-panel {
+        padding-top: 16px;
+    }
+
+    /* Trip Details becomes a real desktop dashboard. */
+    #tab-details.active {
+        display: grid;
+        grid-template-columns: minmax(0, 1.45fr) minmax(320px, .75fr);
+        gap: 16px;
+        align-items: start;
+    }
+
+    #tab-details > .info-card:first-child,
+    #tab-details > .info-card:nth-child(2) {
+        grid-column: 1;
+    }
+
+    #tab-details > .qr-card {
+        grid-column: 2;
+        grid-row: 1;
+    }
+
+    #tab-details > .reminder-card {
+        grid-column: 2;
+        grid-row: 2;
+    }
+
+    .info-card,
+    .qr-card,
+    .reminder-card {
+        margin-bottom: 0;
+        border-radius: 16px;
+    }
+
+    .info-card {
+        padding: 18px;
+    }
+
+    .info-card h3,
+    .qr-content h3 {
+        font-size: 16px;
+    }
+
+    .info-row {
+        min-height: 52px;
+        padding: 10px 12px;
+    }
+
+    .info-label,
+    .info-row strong {
+        font-size: 11px;
+    }
+
+    .included-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px 18px;
+    }
+
+    .included-item {
+        font-size: 11px;
+    }
+
+    .qr-content {
+        padding: 18px;
+    }
+
+    .qr-main {
+        align-items: flex-start;
+    }
+
+    .qr-image-wrapper {
+        width: 125px;
+        height: 125px;
+    }
+
+    .qr-info h4 {
+        font-size: 14px;
+    }
+
+    .qr-info p {
+        font-size: 10px;
+    }
+
+    .reminder-card {
+        padding: 18px;
+    }
+
+    .reminder-card li {
+        font-size: 11px;
+    }
+
+    #tab-itinerary.active,
+    #tab-pickup.active,
+    #tab-accommodation.active,
+    #tab-coordinator.active {
+        display: block;
+    }
+
+    #tab-itinerary > .info-card,
+    #tab-pickup > .info-card,
+    #tab-accommodation > .info-card,
+    #tab-coordinator > .info-card {
+        width: 100%;
+    }
+}
+
+@media (min-width: 1400px) {
+    #customerBottomNav {
+        width: 250px;
+    }
+
+    .my-trip-page {
+        width: calc(100% - 250px);
+        margin-left: 250px;
+    }
+
+    .trip-loading,
+    .no-trip-state {
+        width: calc(100% - 250px);
+        margin-left: 250px;
+    }
+
+    .trip-content {
+        padding-left: 38px;
+        padding-right: 38px;
+    }
+}
+
+
+/* ==========================================================
+   MY TRIP — DESKTOP SHARED NAV INTEGRATION FIX
+   Keeps customer-nav.css as the shared navigation source.
+========================================================== */
+
+@media (min-width: 900px) {
+
+    /*
+     * customer-nav.css is loaded after my-trip.css and gives the
+     * shared nav container position: relative / width: 100%.
+     * My Trip uses a fixed desktop sidebar, so these page-level
+     * dimensions must win the cascade.
+     */
+    #customerBottomNav {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: auto !important;
+        bottom: 0 !important;
+
+        width: 240px !important;
+        min-width: 240px !important;
+        max-width: 240px !important;
+
+        height: 100vh !important;
+        min-height: 100vh !important;
+
+        margin: 0 !important;
+
+        overflow: hidden;
+        z-index: 1000;
+    }
+
+    .my-trip-page {
+        width: calc(100% - 240px);
+        max-width: none;
+        margin-left: 240px;
+    }
+
+    /*
+     * Loading / empty states already live inside .my-trip-page,
+     * so they must not receive the sidebar offset a second time.
+     */
+    .trip-loading,
+    .no-trip-state {
+        width: 100%;
+        margin-left: 0;
+    }
+}
+
+@media (min-width: 1400px) {
+
+    #customerBottomNav {
+        width: 250px !important;
+        min-width: 250px !important;
+        max-width: 250px !important;
+    }
+
+    .my-trip-page {
+        width: calc(100% - 250px);
+        margin-left: 250px;
+    }
+}

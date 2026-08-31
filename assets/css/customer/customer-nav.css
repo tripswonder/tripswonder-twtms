@@ -1,120 +1,158 @@
 /* ==========================================================
-   CUSTOMER SHARED BOTTOM NAVIGATION
-   MASTER DESIGN: MY TRIP
+   TRIPS WONDER — CUSTOMER SHARED NAVIGATION
+   FINAL RESPONSIVE VERSION
+
+   Mobile / Tablet : Bottom navigation
+   Desktop >= 900px: Full-height integrated left sidebar
+========================================================== */
+
+#customerBottomNav {
+    position: relative;
+    z-index: 1000;
+}
+
+/* ==========================================================
+   NAV ROOT
 ========================================================== */
 
 .bottom-nav {
-
     position: fixed;
-
-    left: 50%;
+    left: 0;
+    right: 0;
     bottom: 0;
 
-    transform: translateX(-50%);
-
     width: 100%;
-    max-width: 430px;
+    height: calc(68px + env(safe-area-inset-bottom));
 
-    height: 68px;
+    margin: 0;
+    padding:
+        5px
+        6px
+        calc(7px + env(safe-area-inset-bottom));
 
-    padding: 5px 8px 7px;
+    display: block !important;
 
-    display: flex;
+    background: rgba(255, 255, 255, 0.98);
 
-    align-items: stretch;
-    justify-content: space-around;
-
-    background: rgba(255, 255, 255, 0.97);
-
+    border: 0;
     border-top: 1px solid #e2e8f0;
 
     box-shadow:
-        0 -4px 15px rgba(16, 35, 79, 0.06);
+        0 -4px 15px rgba(16, 35, 79, 0.08);
 
     backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
 
-    z-index: 100;
+    transform: none !important;
+
+    z-index: 1000;
 }
 
+/* ==========================================================
+   BRAND
+   Hidden on mobile
+========================================================== */
+
+.customer-nav-brand {
+    display: none;
+}
+
+/* ==========================================================
+   MENU
+========================================================== */
+
+.customer-nav-menu {
+    width: 100%;
+    height: 100%;
+
+    display: flex !important;
+    align-items: stretch;
+    justify-content: space-around;
+
+    gap: 0;
+}
+
+/* ==========================================================
+   MENU ITEM
+========================================================== */
 
 .bottom-nav-item {
+    min-width: 0;
+    height: 100%;
 
-    min-width: 54px;
+    flex: 1 1 0 !important;
 
-    flex: 1;
-
-    display: flex;
-
+    display: flex !important;
     flex-direction: column;
-
     align-items: center;
     justify-content: center;
 
     gap: 3px;
 
+    position: relative;
+
+    padding: 0;
+
     color: #64748b;
+    background: transparent;
+
+    border: 0;
+    border-radius: 0;
+
+    text-decoration: none;
 
     font-size: 9px;
-
     font-weight: 500;
-
-    position: relative;
+    line-height: 1;
 
     transition:
         color 0.2s ease,
+        background 0.2s ease,
         transform 0.2s ease;
 }
 
-
 .bottom-icon {
-
+    width: auto;
     height: 27px;
 
     display: flex;
-
     align-items: center;
     justify-content: center;
+
+    flex: 0 0 auto;
 
     font-size: 17px;
 }
 
-
 .bottom-label {
+    display: block;
 
     line-height: 1;
-
     white-space: nowrap;
 }
 
-
-/* ACTIVE */
+/* ACTIVE — MOBILE */
 
 .bottom-nav-item.active {
-
     color: #1264e8;
 
     font-weight: 700;
 }
 
-
 .bottom-nav-item.active .bottom-icon {
-
     font-size: 18px;
 
     transform: translateY(-1px);
 }
 
-
 .bottom-nav-item.active::after {
-
     content: "";
 
     position: absolute;
 
-    left: 18px;
-    right: 18px;
-
-    bottom: 0;
+    left: 15px;
+    right: 15px;
+    bottom: -1px;
 
     height: 3px;
 
@@ -123,67 +161,255 @@
     border-radius: 5px 5px 0 0;
 }
 
-
-/* HOVER */
-
 .bottom-nav-item:hover {
-
     color: #1264e8;
 }
 
-
-/* MOBILE */
-
-@media (max-width: 430px) {
-
-    .bottom-nav {
-
-        max-width: 430px;
-
-        padding-left: 6px;
-        padding-right: 6px;
-
-    }
-
-    .bottom-nav-item {
-
-        min-width: 0;
-
-    }
-
-    .bottom-nav-item.active::after {
-
-        left: 15px;
-        right: 15px;
-
-    }
-
-}
-
-
-/* SMALL MOBILE */
+/* ==========================================================
+   SMALL MOBILE
+========================================================== */
 
 @media (max-width: 360px) {
 
     .bottom-nav {
-
-        height: 66px;
+        height: calc(66px + env(safe-area-inset-bottom));
 
         padding-left: 3px;
         padding-right: 3px;
-
     }
 
     .bottom-nav-item {
-
         font-size: 8px;
-
     }
 
     .bottom-icon {
-
         font-size: 16px;
+    }
+}
 
+/* ==========================================================
+   DESKTOP — FINAL INTEGRATED SIDEBAR
+========================================================== */
+
+@media (min-width: 900px) {
+
+    #customerBottomNav {
+        width: 100%;
+        min-width: 0;
+        min-height: 100vh;
+
+        background: #eef3f8;
+
+        border-right: 1px solid #dde6ef;
     }
 
+    .bottom-nav {
+        position: sticky !important;
+
+        top: 0 !important;
+        left: auto !important;
+        right: auto !important;
+        bottom: auto !important;
+
+        width: 100% !important;
+        max-width: none !important;
+        height: 100vh !important;
+
+        margin: 0 !important;
+
+        padding:
+            22px
+            14px !important;
+
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        justify-content: flex-start !important;
+
+        gap: 18px !important;
+
+        overflow-y: auto;
+
+        background: #eef3f8 !important;
+
+        border: 0 !important;
+        border-radius: 0 !important;
+
+        box-shadow: none !important;
+
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+
+        transform: none !important;
+    }
+
+    /* BRAND */
+
+    .customer-nav-brand {
+        width: 100%;
+        min-height: 58px;
+
+        display: flex !important;
+        align-items: center;
+
+        gap: 10px;
+
+        flex: 0 0 auto !important;
+
+        padding:
+            5px
+            8px;
+
+        color: #123d70;
+
+        text-decoration: none;
+    }
+
+    .customer-nav-logo {
+        width: 38px;
+        height: 38px;
+
+        display: block;
+
+        flex: 0 0 38px;
+
+        object-fit: contain;
+    }
+
+    .customer-nav-brand-copy {
+        min-width: 0;
+
+        display: flex;
+        flex-direction: column;
+
+        line-height: 1.15;
+    }
+
+    .customer-nav-brand-copy strong {
+        color: #123d70;
+
+        font-size: 14px;
+        font-weight: 800;
+
+        white-space: nowrap;
+    }
+
+    .customer-nav-brand-copy span {
+        margin-top: 2px;
+
+        color: #7a8da3;
+
+        font-size: 9px;
+        font-weight: 500;
+
+        white-space: nowrap;
+    }
+
+    /* MENU */
+
+    .customer-nav-menu {
+        width: 100%;
+        height: auto !important;
+
+        display: flex !important;
+        flex: 0 0 auto !important;
+        flex-direction: column !important;
+
+        align-items: stretch !important;
+        justify-content: flex-start !important;
+
+        gap: 5px !important;
+    }
+
+    /* ITEM */
+
+    .bottom-nav-item {
+        width: 100% !important;
+        min-width: 0 !important;
+        min-height: 46px !important;
+        height: 46px !important;
+        max-height: 46px !important;
+
+        flex:
+            0
+            0
+            46px !important;
+
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+
+        gap: 10px !important;
+
+        padding:
+            0
+            12px !important;
+
+        color: #5f7389;
+
+        background: transparent;
+
+        border-radius: 10px !important;
+
+        font-size: 12px !important;
+        font-weight: 600;
+
+        line-height: 1;
+    }
+
+    .bottom-icon {
+        width: 28px !important;
+        height: 28px !important;
+
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+
+        flex:
+            0
+            0
+            28px !important;
+
+        font-size: 16px !important;
+
+        transform: none !important;
+    }
+
+    .bottom-label {
+        display: block !important;
+
+        flex: 0 0 auto;
+
+        font-size: 12px;
+        line-height: 1;
+
+        white-space: nowrap;
+    }
+
+    /* ACTIVE — DESKTOP */
+
+    .bottom-nav-item.active {
+        color: #1264e8 !important;
+
+        background: #dfeeff !important;
+
+        font-weight: 700;
+    }
+
+    .bottom-nav-item.active .bottom-icon {
+        font-size: 16px !important;
+
+        transform: none !important;
+    }
+
+    .bottom-nav-item.active::after {
+        display: none !important;
+    }
+
+    .bottom-nav-item:hover {
+        color: #1264e8;
+
+        background: #e7f1fc;
+    }
 }
