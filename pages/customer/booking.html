@@ -9,552 +9,1019 @@
         name="viewport"
         content="width=device-width, initial-scale=1.0">
 
-    <title>Book Your Tour | Trips Wonder</title>
+    <title>
+        Book Your Tour | Trips Wonder
+    </title>
 
 
-    <!-- GLOBAL -->
+    <!-- GOOGLE FONT -->
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com">
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+
+    <!-- FONT AWESOME -->
 
     <link
         rel="stylesheet"
-        href="../../assets/css/shared/variables.css">
-
-    <link
-        rel="stylesheet"
-        href="../../assets/css/shared/global.css">
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 
 
-    <!-- BOOKING -->
+    <!-- PAGE CSS -->
 
     <link
         rel="stylesheet"
         href="../../assets/css/customer/booking.css">
 
-
 </head>
 
 
-<body class="booking-body">
+<body>
 
 
-<main class="booking-page">
-
-
-    <!-- ==================================================
+    <!-- =====================================================
          HEADER
-    =================================================== -->
+    ====================================================== -->
 
     <header class="booking-header">
 
-        <button
-            type="button"
-            class="booking-back"
-            id="bookingBack"
-            aria-label="Go back">
+        <div class="booking-header-inner">
 
-            ←
+            <a
+                href="tours.html"
+                class="back-button">
 
-        </button>
+                <i class="fa-solid fa-arrow-left"></i>
 
-
-        <h1>
-            Book Your Tour
-        </h1>
+            </a>
 
 
-        <div class="booking-header-space"></div>
+            <div class="booking-brand">
+
+                <strong>
+                    Trips Wonder
+                </strong>
+
+                <span>
+                    Tour Booking
+                </span>
+
+            </div>
+
+
+            <div class="header-spacer"></div>
+
+        </div>
 
     </header>
 
 
+    <!-- =====================================================
+         MAIN
+    ====================================================== -->
 
-    <!-- ==================================================
-         CONTENT
-    =================================================== -->
+    <main class="booking-main">
 
-    <div class="booking-content">
-
-
-        <!-- =================================================
-             SELECTED PACKAGE
-        ================================================== -->
-
-        <section class="booking-package-card">
+        <div class="booking-container">
 
 
-            <div class="booking-package-image">
+            <!-- =================================================
+                 PAGE INTRO
+            ================================================== -->
 
-                <img
-                    id="bookingPackageImage"
-                    src="../../assets/images/logo.png"
-                    alt="Selected Tour">
+            <section class="booking-intro">
 
-            </div>
-
-
-            <div class="booking-package-info">
-
-
-                <span
-                    id="bookingPackageCategory"
-                    class="booking-package-category">
-
-                    Tour
-
+                <span>
+                    BOOK YOUR TRIP
                 </span>
 
+                <h1>
+                    Complete Your Booking
+                </h1>
 
-                <h2 id="bookingPackageName">
-
-                    Loading package...
-
-                </h2>
-
-
-                <p id="bookingPackageLocation">
-
-                    Please wait...
-
+                <p>
+                    Fill in your travel details and submit your
+                    initial deposit reference for verification.
                 </p>
 
-
-                <div class="booking-package-price">
-
-                    <span>
-                        From
-                    </span>
-
-                    <strong
-                        id="bookingPackagePrice">
-
-                        ₱0
-
-                    </strong>
-
-                </div>
-
-
-            </div>
-
-        </section>
-
-
-
-        <!-- =================================================
-             BOOKING FORM
-        ================================================== -->
-
-        <form
-            id="bookingForm"
-            class="booking-form">
-
-
-            <!-- =================================================
-                 1. TRAVEL DETAILS
-            ================================================== -->
-
-            <section class="booking-section">
-
-
-                <div class="booking-section-heading">
-
-                    <span class="booking-step">
-                        1
-                    </span>
-
-
-                    <div>
-
-                        <h2>
-                            Travel Details
-                        </h2>
-
-                        <p>
-                            Tell us about your planned trip.
-                        </p>
-
-                    </div>
-
-                </div>
-
-
-
-                <!-- DATE -->
-
-                <div class="form-group">
-
-                    <label for="travelDate">
-
-                        Travel Date
-                        <span>*</span>
-
-                    </label>
-
-
-                    <input
-                        type="date"
-                        id="travelDate"
-                        required>
-
-                </div>
-
-
-
-                <!-- PAX + PICKUP -->
-
-                <div class="form-row">
-
-
-                    <div class="form-group">
-
-                        <label for="numberOfGuests">
-
-                            Number of Guests
-                            <span>*</span>
-
-                        </label>
-
-
-                        <input
-                            type="number"
-                            id="numberOfGuests"
-                            min="1"
-                            value="1"
-                            required>
-
-                    </div>
-
-
-
-                    <div class="form-group">
-
-                        <label for="pickupPoint">
-
-                            Pick-up Point
-                            <span>*</span>
-
-                        </label>
-
-
-                        <select
-                            id="pickupPoint"
-                            required>
-
-                            <option value="">
-                                Select pick-up
-                            </option>
-
-                            <option value="MOA">
-                                MOA
-                            </option>
-
-                            <option value="Greenfield">
-                                Greenfield
-                            </option>
-
-                            <option value="Quezon Avenue">
-                                Quezon Avenue
-                            </option>
-
-                            <option value="Antipolo">
-                                Antipolo
-                            </option>
-
-                            <option value="Other">
-                                Other / Special Arrangement
-                            </option>
-
-                        </select>
-
-                    </div>
-
-
-                </div>
-
-
             </section>
 
 
-
             <!-- =================================================
-                 2. CUSTOMER INFORMATION
+                 SELECTED PACKAGE
             ================================================== -->
 
-            <section class="booking-section">
+            <section
+                class="selected-package-card"
+                id="selectedPackageCard">
 
+                <div
+                    class="package-loading"
+                    id="packageLoading">
 
-                <div class="booking-section-heading">
+                    <i class="fa-solid fa-spinner fa-spin"></i>
 
-                    <span class="booking-step">
-                        2
-                    </span>
-
-
-                    <div>
-
-                        <h2>
-                            Customer Information
-                        </h2>
-
-                        <p>
-                            Your contact details.
-                        </p>
-
-                    </div>
+                    Loading selected package...
 
                 </div>
-
-
-
-                <div class="form-group">
-
-                    <label for="customerNameInput">
-
-                        Full Name
-                        <span>*</span>
-
-                    </label>
-
-
-                    <input
-                        type="text"
-                        id="customerNameInput"
-                        placeholder="Enter your full name"
-                        required>
-
-                </div>
-
-
-
-                <div class="form-group">
-
-                    <label for="contactNumber">
-
-                        Contact Number
-                        <span>*</span>
-
-                    </label>
-
-
-                    <input
-                        type="tel"
-                        id="contactNumber"
-                        placeholder="09XXXXXXXXX"
-                        required>
-
-                </div>
-
-
-
-                <div class="form-group">
-
-                    <label for="emailAddress">
-
-                        Email Address
-
-                    </label>
-
-
-                    <input
-                        type="email"
-                        id="emailAddress"
-                        placeholder="you@example.com">
-
-                </div>
-
-
-
-                <div class="form-group">
-
-                    <label for="facebookName">
-
-                        Facebook Name
-
-                    </label>
-
-
-                    <input
-                        type="text"
-                        id="facebookName"
-                        placeholder="Facebook name">
-
-                </div>
-
-
-            </section>
-
-
-
-            <!-- =================================================
-                 3. ACCOMMODATION
-            ================================================== -->
-
-            <section class="booking-section">
-
-
-                <div class="booking-section-heading">
-
-                    <span class="booking-step">
-                        3
-                    </span>
-
-
-                    <div>
-
-                        <h2>
-                            Accommodation
-                        </h2>
-
-                        <p>
-                            Select your preferred option.
-                        </p>
-
-                    </div>
-
-                </div>
-
 
 
                 <div
-                    id="accommodationOptions"
-                    class="accommodation-options">
+                    class="package-content hidden"
+                    id="packageContent">
 
-                </div>
+                    <div class="package-image">
 
+                        <img
+                            id="packageImage"
+                            src=""
+                            alt="Tour Package">
 
-            </section>
-
-
-
-            <!-- =================================================
-                 4. SPECIAL REQUEST
-            ================================================== -->
-
-            <section class="booking-section">
+                    </div>
 
 
-                <div class="booking-section-heading">
+                    <div class="package-info">
 
-                    <span class="booking-step">
-                        4
-                    </span>
+                        <span class="package-label">
+                            SELECTED PACKAGE
+                        </span>
 
-
-                    <div>
-
-                        <h2>
-                            Special Request
+                        <h2 id="packageName">
+                            —
                         </h2>
 
-                        <p>
-                            Optional request for your trip.
-                        </p>
+                        <div class="package-meta">
+
+                            <span>
+
+                                <i class="fa-solid fa-location-dot"></i>
+
+                                <span id="packageLocation">
+                                    —
+                                </span>
+
+                            </span>
+
+
+                            <span>
+
+                                <i class="fa-regular fa-clock"></i>
+
+                                <span id="packageDuration">
+                                    —
+                                </span>
+
+                            </span>
+
+                        </div>
+
+
+                        <div class="package-price">
+
+                            <span>
+                                Package Rate
+                            </span>
+
+                            <strong id="packagePrice">
+                                ₱0
+                            </strong>
+
+                            <small>
+                                per person
+                            </small>
+
+                        </div>
 
                     </div>
 
                 </div>
 
 
+                <div
+                    class="package-error hidden"
+                    id="packageError">
 
-                <div class="form-group">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
 
-                    <label for="specialRequest">
+                    <strong>
+                        Package could not be loaded.
+                    </strong>
 
-                        Special Request
+                    <a href="tours.html">
+                        Choose another package
+                    </a>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 BOOKING FORM
+            ================================================== -->
+
+            <form
+                id="clientBookingForm"
+                class="booking-form">
+
+
+                <!-- =============================================
+                     CUSTOMER INFORMATION
+                ============================================== -->
+
+                <section class="form-card">
+
+                    <div class="form-card-heading">
+
+                        <span class="section-number">
+                            01
+                        </span>
+
+                        <div>
+
+                            <h2>
+                                Customer Information
+                            </h2>
+
+                            <p>
+                                Tell us who is making this booking.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-grid">
+
+
+                        <div class="form-field full">
+
+                            <label for="customerName">
+                                Full Name *
+                            </label>
+
+                            <input
+                                type="text"
+                                id="customerName"
+                                placeholder="Enter your full name"
+                                autocomplete="name"
+                                required>
+
+                        </div>
+
+
+                        <div class="form-field">
+
+                            <label for="customerContact">
+                                Contact Number *
+                            </label>
+
+                            <input
+                                type="tel"
+                                id="customerContact"
+                                placeholder="09XXXXXXXXX"
+                                autocomplete="tel"
+                                required>
+
+                        </div>
+
+
+                        <div class="form-field">
+
+                            <label for="customerEmail">
+                                Email Address *
+                            </label>
+
+                            <input
+                                type="email"
+                                id="customerEmail"
+                                placeholder="your@email.com"
+                                autocomplete="email"
+                                required>
+
+                        </div>
+
+
+                        <div class="form-field full">
+
+                            <label for="customerFacebook">
+                                Facebook Name
+                            </label>
+
+                            <input
+                                type="text"
+                                id="customerFacebook"
+                                placeholder="Facebook name">
+
+                        </div>
+
+
+                    </div>
+
+                </section>
+
+
+                <!-- =============================================
+                     TRAVEL DETAILS
+                ============================================== -->
+
+                <section class="form-card">
+
+                    <div class="form-card-heading">
+
+                        <span class="section-number">
+                            02
+                        </span>
+
+                        <div>
+
+                            <h2>
+                                Travel Details
+                            </h2>
+
+                            <p>
+                                Select your preferred travel details.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-grid">
+
+
+                        <div class="form-field">
+
+                            <label for="travelDate">
+                                Travel Date *
+                            </label>
+
+                            <input
+                                type="date"
+                                id="travelDate"
+                                required>
+
+                        </div>
+
+
+                        <div class="form-field">
+
+                            <label for="numberOfGuests">
+                                Total Number of Pax *
+                            </label>
+
+                            <input
+                                type="number"
+                                id="numberOfGuests"
+                                min="1"
+                                value="1"
+                                required>
+
+                            <small class="field-help">
+                                Include adults and children in the total headcount.
+                            </small>
+
+                        </div>
+
+
+                        <div
+                            class="form-field hidden"
+                            id="childrenFreeField">
+
+                            <label
+                                for="children0To3"
+                                id="childrenFreeLabel">
+                                Children 0–3 yrs
+                            </label>
+
+                            <input
+                                type="number"
+                                id="children0To3"
+                                min="0"
+                                value="0">
+
+                            <small class="field-help">
+                                FREE package • lap seat in van • share bed
+                            </small>
+
+                        </div>
+
+
+                        <div
+                            class="form-field hidden"
+                            id="childrenDiscountField">
+
+                            <label
+                                for="children4To8"
+                                id="childrenDiscountLabel">
+                                Children 4–8 yrs
+                            </label>
+
+                            <input
+                                type="number"
+                                id="children4To8"
+                                min="0"
+                                value="0">
+
+                            <small
+                                class="field-help"
+                                id="childrenDiscountHelp">
+                                Discounted child rate
+                            </small>
+
+                        </div>
+
+
+                        <div class="form-field full">
+
+                            <label for="pickupPoint">
+                                Pick-up Location *
+                            </label>
+
+                            <select
+                                id="pickupPoint"
+                                required>
+
+                                <option value="">
+                                    Select pick-up location
+                                </option>
+
+                                <option value="Pasay - Uniqlo">
+                                    Pasay – Uniqlo
+                                </option>
+
+                                <option value="Greenfield Shaw">
+                                    Greenfield Shaw
+                                </option>
+
+                                <option value="Quezon Ave / Centris">
+                                    Quezon Ave / Centris
+                                </option>
+
+                                <option value="Other / Along the Way">
+                                    Other / Along the Way
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div
+                            class="form-field full hidden"
+                            id="otherPickupField">
+
+                            <label for="otherPickup">
+                                Requested Pick-up Location
+                            </label>
+
+                            <input
+                                type="text"
+                                id="otherPickup"
+                                placeholder="Enter requested pick-up location">
+
+                        </div>
+
+
+                        <div class="form-field full">
+                            <label for="accommodation">Included Accommodation</label>
+                            <input type="text" id="accommodation"
+                                value="Loading included accommodation..." readonly>
+                            <small class="field-help">
+                                Included in your package. Optional upgrades will be available after you submit your booking.
+                            </small>
+                        </div>
+
+
+                        <div class="form-field full">
+
+                            <label for="specialRequest">
+                                Special Request
+                            </label>
+
+                            <textarea
+                                id="specialRequest"
+                                rows="3"
+                                placeholder="Optional requests or notes..."></textarea>
+
+                        </div>
+
+
+                    </div>
+
+                </section>
+
+
+                <!-- =============================================
+                     BOOKING SUMMARY
+                ============================================== -->
+
+                <section class="form-card">
+
+                    <div class="form-card-heading">
+
+                        <span class="section-number">
+                            03
+                        </span>
+
+                        <div>
+
+                            <h2>
+                                Booking Summary
+                            </h2>
+
+                            <p>
+                                Review the estimated booking amount.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="booking-summary">
+
+
+                        <div class="summary-row">
+
+                            <span>
+                                Package Rate
+                            </span>
+
+                            <strong id="summaryPackageRate">
+                                ₱0
+                            </strong>
+
+                        </div>
+
+
+                        <div class="summary-row">
+
+                            <span>
+                                Number of Pax
+                            </span>
+
+                            <strong id="summaryPax">
+                                1
+                            </strong>
+
+                        </div>
+
+
+                        <div class="summary-row">
+
+                            <span>
+                                Package Subtotal
+                            </span>
+
+                            <strong id="summarySubtotal">
+                                ₱0
+                            </strong>
+
+                        </div>
+
+
+                        <div
+                            class="summary-row hidden"
+                            id="summaryChildFreeRow">
+
+                            <span>
+                                Children 0–3 (FREE)
+                            </span>
+
+                            <strong id="summaryChildFree">
+                                0 pax
+                            </strong>
+
+                        </div>
+
+
+                        <div
+                            class="summary-row hidden"
+                            id="summaryChildDiscountRow">
+
+                            <span>
+                                Kids Discount (4–8 yrs)
+                            </span>
+
+                            <strong id="summaryChildDiscount">
+                                -₱0
+                            </strong>
+
+                        </div>
+
+
+                        <div
+                            class="summary-row hidden"
+                            id="summaryExclusiveRow">
+
+                            <span>
+                                Exclusive Tour Benefit
+                            </span>
+
+                            <strong id="summaryExclusiveDiscount">
+                                -₱0
+                            </strong>
+
+                        </div>
+
+
+                        <div class="summary-row">
+
+                            <span>
+                                Accommodation
+                            </span>
+
+                            <strong id="summaryAccommodation">
+                                Included
+                            </strong>
+
+                        </div>
+
+
+                        <div class="promo-booking-box">
+
+                            <label for="bookingPromoCode">
+                                Promo Code
+                            </label>
+
+                            <div class="promo-booking-input-row">
+
+                                <input
+                                    type="text"
+                                    id="bookingPromoCode"
+                                    placeholder="Enter promo code"
+                                    autocomplete="off"
+                                    maxlength="40">
+
+                                <button
+                                    type="button"
+                                    id="applyPromoButton">
+
+                                    Apply
+
+                                </button>
+
+                            </div>
+
+                            <div
+                                class="promo-booking-message hidden"
+                                id="promoBookingMessage">
+                            </div>
+
+                        </div>
+
+
+                        <div
+                            class="summary-row promo-discount-row hidden"
+                            id="summaryPromoRow">
+
+                            <span>
+                                Promo Discount
+                            </span>
+
+                            <strong id="summaryPromoDiscount">
+                                -₱0
+                            </strong>
+
+                        </div>
+
+
+                        <div class="summary-row total">
+
+                            <span>
+                                Estimated Total
+                            </span>
+
+                            <strong id="summaryTotal">
+                                ₱0
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- =============================================
+                     INITIAL DEPOSIT
+                ============================================== -->
+
+                <section class="form-card payment-card">
+
+                    <div class="form-card-heading">
+
+                        <span class="section-number">
+                            04
+                        </span>
+
+                        <div>
+
+                            <h2>
+                                Initial Deposit
+                            </h2>
+
+                            <p>
+                                Payment must be sent before submitting
+                                your booking request.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="deposit-summary">
+
+                        <span>
+                            Required Initial Deposit
+                        </span>
+
+                        <strong id="requiredDeposit">
+                            ₱500
+                        </strong>
+
+                        <small id="depositBreakdown">
+                            ₱500 × 1 pax
+                        </small>
+
+                    </div>
+
+
+                    <!-- PAYMENT METHOD -->
+
+                    <div class="form-field full">
+
+                        <label>
+                            Payment Method *
+                        </label>
+
+
+                        <div class="payment-methods">
+
+
+                            <label class="payment-option">
+
+                                <input
+                                    type="radio"
+                                    name="paymentMethod"
+                                    value="gcash"
+                                    required>
+
+                                <span class="payment-option-content">
+
+                                    <i class="fa-solid fa-mobile-screen-button"></i>
+
+                                    <strong>
+                                        GCash
+                                    </strong>
+
+                                </span>
+
+                            </label>
+
+
+                            <label class="payment-option">
+
+                                <input
+                                    type="radio"
+                                    name="paymentMethod"
+                                    value="bank"
+                                    required>
+
+                                <span class="payment-option-content">
+
+                                    <i class="fa-solid fa-building-columns"></i>
+
+                                    <strong>
+                                        Bank Transfer
+                                    </strong>
+
+                                </span>
+
+                            </label>
+
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- PAYMENT INSTRUCTIONS -->
+
+                    <div
+                        class="payment-instructions hidden"
+                        id="paymentInstructions">
+
+                        <div id="paymentInstructionsContent">
+                        </div>
+
+                    </div>
+
+
+                    <!-- REFERENCE -->
+
+                    <div class="form-field full">
+
+                        <label for="paymentReference">
+                            Payment Reference Number *
+                        </label>
+
+                        <input
+                            type="text"
+                            id="paymentReference"
+                            placeholder="Enter your payment reference number"
+                            autocomplete="off"
+                            required>
+
+                        <small class="field-help">
+                            Your payment will still be verified by our admin.
+                        </small>
+
+                    </div>
+
+                </section>
+
+
+                <!-- =============================================
+                     AGREEMENT
+                ============================================== -->
+
+                <section class="form-card agreement-card">
+
+                    <label class="agreement-check">
+
+                        <input
+                            type="checkbox"
+                            id="bookingAgreement"
+                            required>
+
+                        <span>
+                            I confirm that the information provided is correct
+                            and understand that my booking will only be confirmed
+                            after Trips Wonder verifies my payment.
+                        </span>
 
                     </label>
 
+                </section>
 
-                    <textarea
-                        id="specialRequest"
-                        rows="4"
-                        placeholder="Room request, accessibility request, celebration, etc."></textarea>
+
+                <!-- =============================================
+                     SUBMIT
+                ============================================== -->
+
+                <div class="booking-submit-area">
+
+                    <button
+                        type="submit"
+                        class="submit-booking-button"
+                        id="submitBookingButton">
+
+                        <i class="fa-solid fa-paper-plane"></i>
+
+                        Submit Booking Request
+
+                    </button>
+
+
+                    <p>
+                        Payment reference is required before your
+                        booking request can be submitted.
+                    </p>
 
                 </div>
 
 
-            </section>
+            </form>
+
+        </div>
+
+    </main>
 
 
+    <!-- =====================================================
+         SUCCESS MODAL
+    ====================================================== -->
 
-            <!-- =================================================
-                 TERMS
-            ================================================== -->
+    <div
+        class="success-modal"
+        id="bookingSuccessModal"
+        aria-hidden="true">
 
-            <section class="booking-section booking-terms-section">
-
-
-                <label class="terms-check">
-
-
-                    <input
-                        type="checkbox"
-                        id="agreeTerms">
+        <div class="success-modal-backdrop">
+        </div>
 
 
-                    <span>
+        <div class="success-modal-panel">
 
-                        I understand that this is a booking
-                        request and is subject to confirmation
-                        by Trips Wonder Travel and Tours.
+            <div class="success-icon">
 
-                    </span>
+                <i class="fa-solid fa-check"></i>
 
-
-                </label>
+            </div>
 
 
-            </section>
+            <h2>
+                Booking Request Received
+            </h2>
 
 
-
-            <!-- =================================================
-                 SUBMIT
-            ================================================== -->
-
-            <button
-                type="submit"
-                id="continueBooking"
-                class="continue-booking">
-
-                Continue to Booking Summary
-
-                <span>
-                    →
-                </span>
-
-            </button>
-
-
-
-            <p
-                id="bookingError"
-                class="booking-error">
+            <p>
+                Thank you! Your booking details and payment
+                reference have been submitted for verification.
             </p>
 
 
-        </form>
+            <div class="success-reference">
 
+                <span>
+                    Booking Number
+                </span>
+
+                <strong id="bookingRequestReference">
+                    —
+                </strong>
+
+            </div>
+
+
+            <small>
+                Your booking is already saved. You may now enhance
+                this same booking with an optional accommodation upgrade.
+            </small>
+
+            <div class="post-booking-addons hidden" id="postBookingAddons">
+                <div class="post-booking-current">
+                    <span class="post-booking-current-label">CURRENT ACCOMMODATION</span>
+                    <div class="post-booking-current-row">
+                        <div>
+                            <strong id="currentIncludedAccommodation">Package Included Accommodation</strong>
+                            <small>Already included in your booking</small>
+                        </div>
+                        <span class="included-badge"><i class="fa-solid fa-check"></i> Included</span>
+                    </div>
+                </div>
+
+                <div class="post-booking-addons-heading">
+                    <span>OPTIONAL UPGRADE</span>
+                    <h3>Want to upgrade your stay?</h3>
+                    <p>
+                        Optional only. Your current accommodation is already included in your package.
+                        Select one room below only if you want to upgrade.
+                    </p>
+                </div>
+
+                <div class="post-booking-addon-list" id="postBookingAddonList"></div>
+
+                <div class="post-booking-selected-summary hidden" id="postBookingSelectedSummary">
+                    <div>
+                        <span>SELECTED UPGRADE</span>
+                        <strong id="selectedAddonName">—</strong>
+                    </div>
+                    <div class="post-booking-selected-pricing">
+                        <span id="selectedAddonAmount">+₱0</span>
+                        <small id="selectedAddonNewTotal">New total: ₱0</small>
+                    </div>
+                </div>
+
+                <div class="post-booking-addon-message hidden" id="postBookingAddonMessage"></div>
+            </div>
+
+            <button type="button" class="success-primary-action hidden" id="addSelectedAddonButton">
+                <i class="fa-solid fa-plus"></i> Add Upgrade to Booking
+            </button>
+
+            <button type="button" class="success-secondary-action" id="successDoneButton">
+                <i class="fa-solid fa-bed"></i> Keep Included Accommodation
+            </button>
+
+        </div>
 
     </div>
 
 
-</main>
+    <!-- =====================================================
+         SCRIPT
+    ====================================================== -->
 
-
-
-<!-- ==========================================================
-     FIREBASE / PACKAGE DATA
-=========================================================== -->
-
-<script
-    src="../../assets/data/package.js">
-</script>
-
-
-<script
-    type="module"
-    src="../../assets/js/customer/booking.js">
-</script>
+    <script
+        type="module"
+        src="../../assets/js/customer/booking.js">
+    </script>
 
 
 </body>

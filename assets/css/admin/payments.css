@@ -4841,3 +4841,234 @@ textarea:focus-visible {
     }
 
 }
+
+
+/* =========================================================
+   PAYMENT VERIFICATION - PROMO / PRICING
+   ========================================================= */
+
+.verify-promo-section[hidden] {
+    display: none !important;
+}
+
+.verify-promo-grid {
+    display: grid;
+    grid-template-columns:
+        repeat(5, minmax(0, 1fr));
+    gap: 9px;
+}
+
+.verify-promo-grid > div {
+    min-height: 72px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 11px 12px;
+    border: 1px solid #e4ebf3;
+    border-radius: 9px;
+    background: #fbfcfe;
+}
+
+.verify-promo-grid span {
+    color: #7892ab;
+    font-size: 8px;
+    font-weight: 600;
+}
+
+.verify-promo-grid strong {
+    margin-top: 5px;
+    color: #173c6b;
+    font-size: 10px;
+    font-weight: 750;
+    line-height: 1.35;
+    word-break: break-word;
+}
+
+.verify-promo-grid strong.discount {
+    color: #d14e4e;
+}
+
+.verify-promo-grid .final-total {
+    border-color: #cfe0f3;
+    background: #f3f8fe;
+}
+
+.verify-promo-grid .final-total strong {
+    color: #1767b7;
+    font-size: 12px;
+}
+
+@media (max-width: 900px) {
+    .verify-promo-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+    .verify-promo-grid .final-total {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 680px) {
+    .verify-promo-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .verify-promo-grid .final-total {
+        grid-column: auto;
+    }
+}
+
+
+/* =========================================================
+   PAYMENT DETAILS - PROMO / PRICING
+   ========================================================= */
+
+.payment-details-promo[hidden],
+.receipt-promo-section[hidden] {
+    display: none !important;
+}
+
+.payment-details-promo {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid #edf1f5;
+}
+
+.payment-details-promo-title {
+    margin-bottom: 9px;
+    color: #173c6b;
+    font-size: 10px;
+    font-weight: 800;
+}
+
+.payment-details-promo-grid {
+    display: grid;
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+    gap: 9px;
+}
+
+.payment-details-promo-grid > div {
+    min-height: 62px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 10px 11px;
+    border: 1px solid #e3eaf3;
+    border-radius: 9px;
+    background: #f9fbfd;
+}
+
+.payment-details-promo-grid span {
+    color: #879bb2;
+    font-size: 8px;
+    font-weight: 600;
+}
+
+.payment-details-promo-grid strong {
+    margin-top: 4px;
+    color: #173c6b;
+    font-size: 10px;
+    font-weight: 750;
+    word-break: break-word;
+}
+
+.payment-details-promo-grid strong.discount {
+    color: #d14e4e;
+}
+
+.payment-details-promo-grid .final-total {
+    grid-column: 1 / -1;
+    border-color: #cfe0f3;
+    background: #f3f8fe;
+}
+
+.payment-details-promo-grid .final-total strong {
+    color: #1767b7;
+    font-size: 12px;
+}
+
+
+/* =========================================================
+   PAYMENT RECEIPT - PROMO / PRICING
+   ========================================================= */
+
+.receipt-promo-grid {
+    display: grid;
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+    gap: 8px;
+}
+
+.receipt-promo-grid .receipt-summary-row {
+    min-height: 56px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 4px;
+    padding: 10px 12px;
+    border: 1px solid #e3eaf3;
+    border-radius: 9px;
+    background: #f9fbfd;
+}
+
+.receipt-promo-grid .receipt-summary-row span {
+    color: #879bb2;
+    font-size: 8px;
+    font-weight: 600;
+}
+
+.receipt-promo-grid .receipt-summary-row strong {
+    color: #173c6b;
+    font-size: 10px;
+    font-weight: 750;
+    text-align: left;
+    word-break: break-word;
+}
+
+.receipt-promo-grid .receipt-summary-row strong.discount {
+    color: #d14e4e;
+}
+
+.receipt-promo-grid .receipt-summary-row.final-total {
+    grid-column: 1 / -1;
+    border-color: #cfe0f3;
+    background: #f3f8fe;
+}
+
+.receipt-promo-grid .receipt-summary-row.final-total strong {
+    color: #1767b7;
+    font-size: 12px;
+}
+
+@media (max-width: 680px) {
+    .payment-details-promo-grid,
+    .receipt-promo-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .payment-details-promo-grid .final-total,
+    .receipt-promo-grid .receipt-summary-row.final-total {
+        grid-column: auto;
+    }
+}
+
+
+/* =========================================================
+   RECEIPT PAYMENT SUMMARY - PROMO ROWS
+   ========================================================= */
+
+.receipt-summary-promo-row[hidden] {
+    display: none !important;
+}
+
+.receipt-summary-promo-row {
+    background: #f8fbff;
+}
+
+.receipt-summary-promo-row .receipt-promo-discount {
+    color: #d14e4e;
+}
+

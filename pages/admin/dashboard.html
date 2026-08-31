@@ -60,6 +60,10 @@
     <link
         rel="stylesheet"
         href="../../../assets/css/admin/dashboard.css">
+
+    <link
+        rel="stylesheet"
+        href="/assets/css/shared/admin-nav.css">
         
     <!-- GLOBAL LOADING SCREEN -->
     <link
@@ -69,7 +73,7 @@
 </head>
 
 
-<body class="twtms-page-loading">
+<body class="twtms-page-loading admin-shared-nav-page">
 
 
 <!-- =========================================================
@@ -83,241 +87,7 @@
          SIDEBAR
     ====================================================== -->
 
-    <aside class="sidebar">
-
-
-        <!-- =================================================
-             BRAND
-        ================================================== -->
-
-        <div class="brand">
-
-            <div class="brand-logo">
-
-                <img
-                    src="../../../assets/images/logo.png"
-                    alt="Trips Wonder Logo">
-
-            </div>
-
-
-            <div class="brand-text">
-
-                <strong>
-                    Trips Wonder
-                </strong>
-
-                <span>
-                    Travel Management System
-                </span>
-
-            </div>
-
-        </div>
-
-
-        <!-- =================================================
-             MENU TITLE
-        ================================================== -->
-
-        <div class="menu-title">
-            MAIN MENU
-        </div>
-
-
-        <!-- =================================================
-             MAIN NAVIGATION
-        ================================================== -->
-
-        <nav
-            class="nav-menu"
-            aria-label="Main Navigation">
-
-
-            <!-- DASHBOARD -->
-
-            <a
-                href="dashboard.html"
-                class="nav-link active">
-
-                <i class="fa-solid fa-chart-pie"></i>
-
-                <span>
-                    Dashboard
-                </span>
-
-            </a>
-
-
-            <!-- PACKAGES -->
-
-            <a
-                href="packages.html"
-                class="nav-link">
-
-                <i class="fa-solid fa-suitcase"></i>
-
-                <span>
-                    Packages
-                </span>
-
-            </a>
-
-
-            <!-- BOOKINGS -->
-
-            <a
-                href="bookings.html"
-                class="nav-link">
-
-                <i class="fa-regular fa-calendar-check"></i>
-
-                <span>
-                    Bookings
-                </span>
-
-            </a>
-
-
-            <!-- CUSTOMERS -->
-
-            <a
-                href="customers.html"
-                class="nav-link">
-
-                <i class="fa-solid fa-user-group"></i>
-
-                <span>
-                    Customers
-                </span>
-
-            </a>
-
-
-            <!-- PAYMENTS -->
-
-            <a
-                href="payments.html"
-                class="nav-link">
-
-                <i class="fa-regular fa-credit-card"></i>
-
-                <span>
-                    Payments
-                </span>
-
-            </a>
-
-
-            <!-- INVOICES -->
-
-            <a
-                href="invoices.html"
-                class="nav-link">
-
-                <i class="fa-solid fa-file-invoice"></i>
-
-                <span>
-                    Invoices
-                </span>
-
-            </a>
-
-
-            <!-- RESORT BOOKINGS -->
-
-            <a
-                href="resort-bookings.html"
-                class="nav-link">
-
-                <i class="fa-solid fa-building"></i>
-
-                <span>
-                    Resort Bookings
-                </span>
-
-            </a>
-
-
-            <!-- REPORTS -->
-
-            <a
-                href="reports.html"
-                class="nav-link">
-
-                <i class="fa-solid fa-chart-line"></i>
-
-                <span>
-                    Reports
-                </span>
-
-            </a>
-
-
-        </nav>
-
-
-        <!-- =================================================
-             SIDEBAR BOTTOM
-        ================================================== -->
-
-        <div class="sidebar-bottom">
-
-
-           <!-- =================================================
-     ADMIN PROFILE
-     ONE CLICK
-================================================== -->
-
-<a
-    href="admin-profile.html"
-    class="sidebar-admin-profile"
-    id="adminProfileLink"
->
-
-    <div class="sidebar-admin-avatar">
-
-        <i class="fa-solid fa-user"></i>
-
-    </div>
-
-
-    <div class="sidebar-admin-info">
-
-        <strong id="adminName">
-            Admin Trips Wonder
-        </strong>
-
-        <span>
-            Administrator
-        </span>
-
-    </div>
-
-</a>
-<!-- =================================================
-                 LOGOUT
-                 ALWAYS VISIBLE
-            ================================================== -->
-
-            <button
-                type="button"
-                id="logoutBtn"
-                class="sidebar-admin-action logout-btn">
-
-                <i class="fa-solid fa-right-from-bracket"></i>
-
-                <span>
-                    Logout
-                </span>
-
-            </button>
-
-
-        </div>
-
-
-    </aside>
+    <aside id="adminSidebar" class="admin-sidebar"></aside>
 
 
     <!-- =====================================================
@@ -1191,6 +961,8 @@
     src="../../../assets/js/admin/dashboard.js">
 </script>
 
+
+    <script type="module" src="/assets/js/shared/admin-nav.js"></script>
 
 </body>
 

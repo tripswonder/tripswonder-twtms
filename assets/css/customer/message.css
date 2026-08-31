@@ -1,587 +1,512 @@
-/* ==========================================================
-   MESSAGE MODULE
-   Trips Wonder Customer
-========================================================== */
-
-
-/* ==========================================================
-   PAGE
-========================================================== */
-
-.message-page{
-    width:100%;
-
-    min-height:calc(100vh - 80px);
-
-    padding:18px 14px 90px;
-
-    background:var(--bg-body);
-
-    color:var(--text-dark);
-
-    overflow-y:auto;
+* {
+    box-sizing: border-box;
 }
 
-
-/* ==========================================================
-   MESSAGE HEADER
-========================================================== */
-
-.message-header{
-
-    width:100%;
-
-    display:flex;
-
-    align-items:flex-start;
-
-    justify-content:space-between;
-
-    margin-bottom:18px;
-
+html,
+body {
+    margin: 0;
+    min-height: 100%;
 }
 
-
-.message-header-left{
-
-    min-width:0;
-
+body {
+    background: #eef3f9;
+    font-family: "Poppins", sans-serif;
+    color: #17324f;
+    display: flex;
+    justify-content: center;
+    overflow: hidden;
 }
 
-
-.message-eyebrow{
-
-    display:block;
-
-    margin-bottom:2px;
-
-    color:#64748B;
-
-    font-size:10px;
-
-    font-weight:500;
-
-    line-height:1.3;
-
+.message-shell {
+    width: 100%;
+    max-width: 430px;
+    height: 100dvh;
+    max-height: 100dvh;
+    margin: 0 auto;
+    overflow: hidden;
+    background: #f7f9fc;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    box-shadow:
+        0 0 0 1px rgba(24, 62, 103, .05),
+        0 12px 40px rgba(24, 62, 103, .08);
 }
 
-
-.message-header h1{
-
-    margin:0;
-
-    color:#102A56;
-
-    font-size:24px;
-
-    font-weight:700;
-
-    line-height:1.2;
-
+.customer-message-page {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
 
-
-.message-header p{
-
-    margin-top:5px;
-
-    color:#64748B;
-
-    font-size:12px;
-
-    font-weight:400;
-
-    line-height:1.4;
-
+.customer-message-header {
+    height: 72px;
+    min-height: 72px;
+    flex: 0 0 72px;
+    background: #fff;
+    border-bottom: 1px solid #e2e9f1;
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    gap: 11px;
 }
 
-
-/* ==========================================================
-   HEADER BUTTON
-========================================================== */
-
-.message-header-button{
-
-    width:40px;
-
-    height:40px;
-
-    flex-shrink:0;
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    margin-top:1px;
-
-    border-radius:14px;
-
-    background:#EEF5FF;
-
-    color:#1769E0;
-
-    font-size:16px;
-
+.support-avatar {
+    width: 43px;
+    height: 43px;
+    flex: 0 0 43px;
+    border-radius: 50%;
+    background: #edf5ff;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
 }
 
-
-/* ==========================================================
-   MESSAGE LIST
-========================================================== */
-
-.message-list{
-
-    width:100%;
-
-    display:flex;
-
-    flex-direction:column;
-
-    gap:10px;
-
+.support-avatar img {
+    width: 34px;
+    height: 34px;
+    object-fit: contain;
 }
 
-
-/* ==========================================================
-   MESSAGE CARD
-========================================================== */
-
-.message-card{
-
-    position:relative;
-
-    width:100%;
-
-    min-height:76px;
-
-    display:flex;
-
-    align-items:center;
-
-    gap:12px;
-
-    padding:12px 13px;
-
-    border:1px solid #E1EAF5;
-
-    border-radius:16px;
-
-    background:#FFFFFF;
-
-    color:inherit;
-
-    text-align:left;
-
-    box-shadow:0 2px 8px rgba(15,23,42,0.03);
-
-    cursor:pointer;
-
-    transition:
-
-        transform .2s ease,
-
-        box-shadow .2s ease,
-
-        background .2s ease;
-
+.customer-message-header h1 {
+    margin: 0;
+    color: #102a4c;
+    font-size: 14px;
+    font-weight: 700;
 }
 
-
-/* ==========================================================
-   CARD HOVER
-========================================================== */
-
-.message-card:hover{
-
-    transform:translateY(-1px);
-
-    box-shadow:0 5px 14px rgba(15,23,42,0.07);
-
+.customer-message-header p {
+    margin: 3px 0 0;
+    color: #7e90a6;
+    font-size: 9px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
 }
 
-
-/* ==========================================================
-   MESSAGE AVATAR
-========================================================== */
-
-.message-avatar{
-
-    width:42px;
-
-    height:42px;
-
-    flex-shrink:0;
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    border-radius:13px;
-
-    background:#EEF5FF;
-
-    color:#1769E0;
-
-    font-size:15px;
-
+.online-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #19a56f;
 }
 
-
-/* ==========================================================
-   MESSAGE CONTENT
-========================================================== */
-
-.message-content{
-
-    min-width:0;
-
-    flex:1;
-
+.customer-message-stream {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 8px 14px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    background: linear-gradient(180deg, #f7f9fc, #f2f6fb);
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
 }
 
-
-/* ==========================================================
-   TOP ROW
-========================================================== */
-
-.message-top{
-
-    width:100%;
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:space-between;
-
-    gap:10px;
-
-    margin-bottom:2px;
-
+.customer-message-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 6px;
+    margin: 2px 0;
 }
 
-
-.message-top strong{
-
-    min-width:0;
-
-    color:#17315E;
-
-    font-size:10px;
-
-    font-weight:600;
-
-    line-height:1.3;
-
+.customer-message-row.customer {
+    justify-content: flex-end;
 }
 
-
-.message-top span{
-
-    flex-shrink:0;
-
-    color:#94A3B8;
-
-    font-size:9px;
-
-    font-weight:400;
-
-    line-height:1.3;
-
+.customer-message-row.admin {
+    justify-content: flex-start;
 }
 
-
-/* ==========================================================
-   MESSAGE TITLE
-========================================================== */
-
-.message-content h2{
-
-    margin:0 0 3px;
-
-    color:#102A56;
-
-    font-size:13px;
-
-    font-weight:700;
-
-    line-height:1.25;
-
+.customer-message-avatar {
+    width: 24px;
+    height: 24px;
+    flex: 0 0 24px;
+    border-radius: 50%;
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+    background: #edf5ff;
+    border: 1px solid #e2e8f0;
 }
 
-
-/* ==========================================================
-   MESSAGE PREVIEW
-========================================================== */
-
-.message-content p{
-
-    margin:0;
-
-    color:#64748B;
-
-    font-size:10px;
-
-    font-weight:400;
-
-    line-height:1.4;
-
-    white-space:nowrap;
-
-    overflow:hidden;
-
-    text-overflow:ellipsis;
-
+.customer-message-avatar img {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
 }
 
-
-/* ==========================================================
-   UNREAD MESSAGE
-========================================================== */
-
-.message-card.unread{
-
-    background:#F8FBFF;
-
-    border-color:#DCE9FA;
-
+.customer-message-content {
+    display: flex;
+    flex-direction: column;
+    max-width: 76%;
 }
 
-
-/* ==========================================================
-   UNREAD DOT
-========================================================== */
-
-.message-unread-dot{
-
-    position:absolute;
-
-    top:15px;
-
-    right:13px;
-
-    width:7px;
-
-    height:7px;
-
-    border-radius:50%;
-
-    background:#1769E0;
-
+.customer-message-row.customer .customer-message-content {
+    align-items: flex-end;
 }
 
-
-/* ==========================================================
-   EMPTY STATE
-========================================================== */
-
-.message-empty{
-
-    min-height:420px;
-
-    display:flex;
-
-    flex-direction:column;
-
-    align-items:center;
-
-    justify-content:center;
-
-    padding:40px 20px;
-
-    text-align:center;
-
+.customer-message-row.admin .customer-message-content {
+    align-items: flex-start;
 }
 
-
-.message-empty[hidden]{
-
-    display:none !important;
-
+.customer-message-bubble {
+    width: fit-content;
+    max-width: 100%;
+    padding: 8px 12px;
+    border: 0;
+    border-radius: 18px;
+    background: #e9edf2;
+    color: #1f2937;
+    font-size: 11px;
+    line-height: 1.45;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    box-shadow: none;
 }
 
-
-.message-empty-icon{
-
-    width:52px;
-
-    height:52px;
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    margin-bottom:12px;
-
-    border-radius:16px;
-
-    background:#EEF5FF;
-
-    color:#1769E0;
-
-    font-size:20px;
-
+.customer-message-row.customer .customer-message-bubble {
+    background: #0a7cff;
+    color: #fff;
+    border-bottom-right-radius: 5px;
 }
 
-
-.message-empty h2{
-
-    margin:0;
-
-    color:#102A56;
-
-    font-size:14px;
-
-    font-weight:700;
-
+.customer-message-row.admin .customer-message-bubble {
+    background: #e9edf2;
+    color: #1f2937;
+    border-bottom-left-radius: 5px;
 }
 
-
-.message-empty p{
-
-    max-width:220px;
-
-    margin-top:5px;
-
-    color:#94A3B8;
-
-    font-size:10px;
-
-    font-weight:400;
-
-    line-height:1.5;
-
+.customer-message-meta {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 3px;
+    padding: 0 4px;
+    font-size: 7px;
+    line-height: 1.2;
+    color: #8291a5;
 }
 
+.customer-message-row.customer .customer-message-meta {
+    justify-content: flex-end;
+}
 
-/* ==========================================================
-   MOBILE
-========================================================== */
+.customer-message-read {
+    color: #0a7cff;
+    font-size: 7px;
+}
 
-@media (max-width:360px){
+/* Consecutive messages from the same sender */
+.customer-message-row.grouped {
+    margin-top: -1px;
+}
 
-    .message-page{
+.customer-message-row.grouped .customer-message-avatar {
+    visibility: hidden;
+}
 
-        padding:16px 10px 86px;
+.customer-message-row.admin.grouped .customer-message-bubble {
+    border-top-left-radius: 7px;
+}
 
+.customer-message-row.customer.grouped .customer-message-bubble {
+    border-top-right-radius: 7px;
+}
+
+.message-loading {
+    margin: auto;
+    text-align: center;
+    color: #91a1b4;
+    font-size: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.message-loading i {
+    font-size: 24px;
+}
+
+.customer-message-composer {
+    flex: 0 0 auto;
+    background: #fff;
+    border-top: 1px solid #e2e9f1;
+    padding: 10px 12px calc(10px + env(safe-area-inset-bottom, 0px));
+    display: flex;
+    align-items: flex-end;
+    gap: 9px;
+    position: relative;
+    z-index: 5;
+}
+
+.customer-message-composer textarea {
+    flex: 1;
+    min-width: 0;
+    min-height: 42px;
+    max-height: 100px;
+    resize: none;
+    border: 1px solid #d9e4ef;
+    border-radius: 14px;
+    padding: 11px 13px;
+    outline: 0;
+    background: #f9fbfd;
+    color: #17324f;
+    font: inherit;
+    font-size: 11px;
+    line-height: 1.45;
+}
+
+.customer-message-composer textarea:focus {
+    border-color: #83b4e8;
+    background: #fff;
+}
+
+.customer-message-composer button {
+    width: 42px;
+    height: 42px;
+    flex: 0 0 42px;
+    border: 0;
+    border-radius: 50%;
+    background: #1769c2;
+    color: #fff;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.customer-message-composer button:disabled {
+    opacity: .55;
+    cursor: not-allowed;
+}
+
+.customer-bottom-nav-slot {
+    width: 100%;
+    flex: 0 0 72px;
+    height: 72px;
+    min-height: 72px;
+    position: relative;
+    z-index: 10;
+}
+
+.customer-bottom-nav-slot .bottom-nav {
+    width: 100%;
+    max-width: none;
+
+    height: 72px;
+
+    position: absolute;
+
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    /* Reset the shared fixed-nav centering rule.
+       Without this, translateX(-50%) shifts the nav left
+       inside the 430px message shell. */
+    transform: none;
+}
+
+@media (min-width: 431px) {
+    .message-shell {
+        border-left: 1px solid #e2e9f1;
+        border-right: 1px solid #e2e9f1;
+    }
+}
+
+@media (max-width: 360px) {
+    .customer-message-header {
+        padding-left: 12px;
+        padding-right: 12px;
     }
 
-
-    .message-header{
-
-        margin-bottom:15px;
-
+    .customer-message-stream {
+        padding-left: 10px;
+        padding-right: 10px;
     }
 
-
-    .message-header h1{
-
-        font-size:22px;
-
+    .customer-message-composer {
+        padding-left: 9px;
+        padding-right: 9px;
     }
 
-
-    .message-header p{
-
-        font-size:11px;
-
+    .customer-message-bubble {
+        max-width: 84%;
     }
-
-
-    .message-header-button{
-
-        width:36px;
-
-        height:36px;
-
-        border-radius:12px;
-
-        font-size:15px;
-
-    }
-
-
-    .message-card{
-
-        min-height:70px;
-
-        padding:10px;
-
-        gap:10px;
-
-        border-radius:14px;
-
-    }
-
-
-    .message-avatar{
-
-        width:38px;
-
-        height:38px;
-
-        border-radius:11px;
-
-        font-size:14px;
-
-    }
-
-
-    .message-top strong{
-
-        font-size:9px;
-
-    }
-
-
-    .message-top span{
-
-        font-size:8px;
-
-    }
-
-
-    .message-content h2{
-
-        font-size:12px;
-
-    }
-
-
-    .message-content p{
-
-        font-size:9px;
-
-    }
-
 }
-
 
 /* ==========================================================
-   DESKTOP
-   KEEP MOBILE APP WIDTH
+   FINAL CUSTOMER CHAT REFINEMENT
+   Compact Messenger / iMessage inspired proportions
 ========================================================== */
 
-@media (min-width:430px){
-
-    .message-page{
-
-        width:100%;
-
-        max-width:430px;
-
-        margin:0 auto;
-
-        padding-left:14px;
-
-        padding-right:14px;
-
-    }
-
+.customer-message-stream {
+    padding: 8px 12px 18px;
+    gap: 2px;
 }
+
+.customer-message-row {
+    width: 100%;
+    margin: 0;
+    gap: 6px;
+}
+
+.customer-message-row:not(.grouped) {
+    margin-top: 6px;
+}
+
+.customer-message-stream .customer-message-row:first-child {
+    margin-top: 0;
+}
+
+.customer-message-content {
+    display: flex;
+    flex-direction: column;
+    width: fit-content;
+    min-width: 0;
+    max-width: 78%;
+}
+
+.customer-message-row.customer .customer-message-content {
+    align-items: flex-end;
+    margin-left: auto;
+}
+
+.customer-message-row.admin .customer-message-content {
+    align-items: flex-start;
+    margin-right: auto;
+}
+
+.customer-message-bubble {
+    display: inline-block;
+    width: fit-content;
+    min-width: 0;
+    max-width: 100%;
+    margin: 0;
+    padding: 7px 10px;
+    border: 0;
+    border-radius: 16px;
+    background: #e9edf2;
+    color: #1f2937;
+    font-size: 11px;
+    font-weight: 400;
+    line-height: 1.4;
+    text-align: left;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+    word-break: normal;
+    box-shadow: none;
+}
+
+.customer-message-row.customer .customer-message-bubble {
+    background: #0a7cff;
+    color: #fff;
+    border-bottom-right-radius: 5px;
+}
+
+.customer-message-row.admin .customer-message-bubble {
+    background: #e9edf2;
+    color: #1f2937;
+    border-bottom-left-radius: 5px;
+}
+
+.customer-message-meta {
+    width: auto;
+    min-height: 0;
+    margin-top: 2px;
+    padding: 0 3px;
+    gap: 3px;
+    font-size: 8px;
+    line-height: 1.15;
+    color: #8291a5;
+}
+
+.customer-message-row.customer .customer-message-meta {
+    justify-content: flex-end;
+}
+
+.customer-message-read {
+    color: #0a7cff;
+    font-size: 8px;
+}
+
+.customer-message-avatar {
+    width: 25px;
+    height: 25px;
+    flex: 0 0 25px;
+}
+
+.customer-message-avatar img {
+    width: 20px;
+    height: 20px;
+}
+
+.customer-message-row.grouped {
+    margin-top: 1px;
+}
+
+.customer-message-row.grouped .customer-message-avatar {
+    visibility: hidden;
+}
+
+.customer-message-row.admin.grouped .customer-message-bubble {
+    border-top-left-radius: 7px;
+}
+
+.customer-message-row.customer.grouped .customer-message-bubble {
+    border-top-right-radius: 7px;
+}
+
+@media (max-width: 360px) {
+    .customer-message-content {
+        max-width: 82%;
+    }
+}
+
+/* ==========================================================
+   FINAL VISUAL POLISH
+   Slightly more readable bubbles + cleaner composer
+========================================================== */
+
+.customer-message-bubble {
+    padding: 8px 11px;
+    font-size: 11.5px;
+    line-height: 1.42;
+    border-radius: 17px;
+}
+
+.customer-message-meta {
+    margin-top: 3px;
+    font-size: 8.5px;
+    line-height: 1.2;
+}
+
+.customer-message-read {
+    font-size: 8.5px;
+}
+
+.customer-message-composer {
+    padding-top: 9px;
+    padding-bottom: calc(9px + env(safe-area-inset-bottom, 0px));
+}
+
+.customer-message-composer textarea {
+    min-height: 42px;
+    max-height: 110px;
+    padding: 10px 14px;
+    border-radius: 22px;
+    font-size: 11.5px;
+    background: #ffffff;
+}
+
+.customer-message-composer button {
+    width: 42px;
+    height: 42px;
+    flex: 0 0 42px;
+}
+

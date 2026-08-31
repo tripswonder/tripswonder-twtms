@@ -5,13 +5,19 @@
 
 import {
     collection,
+    doc,
+    getDoc,
     getDocs,
     query,
-    orderBy,
-    limit
+    where
 } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
 import {
+    onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
+
+import {
+    auth,
     db
 } from "../firebase/firebase-config.js";
 
@@ -95,8 +101,14 @@ const qrModalImage =
 const qrModalClose =
     document.getElementById("qrModalClose");
 
-const pickupPoint =
-    document.getElementById("pickupPoint");
+const pickupLocation =
+    document.getElementById("pickupLocation");
+
+const pickupTime =
+    document.getElementById("pickupTime");
+
+const pickupInstructions =
+    document.getElementById("pickupInstructions");
 
 const accommodation =
     document.getElementById("accommodation");
@@ -107,8 +119,17 @@ const coordinatorName =
 const coordinatorContact =
     document.getElementById("coordinatorContact");
 
-const vanDetails =
-    document.getElementById("vanDetails");
+const vehicleName =
+    document.getElementById("vehicleName");
+
+const vehiclePlate =
+    document.getElementById("vehiclePlate");
+
+const driverName =
+    document.getElementById("driverName");
+
+const driverContact =
+    document.getElementById("driverContact");
 
 const itineraryContent =
     document.getElementById("itineraryContent");
@@ -583,10 +604,9 @@ function renderBooking(booking) {
 
 
     const id =
-        booking.bookingId ||
-        booking.id ||
-        booking.documentId ||
-        "—";
+        getBookingReferenceValue(
+            booking
+        );
 
 
     /* -----------------------------------------------
@@ -719,17 +739,6 @@ function renderBooking(booking) {
        OTHER DETAILS
     ------------------------------------------------ */
 
-    if (pickupPoint) {
-
-        pickupPoint.textContent =
-            clean(
-                booking.pickupPoint ||
-                booking.pickUpPoint ||
-                booking.pickupLocation ||
-                booking.meetUpPoint
-            );
-
-    }
 
 
     if (accommodation) {
@@ -766,16 +775,6 @@ function renderBooking(booking) {
     }
 
 
-    if (vanDetails) {
-
-        vanDetails.textContent =
-            clean(
-                booking.vanDetails ||
-                booking.vehicle ||
-                booking.van
-            );
-
-    }
 
 
     /* -----------------------------------------------
@@ -791,49 +790,30 @@ function renderBooking(booking) {
        QR
     ------------------------------------------------ */
 
-    const qr =
-        booking.qrCode ||
-        booking.qrImage ||
-        booking.qrPass ||
-        booking.qrUrl ||
+    /*
+     * PERMANENT CUSTOMER QR
+     *
+     * One QR belongs to one authenticated customer account.
+     * The same QR can later be used by:
+     * - Admin Customers → open customer account
+     * - Coordinator Module → locate active booking and check in/pick up
+     *
+     * Firebase UID is an identifier, not a password/credential.
+     * It lets admin/coordinator resolve the customer's active bookings
+     * through booking.customerUid without creating a new QR per trip.
+     */
+
+    const customerUid =
+        auth.currentUser?.uid ||
+        booking.customerUid ||
+        booking.authUid ||
+        booking.userUid ||
         "";
 
 
-    if (qr) {
-
-        if (qrImage) {
-
-            qrImage.src =
-                qr;
-
-            qrImage.style.display =
-                "block";
-
-        }
-
-
-        if (qrModalImage) {
-
-            qrModalImage.src =
-                qr;
-
-        }
-
-
-        if (qrFullscreenBtn) {
-
-            qrFullscreenBtn.style.display =
-                "inline-flex";
-
-        }
-
-    } else {
-
-        generateBookingQR(
-            id
-        );
-
-    }
+    generateCustomerQR(
+        customerUid
+    );
 
 
     /* -----------------------------------------------
@@ -853,22 +833,52 @@ function renderBooking(booking) {
 
 
 /* ==========================================================
-   QR GENERATOR
+   PERMANENT CUSTOMER QR GENERATOR
 ========================================================== */
 
-function generateBookingQR(id) {
+function generateCustomerQR(customerUid) {
 
-    if (
-        !id ||
-        id === "—"
-    ) {
+    if (!customerUid) {
+
+        console.warn(
+            "MY TRIP QR: Customer UID not available."
+        );
+
+        if (qrImage) {
+            qrImage.style.display =
+                "none";
+        }
+
+        if (qrFullscreenBtn) {
+            qrFullscreenBtn.style.display =
+                "none";
+        }
+
         return;
+
     }
+
+
+    /*
+     * Versioned payload.
+     *
+     * Future scanners should accept:
+     *
+     * TWTMS:CUSTOMER:<firebase-uid>
+     *
+     * IMPORTANT:
+     * The QR proves which account the customer is presenting,
+     * but the scanner must still verify booking/trip status
+     * from Firestore before allowing check-in.
+     */
+
+    const qrPayload =
+        `TWTMS:CUSTOMER:${customerUid}`;
 
 
     const encoded =
         encodeURIComponent(
-            id
+            qrPayload
         );
 
 
@@ -881,6 +891,9 @@ function generateBookingQR(id) {
         qrImage.src =
             qrURL;
 
+        qrImage.alt =
+            "Trips Wonder Customer QR";
+
         qrImage.style.display =
             "block";
 
@@ -892,6 +905,9 @@ function generateBookingQR(id) {
         qrModalImage.src =
             qrURL;
 
+        qrModalImage.alt =
+            "Trips Wonder Customer QR";
+
     }
 
 
@@ -901,6 +917,16 @@ function generateBookingQR(id) {
             "inline-flex";
 
     }
+
+
+    console.log(
+        "MY TRIP CUSTOMER QR READY:",
+        {
+            customerUid,
+            format:
+                "TWTMS:CUSTOMER:<uid>"
+        }
+    );
 
 }
 
@@ -922,14 +948,20 @@ function renderItinerary(booking) {
         booking.tripItinerary;
 
 
-    if (!itinerary) {
+    itineraryContent.innerHTML = "";
+
+
+    if (
+        !itinerary ||
+        typeof itinerary !== "object" ||
+        Array.isArray(itinerary)
+    ) {
 
         itineraryContent.innerHTML = `
             <div class="empty-tab-content">
                 <i class="fa-regular fa-calendar"></i>
                 <br>
-                Itinerary details will be available
-                for your booking.
+                Itinerary details will be available for your booking.
             </div>
         `;
 
@@ -938,78 +970,1389 @@ function renderItinerary(booking) {
     }
 
 
-    if (Array.isArray(itinerary)) {
-
-        itineraryContent.innerHTML =
-            "";
-
-
-        itinerary.forEach(
-            (item, index) => {
-
-                const row =
-                    document.createElement(
-                        "div"
-                    );
+    const dayDefinitions = [
+        { key: "day0", label: "Day 0" },
+        { key: "day1", label: "Day 1" },
+        { key: "day2", label: "Day 2" },
+        { key: "day3", label: "Day 3" }
+    ];
 
 
-                row.className =
-                    "detail-box";
+    function normalizeEntry(item) {
+
+        if (!item) {
+            return null;
+        }
 
 
-                if (
-                    typeof item === "object" &&
-                    item !== null
-                ) {
+        if (
+            item.type === "section" ||
+            (
+                Array.isArray(item.items) &&
+                (
+                    item.title ||
+                    item.items.length
+                )
+            )
+        ) {
 
-                    row.innerHTML = `
-                        <span>
-                            ${clean(
-                                item.time ||
-                                item.day ||
-                                `Schedule ${index + 1}`
-                            )}
-                        </span>
+            return {
+                type: "section",
+                title: clean(
+                    item.title,
+                    ""
+                ),
+                items:
+                    Array.isArray(item.items)
+                        ? item.items
+                            .map(
+                                value =>
+                                    clean(
+                                        value,
+                                        ""
+                                    )
+                            )
+                            .filter(Boolean)
+                        : []
+            };
 
-                        <strong>
-                            ${clean(
-                                item.activity ||
-                                item.title ||
-                                item.description
-                            )}
-                        </strong>
-                    `;
-
-                } else {
-
-                    row.innerHTML = `
-                        <strong>
-                            ${clean(item)}
-                        </strong>
-                    `;
-
-                }
+        }
 
 
-                itineraryContent
-                    .appendChild(row);
+        if (
+            typeof item === "object" &&
+            !Array.isArray(item)
+        ) {
 
+            const time =
+                clean(
+                    item.time,
+                    ""
+                );
+
+
+            const activity =
+                clean(
+                    item.activity,
+                    ""
+                );
+
+
+            if (
+                !time &&
+                !activity
+            ) {
+                return null;
             }
+
+
+            return {
+                type: "schedule",
+                time,
+                activity
+            };
+
+        }
+
+
+        return null;
+
+    }
+
+
+    const availableDays =
+        dayDefinitions
+            .map(
+                day => ({
+                    ...day,
+                    entries:
+                        Array.isArray(
+                            itinerary[day.key]
+                        )
+                            ? itinerary[day.key]
+                                .map(
+                                    normalizeEntry
+                                )
+                                .filter(Boolean)
+                            : []
+                })
+            )
+            .filter(
+                day =>
+                    day.entries.length
+            );
+
+
+    const notes =
+        clean(
+            itinerary.notes,
+            ""
         );
 
+
+    if (
+        !availableDays.length &&
+        !notes
+    ) {
+
+        itineraryContent.innerHTML = `
+            <div class="empty-tab-content">
+                <i class="fa-regular fa-calendar"></i>
+                <br>
+                Itinerary details will be available for your booking.
+            </div>
+        `;
 
         return;
 
     }
 
 
-    itineraryContent.innerHTML = `
-        <div class="detail-box">
-            <strong>
-                ${clean(itinerary)}
-            </strong>
-        </div>
-    `;
+    const shell =
+        document.createElement(
+            "div"
+        );
+
+
+    shell.className =
+        "customer-itinerary-builder";
+
+
+    const tabBar =
+        document.createElement(
+            "div"
+        );
+
+
+    tabBar.className =
+        "customer-itinerary-tabs";
+
+
+    const panels =
+        document.createElement(
+            "div"
+        );
+
+
+    panels.className =
+        "customer-itinerary-panels";
+
+
+    const sections = [];
+
+
+    availableDays.forEach(
+        (
+            day,
+            index
+        ) => {
+
+            const button =
+                document.createElement(
+                    "button"
+                );
+
+
+            button.type =
+                "button";
+
+
+            button.className =
+                "customer-itinerary-tab";
+
+
+            button.textContent =
+                day.label;
+
+
+            const panel =
+                document.createElement(
+                    "section"
+                );
+
+
+            panel.className =
+                "customer-itinerary-panel";
+
+
+            const body =
+                document.createElement(
+                    "div"
+                );
+
+
+            body.className =
+                "customer-itinerary-compact";
+
+
+            /* ---------------------------------------------
+               DAY HEADER
+            --------------------------------------------- */
+
+            const dayHeader =
+                document.createElement(
+                    "div"
+                );
+
+
+            dayHeader.className =
+                "customer-itinerary-day-header";
+
+
+            const firstSection =
+                day.entries.find(
+                    entry =>
+                        entry.type === "section"
+                );
+
+
+            dayHeader.innerHTML = `
+
+                <span class="customer-itinerary-day-dot"></span>
+
+                <strong>
+                    ${day.label}
+                </strong>
+
+                ${
+                    firstSection?.title
+                        ? `
+                            <span class="customer-itinerary-day-divider"></span>
+
+                            <span class="customer-itinerary-day-caption">
+                                ${
+                                    clean(
+                                        firstSection.title
+                                            .replace(
+                                                /PLACES TO VISIT:?/i,
+                                                "Whole-Day Island Tour"
+                                            ),
+                                        ""
+                                    )
+                                }
+                            </span>
+                        `
+                        : ""
+                }
+
+            `;
+
+
+            body.appendChild(
+                dayHeader
+            );
+
+
+            day.entries.forEach(
+                entry => {
+
+                    /* -------------------------------------
+                       SECTION / ACTIVITIES
+                    ------------------------------------- */
+
+                    if (
+                        entry.type === "section"
+                    ) {
+
+                        if (
+                            !entry.title &&
+                            !entry.items.length
+                        ) {
+                            return;
+                        }
+
+
+                        const section =
+                            document.createElement(
+                                "div"
+                            );
+
+
+                        section.className =
+                            "customer-itinerary-activity-block";
+
+
+                        const sectionHeader =
+                            document.createElement(
+                                "button"
+                            );
+
+
+                        sectionHeader.type =
+                            "button";
+
+
+                        sectionHeader.className =
+                            "customer-itinerary-activity-head";
+
+
+                        const count =
+                            entry.items.length;
+
+
+                        sectionHeader.innerHTML = `
+
+                            <span class="customer-itinerary-pin">
+                                <i class="fa-solid fa-location-dot"></i>
+                            </span>
+
+                            <strong>
+                                ${clean(entry.title)}
+                            </strong>
+
+                            ${
+                                count
+                                    ? `
+                                        <span class="customer-itinerary-count">
+                                            · ${count} ${
+                                                count === 1
+                                                    ? "place"
+                                                    : "places"
+                                            }
+                                        </span>
+                                    `
+                                    : ""
+                            }
+
+                            <i class="fa-solid fa-chevron-up customer-itinerary-chevron"></i>
+
+                        `;
+
+
+                        const sectionBody =
+                            document.createElement(
+                                "div"
+                            );
+
+
+                        sectionBody.className =
+                            "customer-itinerary-activity-body";
+
+
+                        if (
+                            entry.items.length
+                        ) {
+
+                            const list =
+                                document.createElement(
+                                    "ul"
+                                );
+
+
+                            entry.items.forEach(
+                                value => {
+
+                                    const li =
+                                        document.createElement(
+                                            "li"
+                                        );
+
+
+                                    li.textContent =
+                                        value;
+
+
+                                    list.appendChild(
+                                        li
+                                    );
+
+                                }
+                            );
+
+
+                            sectionBody.appendChild(
+                                list
+                            );
+
+                        }
+
+
+                        sectionHeader.addEventListener(
+                            "click",
+                            () => {
+
+                                const collapsed =
+                                    section.classList.toggle(
+                                        "collapsed"
+                                    );
+
+
+                                const chevron =
+                                    sectionHeader
+                                        .querySelector(
+                                            ".customer-itinerary-chevron"
+                                        );
+
+
+                                if (chevron) {
+
+                                    chevron.className =
+                                        collapsed
+                                            ? "fa-solid fa-chevron-down customer-itinerary-chevron"
+                                            : "fa-solid fa-chevron-up customer-itinerary-chevron";
+
+                                }
+
+                            }
+                        );
+
+
+                        section.appendChild(
+                            sectionHeader
+                        );
+
+
+                        section.appendChild(
+                            sectionBody
+                        );
+
+
+                        body.appendChild(
+                            section
+                        );
+
+
+                        return;
+
+                    }
+
+
+                    /* -------------------------------------
+                       SCHEDULE
+                    ------------------------------------- */
+
+                    const row =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    row.className =
+                        "customer-itinerary-schedule-row";
+
+
+                    row.innerHTML = `
+
+                        <div class="customer-itinerary-schedule-time">
+                            ${clean(entry.time, "")}
+                        </div>
+
+                        <div class="customer-itinerary-schedule-separator">
+                            —
+                        </div>
+
+                        <div class="customer-itinerary-schedule-activity">
+                            ${clean(entry.activity, "")}
+                        </div>
+
+                    `;
+
+
+                    body.appendChild(
+                        row
+                    );
+
+                }
+            );
+
+
+            panel.appendChild(
+                body
+            );
+
+
+            if (
+                index === 0
+            ) {
+
+                button.classList.add(
+                    "active"
+                );
+
+
+                panel.classList.add(
+                    "active"
+                );
+
+            }
+
+
+            tabBar.appendChild(
+                button
+            );
+
+
+            panels.appendChild(
+                panel
+            );
+
+
+            sections.push({
+                button,
+                panel
+            });
+
+        }
+    );
+
+
+    if (notes) {
+
+        const button =
+            document.createElement(
+                "button"
+            );
+
+
+        button.type =
+            "button";
+
+
+        button.className =
+            "customer-itinerary-tab";
+
+
+        button.innerHTML =
+            `<i class="fa-regular fa-note-sticky"></i> Notes`;
+
+
+        const panel =
+            document.createElement(
+                "section"
+            );
+
+
+        panel.className =
+            "customer-itinerary-panel";
+
+
+        panel.innerHTML = `
+
+            <div class="customer-itinerary-notes-v4">
+
+                <div class="customer-itinerary-notes-title-v4">
+                    <i class="fa-solid fa-circle-info"></i>
+                    Important Notes & Reminders
+                </div>
+
+                <div class="customer-itinerary-notes-text-v4">
+                    ${notes}
+                </div>
+
+            </div>
+
+        `;
+
+
+        if (
+            !availableDays.length
+        ) {
+
+            button.classList.add(
+                "active"
+            );
+
+
+            panel.classList.add(
+                "active"
+            );
+
+        }
+
+
+        tabBar.appendChild(
+            button
+        );
+
+
+        panels.appendChild(
+            panel
+        );
+
+
+        sections.push({
+            button,
+            panel
+        });
+
+    }
+
+
+    sections.forEach(
+        section => {
+
+            section.button
+                .addEventListener(
+                    "click",
+                    () => {
+
+                        sections.forEach(
+                            item => {
+
+                                item.button
+                                    .classList
+                                    .remove(
+                                        "active"
+                                    );
+
+
+                                item.panel
+                                    .classList
+                                    .remove(
+                                        "active"
+                                    );
+
+                            }
+                        );
+
+
+                        section.button
+                            .classList
+                            .add(
+                                "active"
+                            );
+
+
+                        section.panel
+                            .classList
+                            .add(
+                                "active"
+                            );
+
+                    }
+                );
+
+        }
+    );
+
+
+    shell.appendChild(
+        tabBar
+    );
+
+
+    shell.appendChild(
+        panels
+    );
+
+
+    itineraryContent.appendChild(
+        shell
+    );
+
+}
+
+
+/* ==========================================================
+   CUSTOMER BOOKING HELPERS
+========================================================== */
+
+function normalizeLower(value) {
+
+    return String(value ?? "")
+        .trim()
+        .toLowerCase();
+
+}
+
+
+function toDateValue(value) {
+
+    if (!value) {
+        return null;
+    }
+
+    if (
+        typeof value === "object" &&
+        typeof value.toDate === "function"
+    ) {
+
+        return value.toDate();
+
+    }
+
+    if (value instanceof Date) {
+        return value;
+    }
+
+    const text = String(value).trim();
+
+    const date =
+        /^\\d{4}-\\d{2}-\\d{2}$/.test(text)
+            ? new Date(`${text}T00:00:00`)
+            : new Date(text);
+
+    return Number.isNaN(date.getTime())
+        ? null
+        : date;
+
+}
+
+
+function getBookingReferenceValue(booking) {
+
+    return clean(
+        booking.bookingNumber ||
+        booking.bookingReference ||
+        booking.bookingId ||
+        booking.id ||
+        booking.documentId
+    );
+
+}
+
+
+async function loadPackageSnapshot(packageId) {
+
+    if (!packageId) {
+        return null;
+    }
+
+    try {
+
+        const snapshot =
+            await getDoc(
+                doc(
+                    db,
+                    "packages",
+                    packageId
+                )
+            );
+
+        if (!snapshot.exists()) {
+            return null;
+        }
+
+        return {
+            id: snapshot.id,
+            ...snapshot.data()
+        };
+
+    } catch (error) {
+
+        console.warn(
+            "MY TRIP PACKAGE LOAD ERROR:",
+            error
+        );
+
+        return null;
+    }
+
+}
+
+
+async function getBookingsForCustomer(user) {
+
+    if (!user?.uid) {
+        return [];
+    }
+
+    const bookingsRef =
+        collection(
+            db,
+            "bookings"
+        );
+
+    const uidQuery =
+        query(
+            bookingsRef,
+            where(
+                "customerUid",
+                "==",
+                user.uid
+            )
+        );
+
+    const uidSnapshot =
+        await getDocs(
+            uidQuery
+        );
+
+    let bookings =
+        uidSnapshot.docs.map(
+            documentSnapshot => ({
+                id: documentSnapshot.id,
+                ...documentSnapshot.data()
+            })
+        );
+
+    /*
+     * Compatibility fallback for old bookings created
+     * before customerUid was added.
+     */
+    if (
+        bookings.length === 0 &&
+        user.email
+    ) {
+
+        const emailQuery =
+            query(
+                bookingsRef,
+                where(
+                    "customerEmail",
+                    "==",
+                    normalizeLower(
+                        user.email
+                    )
+                )
+            );
+
+        const emailSnapshot =
+            await getDocs(
+                emailQuery
+            );
+
+        bookings =
+            emailSnapshot.docs.map(
+                documentSnapshot => ({
+                    id: documentSnapshot.id,
+                    ...documentSnapshot.data()
+                })
+            );
+    }
+
+    return bookings;
+
+}
+
+
+function chooseCustomerTrip(bookings) {
+
+    if (!bookings.length) {
+        return null;
+    }
+
+    const requestedBooking =
+        new URLSearchParams(
+            window.location.search
+        ).get("booking");
+
+    if (requestedBooking) {
+
+        const requested =
+            bookings.find(booking =>
+                booking.id === requestedBooking ||
+                getBookingReferenceValue(booking) === requestedBooking
+            );
+
+        if (requested) {
+            return requested;
+        }
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const active =
+        bookings.filter(booking => {
+
+            const status =
+                String(
+                    getBookingStatus(booking)
+                ).toLowerCase();
+
+            return !(
+                status === "cancelled" ||
+                status === "canceled"
+            );
+        });
+
+    const upcoming =
+        active
+            .filter(booking => {
+
+                const endDate =
+                    toDateValue(
+                        booking.travelEndDate ||
+                        booking.endTravelDate ||
+                        booking.travelStartDate ||
+                        booking.startTravelDate ||
+                        booking.travelDate
+                    );
+
+                return !endDate || endDate >= today;
+            })
+            .sort((a, b) => {
+
+                const aDate =
+                    toDateValue(
+                        a.travelStartDate ||
+                        a.startTravelDate ||
+                        a.travelDate
+                    );
+
+                const bDate =
+                    toDateValue(
+                        b.travelStartDate ||
+                        b.startTravelDate ||
+                        b.travelDate
+                    );
+
+                return (
+                    aDate?.getTime() ||
+                    Number.MAX_SAFE_INTEGER
+                ) - (
+                    bDate?.getTime() ||
+                    Number.MAX_SAFE_INTEGER
+                );
+            });
+
+    if (upcoming.length) {
+        return upcoming[0];
+    }
+
+    return active[0] || null;
+}
+
+
+/* ==========================================================
+   TRIP OPERATIONS
+========================================================== */
+
+function normalizeDateKey(value) {
+
+    const date = toDateValue(value);
+
+    if (!date) {
+        return "";
+    }
+
+    const year = date.getFullYear();
+
+    const month =
+        String(date.getMonth() + 1)
+            .padStart(2, "0");
+
+    const day =
+        String(date.getDate())
+            .padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+
+}
+
+
+function getBookingPickupLocation(booking) {
+
+    return clean(
+        booking.pickup ||
+        booking.pickupPoint ||
+        booking.pickUpPoint ||
+        booking.pickupLocation ||
+        booking.meetUpPoint,
+        ""
+    );
+
+}
+
+
+function findCustomerPickup(operation, booking) {
+
+    const selectedPickup =
+        normalizeLower(
+            getBookingPickupLocation(booking)
+        );
+
+    const schedule =
+        Array.isArray(operation?.pickupSchedule)
+            ? operation.pickupSchedule
+            : [];
+
+    if (!selectedPickup) {
+        return null;
+    }
+
+    return (
+        schedule.find(item =>
+            normalizeLower(item?.location) ===
+            selectedPickup
+        ) ||
+        schedule.find(item => {
+
+            const location =
+                normalizeLower(
+                    item?.location
+                );
+
+            return (
+                location &&
+                (
+                    location.includes(selectedPickup) ||
+                    selectedPickup.includes(location)
+                )
+            );
+
+        }) ||
+        null
+    );
+
+}
+
+
+async function loadTripOperation(booking) {
+
+    const packageId =
+        clean(
+            booking.packageId,
+            ""
+        );
+
+    const bookingStartDate =
+        normalizeDateKey(
+            booking.startTravelDate ||
+            booking.travelStartDate ||
+            booking.startDate ||
+            booking.travelDate
+        );
+
+    if (!packageId || !bookingStartDate) {
+
+        console.warn(
+            "MY TRIP: Missing packageId or travel start date for Trip Operations.",
+            {
+                packageId,
+                bookingStartDate
+            }
+        );
+
+        return null;
+    }
+
+
+    try {
+
+        const operationsRef =
+            collection(
+                db,
+                "tripOperations"
+            );
+
+
+        /*
+         * Query by packageId first, then match the exact departure
+         * date in JavaScript. This avoids requiring a composite
+         * Firestore index for packageId + startDate.
+         */
+
+        const operationQuery =
+            query(
+                operationsRef,
+                where(
+                    "packageId",
+                    "==",
+                    packageId
+                )
+            );
+
+
+        const snapshot =
+            await getDocs(
+                operationQuery
+            );
+
+
+        const operations =
+            snapshot.docs.map(
+                documentSnapshot => ({
+                    id:
+                        documentSnapshot.id,
+                    ...documentSnapshot.data()
+                })
+            );
+
+
+        const operation =
+            operations.find(item =>
+                normalizeDateKey(
+                    item.startDate ||
+                    item.travelStartDate
+                ) === bookingStartDate
+            ) || null;
+
+
+        console.log(
+            "MY TRIP OPERATION MATCH:",
+            {
+                packageId,
+                bookingStartDate,
+                operation
+            }
+        );
+
+
+        return operation;
+
+    } catch (error) {
+
+        console.error(
+            "MY TRIP TRIP OPERATION LOAD ERROR:",
+            error
+        );
+
+        return null;
+    }
+
+}
+
+
+function applyTripOperationToBooking(
+    booking,
+    operation
+) {
+
+    if (!operation) {
+        return booking;
+    }
+
+
+    const customerPickup =
+        findCustomerPickup(
+            operation,
+            booking
+        );
+
+
+    const pickupLocation =
+        clean(
+            customerPickup?.location ||
+            getBookingPickupLocation(booking),
+            ""
+        );
+
+
+    const pickupTime =
+        clean(
+            customerPickup?.time ||
+            customerPickup?.meetupTime ||
+            customerPickup?.meetUpTime,
+            ""
+        );
+
+
+    const pickupInstructions =
+        clean(
+            customerPickup?.instructions ||
+            customerPickup?.meetingInstructions ||
+            customerPickup?.notes,
+            ""
+        );
+
+
+    /*
+     * Keep booking/package snapshot values, then overlay only
+     * operational fields that Admin controls in Trip Operations.
+     */
+
+    return {
+        ...booking,
+
+        tripOperationId:
+            operation.id,
+
+        tripOperationStatus:
+            operation.status || "",
+
+        pickup:
+            pickupLocation ||
+            booking.pickup,
+
+        pickupPoint:
+            pickupLocation ||
+            booking.pickupPoint,
+
+        pickupTime,
+
+        pickupInstructions,
+
+        vehicle:
+            operation.vehicleName ||
+            operation.vehicle ||
+            booking.vehicle ||
+            booking.vanDetails ||
+            "",
+
+        vanDetails:
+            operation.vehicleName ||
+            operation.vehicle ||
+            booking.vanDetails ||
+            booking.vehicle ||
+            "",
+
+        vehiclePlate:
+            operation.plateNumber ||
+            operation.vehiclePlate ||
+            "",
+
+        driverName:
+            operation.driverName ||
+            operation.driver ||
+            "",
+
+        driverContact:
+            operation.driverContact ||
+            operation.driverPhone ||
+            "",
+
+        coordinatorName:
+            operation.coordinatorName ||
+            operation.coordinator ||
+            booking.coordinatorName ||
+            booking.coordinator ||
+            "",
+
+        coordinatorContact:
+            operation.coordinatorContact ||
+            operation.coordinatorNumber ||
+            operation.coordinatorPhone ||
+            booking.coordinatorContact ||
+            booking.coordinatorNumber ||
+            booking.coordinatorPhone ||
+            "",
+
+        tripAnnouncement:
+            operation.announcement ||
+            operation.tripAnnouncement ||
+            operation.notes ||
+            ""
+    };
+
+}
+
+
+function formatPickupTime(value) {
+
+    const time =
+        clean(
+            value,
+            ""
+        );
+
+    if (!time) {
+        return "";
+    }
+
+    const match =
+        time.match(
+            /^(\d{1,2}):(\d{2})$/
+        );
+
+    if (!match) {
+        return time;
+    }
+
+    let hour =
+        Number(match[1]);
+
+    const minute =
+        match[2];
+
+    const period =
+        hour >= 12
+            ? "PM"
+            : "AM";
+
+    hour =
+        hour % 12 || 12;
+
+    return `${hour}:${minute} ${period}`;
+
+}
+
+
+function renderOperationalPickupDetails(booking) {
+
+    if (pickupLocation) {
+
+        pickupLocation.textContent =
+            getBookingPickupLocation(
+                booking
+            ) || "—";
+
+    }
+
+
+    if (pickupTime) {
+
+        pickupTime.textContent =
+            formatPickupTime(
+                booking.pickupTime
+            ) || "—";
+
+    }
+
+
+    if (pickupInstructions) {
+
+        pickupInstructions.textContent =
+            clean(
+                booking.pickupInstructions
+            );
+
+    }
+
+
+    if (vehicleName) {
+
+        vehicleName.textContent =
+            clean(
+                booking.vehicle ||
+                booking.vanDetails
+            );
+
+    }
+
+
+    if (vehiclePlate) {
+
+        vehiclePlate.textContent =
+            clean(
+                booking.vehiclePlate
+            );
+
+    }
+
+
+    if (driverName) {
+
+        driverName.textContent =
+            clean(
+                booking.driverName
+            );
+
+    }
+
+
+    if (driverContact) {
+
+        driverContact.textContent =
+            clean(
+                booking.driverContact
+            );
+
+    }
+
+
+    if (coordinatorName) {
+
+        coordinatorName.textContent =
+            clean(
+                booking.coordinatorName ||
+                booking.coordinator
+            );
+
+    }
+
+
+    if (coordinatorContact) {
+
+        coordinatorContact.textContent =
+            clean(
+                booking.coordinatorContact ||
+                booking.coordinatorNumber ||
+                booking.coordinatorPhone
+            );
+
+    }
 
 }
 
@@ -1018,140 +2361,97 @@ function renderItinerary(booking) {
    LOAD BOOKING
 ========================================================== */
 
-async function loadBooking() {
+async function loadBooking(user) {
 
     try {
 
-        /* -----------------------------------------------
-           START LOADING
-        ------------------------------------------------ */
-
         showLoading();
 
-
         console.log(
-            "Loading My Trip from Firebase..."
+            "Loading My Trip for customer:",
+            {
+                uid: user.uid,
+                email: user.email
+            }
         );
-
-
-        /* -----------------------------------------------
-           BOOKINGS COLLECTION
-        ------------------------------------------------ */
-
-        const bookingsRef =
-            collection(
-                db,
-                "bookings"
-            );
-
-
-        const bookingQuery =
-            query(
-                bookingsRef,
-
-                orderBy(
-                    "createdAt",
-                    "desc"
-                ),
-
-                limit(20)
-            );
-
-
-        const snapshot =
-            await getDocs(
-                bookingQuery
-            );
-
-
-        console.log(
-            "Bookings found:",
-            snapshot.size
-        );
-
-
-        /* -----------------------------------------------
-           NO BOOKINGS
-        ------------------------------------------------ */
-
-        if (
-            snapshot.empty
-        ) {
-
-            showNoTrip();
-
-            return;
-
-        }
-
-
-        /* -----------------------------------------------
-           CONVERT FIRESTORE DATA
-        ------------------------------------------------ */
 
         const bookings =
-            snapshot.docs.map(
-                doc => {
-
-                    return {
-                        id: doc.id,
-                        ...doc.data()
-                    };
-
-                }
+            await getBookingsForCustomer(
+                user
             );
 
-
         console.log(
-            "BOOKINGS:",
-            bookings
+            "MY TRIP CUSTOMER BOOKINGS:",
+            bookings.length
         );
 
-
-        /* -----------------------------------------------
-           CURRENTLY USE NEWEST BOOKING
-        ------------------------------------------------ */
-
         const booking =
-            bookings[0];
-
+            chooseCustomerTrip(
+                bookings
+            );
 
         if (!booking) {
 
             showNoTrip();
-
             return;
-
         }
+
+        const packageData =
+            await loadPackageSnapshot(
+                booking.packageId
+            );
+
+        /*
+         * Package data supplies gallery, inclusions, itinerary,
+         * etc. Booking snapshot remains the source of customer
+         * and reservation-specific values.
+         */
+        const bookingWithPackage = {
+            ...(packageData || {}),
+            ...booking,
+            id: booking.id
+        };
+
+
+        const tripOperation =
+            await loadTripOperation(
+                bookingWithPackage
+            );
+
+
+        const completeBooking =
+            applyTripOperationToBooking(
+                bookingWithPackage,
+                tripOperation
+            );
 
 
         console.log(
             "SELECTED MY TRIP:",
-            booking
+            completeBooking
         );
 
-
-        /* -----------------------------------------------
-           RENDER
-        ------------------------------------------------ */
 
         renderBooking(
-            booking
+            completeBooking
         );
 
 
-        /* -----------------------------------------------
-           IMPORTANT:
-           FORCE LOADING OFF
-        ------------------------------------------------ */
+        /*
+         * Override the basic booking pickup / vehicle fields with
+         * the exact Admin Trip Operations details for this departure.
+         */
+
+        renderOperationalPickupDetails(
+            completeBooking
+        );
+
 
         showTripContent();
-
 
         console.log(
             "MY TRIP DISPLAYED SUCCESSFULLY"
         );
-
 
     } catch (error) {
 
@@ -1160,32 +2460,8 @@ async function loadBooking() {
             error
         );
 
-
-        /* -----------------------------------------------
-           ALWAYS REMOVE LOADING ON ERROR
-        ------------------------------------------------ */
-
-        if (loading) {
-
-            loading.hidden =
-                true;
-
-            loading.style.display =
-                "none";
-
-        }
-
-
-        /*
-         * If Firestore does not allow
-         * reading bookings,
-         * show no-trip state instead
-         */
-
         showNoTrip();
-
     }
-
 }
 
 
@@ -1491,4 +2767,27 @@ document.addEventListener(
    START
 ========================================================== */
 
-loadBooking();
+showLoading();
+
+
+onAuthStateChanged(
+    auth,
+    async user => {
+
+        if (!user) {
+
+            console.warn(
+                "MY TRIP: NO LOGGED-IN CUSTOMER"
+            );
+
+            window.location.href =
+                "../../index.html";
+
+            return;
+        }
+
+        await loadBooking(
+            user
+        );
+    }
+);

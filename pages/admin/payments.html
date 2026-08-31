@@ -6,6 +6,7 @@
     <title>Payments | Trips Wonder Admin</title>
 
     <link rel="stylesheet" href="../../assets/css/admin/payments.css">
+    <link rel="stylesheet" href="../../assets/css/shared/admin-nav.css">
 
     <link
         rel="stylesheet"
@@ -13,130 +14,20 @@
     >
 </head>
 
-<body class="twtms-page-loading">
+<body class="twtms-page-loading admin-shared-nav-page">
 
-<div class="admin-layout">
+<div class="admin-layout admin-wrapper">
 
     <!-- =====================================================
-         SIDEBAR
+         SHARED ADMIN SIDEBAR
     ====================================================== -->
-    <aside class="sidebar">
-
-        <div class="sidebar-brand">
-
-        <div class="brand-logo">
-            <img
-                src="../../assets/images/logo.png"
-                alt="Trips Wonder Logo"
-            >
-        </div>
-
-        <div class="brand-text">
-            <h2>Trips Wonder</h2>
-            <span>Travel Management System</span>
-        </div>
-
-        </div>
-
-
-        <div class="sidebar-menu">
-
-        <div class="menu-label">
-            MAIN MENU
-        </div>
-
-        <nav class="main-navigation">
-
-        <a href="dashboard.html" class="nav-item">
-            <i class="fa-solid fa-chart-pie"></i>
-            <span>Dashboard</span>
-        </a>
-
-        <a href="packages.html" class="nav-item">
-            <i class="fa-solid fa-suitcase"></i>
-            <span>Packages</span>
-        </a>
-
-        <a href="bookings.html" class="nav-item">
-            <i class="fa-solid fa-calendar-check"></i>
-            <span>Bookings</span>
-        </a>
-
-        <a href="customers.html" class="nav-item">
-            <i class="fa-solid fa-users"></i>
-            <span>Customers</span>
-        </a>
-
-                <a href="payments.html" class="nav-item active">
-                    <i class="fa-solid fa-credit-card"></i>
-                    <span>Payments</span>
-                </a>
-
-                <a href="invoices.html" class="nav-item">
-                    <i class="fa-solid fa-file-invoice"></i>
-                    <span>Invoices</span>
-                </a>
-
-                <a href="resort-bookings.html" class="nav-item">
-                    <i class="fa-solid fa-building"></i>
-                    <span>Resort Bookings</span>
-                </a>
-
-                <a href="reports.html" class="nav-item">
-                    <i class="fa-solid fa-chart-line"></i>
-                    <span>Reports</span>
-                </a>
-
-            </nav>
-
-        </div>
-
-
-        <!-- =================================================
-             ADMIN PROFILE
-             ONE CLICK
-        ================================================== -->
-        <div class="sidebar-bottom">
-
-            <a
-                href="admin-profile.html"
-                class="admin-profile"
-                id="adminProfile"
-            >
-
-                <div class="admin-avatar">
-                    <i class="fa-solid fa-user"></i>
-                </div>
-
-                <div class="admin-info">
-                    <strong>Admin Trips Wonder</strong>
-                    <span>Administrator</span>
-                </div>
-
-            </a>
-
-
-            <!-- LOGOUT ALWAYS VISIBLE -->
-            <button
-                type="button"
-                class="logout-button"
-                onclick="handleLogout()"
-            >
-
-                <i class="fa-solid fa-right-from-bracket"></i>
-                <span>Logout</span>
-
-            </button>
-
-        </div>
-
-    </aside>
+    <aside id="adminSidebar" class="admin-sidebar"></aside>
 
 
     <!-- =====================================================
          MAIN CONTENT
     ====================================================== -->
-    <main class="main-content">
+    <main class="main-content main">
 
         <!-- HEADER -->
         <section class="page-header">
@@ -1183,6 +1074,51 @@
             </div>
 
 
+            <section
+                class="payment-details-promo"
+                id="detailsPromoSection"
+                hidden
+            >
+                <div class="payment-details-promo-title">
+                    Pricing & Promo
+                </div>
+
+                <div class="payment-details-promo-grid">
+
+                    <div>
+                        <span>Original Amount</span>
+                        <strong id="detailsOriginalAmount">₱0</strong>
+                    </div>
+
+                    <div>
+                        <span>Promo</span>
+                        <strong id="detailsPromoTitle">—</strong>
+                    </div>
+
+                    <div>
+                        <span>Promo Code</span>
+                        <strong id="detailsPromoCode">—</strong>
+                    </div>
+
+                    <div>
+                        <span>Promo Discount</span>
+                        <strong
+                            id="detailsPromoDiscount"
+                            class="discount"
+                        >
+                            −₱0
+                        </strong>
+                    </div>
+
+                    <div class="final-total">
+                        <span>Final Booking Total</span>
+                        <strong id="detailsFinalBookingTotal">₱0</strong>
+                    </div>
+
+                </div>
+            </section>
+
+
             <div class="details-notes">
 
                 <span>
@@ -1343,6 +1279,52 @@
 
                 </div>
 
+            </section>
+
+
+            <!-- PROMO / PRICING -->
+            <section
+                class="verify-payment-section verify-promo-section"
+                id="verifyPromoSection"
+                hidden
+            >
+                <div class="verify-section-title">
+                    Pricing & Promo
+                </div>
+
+                <div class="verify-promo-grid">
+
+                    <div>
+                        <span>Original Amount</span>
+                        <strong id="verifyOriginalAmount">₱0</strong>
+                    </div>
+
+                    <div>
+                        <span>Promo</span>
+                        <strong id="verifyPromoTitle">—</strong>
+                    </div>
+
+                    <div>
+                        <span>Promo Code</span>
+                        <strong id="verifyPromoCode">—</strong>
+                    </div>
+
+                    <div>
+                        <span>Promo Discount</span>
+                        <strong
+                            id="verifyPromoDiscount"
+                            class="discount"
+                        >
+                            −₱0
+                        </strong>
+                    </div>
+
+                    <div class="final-total">
+                        <span>Final Booking Total</span>
+                        <strong id="verifyFinalBookingTotal">₱0</strong>
+                    </div>
+
+                </div>
             </section>
 
 
@@ -1687,6 +1669,52 @@
             </section>
 
 
+            <!-- PROMO / PRICING -->
+            <section
+                class="receipt-section receipt-promo-section"
+                id="receiptPromoSection"
+                hidden
+            >
+                <div class="receipt-section-title">
+                    Pricing & Promo
+                </div>
+
+                <div class="receipt-promo-grid">
+
+                    <div class="receipt-summary-row">
+                        <span>Original Amount</span>
+                        <strong id="receiptOriginalAmount">₱0</strong>
+                    </div>
+
+                    <div class="receipt-summary-row">
+                        <span>Promo</span>
+                        <strong id="receiptPromoTitle">—</strong>
+                    </div>
+
+                    <div class="receipt-summary-row">
+                        <span>Promo Code</span>
+                        <strong id="receiptPromoCode">—</strong>
+                    </div>
+
+                    <div class="receipt-summary-row">
+                        <span>Promo Discount</span>
+                        <strong
+                            id="receiptPromoDiscount"
+                            class="discount"
+                        >
+                            −₱0
+                        </strong>
+                    </div>
+
+                    <div class="receipt-summary-row final-total">
+                        <span>Final Booking Total</span>
+                        <strong id="receiptFinalBookingTotal">₱0</strong>
+                    </div>
+
+                </div>
+            </section>
+
+
             <!-- PAYMENT SUMMARY -->
 
             <section class="receipt-section">
@@ -1698,9 +1726,42 @@
 
                 <div class="receipt-summary">
 
+                    <div
+                        class="receipt-summary-row receipt-summary-promo-row"
+                        id="receiptSummaryOriginalRow"
+                        hidden
+                    >
+                        <span>
+                            Original Amount
+                        </span>
+
+                        <strong id="receiptSummaryOriginalAmount">
+                            ₱0
+                        </strong>
+                    </div>
+
+
+                    <div
+                        class="receipt-summary-row receipt-summary-promo-row"
+                        id="receiptSummaryDiscountRow"
+                        hidden
+                    >
+                        <span>
+                            Promo Discount
+                        </span>
+
+                        <strong
+                            id="receiptSummaryPromoDiscount"
+                            class="receipt-promo-discount"
+                        >
+                            −₱0
+                        </strong>
+                    </div>
+
+
                     <div class="receipt-summary-row">
 
-                        <span>
+                        <span id="receiptBookingTotalLabel">
                             Booking Total
                         </span>
 
@@ -2397,6 +2458,11 @@
 <!-- =============================================================
      PAYMENT JAVASCRIPT
 ============================================================== -->
+<script
+    type="module"
+    src="../../assets/js/shared/admin-nav.js">
+</script>
+
 <script
     type="module"
     src="../../assets/js/admin/payments.js">

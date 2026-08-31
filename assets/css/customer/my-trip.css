@@ -846,3 +846,1121 @@ body {
     }
 
 }
+
+/* ==========================================================
+   MY TRIP — ITINERARY
+   ========================================================== */
+
+#itineraryContent {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+
+/* DAY CARD */
+
+.itinerary-day-card {
+    width: 100%;
+
+    padding: 12px;
+
+    background: #f8fbff;
+
+    border: 1px solid #e2eaf3;
+    border-radius: 12px;
+}
+
+
+/* DAY TITLE */
+
+.itinerary-day-title {
+    margin-bottom: 10px;
+
+    color: #15345f;
+
+    font-size: 11px;
+    font-weight: 800;
+    line-height: 1.35;
+
+    text-transform: uppercase;
+}
+
+
+/* SCHEDULE ROW */
+
+.itinerary-schedule-row {
+    display: grid;
+
+    grid-template-columns:
+        78px
+        minmax(0, 1fr);
+
+    gap: 10px;
+
+    padding: 8px 0;
+
+    border-top:
+        1px solid #e7edf4;
+}
+
+.itinerary-schedule-row:first-of-type {
+    border-top: 0;
+}
+
+
+/* TIME */
+
+.itinerary-time {
+    color: #1767b7;
+
+    font-size: 8px;
+    font-weight: 800;
+    line-height: 1.35;
+}
+
+
+/* ACTIVITY */
+
+.itinerary-activity {
+    color: #253858;
+
+    font-size: 8px;
+    font-weight: 600;
+    line-height: 1.45;
+}
+
+
+/* FALLBACK DESCRIPTION */
+
+.itinerary-day-description {
+    color: #52657a;
+
+    font-size: 8px;
+    line-height: 1.55;
+
+    white-space: pre-line;
+}
+
+/* ==========================================================
+   PICKUP DETAILS
+========================================================== */
+
+.pickup-detail-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.pickup-detail-item {
+    padding: 10px 0;
+    border-bottom: 1px solid #e7edf5;
+}
+
+.pickup-detail-item:first-child {
+    padding-top: 0;
+}
+
+.pickup-detail-item:last-child {
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.pickup-detail-item span {
+    display: block;
+    margin-bottom: 4px;
+    color: #64748b;
+    font-size: 9px;
+    font-weight: 500;
+}
+
+.pickup-detail-item strong {
+    display: block;
+    color: var(--my-text);
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+.pickup-details-box {
+    padding: 13px;
+}
+
+.pickup-details-box #pickupPoint {
+    width: 100%;
+}
+
+/* ==========================================================
+   VAN DETAILS
+========================================================== */
+
+.van-details-box {
+    padding: 13px;
+}
+
+.van-details-box #vanDetails {
+    width: 100%;
+}
+
+.van-detail-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.van-detail-item {
+    padding: 10px 0;
+    border-bottom: 1px solid #e7edf5;
+}
+
+.van-detail-item:first-child {
+    padding-top: 0;
+}
+
+.van-detail-item:last-child {
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.van-detail-item span {
+    display: block;
+    margin-bottom: 4px;
+    color: #64748b;
+    font-size: 9px;
+    font-weight: 500;
+}
+
+.van-detail-item strong {
+    display: block;
+    color: var(--my-text);
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1.4;
+    word-break: break-word;
+}
+
+/* ==========================================================
+   MY TRIP — ITINERARY IMPROVED UI
+========================================================== */
+
+#tab-itinerary .info-card {
+    padding: 14px;
+}
+
+#itineraryContent {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+
+/* DAY CARD */
+
+.itinerary-day-card {
+    width: 100%;
+
+    padding: 0;
+
+    overflow: hidden;
+
+    background: #ffffff;
+
+    border: 1px solid #e5eaf2;
+    border-radius: 12px;
+
+    box-shadow: 0 2px 8px rgba(16, 35, 79, 0.035);
+}
+
+
+/* DAY HEADER */
+
+.itinerary-day-title {
+    margin: 0;
+
+    padding: 10px 12px;
+
+    color: var(--my-blue);
+
+    background: #f3f7ff;
+
+    border-bottom: 1px solid #e2eaf3;
+
+    font-size: 10px;
+    font-weight: 800;
+    line-height: 1.3;
+
+    text-transform: uppercase;
+}
+
+
+/* SCHEDULE */
+
+.itinerary-schedule-row {
+    position: relative;
+
+    display: grid;
+
+    grid-template-columns:
+        86px
+        minmax(0, 1fr);
+
+    gap: 10px;
+
+    padding: 10px 12px 10px 20px;
+
+    border-top: 1px solid #edf1f5;
+}
+
+.itinerary-schedule-row:first-of-type {
+    border-top: none;
+}
+
+
+/* TIMELINE DOT */
+
+.itinerary-schedule-row::before {
+    content: "";
+
+    position: absolute;
+
+    left: 9px;
+    top: 15px;
+
+    width: 5px;
+    height: 5px;
+
+    background: var(--my-blue);
+
+    border-radius: 50%;
+}
+
+
+/* TIME */
+
+.itinerary-time {
+    color: var(--my-blue);
+
+    font-size: 8px;
+    font-weight: 800;
+    line-height: 1.45;
+
+    white-space: normal;
+}
+
+
+/* ACTIVITY */
+
+.itinerary-activity {
+    color: var(--my-text);
+
+    font-size: 8px;
+    font-weight: 600;
+    line-height: 1.5;
+}
+
+
+/* FALLBACK DESCRIPTION */
+
+.itinerary-day-description {
+    padding: 12px;
+
+    color: #52657a;
+
+    font-size: 9px;
+    line-height: 1.6;
+
+    white-space: pre-line;
+}
+
+
+/* SMALL MOBILE */
+
+@media (max-width: 360px) {
+
+    .itinerary-schedule-row {
+        grid-template-columns:
+            76px
+            minmax(0, 1fr);
+
+        gap: 8px;
+    }
+
+}
+
+/* ==========================================================
+   STRUCTURED ITINERARY TABS
+========================================================== */
+
+#tab-itinerary .info-card {
+    overflow: hidden;
+}
+
+.customer-itinerary-builder {
+    width: 100%;
+}
+
+.customer-itinerary-tabs {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    padding: 2px 0 10px;
+    scrollbar-width: none;
+}
+
+.customer-itinerary-tabs::-webkit-scrollbar {
+    display: none;
+}
+
+.customer-itinerary-tab {
+    flex: 0 0 auto;
+    min-height: 34px;
+    padding: 0 12px;
+
+    border: 1px solid #dbe4f0;
+    border-radius: 9px;
+
+    background: #ffffff;
+    color: #64748b;
+
+    font-size: 9px;
+    font-weight: 700;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.customer-itinerary-tab.active {
+    background: #eef5ff;
+    border-color: #b9d3fb;
+    color: var(--my-blue);
+    box-shadow: inset 0 -2px 0 var(--my-blue);
+}
+
+.customer-itinerary-panels {
+    width: 100%;
+}
+
+.customer-itinerary-panel {
+    display: none;
+}
+
+.customer-itinerary-panel.active {
+    display: block;
+}
+
+.customer-itinerary-list {
+    border: 1px solid #e7edf5;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #ffffff;
+}
+
+.customer-itinerary-item {
+    position: relative;
+
+    display: grid;
+    grid-template-columns: 18px minmax(0, 1fr);
+    gap: 10px;
+
+    padding: 11px 12px;
+
+    border-bottom: 1px solid #edf1f5;
+}
+
+.customer-itinerary-item:last-child {
+    border-bottom: none;
+}
+
+.customer-itinerary-marker {
+    position: relative;
+    display: flex;
+    justify-content: center;
+}
+
+.customer-itinerary-marker::after {
+    content: "";
+    position: absolute;
+    top: 14px;
+    bottom: -12px;
+    width: 1px;
+    background: #dbe7f7;
+}
+
+.customer-itinerary-item:last-child
+.customer-itinerary-marker::after {
+    display: none;
+}
+
+.customer-itinerary-marker span {
+    position: relative;
+    z-index: 1;
+
+    width: 8px;
+    height: 8px;
+    margin-top: 4px;
+
+    border-radius: 50%;
+    background: var(--my-blue);
+
+    box-shadow: 0 0 0 3px #eaf2ff;
+}
+
+.customer-itinerary-item-content {
+    min-width: 0;
+}
+
+.customer-itinerary-time {
+    margin-bottom: 3px;
+
+    color: var(--my-blue);
+
+    font-size: 9px;
+    font-weight: 800;
+    line-height: 1.35;
+}
+
+.customer-itinerary-activity {
+    color: var(--my-text);
+
+    font-size: 10px;
+    font-weight: 600;
+    line-height: 1.5;
+
+    word-break: break-word;
+}
+
+.customer-itinerary-notes {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+
+    padding: 13px;
+
+    border: 1px solid #f0dfb3;
+    border-radius: 12px;
+
+    background: #fffaf0;
+}
+
+.customer-itinerary-notes-icon {
+    width: 28px;
+    height: 28px;
+    flex: 0 0 auto;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #fff1c9;
+    color: var(--my-orange);
+
+    font-size: 12px;
+}
+
+.customer-itinerary-notes strong {
+    display: block;
+    margin-bottom: 5px;
+
+    color: var(--my-text);
+
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.customer-itinerary-notes p {
+    margin: 0;
+
+    color: #52657a;
+
+    font-size: 9px;
+    line-height: 1.6;
+
+    white-space: pre-line;
+}
+
+
+/* ==========================================================
+   DISABLE OLD ITINERARY STYLES FOR NEW STRUCTURED UI
+========================================================== */
+
+.customer-itinerary-builder
+.itinerary-day-card,
+.customer-itinerary-builder
+.itinerary-day-title,
+.customer-itinerary-builder
+.itinerary-schedule-row,
+.customer-itinerary-builder
+.itinerary-day-description {
+    all: unset;
+}
+
+
+/* ==========================================================
+   SMALL MOBILE
+========================================================== */
+
+@media (max-width: 360px) {
+
+    .customer-itinerary-tab {
+        min-height: 32px;
+        padding: 0 10px;
+        font-size: 8px;
+    }
+
+    .customer-itinerary-item {
+        grid-template-columns: 16px minmax(0, 1fr);
+        gap: 8px;
+        padding: 10px;
+    }
+
+}
+
+
+/* ==========================================================
+   MY TRIP — FINAL COMPACT ITINERARY V4
+   Matches Home module blue + white theme
+========================================================== */
+
+:root {
+    --it-blue: #1768c5;
+    --it-blue-dark: #0f4f9b;
+    --it-blue-soft: #edf5ff;
+    --it-blue-border: #cfe0f4;
+    --it-text: #17365f;
+    --it-muted: #6f829b;
+    --it-line: #e6edf5;
+    --it-card: #ffffff;
+}
+
+
+/* MAIN ITINERARY CARD */
+
+#tab-itinerary .info-card {
+    padding: 15px 14px 16px;
+    background: var(--it-card);
+    border: 1px solid #e1e9f2;
+    border-radius: 16px;
+    box-shadow: 0 5px 16px rgba(23, 54, 95, 0.05);
+}
+
+#tab-itinerary .info-card h3 {
+    margin-bottom: 15px;
+    color: var(--it-text);
+}
+
+#tab-itinerary .info-card h3 i {
+    color: var(--it-blue);
+}
+
+#itineraryContent {
+    display: block;
+}
+
+
+/* DAY TABS */
+
+.customer-itinerary-tabs {
+    display: flex;
+    gap: 7px;
+    padding: 0 0 14px;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
+.customer-itinerary-tabs::-webkit-scrollbar {
+    display: none;
+}
+
+.customer-itinerary-tab {
+    flex: 0 0 auto;
+    min-width: 54px;
+    height: 34px;
+    padding: 0 12px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+
+    background: #ffffff;
+    color: #334b6b;
+
+    border: 1px solid #d6e2ef;
+    border-radius: 10px;
+
+    font-size: 9px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        background 0.18s ease,
+        color 0.18s ease,
+        border-color 0.18s ease,
+        box-shadow 0.18s ease;
+}
+
+.customer-itinerary-tab.active {
+    background: var(--it-blue);
+    color: #ffffff;
+    border-color: var(--it-blue);
+    box-shadow: 0 4px 10px rgba(23, 104, 197, 0.18);
+}
+
+
+/* PANEL */
+
+.customer-itinerary-panel {
+    display: none;
+}
+
+.customer-itinerary-panel.active {
+    display: block;
+}
+
+.customer-itinerary-compact {
+    width: 100%;
+}
+
+
+/* DAY HEADING */
+
+.customer-itinerary-day-header {
+    min-height: 34px;
+    padding: 2px 0 9px;
+
+    display: flex;
+    align-items: center;
+    gap: 9px;
+
+    border-bottom: 1px solid var(--it-line);
+}
+
+.customer-itinerary-day-dot {
+    width: 7px;
+    height: 7px;
+    flex: 0 0 7px;
+
+    background: var(--it-blue);
+    border-radius: 50%;
+}
+
+.customer-itinerary-day-header strong {
+    color: var(--it-blue);
+    font-size: 10px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.customer-itinerary-day-divider {
+    width: 1px;
+    height: 15px;
+    background: #cbd7e5;
+}
+
+.customer-itinerary-day-caption {
+    min-width: 0;
+    color: var(--it-muted);
+    font-size: 10px;
+    font-weight: 700;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+/* SCHEDULE ROW */
+
+.customer-itinerary-schedule-row {
+    min-height: 42px;
+    padding: 9px 3px;
+
+    display: grid;
+    grid-template-columns:
+        72px
+        12px
+        minmax(0, 1fr);
+
+    align-items: center;
+    gap: 5px;
+
+    border-bottom: 1px solid var(--it-line);
+}
+
+.customer-itinerary-schedule-time {
+    color: var(--it-blue);
+    font-size: 9px;
+    font-weight: 800;
+    line-height: 1.3;
+    white-space: nowrap;
+}
+
+.customer-itinerary-schedule-separator {
+    color: #506986;
+    font-size: 9px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.customer-itinerary-schedule-activity {
+    min-width: 0;
+
+    color: var(--it-text);
+
+    font-size: 9.5px;
+    font-weight: 600;
+    line-height: 1.45;
+
+    text-align: left;
+}
+
+
+/* ACTIVITY / PLACES SECTION */
+
+.customer-itinerary-activity-block {
+    margin: 10px 0;
+
+    overflow: hidden;
+
+    background: #f5f9fe;
+    border: 1px solid var(--it-blue-border);
+    border-radius: 11px;
+}
+
+.customer-itinerary-activity-head {
+    width: 100%;
+    min-height: 38px;
+    padding: 9px 11px;
+
+    display: flex;
+    align-items: center;
+    gap: 7px;
+
+    background: transparent;
+    border: 0;
+
+    color: var(--it-text);
+
+    text-align: left;
+}
+
+.customer-itinerary-pin {
+    color: var(--it-blue);
+    font-size: 12px;
+}
+
+.customer-itinerary-activity-head strong {
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.customer-itinerary-count {
+    color: var(--it-blue);
+    font-size: 9px;
+    font-weight: 700;
+}
+
+.customer-itinerary-chevron {
+    margin-left: auto;
+
+    color: #3c5270;
+    font-size: 9px;
+}
+
+.customer-itinerary-activity-body {
+    padding: 0 12px 11px 31px;
+}
+
+.customer-itinerary-activity-body ul {
+    margin: 0;
+    padding-left: 14px;
+}
+
+.customer-itinerary-activity-body li {
+    margin-bottom: 5px;
+
+    color: #334b6b;
+
+    font-size: 9px;
+    font-weight: 500;
+    line-height: 1.45;
+
+    text-align: left;
+}
+
+.customer-itinerary-activity-body li:last-child {
+    margin-bottom: 0;
+}
+
+.customer-itinerary-activity-block.collapsed
+.customer-itinerary-activity-body {
+    display: none;
+}
+
+
+/* NOTES */
+
+.customer-itinerary-notes-v4 {
+    padding: 12px 13px;
+
+    background: #f8fbff;
+    border: 1px solid var(--it-blue-border);
+    border-radius: 11px;
+}
+
+.customer-itinerary-notes-title-v4 {
+    margin-bottom: 7px;
+
+    color: var(--it-blue-dark);
+
+    font-size: 10px;
+    font-weight: 800;
+}
+
+.customer-itinerary-notes-title-v4 i {
+    margin-right: 5px;
+    color: var(--it-blue);
+}
+
+.customer-itinerary-notes-text-v4 {
+    color: #526984;
+
+    font-size: 9px;
+    line-height: 1.6;
+
+    white-space: pre-line;
+    text-align: left;
+}
+
+
+/* SMALL MOBILE */
+
+@media (max-width: 360px) {
+
+    .customer-itinerary-tab {
+        min-width: 50px;
+        height: 32px;
+        padding: 0 10px;
+
+        font-size: 8px;
+    }
+
+    .customer-itinerary-schedule-row {
+        grid-template-columns:
+            64px
+            10px
+            minmax(0, 1fr);
+
+        gap: 4px;
+    }
+
+    .customer-itinerary-schedule-time,
+    .customer-itinerary-schedule-activity {
+        font-size: 8.5px;
+    }
+
+    .customer-itinerary-day-caption {
+        font-size: 9px;
+    }
+
+}
+
+/* ==========================================================
+   MY TRIP — TOP TRIP TABS MOCKUP STYLE
+========================================================== */
+
+.trip-tabs {
+    margin-top: 10px;
+
+    display: flex;
+
+    overflow-x: auto;
+
+    background: #ffffff;
+
+    border: 1px solid #e1e9f2;
+    border-radius: 14px;
+
+    box-shadow: 0 5px 16px rgba(23, 54, 95, 0.05);
+
+    scrollbar-width: none;
+}
+
+.trip-tabs::-webkit-scrollbar {
+    display: none;
+}
+
+
+/* EACH TAB */
+
+.trip-tab {
+    position: relative;
+
+    flex: 1 0 82px;
+
+    min-width: 82px;
+    height: 74px;
+
+    padding: 9px 6px 8px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    gap: 6px;
+
+    background: transparent;
+
+    color: #64748b;
+
+    border: 0;
+    border-right: 1px solid #e7edf5;
+
+    font-size: 9px;
+    font-weight: 500;
+
+    transition:
+        color 0.18s ease,
+        background 0.18s ease;
+}
+
+
+/* LAST TAB */
+
+.trip-tab:last-child {
+    border-right: 0;
+}
+
+
+/* ICON */
+
+.trip-tab i {
+    font-size: 21px;
+
+    color: #60758f;
+
+    transition:
+        color 0.18s ease,
+        transform 0.18s ease;
+}
+
+
+/* HOVER */
+
+.trip-tab:hover {
+    background: #f8fbff;
+    color: #1768c5;
+}
+
+.trip-tab:hover i {
+    color: #1768c5;
+}
+
+
+/* ACTIVE */
+
+.trip-tab.active {
+    background: #ffffff;
+
+    color: #1768c5;
+
+    font-weight: 600;
+}
+
+.trip-tab.active i {
+    color: #1768c5;
+}
+
+
+/* ACTIVE BLUE LINE */
+
+.trip-tab.active::after {
+    content: "";
+
+    position: absolute;
+
+    left: 12px;
+    right: 12px;
+    bottom: 0;
+
+    height: 3px;
+
+    background: #1768c5;
+
+    border-radius: 3px 3px 0 0;
+}
+
+
+/* OPTIONAL ACTIVE ICON LIFT */
+
+.trip-tab.active i {
+    transform: translateY(-1px);
+}
+
+
+/* ==========================================================
+   SMALL MOBILE
+========================================================== */
+
+@media (max-width: 360px) {
+
+    .trip-tab {
+        flex-basis: 78px;
+        min-width: 78px;
+
+        height: 70px;
+
+        font-size: 8px;
+    }
+
+    .trip-tab i {
+        font-size: 19px;
+    }
+
+}
+
+/* ==========================================================
+   MY TRIP — 5 FIXED TABS / NO HORIZONTAL SCROLL
+   Van details are now inside Pickup Details.
+========================================================== */
+
+.trip-tabs {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    overflow: hidden;
+    width: 100%;
+}
+
+.trip-tab {
+    min-width: 0;
+    width: 100%;
+    height: 72px;
+    padding: 8px 3px 7px;
+    flex-shrink: 1;
+}
+
+.trip-tab i {
+    font-size: 19px;
+}
+
+.trip-tab span {
+    width: 100%;
+    font-size: 8px;
+    line-height: 1.15;
+    text-align: center;
+    white-space: normal;
+}
+
+.trip-tab.active::after {
+    left: 7px;
+    right: 7px;
+}

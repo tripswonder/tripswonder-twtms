@@ -1,0 +1,517 @@
+/* =========================================================
+   TRIPS WONDER - SHARED ADMIN NAVIGATION
+   Admin pages only
+   ========================================================= */
+
+:root {
+    --admin-nav-collapsed: 72px;
+    --admin-nav-expanded: 260px;
+}
+
+body.admin-shared-nav-page {
+    --admin-content-left: var(--admin-nav-collapsed);
+}
+
+.admin-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+
+    z-index: 1000;
+
+    width: var(--admin-nav-collapsed);
+    min-width: var(--admin-nav-collapsed);
+    height: 100vh;
+
+    padding: 14px 10px;
+
+    display: flex;
+    flex-direction: column;
+
+    overflow: hidden;
+
+    background: #ffffff;
+    color: #17213b;
+
+    border-right: 1px solid #e3eaf2;
+
+    transition:
+        width .28s ease,
+        box-shadow .28s ease;
+}
+
+.admin-sidebar:hover {
+    width: var(--admin-nav-expanded);
+    min-width: var(--admin-nav-expanded);
+
+    box-shadow:
+        12px 0 35px rgba(15, 23, 42, .08);
+}
+
+.admin-sidebar-brand {
+    min-height: 54px;
+
+    padding: 4px 6px 14px;
+
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    border-bottom: 1px solid #edf1f5;
+}
+
+.admin-sidebar-logo {
+    width: 40px;
+    min-width: 40px;
+    height: 40px;
+    flex: 0 0 40px;
+
+    display: grid;
+    place-items: center;
+
+    overflow: hidden;
+
+    border-radius: 11px;
+}
+
+.admin-sidebar-logo img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: contain;
+}
+
+.admin-sidebar-brand-text {
+    min-width: 170px;
+
+    opacity: 0;
+    transform: translateX(-8px);
+
+    transition:
+        opacity .20s ease,
+        transform .20s ease;
+}
+
+.admin-sidebar:hover
+.admin-sidebar-brand-text {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.admin-sidebar-brand-text strong {
+    display: block;
+
+    color: #17213b;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    white-space: nowrap;
+}
+
+.admin-sidebar-brand-text span {
+    display: block;
+
+    margin-top: 2px;
+
+    color: #7e8fa3;
+
+    font-size: 8px;
+
+    white-space: nowrap;
+}
+
+.admin-sidebar-menu-title {
+    min-width: 180px;
+
+    margin: 18px 8px 8px;
+
+    color: #9aa8b8;
+
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: .8px;
+
+    opacity: 0;
+
+    transition: opacity .20s ease;
+}
+
+.admin-sidebar:hover
+.admin-sidebar-menu-title {
+    opacity: 1;
+}
+
+.admin-sidebar-menu {
+    display: flex;
+    flex-direction: column;
+
+    gap: 5px;
+}
+
+.admin-sidebar-link {
+    position: relative;
+
+    width: 100%;
+    height: 42px;
+    min-height: 42px;
+
+    padding: 0 14px;
+
+    display: flex;
+    align-items: center;
+    gap: 13px;
+
+    overflow: hidden;
+
+    border-radius: 10px;
+
+    color: #657991;
+
+    font-size: 11px;
+    font-weight: 500;
+
+    text-decoration: none;
+
+    transition:
+        background .18s ease,
+        color .18s ease;
+}
+
+.admin-sidebar-link i {
+    width: 24px;
+    min-width: 24px;
+    flex: 0 0 24px;
+
+    text-align: center;
+
+    color: #647991;
+
+    font-size: 15px;
+}
+
+.admin-sidebar-link span {
+    min-width: 170px;
+
+    opacity: 0;
+    transform: translateX(-7px);
+
+    white-space: nowrap;
+
+    transition:
+        opacity .18s ease,
+        transform .18s ease;
+}
+
+.admin-sidebar:hover
+.admin-sidebar-link span {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.admin-sidebar-link:hover {
+    background: #f1f6fc;
+    color: #1767b7;
+}
+
+.admin-sidebar-link:hover i {
+    color: #1767b7;
+}
+
+.admin-sidebar-link.active {
+    background: #eaf4ff;
+    color: #1767b7;
+
+    font-weight: 700;
+}
+
+.admin-sidebar-link.active::before {
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+    top: 8px;
+    bottom: 8px;
+
+    width: 3px;
+
+    border-radius: 0 4px 4px 0;
+
+    background: #1767b7;
+}
+
+.admin-sidebar-link.active i {
+    color: #1767b7;
+}
+
+.admin-sidebar-link.coming-soon::after {
+    content: "";
+
+    width: 5px;
+    height: 5px;
+
+    margin-left: auto;
+
+    border-radius: 50%;
+
+    background: #c5d1df;
+
+    opacity: 0;
+}
+
+.admin-sidebar:hover
+.admin-sidebar-link.coming-soon::after {
+    opacity: 1;
+}
+
+.admin-sidebar-bottom {
+    margin-top: auto;
+
+    padding-top: 12px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+
+    border-top: 1px solid #edf1f5;
+}
+
+.admin-sidebar-profile,
+.admin-sidebar-logout {
+    width: 100%;
+
+    border: 0;
+    border-radius: 10px;
+
+    background: transparent;
+
+    color: #657991;
+
+    text-decoration: none;
+}
+
+.admin-sidebar-profile {
+    min-height: 48px;
+
+    padding: 5px 7px;
+
+    display: flex;
+    align-items: center;
+    gap: 11px;
+
+    overflow: hidden;
+}
+
+.admin-sidebar-profile:hover {
+    background: #f1f6fc;
+}
+
+.admin-sidebar-avatar {
+    width: 38px;
+    min-width: 38px;
+    height: 38px;
+    flex: 0 0 38px;
+
+    display: grid;
+    place-items: center;
+
+    border-radius: 50%;
+
+    background: #eaf4ff;
+    color: #1767b7;
+
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.admin-sidebar-account {
+    min-width: 170px;
+
+    opacity: 0;
+    transform: translateX(-7px);
+
+    transition:
+        opacity .18s ease,
+        transform .18s ease;
+}
+
+.admin-sidebar:hover
+.admin-sidebar-account {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.admin-sidebar-account strong {
+    display: block;
+
+    overflow: hidden;
+
+    color: #263a55;
+
+    font-size: 10px;
+    font-weight: 700;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.admin-sidebar-account span {
+    display: block;
+
+    margin-top: 2px;
+
+    color: #8292a5;
+
+    font-size: 8px;
+}
+
+.admin-sidebar-logout {
+    min-height: 42px;
+
+    padding: 0 14px;
+
+    display: flex;
+    align-items: center;
+    gap: 13px;
+
+    cursor: pointer;
+
+    font: inherit;
+
+    overflow: hidden;
+}
+
+.admin-sidebar-logout i {
+    width: 24px;
+    min-width: 24px;
+
+    text-align: center;
+}
+
+.admin-sidebar-logout span {
+    min-width: 170px;
+
+    opacity: 0;
+
+    text-align: left;
+
+    white-space: nowrap;
+
+    transition: opacity .18s ease;
+}
+
+.admin-sidebar:hover
+.admin-sidebar-logout span {
+    opacity: 1;
+}
+
+.admin-sidebar-logout:hover {
+    background: #fff2f2;
+    color: #c63d3d;
+}
+
+.admin-sidebar-logout:disabled {
+    opacity: .65;
+    cursor: wait;
+}
+
+/* Shared main content position
+   Important: old Admin pages use .admin-wrapper { display:flex; }.
+   The sidebar is fixed, so leaving the wrapper as flex can make
+   .main shrink to its content instead of filling the viewport.
+*/
+body.admin-shared-nav-page .admin-wrapper {
+    display: block !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 100vh;
+}
+
+body.admin-shared-nav-page .main {
+    display: block !important;
+
+    margin-left: var(--admin-nav-collapsed) !important;
+
+    width: calc(
+        100% - var(--admin-nav-collapsed)
+    ) !important;
+
+    max-width: none !important;
+    min-width: 0 !important;
+
+    flex: none !important;
+
+    transition:
+        margin-left .28s ease,
+        width .28s ease;
+}
+
+body.admin-shared-nav-page
+.admin-sidebar:hover + .main {
+    margin-left: var(--admin-nav-expanded) !important;
+
+    width: calc(
+        100% - var(--admin-nav-expanded)
+    ) !important;
+}
+
+/* Allow page content to use the full width supplied by .main.
+   Individual modules can still control their internal padding.
+*/
+body.admin-shared-nav-page .content {
+    width: 100% !important;
+    max-width: none !important;
+    min-width: 0 !important;
+}
+
+/* Small notification used by Coming Soon nav items */
+.admin-nav-toast {
+    position: fixed;
+
+    left: 50%;
+    bottom: 26px;
+
+    z-index: 3000;
+
+    transform:
+        translate(-50%, 20px);
+
+    padding: 10px 14px;
+
+    border: 1px solid #dfe7f1;
+    border-radius: 10px;
+
+    background: #ffffff;
+    color: #40566f;
+
+    box-shadow:
+        0 12px 30px rgba(15,23,42,.12);
+
+    font-size: 11px;
+    font-weight: 600;
+
+    opacity: 0;
+    pointer-events: none;
+
+    transition:
+        opacity .18s ease,
+        transform .18s ease;
+}
+
+.admin-nav-toast.show {
+    opacity: 1;
+
+    transform:
+        translate(-50%, 0);
+}
+
+@media (max-width: 900px) {
+
+    :root {
+        --admin-nav-collapsed: 64px;
+        --admin-nav-expanded: 220px;
+    }
+
+}

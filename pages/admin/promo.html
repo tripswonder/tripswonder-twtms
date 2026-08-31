@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Promo | Trips Wonder Admin</title>
+
+    <link rel="stylesheet" href="../../assets/css/admin/promo.css">
+    <link rel="stylesheet" href="../../assets/css/shared/admin-nav.css">
+    <link rel="stylesheet" href="../../assets/css/shared/loading-screen.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+
+<body class="twtms-page-loading admin-shared-nav-page">
+
+<div class="admin-layout">
+    <aside id="adminSidebar" class="admin-sidebar"></aside>
+
+    <main class="main main-content">
+        <div class="promo-content">
+
+            <section class="promo-header">
+                <div>
+                    <h1>Promo</h1>
+                    <p>Create and manage promo codes for Trips Wonder bookings.</p>
+                </div>
+
+                <button type="button" class="btn-primary" id="addPromoButton">
+                    <i class="fa-solid fa-plus"></i>
+                    New Promo
+                </button>
+            </section>
+
+            <section class="promo-summary">
+                <article class="summary-card">
+                    <div class="summary-icon"><i class="fa-solid fa-tags"></i></div>
+                    <div><span>Total Promos</span><strong id="totalPromos">0</strong><small>All promo records</small></div>
+                </article>
+
+                <article class="summary-card">
+                    <div class="summary-icon active"><i class="fa-solid fa-circle-check"></i></div>
+                    <div><span>Active</span><strong id="activePromos">0</strong><small>Currently available</small></div>
+                </article>
+
+                <article class="summary-card">
+                    <div class="summary-icon scheduled"><i class="fa-regular fa-clock"></i></div>
+                    <div><span>Scheduled</span><strong id="scheduledPromos">0</strong><small>Upcoming promos</small></div>
+                </article>
+
+                <article class="summary-card">
+                    <div class="summary-icon expired"><i class="fa-solid fa-calendar-xmark"></i></div>
+                    <div><span>Expired</span><strong id="expiredPromos">0</strong><small>Past validity</small></div>
+                </article>
+            </section>
+
+            <section class="promo-toolbar">
+                <div class="promo-search-wrap">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="search" id="promoSearch" placeholder="Search promo title, code or package...">
+                </div>
+
+                <select id="promoStatusFilter">
+                    <option value="all">All Status</option>
+                    <option value="active">Active</option>
+                    <option value="draft">Draft</option>
+                    <option value="disabled">Disabled</option>
+                    <option value="scheduled">Scheduled</option>
+                    <option value="expired">Expired</option>
+                </select>
+
+                <select id="promoSort">
+                    <option value="newest">Newest First</option>
+                    <option value="ending-soon">Ending Soon</option>
+                    <option value="code-asc">Code A-Z</option>
+                </select>
+            </section>
+
+            <section class="promo-list-section">
+                <div class="section-heading">
+                    <div>
+                        <h2>All Promos</h2>
+                        <span id="promoResultText">Loading promo records...</span>
+                    </div>
+                </div>
+
+                <div class="promo-table-wrap">
+                    <table class="promo-table">
+                        <thead>
+                            <tr>
+                                <th>Promo</th>
+                                <th>Discount</th>
+                                <th>Applicable To</th>
+                                <th>Validity</th>
+                                <th>Usage</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="promoTableBody"></tbody>
+                    </table>
+
+                    <div class="promo-empty" id="promoEmpty" hidden>
+                        <i class="fa-solid fa-ticket"></i>
+                        <strong>No promos found</strong>
+                        <span>Create your first Trips Wonder promo.</span>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+</div>
+
+<div class="modal-overlay" id="promoModal" aria-hidden="true">
+    <div class="promo-modal">
+        <div class="modal-header">
+            <div>
+                <h2 id="promoModalTitle">Create Promo</h2>
+                <p>Set the promo discount, validity and booking conditions.</p>
+            </div>
+            <button type="button" class="modal-close" id="closePromoModal" aria-label="Close">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <form id="promoForm" class="promo-form">
+            <input type="hidden" id="promoId">
+
+            <div class="form-grid">
+                <div class="form-group span-2">
+                    <label for="promoTitle">Promo Title *</label>
+                    <input type="text" id="promoTitle" required placeholder="e.g. Jomalig Weekend Promo">
+                </div>
+
+                <div class="form-group">
+                    <label for="promoCode">Promo Code *</label>
+                    <input type="text" id="promoCode" required maxlength="30" placeholder="JOMALIG500">
+                </div>
+
+                <div class="form-group">
+                    <label for="promoStatus">Status *</label>
+                    <select id="promoStatus" required>
+                        <option value="draft">Draft</option>
+                        <option value="active">Active</option>
+                        <option value="disabled">Disabled</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="discountType">Discount Type *</label>
+                    <select id="discountType" required>
+                        <option value="fixed">Fixed per Booking (₱)</option>
+                        <option value="per_pax">Per Pax Discount (₱ / pax)</option>
+                        <option value="percentage">Percentage (%)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="discountValue">Discount Value *</label>
+                    <input type="number" id="discountValue" required min="0" step="0.01" placeholder="500">
+                </div>
+
+                <div class="form-group">
+                    <label for="minimumPax">Minimum Pax</label>
+                    <input type="number" id="minimumPax" min="1" step="1" value="1">
+                    <small>1 = no minimum headcount requirement</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="minimumAmount">Minimum Booking Amount</label>
+                    <input type="number" id="minimumAmount" min="0" step="0.01" value="0">
+                </div>
+
+                <div class="form-group">
+                    <label for="maximumDiscount">Maximum Discount</label>
+                    <input type="number" id="maximumDiscount" min="0" step="0.01" placeholder="Optional">
+                </div>
+
+                <div class="form-group">
+                    <label for="validFrom">Valid From *</label>
+                    <input type="datetime-local" id="validFrom" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="validUntil">Valid Until *</label>
+                    <input type="datetime-local" id="validUntil" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="usageLimit">Total Usage Limit</label>
+                    <input type="number" id="usageLimit" min="0" step="1" value="0">
+                    <small>0 = unlimited</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="perCustomerLimit">Per Customer Limit</label>
+                    <input type="number" id="perCustomerLimit" min="1" step="1" value="1">
+                </div>
+
+                <div class="form-group">
+                    <label for="applicableTo">Applicable To *</label>
+                    <select id="applicableTo">
+                        <option value="all">All Packages</option>
+                        <option value="package">Specific Package</option>
+                    </select>
+                </div>
+
+                <div class="form-group" id="packageField" hidden>
+                    <label for="packageId">Package</label>
+                    <select id="packageId">
+                        <option value="">Select package</option>
+                    </select>
+                </div>
+
+                <div class="form-group span-2">
+                    <label for="promoDescription">Description</label>
+                    <textarea id="promoDescription" rows="3" placeholder="Short customer-facing promo description..."></textarea>
+                </div>
+
+                <div class="form-group span-2">
+                    <label for="promoTerms">Terms & Conditions</label>
+                    <textarea id="promoTerms" rows="4" placeholder="Enter promo terms and conditions..."></textarea>
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-secondary" id="cancelPromo">Cancel</button>
+                <button type="submit" class="btn-primary" id="savePromoButton">
+                    <i class="fa-solid fa-floppy-disk"></i>
+                    Save Promo
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script type="module" src="../../assets/js/admin/promo.js"></script>
+<script type="module" src="../../assets/js/shared/admin-nav.js"></script>
+</body>
+</html>

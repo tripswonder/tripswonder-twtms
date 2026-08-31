@@ -389,12 +389,23 @@ function hasModulePermission(
     // -----------------------------------------------------
 
     if (
-        role !== "admin"
-    ) {
+    role === "client"
+) {
 
-        return false;
+    return (
+        !requiredPermission
+    );
 
-    }
+}
+
+
+if (
+    role !== "admin"
+) {
+
+    return false;
+
+}
 
 
     const permissions =

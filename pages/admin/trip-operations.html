@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Trips Wonder Travel Management System - Trip Operations">
+  <title>Trip Operations | Trips Wonder Admin</title>
+  <link rel="icon" href="../../favicon.jpg" type="image/jpeg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+  <link href="../../assets/css/admin/trip-operations.css" rel="stylesheet">
+  <link href="../../assets/css/shared/admin-nav.css" rel="stylesheet">
+  <link href="../../assets/css/shared/loading-screen.css" rel="stylesheet">
+</head>
+<body class="twtms-page-loading admin-shared-nav-page">
+<div class="admin-wrapper">
+  <aside class="admin-sidebar" id="adminSidebar"></aside>
+  <main class="main">
+    <section class="content trip-page" id="tripOperationsContent">
+      <header class="page-head">
+        <div>
+          <span class="eyebrow">MASTER TOUR CALENDAR</span>
+          <h1>Trip Operations</h1>
+          <p>One calendar for all tour schedules. Click a date to open or manage tours.</p>
+        </div>
+        <button class="btn primary" id="customScheduleBtn" type="button"><i class="fa-solid fa-plus"></i> Custom Schedule</button>
+      </header>
+
+      <section class="stats-strip">
+        <div class="stat-item">
+          <span class="stat-icon blue"><i class="fa-regular fa-calendar-check"></i></span>
+          <div class="stat-copy"><span>Open</span><strong id="statOpen">0</strong></div>
+        </div>
+
+        <div class="stat-item">
+          <span class="stat-icon purple"><i class="fa-solid fa-users"></i></span>
+          <div class="stat-copy"><span>Upcoming Guests</span><strong id="statGuests">0</strong></div>
+        </div>
+
+        <div class="stat-item">
+          <span class="stat-icon green"><i class="fa-regular fa-circle-play"></i></span>
+          <div class="stat-copy"><span>Ongoing</span><strong id="statOngoing">0</strong></div>
+        </div>
+
+        <div class="stat-item">
+          <span class="stat-icon amber"><i class="fa-solid fa-arrow-trend-up"></i></span>
+          <div class="stat-copy"><span>This Month</span><strong id="statMonth">0</strong></div>
+        </div>
+      </section>
+
+      <section class="calendar-card">
+        <div class="calendar-head">
+          <div class="calendar-title-group">
+            <h2 id="calendarMonthLabel">Month</h2>
+
+            <div class="calendar-nav-actions">
+              <button class="icon-btn" id="prevMonthBtn" type="button" aria-label="Previous month">
+                <i class="fa-solid fa-chevron-left"></i>
+              </button>
+
+              <button class="btn ghost today-btn" id="todayBtn" type="button">
+                Today
+              </button>
+
+              <button class="icon-btn" id="nextMonthBtn" type="button" aria-label="Next month">
+                <i class="fa-solid fa-chevron-right"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="legend">
+            <span><i class="dot open"></i>Open</span>
+            <span><i class="dot limited"></i>Limited</span>
+            <span><i class="dot full"></i>Full</span>
+            <span><i class="dot closed"></i>Closed</span>
+            <span><i class="dot day0"></i>Day 0</span>
+          </div>
+        </div>
+        <div class="weekdays"><span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span></div>
+        <div class="calendar-grid" id="calendarGrid"></div>
+      </section>
+    </section>
+  </main>
+</div>
+
+<!-- Date modal -->
+<div class="modal" id="dateModal" aria-hidden="true">
+  <div class="modal-backdrop" data-close="date"></div>
+  <div class="modal-panel date-panel" role="dialog" aria-modal="true">
+    <header class="modal-head"><div><span class="eyebrow">SELECTED DATE</span><h2 id="dateModalTitle">Date</h2><p>Available packages and existing schedules for this date.</p></div><button class="modal-x" data-close="date" type="button"><i class="fa-solid fa-xmark"></i></button></header>
+    <div class="modal-tools"><div class="search-box"><i class="fa-solid fa-magnifying-glass"></i><input id="tourSearch" type="search" placeholder="Search other tour / destination for custom schedule..."></div></div>
+    <div class="tour-list" id="dateTourList"></div>
+  </div>
+</div>
+
+<!-- Manage schedule modal -->
+<div class="modal" id="manageModal" aria-hidden="true">
+  <div class="modal-backdrop" data-close="manage"></div>
+  <div class="modal-panel manage-panel" role="dialog" aria-modal="true">
+    <header class="modal-head"><div><span class="eyebrow" id="manageStatus">TOUR SCHEDULE</span><h2 id="manageTitle">Manage Tour</h2><p id="manageDates">—</p></div><button class="modal-x" data-close="manage" type="button"><i class="fa-solid fa-xmark"></i></button></header>
+    <div class="tabs" id="manageTabs"><button class="active" data-tab="overview" type="button">Overview</button><button data-tab="accommodation" type="button">Accommodation</button><button data-tab="guests" type="button">Guests</button><button data-tab="operations" type="button">Operations</button><button data-tab="activity" type="button">Activity</button></div>
+    <form id="manageForm">
+      <section class="tab-pane active" data-pane="overview">
+        <div class="mini-grid"><div><span>Bookings</span><strong id="mBookings">0</strong></div><div><span>Guests</span><strong id="mGuests">0</strong></div><div><span>Day 0</span><strong id="mDay0">—</strong></div><div><span>Expected Pickup</span><strong id="mPickup">—</strong></div></div>
+        <div class="form-grid compact"><label>Booking Availability<select id="mAvailability"><option value="open">Open for Booking</option><option value="limited">Limited Availability</option><option value="full">Fully Booked</option><option value="closed">Closed</option></select></label><label>Operation Status<select id="mOperationStatus"><option value="needs_setup">Needs Setup</option><option value="ready">Ready</option><option value="ongoing">Ongoing</option><option value="completed">Completed</option></select></label></div>
+      </section>
+      <section class="tab-pane" data-pane="accommodation">
+        <div class="section-intro accommodation-section-head">
+          <div>
+            <h3>Accommodation Monitoring</h3>
+            <p>
+              New schedules start from the package default inventory.
+              Adjust this date only when the resort availability changes.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            id="btnGenerateAccommodationGuestList"
+            class="btn btn-secondary btn-generate-guest-list"
+          >
+            <i class="bi bi-people"></i>
+            Generate Guest List
+          </button>
+        </div>
+
+        <div class="accommodation-summary" id="mAccommodationSummary"></div>
+        <div id="mAccommodation" class="accommodation-list"></div>
+      </section>
+      <section class="tab-pane" data-pane="guests"><div class="section-intro"><div><h3>Customers / Manifest</h3><p>Bookings assigned to this exact tour schedule.</p></div></div><div id="mGuestsList" class="simple-list"></div></section>
+      <section class="tab-pane" data-pane="operations"><div class="form-grid"><label>Expected Pick-up Time<input id="mPickupTime" type="time"></label><label>Vehicle<input id="mVehicle" type="text" placeholder="Vehicle / unit"></label><label>Plate Number<input id="mPlate" type="text"></label><label>Driver<input id="mDriver" type="text"></label><label>Driver Contact<input id="mDriverContact" type="text"></label><label>Coordinator<input id="mCoordinator" type="text"></label><label>Coordinator Contact<input id="mCoordinatorContact" type="text"></label><label class="full">Departure Note<input id="mDepartureNote" type="text" placeholder="Pickup time may be adjusted depending on trip operations."></label><label class="full">Customer Update<textarea id="mAnnouncement" rows="3" placeholder="Optional announcement"></textarea></label></div></section>
+      <section class="tab-pane" data-pane="activity"><div id="mActivity" class="activity-list"></div></section>
+      <footer class="modal-foot"><button class="btn ghost" data-close="manage" type="button">Close</button><button class="btn primary" id="saveManageBtn" type="submit"><i class="fa-solid fa-floppy-disk"></i> Save Changes</button></footer>
+    </form>
+
+  <div
+    id="walkInReservationModal"
+    class="walkin-nested-shell"
+    aria-hidden="true"
+  >
+    <div class="walkin-nested-backdrop" data-close-walkin-modal></div>
+
+    <section class="walkin-nested-panel" role="dialog" aria-modal="true">
+      <header class="walkin-modal-header">
+        <div>
+          <span class="guest-list-eyebrow">MANUAL RESERVATION</span>
+          <h2>Add Walk-in / Resort Booking</h2>
+          <p id="walkInAccommodationLabel">—</p>
+        </div>
+
+        <button
+          type="button"
+          class="icon-button"
+          id="btnCloseWalkInModal"
+          aria-label="Close"
+        >
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </header>
+
+      <form id="walkInReservationForm" class="walkin-form">
+        <div class="walkin-grid">
+          <label>
+            Resort Name
+            <input
+              id="walkInResortName"
+              type="text"
+              placeholder="Example: Tala Resort"
+              required
+            >
+          </label>
+
+          <label>
+            Guest / Reference Name
+            <input
+              id="walkInGuestName"
+              type="text"
+              placeholder="Example: Tala Resort Walk-in"
+              required
+            >
+          </label>
+
+          <label>
+            Units / Tent / Room
+            <input
+              id="walkInUnits"
+              type="number"
+              min="1"
+              step="1"
+              value="1"
+              required
+            >
+          </label>
+
+          <label>
+            Pax
+            <input
+              id="walkInPax"
+              type="number"
+              min="0"
+              step="1"
+              value="0"
+            >
+          </label>
+        </div>
+
+        <label class="walkin-note-field">
+          Notes
+          <textarea
+            id="walkInNotes"
+            rows="2"
+            placeholder="Optional note"
+          ></textarea>
+        </label>
+
+        <footer class="walkin-actions">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            id="btnCancelWalkIn"
+          >
+            Cancel
+          </button>
+
+          <button
+            type="submit"
+            class="btn btn-primary"
+            id="btnSaveWalkIn"
+          >
+            <i class="bi bi-plus-lg"></i>
+            Add Reservation
+          </button>
+        </footer>
+      </form>
+    </section>
+  </div>
+
+
+
+  
+  <div
+    id="accommodationAssignmentModal"
+    class="assignment-nested-shell"
+    aria-hidden="true"
+  >
+    <div class="assignment-nested-backdrop" data-close-assignment-modal></div>
+
+    <section class="assignment-nested-panel" role="dialog" aria-modal="true">
+      <header class="walkin-modal-header">
+        <div>
+          <span class="guest-list-eyebrow">ACCOMMODATION ASSIGNMENT</span>
+          <h2 id="assignmentModalTitle">Edit Assignment</h2>
+          <p id="assignmentModalSubtitle">—</p>
+        </div>
+
+        <button
+          type="button"
+          class="icon-button"
+          id="btnCloseAssignmentModal"
+          aria-label="Close"
+        >
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </header>
+
+      <form id="accommodationAssignmentForm" class="walkin-form">
+        <input id="assignmentSource" type="hidden">
+        <input id="assignmentRecordId" type="hidden">
+
+        <div class="walkin-grid">
+          <label>
+            Resort
+            <input
+              id="assignmentResortName"
+              type="text"
+              placeholder="Automatically from accommodation"
+              readonly
+              required
+            >
+          </label>
+
+          <label>
+            Accommodation Type
+            <select id="assignmentAccommodation" required></select>
+          </label>
+
+          <label>
+            Units / Tent / Room
+            <input
+              id="assignmentUnits"
+              type="number"
+              min="1"
+              step="1"
+              value="1"
+              required
+            >
+          </label>
+
+          <label>
+            Pax
+            <input
+              id="assignmentPax"
+              type="number"
+              min="0"
+              step="1"
+              value="0"
+            >
+          </label>
+        </div>
+
+        <label class="walkin-note-field">
+          Notes / Reason
+          <textarea
+            id="assignmentNotes"
+            rows="2"
+            placeholder="Optional note"
+          ></textarea>
+        </label>
+
+        <footer class="walkin-actions">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            id="btnCancelAssignment"
+          >
+            Cancel
+          </button>
+
+          <button
+            type="submit"
+            class="btn btn-primary"
+            id="btnSaveAssignment"
+          >
+            <i class="bi bi-check-lg"></i>
+            Save Assignment
+          </button>
+        </footer>
+      </form>
+    </section>
+  </div>
+
+  <div
+    id="accommodationGuestListModal"
+    class="guest-list-nested-shell"
+    aria-hidden="true"
+  >
+    <div class="guest-list-nested-backdrop" data-close-accommodation-guest-list></div>
+
+    <section class="guest-list-nested-panel" role="dialog" aria-modal="true">
+      <header class="guest-list-modal-header">
+        <div>
+          <span class="guest-list-eyebrow">GENERATED REPORT</span>
+          <h2>Accommodation Guest List</h2>
+          <p id="accommodationGuestListSubtitle">—</p>
+        </div>
+
+        <button
+          type="button"
+          class="icon-button"
+          id="btnCloseAccommodationGuestList"
+          aria-label="Close"
+        >
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </header>
+
+      <div
+        id="accommodationGuestListSummary"
+        class="guest-list-summary"
+      ></div>
+
+      <div
+        id="accommodationGuestListNotice"
+        class="guest-list-notice"
+        hidden
+      ></div>
+
+      <div
+        id="accommodationGuestListContent"
+        class="guest-list-content"
+      ></div>
+    </section>
+  </div>
+
+  </div>
+</div>
+
+<!-- Create schedule modal -->
+<div class="modal" id="createModal" aria-hidden="true">
+  <div class="modal-backdrop" data-close="create"></div>
+  <div class="modal-panel small-panel" role="dialog" aria-modal="true">
+    <header class="modal-head"><div><span class="eyebrow">CUSTOM SCHEDULE</span><h2>Create Tour Schedule</h2><p>Use this for a date outside the package's regular schedule.</p></div><button class="modal-x" data-close="create" type="button"><i class="fa-solid fa-xmark"></i></button></header>
+    <form id="createForm"><div class="form-grid"><label class="full">Tour Package<select id="createPackage" required></select></label><label>Day 1 Start Date<input id="createStart" type="date" required></label><label>End Date<input id="createEnd" type="date" required></label></div><footer class="modal-foot"><button class="btn ghost" data-close="create" type="button">Cancel</button><button class="btn primary" type="submit">Create Schedule</button></footer></form>
+  </div>
+</div>
+
+<script type="module" src="../../assets/js/admin/trip-operations.js"></script>
+<script type="module" src="../../assets/js/shared/admin-nav.js"></script>
+<script type="module" src="../../assets/js/shared/loading-screen.js"></script>
+
+
+
+</body>
+</html>

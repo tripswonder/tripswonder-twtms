@@ -1,0 +1,2620 @@
+/* ==========================================================
+   ROOT / THEME
+========================================================== */
+
+:root {
+    --bg:#f5f7fb;
+    --card:#fff;
+    --text:#172033;
+    --muted:#6d7687;
+    --line:#e7eaf0;
+    --brand:#1877f2;
+    --green:#1f9d63;
+    --amber:#d99717;
+    --red:#dc4c4c;
+    --gray:#8b94a5;
+    --purple:#7c5ce7;
+    --shadow:0 10px 30px rgba(30,42,70,.08)
+}
+
+/* ==========================================================
+   BASE
+========================================================== */
+
+* {
+    box-sizing:border-box
+}
+
+body {
+    font-family:Poppins,sans-serif;
+    background:var(--bg);
+    color:var(--text)
+}
+
+.trip-page {
+    padding:22px;
+    max-width:1500px;
+    margin:0 auto
+}
+
+.page-head,.calendar-head,.modal-head,.modal-foot,.section-intro {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px
+}
+
+.page-head {
+    margin-bottom:14px
+}
+
+.page-head h1 {
+    margin:2px 0 4px;
+    font-size:26px
+}
+
+.page-head p,.modal-head p,.section-intro p {
+    margin:0;
+    color:var(--muted);
+    font-size:12px
+}
+
+.eyebrow {
+    font-size:10px;
+    font-weight:800;
+    letter-spacing:.11em;
+    color:var(--brand)
+}
+
+.btn,.icon-btn,.modal-x {
+    border:0;
+    cursor:pointer;
+    font:inherit
+}
+
+.btn {
+    height:38px;
+    border-radius:10px;
+    padding:0 14px;
+    font-size:12px;
+    font-weight:700;
+    display:inline-flex;
+    align-items:center;
+    gap:7px
+}
+
+.btn.primary {
+    background:var(--brand);
+    color:#fff
+}
+
+.btn.ghost {
+    background:#eef3fb;
+    color:#34425c
+}
+
+.icon-btn,.modal-x {
+    width:36px;
+    height:36px;
+    border-radius:10px;
+    background:#f2f5fa;
+    color:#34425c
+}
+
+/* ==========================================================
+   SUMMARY STRIP
+========================================================== */
+
+.stats-strip {
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:14px;
+    margin-bottom:14px;
+    overflow:hidden
+}
+
+.stats-strip>div {
+    padding:12px 16px;
+    border-right:1px solid var(--line);
+    display:flex;
+    align-items:center;
+    gap:10px
+}
+
+.stats-strip>div:last-child {
+    border-right:0
+}
+
+.stats-strip span {
+    font-size:11px;
+    color:var(--muted)
+}
+
+.stats-strip strong {
+    font-size:18px;
+    margin-left:auto
+}
+
+/* ==========================================================
+   MASTER CALENDAR
+========================================================== */
+
+.calendar-card {
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:16px;
+    box-shadow:var(--shadow);
+    overflow:hidden
+}
+
+.calendar-head {
+    padding:14px 16px;
+    border-bottom:1px solid var(--line)
+}
+
+.month-nav {
+    display:flex;
+    align-items:center;
+    gap:12px
+}
+
+.month-nav h2 {
+    margin:1px 0 0;
+    font-size:18px
+}
+
+.legend {
+    padding:8px 16px;
+    display:flex;
+    gap:14px;
+    flex-wrap:wrap;
+    border-bottom:1px solid var(--line);
+    font-size:10px;
+    color:var(--muted)
+}
+
+.legend span {
+    display:flex;
+    align-items:center;
+    gap:5px
+}
+
+.dot {
+    width:7px;
+    height:7px;
+    border-radius:50%;
+    display:inline-block
+}
+
+.dot.open {
+    background:var(--green)
+}
+
+.dot.limited {
+    background:var(--amber)
+}
+
+.dot.full {
+    background:var(--red)
+}
+
+.dot.closed {
+    background:var(--gray)
+}
+
+.dot.day0 {
+    background:var(--purple)
+}
+
+.weekdays,.calendar-grid {
+    display:grid;
+    grid-template-columns:repeat(7,1fr)
+}
+
+.weekdays {
+    background:#fafbfc;
+    border-bottom:1px solid var(--line)
+}
+
+.weekdays span {
+    padding:8px 10px;
+    font-size:10px;
+    font-weight:700;
+    color:var(--muted);
+    text-align:center
+}
+
+.day {
+    min-height:105px;
+    border-right:1px solid var(--line);
+    border-bottom:1px solid var(--line);
+    padding:7px;
+    position:relative;
+    cursor:pointer;
+    background:#fff;
+    overflow:hidden
+}
+
+.day:nth-child(7n) {
+    border-right:0
+}
+
+.day.outside {
+    background:#fafbfc;
+    color:#aeb5c0
+}
+
+.day.past {
+    background:#fbfbfc
+}
+
+.day.today .date-num {
+    background:var(--brand);
+    color:#fff
+}
+
+.date-num {
+    width:26px;
+    height:26px;
+    border-radius:8px;
+    display:grid;
+    place-items:center;
+    font-size:11px;
+    font-weight:700;
+    margin-bottom:5px
+}
+
+.day0-mark {
+    font-size:8px;
+    color:var(--purple);
+    font-weight:800;
+    margin-bottom:3px
+}
+
+.tour-chip {
+    height:20px;
+    border-radius:5px;
+    margin:2px 0;
+    padding:3px 6px;
+    font-size:8px;
+    font-weight:700;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    border-left:3px solid var(--green);
+    background:#eef9f4;
+    color:#276b4d
+}
+
+.tour-chip.limited {
+    border-color:var(--amber);
+    background:#fff8e8;
+    color:#8a6419
+}
+
+.tour-chip.full {
+    border-color:var(--red);
+    background:#fff0f0;
+    color:#9a3838
+}
+
+.tour-chip.closed,.tour-chip.completed {
+    border-color:var(--gray);
+    background:#f1f3f6;
+    color:#687184
+}
+
+.tour-chip.mid {
+    border-radius:2px
+}
+
+.tour-chip.start {
+    border-radius:6px 2px 2px 6px
+}
+
+.tour-chip.end {
+    border-radius:2px 6px 6px 2px
+}
+
+.more-count {
+    font-size:8px;
+    color:var(--muted);
+    font-weight:700;
+    margin-top:3px
+}
+
+/* ==========================================================
+   MODALS
+========================================================== */
+
+.modal {
+    position:fixed;
+    inset:0;
+    z-index:10000;
+    display:none
+}
+
+.modal.open {
+    display:block
+}
+
+.modal-backdrop {
+    position:absolute;
+    inset:0;
+    background:rgba(18,25,38,.48);
+    backdrop-filter:blur(2px)
+}
+
+.modal-panel {
+    position:relative;
+    margin:4vh auto;
+    background:#fff;
+    border-radius:18px;
+    width:min(900px,calc(100% - 28px));
+    max-height:92vh;
+    overflow:auto;
+    box-shadow:0 24px 70px rgba(0,0,0,.22)
+}
+
+.date-panel {
+    width:min(760px,calc(100% - 28px))
+}
+
+.small-panel {
+    width:min(620px,calc(100% - 28px))
+}
+
+.modal-head {
+    padding:18px 20px;
+    border-bottom:1px solid var(--line);
+    position:sticky;
+    top:0;
+    background:#fff;
+    z-index:4
+}
+
+.modal-head h2 {
+    margin:2px 0;
+    font-size:20px
+}
+
+.modal-tools {
+    padding:12px 20px;
+    border-bottom:1px solid var(--line)
+}
+
+.search-box {
+    height:40px;
+    border:1px solid var(--line);
+    border-radius:10px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:0 12px
+}
+
+.search-box input {
+    border:0;
+    outline:0;
+    width:100%;
+    font:inherit;
+    font-size:12px
+}
+
+.tour-list {
+    padding:10px 20px 20px
+}
+
+.tour-row {
+    display:grid;
+    grid-template-columns:52px 1fr auto;
+    gap:12px;
+    align-items:center;
+    padding:11px;
+    border:1px solid var(--line);
+    border-radius:12px;
+    margin-bottom:8px
+}
+
+.tour-thumb {
+    width:52px;
+    height:52px;
+    border-radius:10px;
+    object-fit:cover;
+    background:#eef1f5
+}
+
+.tour-row h3 {
+    font-size:13px;
+    margin:0 0 3px
+}
+
+.tour-row p {
+    font-size:10px;
+    color:var(--muted);
+    margin:0
+}
+
+.tour-row .status-line {
+    margin-top:4px;
+    font-size:9px;
+    font-weight:700
+}
+
+.empty {
+    padding:28px;
+    text-align:center;
+    color:var(--muted);
+    font-size:12px
+}
+
+/* ==========================================================
+   MANAGE TOUR TABS
+========================================================== */
+
+.tabs {
+    display:flex;
+    gap:4px;
+    padding:10px 20px;
+    border-bottom:1px solid var(--line);
+    overflow:auto
+}
+
+.tabs button {
+    border:0;
+    background:transparent;
+    padding:8px 10px;
+    border-radius:8px;
+    font:inherit;
+    font-size:10px;
+    font-weight:700;
+    color:var(--muted);
+    cursor:pointer;
+    white-space:nowrap
+}
+
+.tabs button.active {
+    background:#edf4ff;
+    color:var(--brand)
+}
+
+.tab-pane {
+    display:none;
+    padding:18px 20px
+}
+
+.tab-pane.active {
+    display:block
+}
+
+.mini-grid {
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:8px;
+    margin-bottom:16px
+}
+
+.mini-grid>div {
+    background:#f7f9fc;
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:10px
+}
+
+.mini-grid span {
+    display:block;
+    font-size:9px;
+    color:var(--muted)
+}
+
+.mini-grid strong {
+    font-size:13px
+}
+
+.form-grid {
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:12px;
+    padding:18px 20px
+}
+
+.tab-pane .form-grid {
+    padding:0
+}
+
+.form-grid label {
+    font-size:10px;
+    font-weight:700;
+    color:#49546a
+}
+
+.form-grid .full {
+    grid-column:1/-1
+}
+
+.form-grid input,.form-grid select,.form-grid textarea {
+    width:100%;
+    margin-top:5px;
+    border:1px solid var(--line);
+    border-radius:9px;
+    padding:9px 10px;
+    font:inherit;
+    font-size:11px;
+    outline:0;
+    background:#fff
+}
+
+.modal-foot {
+    padding:12px 20px;
+    border-top:1px solid var(--line);
+    position:sticky;
+    bottom:0;
+    background:#fff
+}
+
+/* ==========================================================
+   ACCOMMODATION / LISTS
+========================================================== */
+
+.accommodation-list,.simple-list,.activity-list {
+    display:grid;
+    gap:8px
+}
+
+.acc-row {
+    display:grid;
+    grid-template-columns:48px 1fr 105px;
+    gap:10px;
+    align-items:center;
+    border:1px solid var(--line);
+    border-radius:11px;
+    padding:9px
+}
+
+.acc-row img {
+    width:48px;
+    height:48px;
+    border-radius:9px;
+    object-fit:cover;
+    background:#eef1f5
+}
+
+.acc-row h4 {
+    margin:0;
+    font-size:11px
+}
+
+.acc-row p {
+    margin:2px 0 0;
+    font-size:9px;
+    color:var(--muted)
+}
+
+.acc-row input {
+    width:100%;
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:7px;
+    font:inherit;
+    font-size:11px
+}
+
+.list-row {
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:10px;
+    font-size:10px
+}
+
+.list-row strong {
+    display:block;
+    font-size:11px
+}
+
+.activity-item {
+    border-left:2px solid #dbe5f5;
+    padding:5px 0 5px 10px;
+    font-size:10px;
+    color:var(--muted)
+}
+
+.activity-item strong {
+    color:var(--text)
+}
+
+/* ==========================================================
+   RESPONSIVE
+========================================================== */
+
+@media (max-width: 760px) {
+    .trip-page {
+        padding:12px
+    }
+
+    .page-head {
+        align-items:flex-start
+    }
+
+    .page-head p {
+        display:none
+    }
+
+    .stats-strip {
+        grid-template-columns:repeat(2,1fr)
+    }
+
+    .stats-strip>div:nth-child(2) {
+        border-right:0
+    }
+
+    .day {
+        min-height:82px;
+        padding:4px
+    }
+
+    .tour-chip {
+        font-size:0;
+        height:7px;
+        padding:0
+    }
+
+    .date-num {
+        width:23px;
+        height:23px
+    }
+
+    .mini-grid {
+        grid-template-columns:repeat(2,1fr)
+    }
+
+    .form-grid {
+        grid-template-columns:1fr
+    }
+
+    .form-grid .full {
+        grid-column:auto
+    }
+
+    .tour-row {
+        grid-template-columns:44px 1fr
+    }
+
+    .tour-row .row-action {
+        grid-column:1/-1
+    }
+
+    .tour-thumb {
+        width:44px;
+        height:44px
+    }
+
+    .legend {
+        gap:8px
+    }
+
+}
+
+
+/* ==========================================================
+   DATE MODAL - COMPACT TOUR LIST
+========================================================== */
+
+.tour-status-open {
+    color: var(--green);
+}
+
+.tour-row-info {
+    min-width: 0;
+}
+
+.empty small {
+    display: inline-block;
+    margin-top: 6px;
+    color: var(--muted);
+    font-size: 9px;
+}
+
+
+/* ==========================================================
+   TRIP OPERATIONS UI V2
+   Compact operations-planner layout
+========================================================== */
+
+.trip-page {
+    padding: 24px 28px 30px;
+    max-width: 1600px;
+}
+
+.page-head {
+    margin-bottom: 18px;
+}
+
+.page-head h1 {
+    margin: 0 0 4px;
+    font-size: 27px;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+}
+
+.page-head .eyebrow {
+    display: none;
+}
+
+.page-head p {
+    font-size: 12px;
+}
+
+#customScheduleBtn {
+    min-width: 148px;
+    justify-content: center;
+    box-shadow: 0 7px 18px rgba(24, 119, 242, 0.18);
+}
+
+/* Summary cards */
+
+.stats-strip {
+    grid-template-columns: repeat(4, 1fr);
+    border-radius: 15px;
+    margin-bottom: 18px;
+    box-shadow: 0 5px 18px rgba(30, 42, 70, 0.04);
+}
+
+.stats-strip > .stat-item {
+    min-height: 78px;
+    padding: 13px 22px;
+    display: flex;
+    align-items: center;
+    gap: 13px;
+}
+
+.stat-icon {
+    flex: 0 0 auto;
+    width: 43px;
+    height: 43px;
+    display: grid;
+    place-items: center;
+    border-radius: 12px;
+    font-size: 17px;
+}
+
+.stat-icon.blue {
+    color: #1877f2;
+    background: #edf4ff;
+}
+
+.stat-icon.purple {
+    color: #7655e8;
+    background: #f1edff;
+}
+
+.stat-icon.green {
+    color: #16985d;
+    background: #eaf8f1;
+}
+
+.stat-icon.amber {
+    color: #d99514;
+    background: #fff5df;
+}
+
+.stat-copy {
+    min-width: 0;
+}
+
+.stats-strip .stat-copy span {
+    display: block;
+    margin-bottom: 1px;
+    font-size: 10px;
+}
+
+.stats-strip .stat-copy strong {
+    display: block;
+    margin: 0;
+    font-size: 21px;
+    line-height: 1.1;
+}
+
+/* Calendar shell */
+
+.calendar-card {
+    border-radius: 16px;
+    box-shadow: 0 8px 26px rgba(30, 42, 70, 0.06);
+}
+
+.calendar-head {
+    min-height: 70px;
+    padding: 13px 18px;
+}
+
+.calendar-title-group {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.calendar-title-group h2 {
+    min-width: 155px;
+    margin: 0;
+    font-size: 20px;
+    letter-spacing: -0.02em;
+}
+
+.calendar-nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.calendar-nav-actions .icon-btn {
+    width: 36px;
+    height: 36px;
+    border: 1px solid var(--line);
+    background: #ffffff;
+}
+
+.calendar-nav-actions .today-btn {
+    height: 36px;
+    padding: 0 14px;
+    border: 1px solid var(--line);
+    background: #ffffff;
+}
+
+.calendar-head .legend {
+    padding: 0;
+    border: 0;
+    gap: 15px;
+    font-size: 9px;
+}
+
+.weekdays {
+    min-height: 38px;
+}
+
+.weekdays span {
+    padding: 11px 10px;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+/* Calendar days */
+
+.day {
+    min-height: 104px;
+    padding: 8px 7px 7px;
+    transition:
+        background 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+.day:hover {
+    background: #f9fbff;
+    box-shadow: inset 0 0 0 1px #dce8fb;
+}
+
+.day.outside {
+    background: #fbfcfe;
+}
+
+.day.past {
+    background: #fcfcfd;
+}
+
+.date-num {
+    width: 25px;
+    height: 25px;
+    margin-bottom: 7px;
+    border-radius: 8px;
+    font-size: 10px;
+}
+
+.day.today .date-num {
+    box-shadow: 0 4px 10px rgba(24, 119, 242, 0.22);
+}
+
+/* Day 0 */
+
+.day0-mark {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    min-height: 19px;
+    margin: 0 0 4px;
+    padding: 3px 6px;
+    border-radius: 6px;
+    background: #f2edff;
+    color: #6847d7;
+    font-size: 7px;
+    font-weight: 700;
+}
+
+.day0-mark span {
+    display: inline-grid;
+    place-items: center;
+    min-width: 18px;
+    height: 14px;
+    padding: 0 4px;
+    border-radius: 5px;
+    background: #7655e8;
+    color: #ffffff;
+    font-size: 7px;
+    font-weight: 800;
+}
+
+/* Continuous schedule bars */
+
+.tour-chip {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    width: calc(100% + 15px);
+    height: 29px;
+    margin: 3px -8px 3px 0;
+    padding: 5px 8px;
+    overflow: visible;
+    border-left-width: 3px;
+    border-radius: 0;
+    font-size: 8px;
+    cursor: pointer;
+}
+
+.tour-chip.start {
+    width: calc(100% + 15px);
+    margin-left: 0;
+    border-radius: 7px 0 0 7px;
+}
+
+.tour-chip.mid {
+    width: calc(100% + 15px);
+    margin-left: -8px;
+    padding-left: 11px;
+    border-left: 0;
+    border-radius: 0;
+}
+
+.tour-chip.end {
+    width: calc(100% + 8px);
+    margin-left: -8px;
+    padding-left: 11px;
+    border-left: 0;
+    border-radius: 0 7px 7px 0;
+}
+
+.tour-chip.open {
+    background: #e9f7ef;
+    color: #16794c;
+    border-color: #1ca265;
+}
+
+.tour-chip.limited {
+    background: #fff5dc;
+    color: #8c6512;
+    border-color: #dda21e;
+}
+
+.tour-chip.full {
+    background: #ffeded;
+    color: #9b3737;
+    border-color: #df4b4b;
+}
+
+.tour-chip.closed,
+.tour-chip.completed {
+    background: #eff1f5;
+    color: #687184;
+    border-color: #8d96a7;
+}
+
+.tour-day-badge {
+    flex: 0 0 auto;
+    padding: 2px 5px;
+    border-radius: 5px;
+    background: currentColor;
+    color: #ffffff;
+    font-size: 6px;
+    font-weight: 800;
+    line-height: 1.35;
+}
+
+.tour-chip.open .tour-day-badge {
+    background: #19985c;
+}
+
+.tour-chip.limited .tour-day-badge {
+    background: #d79a16;
+}
+
+.tour-chip.full .tour-day-badge {
+    background: #d94646;
+}
+
+.tour-chip.closed .tour-day-badge,
+.tour-chip.completed .tour-day-badge {
+    background: #7f899a;
+}
+
+.tour-chip-name {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 8px;
+    font-weight: 700;
+}
+
+.more-count {
+    margin-top: 4px;
+    padding-left: 3px;
+    font-size: 7px;
+}
+
+/* Slightly cleaner modal cards to match the new calendar */
+
+.date-panel {
+    border: 1px solid rgba(225, 230, 239, 0.9);
+}
+
+.tour-row {
+    padding: 10px;
+    border-radius: 11px;
+    transition:
+        border-color 0.15s ease,
+        box-shadow 0.15s ease,
+        transform 0.15s ease;
+}
+
+.tour-row:hover {
+    border-color: #d6e4fa;
+    box-shadow: 0 6px 16px rgba(30, 42, 70, 0.06);
+    transform: translateY(-1px);
+}
+
+/* ==========================================================
+   RESPONSIVE - UI V2
+========================================================== */
+
+@media (max-width: 1000px) {
+    .calendar-head {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .calendar-head .legend {
+        width: 100%;
+    }
+
+    .day {
+        min-height: 94px;
+    }
+}
+
+@media (max-width: 760px) {
+    .trip-page {
+        padding: 14px 12px 20px;
+    }
+
+    .page-head {
+        gap: 10px;
+    }
+
+    #customScheduleBtn {
+        min-width: auto;
+    }
+
+    .stats-strip > .stat-item {
+        min-height: 64px;
+        padding: 10px 12px;
+    }
+
+    .stat-icon {
+        width: 35px;
+        height: 35px;
+        border-radius: 10px;
+        font-size: 14px;
+    }
+
+    .stats-strip .stat-copy strong {
+        font-size: 17px;
+    }
+
+    .calendar-title-group {
+        width: 100%;
+        justify-content: space-between;
+        gap: 10px;
+    }
+
+    .calendar-title-group h2 {
+        min-width: 0;
+        font-size: 17px;
+    }
+
+    .day {
+        min-height: 78px;
+        padding: 5px 4px;
+    }
+
+    .tour-chip {
+        width: calc(100% + 9px);
+        height: 20px;
+        margin-right: -5px;
+        padding: 3px 4px;
+    }
+
+    .tour-chip.start {
+        width: calc(100% + 9px);
+    }
+
+    .tour-chip.mid,
+    .tour-chip.end {
+        margin-left: -5px;
+        padding-left: 6px;
+    }
+
+    .tour-day-badge {
+        padding: 1px 3px;
+        font-size: 5px;
+    }
+
+    .tour-chip-name {
+        display: none;
+    }
+
+    .day0-mark {
+        padding: 2px 3px;
+        font-size: 0;
+    }
+
+    .day0-mark span {
+        min-width: 17px;
+        font-size: 6px;
+    }
+}
+
+
+/* ==========================================================
+   MASTER CALENDAR V3
+   Fixed-height status overview
+   No destination names inside calendar cells
+========================================================== */
+
+.calendar-grid {
+    grid-auto-rows: 104px;
+}
+
+.day {
+    min-height: 104px;
+    height: 104px;
+    padding: 8px 9px;
+    overflow: hidden;
+    cursor: pointer;
+    background: #ffffff;
+}
+
+.day:hover {
+    background: #f8fbff;
+}
+
+.day.outside {
+    background: #fbfcfe;
+}
+
+.day.past {
+    opacity: 0.72;
+}
+
+.day.has-open {
+    background: linear-gradient(
+        180deg,
+        rgba(31, 157, 99, 0.055) 0%,
+        rgba(31, 157, 99, 0.018) 100%
+    );
+}
+
+.day.has-limited {
+    background: linear-gradient(
+        180deg,
+        rgba(217, 151, 23, 0.065) 0%,
+        rgba(217, 151, 23, 0.02) 100%
+    );
+}
+
+.day.has-full {
+    background: linear-gradient(
+        180deg,
+        rgba(220, 76, 76, 0.055) 0%,
+        rgba(220, 76, 76, 0.018) 100%
+    );
+}
+
+.day.has-closed {
+    background: #f8f9fb;
+}
+
+.date-topline {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    min-height: 26px;
+}
+
+.date-num {
+    margin: 0;
+}
+
+.date-day0-summary {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 6px;
+    border-radius: 999px;
+    background: #f0ebff;
+    color: #6847d7;
+    font-size: 7px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.date-day0-summary span {
+    display: inline-grid;
+    place-items: center;
+    min-width: 19px;
+    height: 15px;
+    padding: 0 4px;
+    border-radius: 999px;
+    background: #7655e8;
+    color: #ffffff;
+    font-size: 6px;
+}
+
+.date-status-summary {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    margin-top: 8px;
+}
+
+.date-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    max-width: 100%;
+    padding: 2px 7px;
+    border-radius: 999px;
+    font-size: 7px;
+    font-weight: 700;
+    line-height: 1.45;
+    white-space: nowrap;
+}
+
+.date-status i {
+    flex: 0 0 auto;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+}
+
+.date-status.open {
+    background: #eaf8f1;
+    color: #18794e;
+}
+
+.date-status.open i {
+    background: var(--green);
+}
+
+.date-status.limited {
+    background: #fff5df;
+    color: #8a6419;
+}
+
+.date-status.limited i {
+    background: var(--amber);
+}
+
+.date-status.full {
+    background: #ffeded;
+    color: #973a3a;
+}
+
+.date-status.full i {
+    background: var(--red);
+}
+
+.date-status.closed {
+    background: #eff1f5;
+    color: #687184;
+}
+
+.date-status.closed i {
+    background: var(--gray);
+}
+
+/* The V3 calendar does not render destination bars. */
+.day .tour-chip,
+.day .more-count,
+.day .day0-mark {
+    display: none !important;
+}
+
+@media (max-width: 1000px) {
+    .calendar-grid {
+        grid-auto-rows: 96px;
+    }
+
+    .day {
+        min-height: 96px;
+        height: 96px;
+    }
+}
+
+@media (max-width: 760px) {
+    .calendar-grid {
+        grid-auto-rows: 78px;
+    }
+
+    .day {
+        min-height: 78px;
+        height: 78px;
+        padding: 5px;
+    }
+
+    .date-status-summary {
+        gap: 2px;
+        margin-top: 4px;
+    }
+
+    .date-status {
+        padding: 1px 4px;
+        font-size: 6px;
+    }
+
+    .date-day0-summary {
+        padding: 1px 3px;
+        font-size: 6px;
+    }
+}
+
+
+/* ==========================================================
+   ACCOMMODATION MONITORING V2
+========================================================== */
+
+.accommodation-summary {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 7px;
+    margin: 14px 0;
+}
+
+.accommodation-summary > div {
+    padding: 9px 10px;
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    background: #f8f9fc;
+}
+
+.accommodation-summary span {
+    display: block;
+    margin-bottom: 2px;
+    color: var(--muted);
+    font-size: 8px;
+    font-weight: 600;
+}
+
+.accommodation-summary strong {
+    font-size: 14px;
+}
+
+.accommodation-summary .available {
+    border-color: #ccebdc;
+    background: #edf9f3;
+}
+
+.accommodation-summary .available strong {
+    color: var(--green);
+}
+
+.accommodation-list {
+    display: grid;
+    gap: 10px;
+}
+
+.acc-monitor-card {
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: #ffffff;
+}
+
+.acc-monitor-main {
+    display: grid;
+    grid-template-columns: 70px 1fr;
+    gap: 12px;
+    padding: 11px;
+}
+
+.acc-monitor-photo {
+    width: 70px;
+    height: 70px;
+    border-radius: 10px;
+    object-fit: cover;
+    background: #eef1f5;
+}
+
+.acc-monitor-info {
+    min-width: 0;
+}
+
+.acc-monitor-title {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.acc-monitor-title h4 {
+    margin: 2px 0 2px;
+    font-size: 12px;
+}
+
+.acc-monitor-title p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 9px;
+}
+
+.acc-remaining-badge {
+    flex: 0 0 auto;
+    padding: 4px 8px;
+    border-radius: 999px;
+    font-size: 8px;
+    font-weight: 700;
+}
+
+.acc-remaining-badge.available {
+    background: #eaf8f1;
+    color: #17784c;
+}
+
+.acc-remaining-badge.full {
+    background: #ffeded;
+    color: #a33d3d;
+}
+
+.acc-monitor-stats {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(55px, 1fr));
+    gap: 6px;
+    margin-top: 12px;
+}
+
+.acc-monitor-stats > div {
+    padding: 6px 7px;
+    border-radius: 7px;
+    background: #f7f9fc;
+}
+
+.acc-monitor-stats span {
+    display: block;
+    color: var(--muted);
+    font-size: 7px;
+}
+
+.acc-monitor-stats strong {
+    font-size: 10px;
+}
+
+.acc-monitor-controls {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr) 110px;
+    gap: 8px;
+    align-items: end;
+    padding: 10px 11px;
+    border-top: 1px solid var(--line);
+    background: #fafbfc;
+}
+
+.acc-monitor-controls label {
+    color: #566176;
+    font-size: 8px;
+    font-weight: 700;
+}
+
+.acc-monitor-controls input {
+    width: 100%;
+    margin-top: 4px;
+    padding: 7px 8px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #ffffff;
+    font: inherit;
+    font-size: 10px;
+    outline: none;
+}
+
+.acc-monitor-controls input:focus {
+    border-color: #a8c8f5;
+    box-shadow: 0 0 0 2px rgba(24, 119, 242, 0.08);
+}
+
+.acc-computed {
+    padding: 7px 9px;
+    border: 1px solid #ccebdc;
+    border-radius: 8px;
+    background: #edf9f3;
+}
+
+.acc-computed span {
+    display: block;
+    color: #5d7468;
+    font-size: 7px;
+}
+
+.acc-computed strong {
+    color: var(--green);
+    font-size: 13px;
+}
+
+@media (max-width: 760px) {
+    .accommodation-summary {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .acc-monitor-main {
+        grid-template-columns: 54px 1fr;
+    }
+
+    .acc-monitor-photo {
+        width: 54px;
+        height: 54px;
+    }
+
+    .acc-monitor-stats {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .acc-monitor-controls {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+
+/* ==========================================================
+   ACCOMMODATION PHOTO + BOOKING LIST
+   Keeps the existing room statistics design unchanged.
+========================================================== */
+
+.acc-monitor-main {
+    grid-template-columns: 94px 1fr;
+    align-items: start;
+}
+
+.acc-photo-wrap {
+    position: relative;
+    width: 94px;
+    height: 84px;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: #f4f6f9;
+}
+
+.acc-monitor-photo {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+    object-fit: cover;
+    background: #eef1f5;
+}
+
+.acc-photo-fallback {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    align-content: center;
+    gap: 4px;
+    color: #95a0b2;
+    font-size: 8px;
+    text-align: center;
+}
+
+.acc-photo-fallback i {
+    font-size: 20px;
+    line-height: 1;
+    color: #a9b4c4;
+}
+
+.acc-photo-wrap.photo-error .acc-photo-fallback {
+    z-index: 3;
+}
+
+.acc-booking-list {
+    border-top: 1px solid var(--line);
+    background: #ffffff;
+}
+
+.acc-booking-list summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 9px 11px;
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+}
+
+.acc-booking-list summary::-webkit-details-marker {
+    display: none;
+}
+
+.acc-booking-list summary::after {
+    content: "\F282";
+    flex: 0 0 auto;
+    font-family: "bootstrap-icons";
+    color: #778195;
+    font-size: 9px;
+    transition: transform 0.2s ease;
+}
+
+.acc-booking-list[open] summary::after {
+    transform: rotate(180deg);
+}
+
+.acc-booking-list-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #344054;
+    font-size: 9px;
+    font-weight: 700;
+}
+
+.acc-booking-list-title i {
+    color: var(--blue);
+    font-size: 11px;
+}
+
+.acc-booking-count {
+    margin-left: auto;
+    padding: 3px 7px;
+    border-radius: 999px;
+    background: #f1f5fb;
+    color: #566176;
+    font-size: 8px;
+    font-weight: 700;
+}
+
+.acc-booking-rows {
+    max-height: 250px;
+    overflow: auto;
+    padding: 0 11px 10px;
+}
+
+.acc-booking-row {
+    display: grid;
+    grid-template-columns: 28px minmax(0, 1fr) auto;
+    gap: 8px;
+    align-items: center;
+    padding: 7px 0;
+    border-top: 1px solid #edf0f4;
+}
+
+.acc-booking-avatar {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #eaf2ff;
+    color: #1769d2;
+    font-size: 9px;
+    font-weight: 800;
+}
+
+.acc-booking-person {
+    min-width: 0;
+}
+
+.acc-booking-person strong,
+.acc-booking-person span,
+.acc-booking-meta strong,
+.acc-booking-meta span {
+    display: block;
+}
+
+.acc-booking-person strong {
+    overflow: hidden;
+    color: #1d2939;
+    font-size: 9px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.acc-booking-person span {
+    margin-top: 1px;
+    color: #8a94a6;
+    font-size: 7px;
+}
+
+.acc-booking-meta {
+    text-align: right;
+}
+
+.acc-booking-meta strong {
+    color: #344054;
+    font-size: 8px;
+}
+
+.acc-booking-meta span {
+    margin-top: 1px;
+    color: #7f899a;
+    font-size: 7px;
+    text-transform: capitalize;
+}
+
+.acc-booking-empty {
+    margin: 0 11px 10px;
+    padding: 9px 10px;
+    border-radius: 8px;
+    background: #f8f9fb;
+    color: #7e8899;
+    font-size: 8px;
+    text-align: center;
+}
+
+@media (max-width: 760px) {
+    .acc-monitor-main {
+        grid-template-columns: 72px 1fr;
+    }
+
+    .acc-photo-wrap {
+        width: 72px;
+        height: 68px;
+    }
+}
+
+
+/* ==========================================================
+   GENERATED ACCOMMODATION GUEST LIST
+========================================================== */
+
+.accommodation-section-head {
+    align-items: center;
+}
+
+.btn-generate-guest-list {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+}
+
+.guest-list-modal-shell {
+    position: fixed;
+    inset: 0;
+    z-index: 1200;
+    display: none;
+    place-items: center;
+    padding: 24px;
+}
+
+.guest-list-modal-shell.show {
+    display: grid;
+}
+
+.guest-list-modal-shell .modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(16, 24, 40, 0.48);
+    backdrop-filter: blur(2px);
+}
+
+.guest-list-modal {
+    position: relative;
+    z-index: 1;
+    width: min(760px, 100%);
+    max-height: min(78vh, 760px);
+    overflow: hidden;
+    border-radius: 16px;
+    background: #ffffff;
+    box-shadow: 0 20px 60px rgba(16, 24, 40, 0.24);
+}
+
+.guest-list-modal-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 18px 20px;
+    border-bottom: 1px solid var(--line);
+}
+
+.guest-list-eyebrow {
+    display: block;
+    margin-bottom: 4px;
+    color: var(--blue);
+    font-size: 8px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+}
+
+.guest-list-modal-header h2 {
+    margin: 0;
+    font-size: 18px;
+}
+
+.guest-list-modal-header p {
+    margin: 4px 0 0;
+    color: var(--muted);
+    font-size: 9px;
+}
+
+.guest-list-summary {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--line);
+    background: #fafbfc;
+}
+
+.guest-list-summary > div {
+    padding: 9px 10px;
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    background: #ffffff;
+}
+
+.guest-list-summary span {
+    display: block;
+    color: var(--muted);
+    font-size: 8px;
+}
+
+.guest-list-summary strong {
+    display: block;
+    margin-top: 2px;
+    font-size: 14px;
+}
+
+.guest-list-content {
+    max-height: calc(78vh - 170px);
+    overflow: auto;
+    padding: 16px 20px 20px;
+}
+
+.generated-guest-group + .generated-guest-group {
+    margin-top: 14px;
+}
+
+.generated-guest-group {
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+}
+
+.generated-guest-group.unassigned {
+    border-color: #f0c9c9;
+}
+
+.generated-guest-group-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 12px;
+    background: #f8fafc;
+}
+
+.generated-guest-group.unassigned
+.generated-guest-group-head {
+    background: #fff6f6;
+}
+
+.generated-guest-group-head h3 {
+    margin: 0;
+    font-size: 11px;
+}
+
+.generated-guest-group-head p {
+    margin: 2px 0 0;
+    color: var(--muted);
+    font-size: 8px;
+}
+
+.generated-guest-group-head > span {
+    padding: 3px 7px;
+    border-radius: 999px;
+    background: #eaf8f1;
+    color: #18794e;
+    font-size: 8px;
+    font-weight: 700;
+}
+
+.generated-guest-table {
+    padding: 0 12px;
+}
+
+.generated-guest-row {
+    display: grid;
+    grid-template-columns: 28px minmax(0, 1fr) auto;
+    gap: 9px;
+    align-items: center;
+    padding: 9px 0;
+    border-top: 1px solid #edf0f4;
+}
+
+.generated-guest-row:first-child {
+    border-top: 0;
+}
+
+.generated-guest-number {
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: #eef4ff;
+    color: #1b67c9;
+    font-size: 8px;
+    font-weight: 800;
+}
+
+.generated-guest-person {
+    min-width: 0;
+}
+
+.generated-guest-person strong,
+.generated-guest-person span,
+.generated-guest-pax strong,
+.generated-guest-pax span {
+    display: block;
+}
+
+.generated-guest-person strong {
+    overflow: hidden;
+    color: #1d2939;
+    font-size: 9px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.generated-guest-person span {
+    margin-top: 1px;
+    color: #8a94a6;
+    font-size: 7px;
+}
+
+.generated-guest-pax {
+    text-align: right;
+}
+
+.generated-guest-pax strong {
+    color: #344054;
+    font-size: 8px;
+}
+
+.generated-guest-pax span {
+    margin-top: 1px;
+    color: #7f899a;
+    font-size: 7px;
+    text-transform: capitalize;
+}
+
+.generated-guest-empty {
+    display: grid;
+    place-items: center;
+    min-height: 210px;
+    padding: 30px;
+    color: #7b8597;
+    text-align: center;
+}
+
+.generated-guest-empty i {
+    margin-bottom: 8px;
+    color: #a8b3c4;
+    font-size: 28px;
+}
+
+.generated-guest-empty strong {
+    color: #344054;
+    font-size: 11px;
+}
+
+.generated-guest-empty span {
+    margin-top: 4px;
+    font-size: 8px;
+}
+
+@media (max-width: 760px) {
+    .accommodation-section-head {
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .btn-generate-guest-list {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .guest-list-modal-shell {
+        padding: 10px;
+    }
+
+    .guest-list-summary {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+
+/* ==========================================================
+   RESORT + WALK-IN INVENTORY
+========================================================== */
+
+.acc-resort-name {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin: 1px 0 3px;
+    color: #667085;
+    font-size: 8px;
+    font-weight: 700;
+}
+
+.acc-resort-name i {
+    color: #7d8ba1;
+    font-size: 9px;
+}
+
+.acc-monitor-controls {
+    grid-template-columns: repeat(3, 1fr) 100px auto;
+}
+
+.acc-add-walkin {
+    min-height: 34px;
+    align-self: end;
+    white-space: nowrap;
+}
+
+.btn-spinner {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    vertical-align: -2px;
+    animation: tw-spin 0.65s linear infinite;
+}
+
+@keyframes tw-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.generated-resort-section + .generated-resort-section {
+    margin-top: 20px;
+}
+
+.generated-resort-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    padding: 0 2px;
+}
+
+.generated-resort-head > div {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.generated-resort-head > div > i {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 9px;
+    background: #eef4ff;
+    color: #1c69ce;
+    font-size: 13px;
+}
+
+.generated-resort-head span {
+    display: block;
+    margin-bottom: 1px;
+    color: #98a2b3;
+    font-size: 7px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+}
+
+.generated-resort-head h3 {
+    margin: 0;
+    color: #263244;
+    font-size: 12px;
+}
+
+.generated-resort-section.unassigned
+.generated-resort-head > div > i {
+    background: #fff0f0;
+    color: #ba4b4b;
+}
+
+.generated-source-block {
+    padding: 0;
+}
+
+.generated-source-block + .generated-source-block {
+    border-top: 1px dashed #dfe4eb;
+}
+
+.generated-source-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 0 4px;
+    color: #475467;
+    font-size: 8px;
+    font-weight: 800;
+}
+
+.generated-source-title i {
+    color: #2471d4;
+}
+
+.generated-source-title span {
+    margin-left: auto;
+    color: #7d8796;
+    font-size: 7px;
+}
+
+.generated-source-block.walkin
+.generated-source-title i {
+    color: #7f56d9;
+}
+
+/* Walk-in modal */
+
+.walkin-modal-shell {
+    position: fixed;
+    inset: 0;
+    z-index: 1300;
+    display: none;
+    place-items: center;
+    padding: 22px;
+}
+
+.walkin-modal-shell.show {
+    display: grid;
+}
+
+.walkin-modal-shell .modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(16, 24, 40, 0.48);
+    backdrop-filter: blur(2px);
+}
+
+.walkin-modal {
+    position: relative;
+    z-index: 1;
+    width: min(560px, 100%);
+    overflow: hidden;
+    border-radius: 15px;
+    background: #ffffff;
+    box-shadow: 0 22px 60px rgba(16, 24, 40, 0.25);
+}
+
+.walkin-modal-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 17px 18px;
+    border-bottom: 1px solid var(--line);
+}
+
+.walkin-modal-header h2 {
+    margin: 0;
+    font-size: 16px;
+}
+
+.walkin-modal-header p {
+    margin: 4px 0 0;
+    color: var(--muted);
+    font-size: 9px;
+}
+
+.walkin-form {
+    padding: 16px 18px 18px;
+}
+
+.walkin-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.walkin-form label {
+    color: #536074;
+    font-size: 8px;
+    font-weight: 700;
+}
+
+.walkin-form input,
+.walkin-form textarea {
+    width: 100%;
+    margin-top: 5px;
+    padding: 9px 10px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #ffffff;
+    color: #1f2937;
+    font: inherit;
+    font-size: 10px;
+    outline: none;
+}
+
+.walkin-form input:focus,
+.walkin-form textarea:focus {
+    border-color: #9fc3f4;
+    box-shadow: 0 0 0 2px rgba(24, 119, 242, 0.08);
+}
+
+.walkin-note-field {
+    display: block;
+    margin-top: 10px;
+}
+
+.walkin-form textarea {
+    resize: vertical;
+}
+
+.walkin-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 15px;
+}
+
+@media (max-width: 760px) {
+    .acc-monitor-controls {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .acc-add-walkin {
+        grid-column: 1 / -1;
+    }
+
+    .walkin-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+/* ==========================================================
+   ACCOMMODATION V4
+   Walk-in only through Add Walk-in button.
+   Nested inside Manage Tour modal.
+========================================================== */
+
+.acc-monitor-controls {
+    grid-template-columns: 1fr 1fr 110px auto;
+}
+
+.walkin-modal-shell {
+    display: none !important;
+}
+
+.manage-panel {
+    position: relative;
+}
+
+.walkin-nested-shell {
+    position: absolute;
+    inset: 0;
+    z-index: 50;
+    display: none;
+    place-items: center;
+    padding: 20px;
+    overflow: hidden;
+    border-radius: inherit;
+}
+
+.walkin-nested-shell.show {
+    display: grid;
+}
+
+.walkin-nested-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.32);
+    backdrop-filter: blur(1px);
+}
+
+.walkin-nested-panel {
+    position: relative;
+    z-index: 1;
+    width: min(520px, calc(100% - 24px));
+    max-height: calc(100% - 36px);
+    overflow: auto;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: #fff;
+    box-shadow: 0 16px 42px rgba(16, 24, 40, 0.22);
+}
+
+.walkin-nested-panel .walkin-modal-header {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: #fff;
+}
+
+@media (max-width: 760px) {
+    .acc-monitor-controls {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .acc-computed {
+        grid-column: 1 / 2;
+    }
+
+    .acc-add-walkin {
+        grid-column: 2 / 3;
+    }
+
+    .walkin-nested-shell {
+        padding: 10px;
+    }
+
+    .walkin-nested-panel {
+        width: 100%;
+        max-height: calc(100% - 20px);
+    }
+}
+
+
+/* ==========================================================
+   GENERATED GUEST LIST V2
+   Nested inside Manage Tour so it is never hidden behind it.
+========================================================== */
+
+.guest-list-modal-shell {
+    display: none !important;
+}
+
+.guest-list-nested-shell {
+    position: absolute;
+    inset: 0;
+    z-index: 55;
+    display: none;
+    place-items: center;
+    padding: 18px;
+    overflow: hidden;
+    border-radius: inherit;
+}
+
+.guest-list-nested-shell.show {
+    display: grid;
+}
+
+.guest-list-nested-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.38);
+    backdrop-filter: blur(1px);
+}
+
+.guest-list-nested-panel {
+    position: relative;
+    z-index: 1;
+    width: min(760px, calc(100% - 24px));
+    max-height: calc(100% - 36px);
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: 15px;
+    background: #ffffff;
+    box-shadow: 0 18px 48px rgba(16, 24, 40, 0.25);
+}
+
+.guest-list-nested-panel .guest-list-modal-header {
+    position: sticky;
+    top: 0;
+    z-index: 3;
+    background: #ffffff;
+}
+
+.guest-list-nested-panel .guest-list-content {
+    max-height: calc(100% - 150px);
+    overflow: auto;
+}
+
+@media (max-width: 760px) {
+    .guest-list-nested-shell {
+        padding: 10px;
+    }
+
+    .guest-list-nested-panel {
+        width: 100%;
+        max-height: calc(100% - 20px);
+    }
+}
+
+
+/* ==========================================================
+   EDIT / RELEASE ACCOMMODATION ASSIGNMENT
+========================================================== */
+
+.guest-row-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 5px;
+    margin-top: 4px;
+}
+
+.guest-row-actions button {
+    padding: 2px 6px;
+    border: 1px solid #dce3ec;
+    border-radius: 6px;
+    background: #ffffff;
+    color: #3e5068;
+    font: inherit;
+    font-size: 7px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.guest-row-actions button:hover {
+    background: #f6f8fb;
+}
+
+.guest-row-actions button.release {
+    border-color: #f1cece;
+    color: #a84747;
+}
+
+.assignment-nested-shell {
+    position: absolute;
+    inset: 0;
+    z-index: 70;
+    display: none;
+    place-items: center;
+    padding: 18px;
+    overflow: hidden;
+    border-radius: inherit;
+}
+
+.assignment-nested-shell.show {
+    display: grid;
+}
+
+.assignment-nested-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.4);
+    backdrop-filter: blur(1px);
+}
+
+.assignment-nested-panel {
+    position: relative;
+    z-index: 1;
+    width: min(540px, calc(100% - 24px));
+    max-height: calc(100% - 36px);
+    overflow: auto;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: #ffffff;
+    box-shadow: 0 18px 48px rgba(16, 24, 40, 0.25);
+}
+
+.assignment-nested-panel select {
+    width: 100%;
+    margin-top: 5px;
+    padding: 9px 10px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #ffffff;
+    color: #1f2937;
+    font: inherit;
+    font-size: 10px;
+    outline: none;
+}
+
+.assignment-nested-panel select:focus {
+    border-color: #9fc3f4;
+    box-shadow: 0 0 0 2px rgba(24, 119, 242, 0.08);
+}
+
+@media (max-width: 760px) {
+    .assignment-nested-shell {
+        padding: 10px;
+    }
+
+    .assignment-nested-panel {
+        width: 100%;
+        max-height: calc(100% - 20px);
+    }
+}
+
+
+/* ==========================================================
+   RELEASE SLOT FEEDBACK
+========================================================== */
+
+.guest-list-notice {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin: 10px 20px 0;
+    padding: 8px 10px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    font-size: 8px;
+    font-weight: 700;
+}
+
+.guest-list-notice[hidden] {
+    display: none !important;
+}
+
+.guest-list-notice.success {
+    border-color: #bfe7d2;
+    background: #ecf9f2;
+    color: #157347;
+}
+
+.guest-list-notice.error {
+    border-color: #f1caca;
+    background: #fff1f1;
+    color: #a33f3f;
+}
+
+.guest-list-notice i {
+    flex: 0 0 auto;
+    font-size: 11px;
+}
+
+.guest-row-actions button:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.btn-spinner-small {
+    width: 9px;
+    height: 9px;
+    border-width: 1.5px;
+}
+
+
+
+
+/* ==========================================================
+   AUTO RESORT ASSIGNMENT
+   Resort follows the selected accommodation from Packages.
+========================================================== */
+
+#assignmentResortName[readonly] {
+    background: #f5f7fb;
+    color: #53657a;
+    cursor: default;
+}
+
+#assignmentResortName[readonly]:focus {
+    border-color: var(--line);
+    box-shadow: none;
+}

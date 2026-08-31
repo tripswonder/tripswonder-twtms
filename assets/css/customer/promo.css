@@ -1,866 +1,428 @@
 /* ==========================================================
-   PROMO MODULE
-   Trips Wonder Customer
+   CUSTOMER PROMO
+   Trips Wonder Customer Module
 ========================================================== */
 
-
-/* ==========================================================
-   PAGE
-========================================================== */
-
-.promo-page{
-
-    width:100%;
-
-    min-height:calc(100vh - 80px);
-
-    padding:18px 14px 90px;
-
-    background:var(--bg-body);
-
-    color:var(--text-dark);
-
-    overflow-y:auto;
-
+:root {
+    --promo-blue: #1264e8;
+    --promo-blue-dark: #0d47b5;
+    --promo-blue-soft: #edf5ff;
+    --promo-text: #10234f;
+    --promo-muted: #64748b;
+    --promo-border: #e5eaf2;
+    --promo-bg: #f4f7fb;
+    --promo-white: #ffffff;
+    --promo-green: #159447;
+    --promo-green-soft: #e8f7ee;
+    --promo-orange: #e99800;
 }
 
-
-/* ==========================================================
-   HEADER
-========================================================== */
-
-.promo-header{
-
-    width:100%;
-
-    display:flex;
-
-    align-items:flex-start;
-
-    justify-content:space-between;
-
-    margin-bottom:18px;
-
+* {
+    box-sizing: border-box;
 }
 
-
-.promo-header-left{
-
-    min-width:0;
-
+html,
+body {
+    margin: 0;
+    min-height: 100%;
 }
 
-
-.promo-eyebrow{
-
-    display:block;
-
-    margin-bottom:2px;
-
-    color:#64748B;
-
-    font-size:10px;
-
-    font-weight:500;
-
-    line-height:1.3;
-
+body {
+    background: #eef3f9;
+    font-family: "Poppins", sans-serif;
+    color: var(--promo-text);
+    overflow: hidden;
 }
 
-
-.promo-header h1{
-
-    margin:0;
-
-    color:#102A56;
-
-    font-size:24px;
-
-    font-weight:700;
-
-    line-height:1.2;
-
+button {
+    font: inherit;
 }
 
-
-.promo-header p{
-
-    max-width:290px;
-
-    margin-top:5px;
-
-    color:#64748B;
-
-    font-size:11px;
-
-    font-weight:400;
-
-    line-height:1.45;
-
+.promo-page {
+    width: 100%;
+    max-width: 430px;
+    height: 100dvh;
+    margin: 0 auto;
+    background: var(--promo-bg);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
 
+/* HEADER */
 
-.promo-header-icon{
-
-    width:40px;
-
-    height:40px;
-
-    flex-shrink:0;
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    margin-top:1px;
-
-    border-radius:14px;
-
-    background:#EEF5FF;
-
-    color:#1769E0;
-
-    font-size:16px;
-
+.promo-header {
+    min-height: 100px;
+    flex: 0 0 100px;
+    padding: 18px 18px 12px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
 }
 
-
-/* ==========================================================
-   FEATURED PROMO
-========================================================== */
-
-.promo-featured{
-
-    width:100%;
-
-    margin-bottom:22px;
-
+.promo-header h1 {
+    margin: 0;
+    color: var(--promo-text);
+    font-size: 26px;
+    line-height: 1.15;
+    font-weight: 700;
 }
 
-
-.promo-featured-card{
-
-    width:100%;
-
-    overflow:hidden;
-
-    border-radius:20px;
-
-    background:#FFFFFF;
-
-    border:1px solid #DCE7F5;
-
-    box-shadow:0 5px 16px rgba(15,23,42,0.06);
-
+.promo-header p {
+    margin: 5px 0 0;
+    color: var(--promo-muted);
+    font-size: 11px;
+    line-height: 1.4;
 }
 
+.promo-header-icon {
+    width: 38px;
+    height: 38px;
+    flex: 0 0 38px;
+    display: grid;
+    place-items: center;
+    border-radius: 12px;
+    background: var(--promo-blue-soft);
+    color: var(--promo-blue);
+    font-size: 16px;
+}
 
-/* ==========================================================
-   FEATURED IMAGE AREA
-========================================================== */
+/* CONTENT */
 
-.promo-featured-image{
+.promo-content {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 0 12px 18px;
+    scrollbar-width: none;
+}
 
-    width:100%;
+.promo-content::-webkit-scrollbar {
+    display: none;
+}
 
-    height:145px;
+.promo-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-bottom: 10px;
+}
 
-    display:flex;
+/* PROMO CARD */
 
-    align-items:center;
+.promo-card {
+    position: relative;
+    overflow: hidden;
+    background: var(--promo-white);
+    border: 1px solid var(--promo-border);
+    border-radius: 17px;
+    box-shadow: 0 5px 16px rgba(16, 35, 79, 0.055);
+}
 
-    justify-content:center;
+.promo-card::before,
+.promo-card::after {
+    content: "";
+    position: absolute;
+    top: 88px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--promo-bg);
+    border: 1px solid var(--promo-border);
+    z-index: 3;
+}
 
+.promo-card::before {
+    left: -10px;
+}
+
+.promo-card::after {
+    right: -10px;
+}
+
+.promo-card-top {
+    padding: 16px 16px 13px;
     background:
         linear-gradient(
             135deg,
-            #1769E0 0%,
-            #4D91F7 55%,
-            #8BB8FA 100%
+            #f9fbff 0%,
+            #edf5ff 100%
         );
-
-    position:relative;
-
-    overflow:hidden;
-
 }
 
-
-.promo-featured-image::before{
-
-    content:"";
-
-    position:absolute;
-
-    width:180px;
-
-    height:180px;
-
-    top:-90px;
-
-    right:-45px;
-
-    border-radius:50%;
-
-    background:rgba(255,255,255,0.13);
-
+.promo-card-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    min-height: 24px;
+    padding: 0 8px;
+    margin-bottom: 9px;
+    border-radius: 20px;
+    background: var(--promo-green-soft);
+    color: var(--promo-green);
+    font-size: 8px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .35px;
 }
 
-
-.promo-featured-image::after{
-
-    content:"";
-
-    position:absolute;
-
-    width:120px;
-
-    height:120px;
-
-    bottom:-70px;
-
-    left:-35px;
-
-    border-radius:50%;
-
-    background:rgba(255,255,255,0.10);
-
+.promo-card-top h2 {
+    margin: 0;
+    color: var(--promo-text);
+    font-size: 17px;
+    line-height: 1.3;
+    font-weight: 700;
 }
 
-
-/* ==========================================================
-   FEATURED IMAGE ICON
-========================================================== */
-
-.promo-featured-image::marker{
-
-    display:none;
-
+.promo-discount {
+    margin-top: 5px;
+    color: var(--promo-blue);
+    font-size: 23px;
+    line-height: 1.1;
+    font-weight: 700;
 }
 
-
-.promo-featured-content{
-
-    padding:15px 15px 16px;
-
+.promo-card-body {
+    padding: 14px 16px 16px;
 }
 
-
-/* ==========================================================
-   BADGE
-========================================================== */
-
-.promo-badge{
-
-    display:inline-flex;
-
-    align-items:center;
-
-    padding:4px 8px;
-
-    border-radius:6px;
-
-    background:#EAF2FF;
-
-    color:#1769E0;
-
-    font-size:8px;
-
-    font-weight:700;
-
-    letter-spacing:.3px;
-
+.promo-description {
+    margin: 0 0 12px;
+    color: #4e6079;
+    font-size: 10px;
+    line-height: 1.55;
 }
 
-
-/* ==========================================================
-   FEATURED TITLE
-========================================================== */
-
-.promo-featured-content h2{
-
-    margin-top:8px;
-
-    color:#102A56;
-
-    font-size:20px;
-
-    font-weight:700;
-
-    line-height:1.2;
-
+.promo-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 13px;
 }
 
-
-.promo-featured-content p{
-
-    margin-top:6px;
-
-    color:#64748B;
-
-    font-size:10px;
-
-    line-height:1.5;
-
+.promo-meta-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    color: #52657e;
+    font-size: 9px;
+    line-height: 1.4;
 }
 
-
-/* ==========================================================
-   PROMO DETAILS
-========================================================== */
-
-.promo-details{
-
-    display:flex;
-
-    flex-wrap:wrap;
-
-    gap:8px 14px;
-
-    margin-top:12px;
-
+.promo-meta-row i {
+    width: 13px;
+    flex: 0 0 13px;
+    margin-top: 1px;
+    color: var(--promo-blue);
+    text-align: center;
 }
 
-
-.promo-details span{
-
-    display:flex;
-
-    align-items:center;
-
-    gap:5px;
-
-    color:#64748B;
-
-    font-size:9px;
-
-    font-weight:500;
-
+.promo-meta-row strong {
+    color: var(--promo-text);
+    font-weight: 600;
 }
 
-
-.promo-details i{
-
-    color:#1769E0;
-
-    font-size:9px;
-
+.promo-code-box {
+    min-height: 48px;
+    padding: 8px 9px 8px 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #f8fbff;
+    border: 1px dashed #b9cee9;
+    border-radius: 11px;
 }
 
-
-/* ==========================================================
-   FEATURED BUTTON
-========================================================== */
-
-.promo-button{
-
-    width:100%;
-
-    height:38px;
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    gap:8px;
-
-    margin-top:14px;
-
-    border-radius:11px;
-
-    background:#1769E0;
-
-    color:#FFFFFF;
-
-    font-size:10px;
-
-    font-weight:600;
-
+.promo-code-copy {
+    min-width: 0;
+    flex: 1;
 }
 
-
-.promo-button i{
-
-    font-size:9px;
-
+.promo-code-copy span {
+    display: block;
+    margin-bottom: 2px;
+    color: var(--promo-muted);
+    font-size: 8px;
 }
 
-
-/* ==========================================================
-   SECTION HEADING
-========================================================== */
-
-.promo-section{
-
-    width:100%;
-
+.promo-code-copy strong {
+    display: block;
+    overflow: hidden;
+    color: var(--promo-blue-dark);
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: .7px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
-
-.promo-section-heading{
-
-    display:flex;
-
-    align-items:flex-end;
-
-    justify-content:space-between;
-
-    margin-bottom:10px;
-
+.copy-promo-button {
+    height: 32px;
+    padding: 0 11px;
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    border: 0;
+    border-radius: 8px;
+    background: var(--promo-blue);
+    color: #ffffff;
+    font-size: 9px;
+    font-weight: 700;
+    cursor: pointer;
 }
 
-
-.promo-section-eyebrow{
-
-    display:block;
-
-    margin-bottom:2px;
-
-    color:#94A3B8;
-
-    font-size:8px;
-
-    font-weight:600;
-
-    letter-spacing:.5px;
-
+.copy-promo-button:active {
+    transform: scale(.97);
 }
 
-
-.promo-section-heading h2{
-
-    margin:0;
-
-    color:#102A56;
-
-    font-size:16px;
-
-    font-weight:700;
-
+.promo-terms {
+    margin-top: 11px;
 }
 
-
-/* ==========================================================
-   PROMO CARD
-========================================================== */
-
-.promo-card{
-
-    position:relative;
-
-    width:100%;
-
-    display:flex;
-
-    align-items:flex-start;
-
-    gap:11px;
-
-    padding:12px;
-
-    margin-bottom:9px;
-
-    border:1px solid #E1EAF5;
-
-    border-radius:16px;
-
-    background:#FFFFFF;
-
-    box-shadow:0 2px 8px rgba(15,23,42,0.03);
-
+.promo-terms summary {
+    color: var(--promo-blue);
+    font-size: 9px;
+    font-weight: 600;
+    cursor: pointer;
 }
 
-
-/* ==========================================================
-   PROMO CARD ICON
-========================================================== */
-
-.promo-card-icon{
-
-    width:42px;
-
-    height:42px;
-
-    flex-shrink:0;
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    border-radius:13px;
-
-    background:#EEF5FF;
-
-    color:#1769E0;
-
-    font-size:15px;
-
+.promo-terms p {
+    margin: 7px 0 0;
+    padding: 9px 10px;
+    border-radius: 9px;
+    background: #f8fafc;
+    color: #65758a;
+    font-size: 8px;
+    line-height: 1.55;
+    white-space: pre-line;
 }
 
+/* LOADING / EMPTY */
 
-/* ==========================================================
-   PROMO CARD CONTENT
-========================================================== */
-
-.promo-card-content{
-
-    min-width:0;
-
-    flex:1;
-
+.promo-loading,
+.promo-empty {
+    min-height: calc(100dvh - 168px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
 }
 
-
-.promo-card-top{
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:space-between;
-
-    gap:8px;
-
+.promo-loading {
+    gap: 9px;
+    color: var(--promo-muted);
+    font-size: 10px;
 }
 
-
-.promo-card-badge{
-
-    display:inline-flex;
-
-    align-items:center;
-
-    padding:3px 6px;
-
-    border-radius:5px;
-
-    background:#F1F6FD;
-
-    color:#1769E0;
-
-    font-size:7px;
-
-    font-weight:700;
-
-    letter-spacing:.2px;
-
+.promo-spinner {
+    width: 28px;
+    height: 28px;
+    border: 3px solid #dce6f4;
+    border-top-color: var(--promo-blue);
+    border-radius: 50%;
+    animation: promoSpin .8s linear infinite;
 }
 
-
-.promo-card-status{
-
-    color:#16A34A;
-
-    font-size:8px;
-
-    font-weight:600;
-
+@keyframes promoSpin {
+    to {
+        transform: rotate(360deg);
+    }
 }
 
-
-.promo-card-content h3{
-
-    margin-top:5px;
-
-    color:#102A56;
-
-    font-size:12px;
-
-    font-weight:700;
-
-    line-height:1.3;
-
+.promo-empty-icon {
+    width: 64px;
+    height: 64px;
+    margin-bottom: 14px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--promo-blue-soft);
+    color: var(--promo-blue);
+    font-size: 25px;
 }
 
-
-.promo-card-content p{
-
-    margin-top:3px;
-
-    color:#64748B;
-
-    font-size:9px;
-
-    line-height:1.45;
-
+.promo-empty h2 {
+    margin: 0 0 6px;
+    font-size: 18px;
 }
 
-
-/* ==========================================================
-   PROMO CARD FOOTER
-========================================================== */
-
-.promo-card-footer{
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:space-between;
-
-    gap:8px;
-
-    margin-top:8px;
-
+.promo-empty p {
+    max-width: 260px;
+    margin: 0;
+    color: var(--promo-muted);
+    font-size: 10px;
+    line-height: 1.5;
 }
 
+/* SHARED NAV SLOT */
 
-.promo-card-footer > span{
-
-    display:flex;
-
-    align-items:center;
-
-    gap:4px;
-
-    color:#94A3B8;
-
-    font-size:8px;
-
+.customer-bottom-nav-slot {
+    width: 100%;
+    height: 68px;
+    min-height: 68px;
+    flex: 0 0 68px;
+    position: relative;
+    z-index: 100;
 }
 
-
-.promo-card-footer i{
-
-    color:#1769E0;
-
-    font-size:8px;
-
+.customer-bottom-nav-slot .bottom-nav {
+    width: 100%;
+    max-width: none;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    transform: none;
 }
 
+/* COPY TOAST */
 
-.promo-card-button{
-
-    display:flex;
-
-    align-items:center;
-
-    gap:5px;
-
-    padding:5px 8px;
-
-    border-radius:7px;
-
-    background:#EEF5FF;
-
-    color:#1769E0;
-
-    font-size:8px;
-
-    font-weight:600;
-
+.copy-toast {
+    position: fixed;
+    left: 50%;
+    bottom: 82px;
+    z-index: 300;
+    transform: translate(-50%, 18px);
+    min-width: 150px;
+    padding: 9px 13px;
+    border-radius: 20px;
+    background: #17365f;
+    color: #ffffff;
+    text-align: center;
+    font-size: 9px;
+    font-weight: 600;
+    opacity: 0;
+    visibility: hidden;
+    transition: .2s ease;
 }
 
-
-.promo-card-button i{
-
-    font-size:7px;
-
+.copy-toast.show {
+    transform: translate(-50%, 0);
+    opacity: 1;
+    visibility: visible;
 }
 
-
-/* ==========================================================
-   EMPTY STATE
-========================================================== */
-
-.promo-empty{
-
-    min-height:420px;
-
-    display:flex;
-
-    flex-direction:column;
-
-    align-items:center;
-
-    justify-content:center;
-
-    padding:40px 20px;
-
-    text-align:center;
-
+[hidden] {
+    display: none !important;
 }
 
-
-.promo-empty[hidden]{
-
-    display:none !important;
-
-}
-
-
-.promo-empty-icon{
-
-    width:52px;
-
-    height:52px;
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    margin-bottom:12px;
-
-    border-radius:16px;
-
-    background:#EEF5FF;
-
-    color:#1769E0;
-
-    font-size:20px;
-
-}
-
-
-.promo-empty h2{
-
-    margin:0;
-
-    color:#102A56;
-
-    font-size:14px;
-
-    font-weight:700;
-
-}
-
-
-.promo-empty p{
-
-    max-width:220px;
-
-    margin-top:5px;
-
-    color:#94A3B8;
-
-    font-size:10px;
-
-    line-height:1.5;
-
-}
-
-
-/* ==========================================================
-   SMALL MOBILE
-========================================================== */
-
-@media (max-width:360px){
-
-    .promo-page{
-
-        padding:16px 10px 86px;
-
+@media (max-width: 360px) {
+    .promo-header {
+        padding-left: 13px;
+        padding-right: 13px;
     }
 
-
-    .promo-header{
-
-        margin-bottom:15px;
-
+    .promo-content {
+        padding-left: 8px;
+        padding-right: 8px;
     }
 
-
-    .promo-header h1{
-
-        font-size:22px;
-
+    .promo-card-top,
+    .promo-card-body {
+        padding-left: 13px;
+        padding-right: 13px;
     }
-
-
-    .promo-header p{
-
-        font-size:10px;
-
-    }
-
-
-    .promo-header-icon{
-
-        width:36px;
-
-        height:36px;
-
-        border-radius:12px;
-
-        font-size:15px;
-
-    }
-
-
-    .promo-featured-image{
-
-        height:130px;
-
-    }
-
-
-    .promo-featured-content{
-
-        padding:13px;
-
-    }
-
-
-    .promo-featured-content h2{
-
-        font-size:18px;
-
-    }
-
-
-    .promo-card{
-
-        padding:10px;
-
-        gap:9px;
-
-        border-radius:14px;
-
-    }
-
-
-    .promo-card-icon{
-
-        width:38px;
-
-        height:38px;
-
-        border-radius:11px;
-
-        font-size:14px;
-
-    }
-
-}
-
-
-/* ==========================================================
-   DESKTOP
-   KEEP MOBILE APP WIDTH
-========================================================== */
-
-@media (min-width:430px){
-
-    .promo-page{
-
-        width:100%;
-
-        max-width:430px;
-
-        margin:0 auto;
-
-        padding-left:14px;
-
-        padding-right:14px;
-
-    }
-
 }

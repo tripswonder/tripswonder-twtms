@@ -44,13 +44,21 @@
         rel="stylesheet"
         href="../../assets/css/admin/packages.css">
 
+    <link
+        rel="stylesheet"
+        href="/assets/css/shared/admin-nav.css">
+
     <!-- GLOBAL LOADING SCREEN -->
     <link
         rel="stylesheet"
         href="../../assets/css/shared/loading-screen.css">
+
+<style>
+.itinerary-builder{border:1px solid #e4eaf3;border-radius:16px;overflow:hidden;background:#fff}.itinerary-tabs{display:flex;gap:4px;padding:8px;background:#f6f8fc;border-bottom:1px solid #e4eaf3;overflow-x:auto}.itinerary-tab{flex:1;min-width:92px;border:0;background:transparent;padding:11px 12px;border-radius:10px;font:inherit;font-size:12px;font-weight:600;color:#64748b;cursor:pointer;white-space:nowrap}.itinerary-tab:hover{background:#fff;color:#1d4ed8}.itinerary-tab.active{background:#fff;color:#0d6efd;box-shadow:0 1px 5px rgba(15,23,42,.08)}.itinerary-panel{display:none;padding:18px}.itinerary-panel.active{display:block}.itinerary-panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}.itinerary-panel-head strong{display:block;color:#102a56;font-size:15px}.itinerary-panel-head span{display:block;margin-top:2px;color:#7a879b;font-size:12px}.itinerary-day-list{display:flex;flex-direction:column;gap:10px;margin-bottom:12px}.itinerary-schedule-row{display:grid;grid-template-columns:170px minmax(0,1fr) 38px;gap:10px;align-items:end;padding:12px;border:1px solid #e5eaf2;border-radius:12px;background:#fbfcfe}.itinerary-field label{display:block;margin-bottom:6px;font-size:11px;font-weight:600;color:#64748b}.itinerary-field input{width:100%;box-sizing:border-box}.itinerary-remove-row{width:38px;height:38px;border:1px solid #e5eaf2;border-radius:9px;background:#fff;color:#94a3b8;cursor:pointer}.itinerary-remove-row:hover{color:#dc2626;border-color:#fecaca;background:#fff7f7}@media(max-width:700px){.itinerary-schedule-row{grid-template-columns:1fr 38px}.itinerary-field.activity{grid-column:1/-1;grid-row:2}.itinerary-remove-row{grid-column:2;grid-row:1}}
+</style>
 </head>
 
-<body class="twtms-page-loading">
+<body class="twtms-page-loading admin-shared-nav-page">
 
 <div class="admin-wrapper">
 
@@ -58,153 +66,7 @@
          SIDEBAR
     ====================================================== -->
 
-    <aside class="sidebar">
-
-        <div class="brand">
-
-            <div class="brand-logo">
-                <img
-                    src="../../assets/images/logo.png"
-                    alt="Trips Wonder Logo">
-            </div>
-
-            <div class="brand-text">
-                <strong>Trips Wonder</strong>
-                <span>Travel Management System</span>
-            </div>
-
-        </div>
-
-
-        <div class="menu-title">
-            MAIN MENU
-        </div>
-
-
-        <nav
-            class="nav-menu"
-            aria-label="Main Navigation">
-
-            <a
-                href="dashboard.html"
-                class="nav-link">
-
-                <i class="fa-solid fa-chart-pie"></i>
-                <span>Dashboard</span>
-
-            </a>
-
-
-            <a
-                href="packages.html"
-                class="nav-link active"
-                aria-current="page">
-
-                <i class="fa-solid fa-suitcase"></i>
-                <span>Packages</span>
-
-            </a>
-
-
-            <a
-                href="bookings.html"
-                class="nav-link">
-
-                <i class="fa-regular fa-calendar-check"></i>
-                <span>Bookings</span>
-
-            </a>
-
-
-            <a
-                href="customers.html"
-                class="nav-link">
-
-                <i class="fa-solid fa-user-group"></i>
-                <span>Customers</span>
-
-            </a>
-
-
-            <a
-                href="payments.html"
-                class="nav-link">
-
-                <i class="fa-regular fa-credit-card"></i>
-                <span>Payments</span>
-
-            </a>
-
-
-            <a
-                href="invoices.html"
-                class="nav-link">
-
-                <i class="fa-solid fa-file-invoice"></i>
-                <span>Invoices</span>
-
-            </a>
-
-
-            <a
-                href="resort-bookings.html"
-                class="nav-link">
-
-                <i class="fa-solid fa-building"></i>
-                <span>Resort Bookings</span>
-
-            </a>
-
-
-            <a
-                href="reports.html"
-                class="nav-link">
-
-                <i class="fa-solid fa-chart-line"></i>
-                <span>Reports</span>
-
-            </a>
-
-        </nav>
-
-
-        <div class="sidebar-bottom">
-
-            <a
-                href="admin-profile.html"
-                class="sidebar-admin-profile"
-                id="adminProfileLink">
-
-                <div class="sidebar-admin-avatar">
-                    <i class="fa-solid fa-user"></i>
-                </div>
-
-                <div class="sidebar-admin-info">
-                    <strong id="adminName">
-                        Admin Trips Wonder
-                    </strong>
-
-                    <span>
-                        Administrator
-                    </span>
-                </div>
-
-            </a>
-
-
-            <button
-                type="button"
-                id="logoutBtn"
-                class="sidebar-admin-action logout-btn">
-
-                <i class="fa-solid fa-right-from-bracket"></i>
-                <span>Logout</span>
-
-            </button>
-
-        </div>
-
-    </aside>
+    <aside id="adminSidebar" class="admin-sidebar"></aside>
 
 
     <!-- =====================================================
@@ -548,8 +410,13 @@
     Pick Up
 </a>
 
-<a href="#packageSectionItinerary" class="package-builder-nav-item">
+<a href="#packageSectionSchedule" class="package-builder-nav-item">
     <span>08</span>
+    Schedule
+</a>
+
+<a href="#packageSectionItinerary" class="package-builder-nav-item">
+    <span>09</span>
     Itinerary
 </a>
 
@@ -730,6 +597,295 @@
                 </div>
 
             </section>
+
+
+            <!-- =================================================
+                 PASSENGER PRICING & EXCLUSIVE TOUR
+            ================================================== -->
+
+            <section
+                class="form-section package-builder-section"
+                id="packageSectionPassengerPricing">
+
+                <div class="form-section-title">
+
+                    <span>
+                        <i class="fa-solid fa-users"></i>
+                    </span>
+
+                    <div>
+                        <h3>Passenger Pricing & Exclusive Tour</h3>
+                        <p>
+                            Configure seasonal child pricing and exclusive group benefits for this package.
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <div class="package-rule-grid">
+
+
+                    <!-- KIDS PRICING -->
+
+                    <div class="package-rule-card">
+
+                        <div class="package-rule-card-head">
+
+                            <div>
+
+                                <strong>
+                                    Kids Discount
+                                </strong>
+
+                                <small>
+                                    Turn this OFF during off-season or when all passengers should pay the regular rate.
+                                </small>
+
+                            </div>
+
+
+                            <label class="package-toggle">
+
+                                <input
+                                    type="checkbox"
+                                    id="kidsPricingEnabled">
+
+                                <span class="package-toggle-slider"></span>
+
+                            </label>
+
+                        </div>
+
+
+                        <div
+                            class="package-rule-fields"
+                            id="kidsPricingFields">
+
+
+                            <div class="package-rule-note">
+
+                                <i class="fa-solid fa-child-reaching"></i>
+
+                                <span>
+                                    9 years old and above always use the regular package rate.
+                                </span>
+
+                            </div>
+
+
+                            <div class="form-grid">
+
+
+                                <div class="form-group">
+
+                                    <label for="childFreeMaxAge">
+                                        FREE Child Maximum Age
+                                    </label>
+
+                                    <input
+                                        type="number"
+                                        id="childFreeMaxAge"
+                                        min="0"
+                                        max="17"
+                                        value="3">
+
+                                    <small class="field-help">
+                                        Default: 0–3 yrs FREE package.
+                                    </small>
+
+                                </div>
+
+
+                                <div class="form-group">
+
+                                    <label for="childDiscountMinAge">
+                                        Discounted Child From Age
+                                    </label>
+
+                                    <input
+                                        type="number"
+                                        id="childDiscountMinAge"
+                                        min="0"
+                                        max="17"
+                                        value="4">
+
+                                </div>
+
+
+                                <div class="form-group">
+
+                                    <label for="childDiscountMaxAge">
+                                        Discounted Child Until Age
+                                    </label>
+
+                                    <input
+                                        type="number"
+                                        id="childDiscountMaxAge"
+                                        min="0"
+                                        max="17"
+                                        value="8">
+
+                                </div>
+
+
+                                <div class="form-group">
+
+                                    <label for="childDiscountAmount">
+                                        Discount per Child
+                                    </label>
+
+                                    <div class="input-prefix-wrap">
+
+                                        <span class="input-prefix">
+                                            ₱
+                                        </span>
+
+                                        <input
+                                            type="number"
+                                            id="childDiscountAmount"
+                                            min="0"
+                                            step="1"
+                                            value="500">
+
+                                    </div>
+
+                                    <small class="field-help">
+                                        Example: change ₱500 to ₱300 anytime.
+                                    </small>
+
+                                </div>
+
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- EXCLUSIVE TOUR -->
+
+                    <div class="package-rule-card">
+
+                        <div class="package-rule-card-head">
+
+                            <div>
+
+                                <strong>
+                                    Exclusive Tour Benefit
+                                </strong>
+
+                                <small>
+                                    Enable or disable the automatic exclusive group pricing rule.
+                                </small>
+
+                            </div>
+
+
+                            <label class="package-toggle">
+
+                                <input
+                                    type="checkbox"
+                                    id="exclusiveTourEnabled">
+
+                                <span class="package-toggle-slider"></span>
+
+                            </label>
+
+                        </div>
+
+
+                        <div
+                            class="package-rule-fields"
+                            id="exclusiveTourFields">
+
+
+                            <div class="package-rule-note">
+
+                                <i class="fa-solid fa-people-group"></i>
+
+                                <span>
+                                    Exactly 12 paying pax = exclusive but no free pax. Free pax benefit starts at 13.
+                                </span>
+
+                            </div>
+
+
+                            <div class="form-grid">
+
+
+                                <div class="form-group">
+
+                                    <label for="exclusiveMinimumPayingPax">
+                                        Minimum Paying Pax
+                                    </label>
+
+                                    <input
+                                        type="number"
+                                        id="exclusiveMinimumPayingPax"
+                                        min="1"
+                                        value="12">
+
+                                </div>
+
+
+                                <div class="form-group">
+
+                                    <label for="exclusiveFreeStartsAt">
+                                        Free Pax Starts At
+                                    </label>
+
+                                    <input
+                                        type="number"
+                                        id="exclusiveFreeStartsAt"
+                                        min="1"
+                                        value="13">
+
+                                </div>
+
+
+                                <div class="form-group">
+
+                                    <label for="exclusiveFreePax">
+                                        Free Pax
+                                    </label>
+
+                                    <input
+                                        type="number"
+                                        id="exclusiveFreePax"
+                                        min="0"
+                                        value="1">
+
+                                </div>
+
+
+                                <div class="form-group">
+
+                                    <label for="exclusiveMaxFreePax">
+                                        Maximum Free Pax
+                                    </label>
+
+                                    <input
+                                        type="number"
+                                        id="exclusiveMaxFreePax"
+                                        min="0"
+                                        value="1">
+
+                                </div>
+
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+            </section>
+
 
 
             <!-- =================================================
@@ -985,9 +1141,9 @@
                     <span>06</span>
 
                     <div>
-                        <h3>Accommodation</h3>
+                        <h3>Resorts & Accommodation</h3>
                         <p>
-                            Add included stays and optional room upgrades.
+                            Manage each resort and its accommodation options in one place.
                         </p>
                     </div>
 
@@ -999,7 +1155,7 @@
                     <i class="fa-solid fa-circle-info"></i>
 
                     <span>
-                        Add each accommodation option separately so guests can easily compare what is included and what requires an additional charge.
+                        Resort and operational accommodation details are required before saving. Photos may be added later. Default units are copied to new Trip Operations schedules as inventory snapshots.
                     </span>
 
                 </div>
@@ -1017,7 +1173,7 @@
                     id="addAccommodation">
 
                     <i class="fa-solid fa-plus"></i>
-                    Add Accommodation
+                    Add Resort Accommodation
 
                 </button>
 
@@ -1077,61 +1233,290 @@
 </section>
 
 
+
             <!-- =================================================
-                 08 ITINERARY
+                 08 REGULAR SCHEDULE & DAY 0
             ================================================== -->
 
             <section
                 class="form-section package-builder-section"
-                id="packageSectionItinerary">
+                id="packageSectionSchedule">
 
                 <div class="form-section-title">
 
                     <span>08</span>
 
                     <div>
-                        <h3>Schedule / Itinerary</h3>
+                        <h3>Regular Schedule & Day 0</h3>
                         <p>
-                            Add the complete tour schedule in a clear day-by-day format.
+                            Configure the normal departure pattern used by Trip Operations
+                            when opening future schedules.
                         </p>
                     </div>
 
                 </div>
 
+                <div class="schedule-settings-card">
 
-                <div class="form-group">
+                    <div class="schedule-settings-head">
 
-                    <label for="formSchedule">
-                        Tour Itinerary
-                    </label>
+                        <div>
+                            <strong>Regular Schedule</strong>
+                            <small>
+                                Turn this on if this package has a normal recurring schedule.
+                            </small>
+                        </div>
 
-                    <textarea
-                        id="formSchedule"
-                        rows="12"
-                        placeholder="Example:
+                        <label class="package-toggle">
+                            <input
+                                type="checkbox"
+                                id="regularScheduleEnabled">
+                            <span class="package-toggle-slider"></span>
+                        </label>
 
-DAY 1
-04:00 AM — ETA Real Port
-06:00 AM — Boat Departure
-10:00 AM — Arrival
-12:00 PM — Lunch
+                    </div>
 
-DAY 2
-06:00 AM — Sunrise
-07:00 AM — Breakfast
-08:00 AM — Island Tour
+                    <div
+                        class="schedule-settings-fields"
+                        id="regularScheduleFields">
 
-DAY 3
-07:00 AM — Breakfast
-09:00 AM — Check-out
-10:00 AM — Return trip"></textarea>
+                        <div class="form-grid">
 
-                    <small class="field-help">
-                        We can upgrade this to a full Day + Time itinerary builder in the next JS update.
-                    </small>
+                            <div class="form-group">
+
+                                <label for="regularStartDay">
+                                    Day 1 Start Day
+                                </label>
+
+                                <select id="regularStartDay">
+                                    <option value="0">Sunday</option>
+                                    <option value="1">Monday</option>
+                                    <option value="2">Tuesday</option>
+                                    <option value="3">Wednesday</option>
+                                    <option value="4">Thursday</option>
+                                    <option value="5" selected>Friday</option>
+                                    <option value="6">Saturday</option>
+                                </select>
+
+                                <small class="field-help">
+                                    Example: Jomalig Friday, Baguio Saturday.
+                                </small>
+
+                            </div>
+
+                            <div class="form-group">
+
+                                <label for="regularDurationDays">
+                                    Tour Duration (Days)
+                                </label>
+
+                                <input
+                                    type="number"
+                                    id="regularDurationDays"
+                                    min="1"
+                                    max="30"
+                                    value="3">
+
+                                <small class="field-help">
+                                    3D2N = 3 days, 2D1N = 2 days.
+                                </small>
+
+                            </div>
+
+                        </div>
+
+                        <div class="schedule-preview-box">
+
+                            <i class="fa-solid fa-calendar-days"></i>
+
+                            <div>
+                                <span>Regular schedule preview</span>
+                                <strong id="regularSchedulePreview">
+                                    Friday → Sunday • 3D2N
+                                </strong>
+                            </div>
+
+                        </div>
+
+                    </div>
 
                 </div>
 
+
+                <div class="schedule-settings-card">
+
+                    <div class="schedule-settings-head">
+
+                        <div>
+                            <strong>Day 0 Departure</strong>
+                            <small>
+                                Day 0 is the departure / pick-up date before Day 1.
+                            </small>
+                        </div>
+
+                        <label class="package-toggle">
+                            <input
+                                type="checkbox"
+                                id="day0Enabled"
+                                checked>
+                            <span class="package-toggle-slider"></span>
+                        </label>
+
+                    </div>
+
+                    <div
+                        class="schedule-settings-fields"
+                        id="day0ScheduleFields">
+
+                        <div class="form-grid">
+
+                            <div class="form-group">
+
+                                <label for="day0Offset">
+                                    Departure Day Offset
+                                </label>
+
+                                <input
+                                    type="number"
+                                    id="day0Offset"
+                                    min="-7"
+                                    max="0"
+                                    value="-1">
+
+                                <small class="field-help">
+                                    Default -1 means one calendar day before Day 1.
+                                </small>
+
+                            </div>
+
+                            <div class="form-group">
+
+                                <label for="pickupStartTime">
+                                    Pick-up Start Time
+                                </label>
+
+                                <input
+                                    type="time"
+                                    id="pickupStartTime">
+
+                            </div>
+
+                            <div class="form-group">
+
+                                <label for="pickupEndTime">
+                                    Pick-up End Time
+                                </label>
+
+                                <input
+                                    type="time"
+                                    id="pickupEndTime">
+
+                            </div>
+
+                            <div class="form-group full">
+
+                                <label for="departureNote">
+                                    Departure Note
+                                </label>
+
+                                <textarea
+                                    id="departureNote"
+                                    rows="3"
+                                    placeholder="e.g. Exact pick-up time may vary depending on assigned pick-up location, traffic and final trip operations."></textarea>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 09 ITINERARY
+            ================================================== -->
+
+            <section class="form-section package-builder-section" id="packageSectionItinerary">
+                <div class="form-section-title">
+                    <span>08</span>
+                    <div>
+                        <h3>Schedule / Itinerary</h3>
+                        <p>Build the tour schedule per day, then add general notes or reminders.</p>
+                    </div>
+                </div>
+
+                <div class="itinerary-builder">
+                    <div class="itinerary-tabs" role="tablist" aria-label="Itinerary days">
+                        <button type="button" class="itinerary-tab active" data-itinerary-tab="day0">Day 0</button>
+                        <button type="button" class="itinerary-tab" data-itinerary-tab="day1">Day 1</button>
+                        <button type="button" class="itinerary-tab" data-itinerary-tab="day2">Day 2</button>
+                        <button type="button" class="itinerary-tab" data-itinerary-tab="day3">Day 3</button>
+                        <button type="button" class="itinerary-tab" data-itinerary-tab="notes">Notes / Reminders</button>
+                    </div>
+
+                    <div class="itinerary-panel active" data-itinerary-panel="day0">
+                        <div class="itinerary-panel-head"><div><strong>Day 0</strong><span>Assembly, departure and pre-tour schedule.</span></div></div>
+                        <div class="itinerary-day-list" id="itineraryDay0List"></div>
+                        <div class="itinerary-entry-actions">
+                            <button type="button" class="add-row-button itinerary-add-row" data-day="day0">
+                                <i class="fa-solid fa-clock"></i> Add Schedule
+                            </button>
+                            <button type="button" class="add-row-button itinerary-add-section" data-day="day0">
+                                <i class="fa-solid fa-list-ul"></i> Add Section / Activities
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="itinerary-panel" data-itinerary-panel="day1">
+                        <div class="itinerary-panel-head"><div><strong>Day 1</strong><span>First day activities and schedule.</span></div></div>
+                        <div class="itinerary-day-list" id="itineraryDay1List"></div>
+                        <div class="itinerary-entry-actions">
+                            <button type="button" class="add-row-button itinerary-add-row" data-day="day1">
+                                <i class="fa-solid fa-clock"></i> Add Schedule
+                            </button>
+                            <button type="button" class="add-row-button itinerary-add-section" data-day="day1">
+                                <i class="fa-solid fa-list-ul"></i> Add Section / Activities
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="itinerary-panel" data-itinerary-panel="day2">
+                        <div class="itinerary-panel-head"><div><strong>Day 2</strong><span>Second day activities and schedule.</span></div></div>
+                        <div class="itinerary-day-list" id="itineraryDay2List"></div>
+                        <div class="itinerary-entry-actions">
+                            <button type="button" class="add-row-button itinerary-add-row" data-day="day2">
+                                <i class="fa-solid fa-clock"></i> Add Schedule
+                            </button>
+                            <button type="button" class="add-row-button itinerary-add-section" data-day="day2">
+                                <i class="fa-solid fa-list-ul"></i> Add Section / Activities
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="itinerary-panel" data-itinerary-panel="day3">
+                        <div class="itinerary-panel-head"><div><strong>Day 3</strong><span>Third day or return-trip schedule.</span></div></div>
+                        <div class="itinerary-day-list" id="itineraryDay3List"></div>
+                        <div class="itinerary-entry-actions">
+                            <button type="button" class="add-row-button itinerary-add-row" data-day="day3">
+                                <i class="fa-solid fa-clock"></i> Add Schedule
+                            </button>
+                            <button type="button" class="add-row-button itinerary-add-section" data-day="day3">
+                                <i class="fa-solid fa-list-ul"></i> Add Section / Activities
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="itinerary-panel" data-itinerary-panel="notes">
+                        <div class="itinerary-panel-head"><div><strong>Notes / Reminders</strong><span>Important information customers should know about the itinerary.</span></div></div>
+                        <div class="form-group full">
+                            <label for="itineraryNotes">Tour Notes / Reminders</label>
+                            <textarea id="itineraryNotes" rows="7" placeholder="e.g. Schedule may change depending on weather and local conditions. Please arrive 30 minutes before departure."></textarea>
+                        </div>
+                    </div>
+                </div>
             </section>
 
 
@@ -1193,6 +1578,8 @@ DAY 3
     type="module"
     src="../../assets/js/admin/packages.js">
 </script>
+
+    <script type="module" src="/assets/js/shared/admin-nav.js"></script>
 
 </body>
 </html>

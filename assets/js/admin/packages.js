@@ -487,6 +487,231 @@ addPickupLocation?.addEventListener(
         }
 
 
+
+        // ======================================================
+        // PACKAGE PRICING RULE HELPERS
+        // ======================================================
+
+        function getNumberInputValue(
+            id,
+            fallback = 0
+        ) {
+
+            const element =
+                document.getElementById(id);
+
+            const value =
+                Number(
+                    element?.value
+                );
+
+            return Number.isFinite(value)
+                ? value
+                : fallback;
+
+        }
+
+
+        function updatePackageRuleVisibility() {
+
+            const kidsEnabled =
+                document.getElementById(
+                    "kidsPricingEnabled"
+                )?.checked === true;
+
+            const exclusiveEnabled =
+                document.getElementById(
+                    "exclusiveTourEnabled"
+                )?.checked === true;
+
+
+            const kidsFields =
+                document.getElementById(
+                    "kidsPricingFields"
+                );
+
+            const exclusiveFields =
+                document.getElementById(
+                    "exclusiveTourFields"
+                );
+
+
+            kidsFields?.classList.toggle(
+                "rule-disabled",
+                !kidsEnabled
+            );
+
+            exclusiveFields?.classList.toggle(
+                "rule-disabled",
+                !exclusiveEnabled
+            );
+
+        }
+
+
+
+        // ======================================================
+        // REGULAR SCHEDULE SETTINGS
+        // ======================================================
+
+        const scheduleDayNames = [
+            "Sunday",
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday"
+        ];
+
+        function updateScheduleSettingsVisibility() {
+
+            const regularEnabled =
+                document.getElementById(
+                    "regularScheduleEnabled"
+                )?.checked === true;
+
+            const day0IsEnabled =
+                document.getElementById(
+                    "day0Enabled"
+                )?.checked === true;
+
+            document
+                .getElementById(
+                    "regularScheduleFields"
+                )
+                ?.classList.toggle(
+                    "rule-disabled",
+                    !regularEnabled
+                );
+
+            document
+                .getElementById(
+                    "day0ScheduleFields"
+                )
+                ?.classList.toggle(
+                    "rule-disabled",
+                    !day0IsEnabled
+                );
+
+            updateRegularSchedulePreview();
+        }
+
+
+        function updateRegularSchedulePreview() {
+
+            const preview =
+                document.getElementById(
+                    "regularSchedulePreview"
+                );
+
+            if (!preview) {
+                return;
+            }
+
+            const enabled =
+                document.getElementById(
+                    "regularScheduleEnabled"
+                )?.checked === true;
+
+            const startDay =
+                Math.min(
+                    6,
+                    Math.max(
+                        0,
+                        getNumberInputValue(
+                            "regularStartDay",
+                            5
+                        )
+                    )
+                );
+
+            const durationDays =
+                Math.max(
+                    1,
+                    getNumberInputValue(
+                        "regularDurationDays",
+                        3
+                    )
+                );
+
+            const endDay =
+                (
+                    startDay +
+                    durationDays -
+                    1
+                ) % 7;
+
+            const nights =
+                Math.max(
+                    0,
+                    durationDays - 1
+                );
+
+            preview.textContent =
+                enabled
+                    ? `${scheduleDayNames[startDay]} → ${scheduleDayNames[endDay]} • ${durationDays}D${nights}N`
+                    : "Regular schedule disabled";
+        }
+
+
+        document
+            .getElementById(
+                "regularScheduleEnabled"
+            )
+            ?.addEventListener(
+                "change",
+                updateScheduleSettingsVisibility
+            );
+
+        document
+            .getElementById(
+                "day0Enabled"
+            )
+            ?.addEventListener(
+                "change",
+                updateScheduleSettingsVisibility
+            );
+
+        document
+            .getElementById(
+                "regularStartDay"
+            )
+            ?.addEventListener(
+                "change",
+                updateRegularSchedulePreview
+            );
+
+        document
+            .getElementById(
+                "regularDurationDays"
+            )
+            ?.addEventListener(
+                "input",
+                updateRegularSchedulePreview
+            );
+
+
+        document
+            .getElementById(
+                "kidsPricingEnabled"
+            )
+            ?.addEventListener(
+                "change",
+                updatePackageRuleVisibility
+            );
+
+
+        document
+            .getElementById(
+                "exclusiveTourEnabled"
+            )
+            ?.addEventListener(
+                "change",
+                updatePackageRuleVisibility
+            );
+
+
         // ======================================================
         // LOAD PACKAGES
         // ======================================================
@@ -600,7 +825,40 @@ addPickupLocation?.addEventListener(
 
                                 itinerary:
                                     data.itinerary ||
-                                    "",
+                                    { day0: [], day1: [], day2: [], day3: [], notes: "" },
+
+                                passengerPricing:
+                                    data.passengerPricing ||
+                                    {
+                                        kidsPricingEnabled: false,
+                                        childFreeMaxAge: 3,
+                                        childDiscountMinAge: 4,
+                                        childDiscountMaxAge: 8,
+                                        childDiscountAmount: 500
+                                    },
+
+                                exclusiveTour:
+                                    data.exclusiveTour ||
+                                    {
+                                        enabled: false,
+                                        minimumPayingPax: 12,
+                                        freeStartsAt: 13,
+                                        freePax: 1,
+                                        maxFreePax: 1
+                                    },
+
+                                scheduleSettings:
+                                    data.scheduleSettings ||
+                                    {
+                                        enabled: false,
+                                        startDay: 5,
+                                        durationDays: 3,
+                                        day0Enabled: true,
+                                        day0Offset: -1,
+                                        pickupStartTime: "",
+                                        pickupEndTime: "",
+                                        departureNote: ""
+                                    },
 
                                 createdAt:
                                     data.createdAt ||
@@ -1491,11 +1749,128 @@ addPickupLocation?.addEventListener(
 
             }
 
+            resetItineraryBuilder();
+
 
             setInputValue(
                 "formStatus",
                 "active"
             );
+
+
+            const kidsPricingEnabled =
+                document.getElementById(
+                    "kidsPricingEnabled"
+                );
+
+            const exclusiveTourEnabled =
+                document.getElementById(
+                    "exclusiveTourEnabled"
+                );
+
+
+            if (kidsPricingEnabled) {
+                kidsPricingEnabled.checked = false;
+            }
+
+            if (exclusiveTourEnabled) {
+                exclusiveTourEnabled.checked = false;
+            }
+
+
+            setInputValue(
+                "childFreeMaxAge",
+                3
+            );
+
+            setInputValue(
+                "childDiscountMinAge",
+                4
+            );
+
+            setInputValue(
+                "childDiscountMaxAge",
+                8
+            );
+
+            setInputValue(
+                "childDiscountAmount",
+                500
+            );
+
+            setInputValue(
+                "exclusiveMinimumPayingPax",
+                12
+            );
+
+            setInputValue(
+                "exclusiveFreeStartsAt",
+                13
+            );
+
+            setInputValue(
+                "exclusiveFreePax",
+                1
+            );
+
+            setInputValue(
+                "exclusiveMaxFreePax",
+                1
+            );
+
+
+            updatePackageRuleVisibility();
+
+
+            const regularScheduleEnabled =
+                document.getElementById(
+                    "regularScheduleEnabled"
+                );
+
+            const day0Enabled =
+                document.getElementById(
+                    "day0Enabled"
+                );
+
+            if (regularScheduleEnabled) {
+                regularScheduleEnabled.checked = false;
+            }
+
+            if (day0Enabled) {
+                day0Enabled.checked = true;
+            }
+
+            setInputValue(
+                "regularStartDay",
+                5
+            );
+
+            setInputValue(
+                "regularDurationDays",
+                3
+            );
+
+            setInputValue(
+                "day0Offset",
+                -1
+            );
+
+            setInputValue(
+                "pickupStartTime",
+                ""
+            );
+
+            setInputValue(
+                "pickupEndTime",
+                ""
+            );
+
+            setInputValue(
+                "departureNote",
+                ""
+            );
+
+            updateScheduleSettingsVisibility();
 
 
             // ==============================================
@@ -1897,112 +2272,144 @@ if (
             accommodation = {}
         ) {
 
-            if (
-                !accommodationList
-            ) {
-                return;
-            }
-
+            if (!accommodationList) return;
 
             accommodationCount++;
 
+            const card = document.createElement("div");
+            card.className = "accommodation-card";
 
-            const card =
-                document.createElement(
-                    "div"
-                );
-
-
-            card.className =
-                "accommodation-card";
-
-
-            card.dataset.existingPhoto =
+            const legacyPhoto =
+                accommodation.mainPhoto ||
+                accommodation.coverPhoto ||
                 accommodation.photo ||
                 "";
 
+            const existingGallery =
+                Array.isArray(accommodation.gallery)
+                    ? accommodation.gallery
+                        .map(item =>
+                            typeof item === "string"
+                                ? item
+                                : item?.url
+                        )
+                        .filter(Boolean)
+                    : [];
+
+            card.dataset.existingPhoto = legacyPhoto;
+            card.dataset.existingGallery =
+                JSON.stringify(existingGallery);
+            card.dataset.accommodationId =
+                accommodation.id ||
+                "";
+
+            const amenitiesValue =
+                Array.isArray(accommodation.amenities)
+                    ? accommodation.amenities.join("\n")
+                    : (accommodation.amenities || "");
+
+            const maxGuests =
+                Number(accommodation.maxGuests) ||
+                Number(
+                    String(accommodation.capacity || "")
+                        .match(/\d+/)?.[0]
+                ) ||
+                2;
+
+            const pricePerNight =
+                normalizePrice(
+                    accommodation.pricePerNight ??
+                    accommodation.price ??
+                    0
+                );
+
+            const resortName =
+                accommodation.resortName ||
+                accommodation.resort ||
+                "";
+
+            const defaultAvailableUnits =
+                Math.max(
+                    0,
+                    Number(
+                        accommodation.defaultAvailableUnits ??
+                        accommodation.defaultUnits ??
+                        accommodation.availableUnits ??
+                        0
+                    ) || 0
+                );
+
+            const isActive =
+                accommodation.active !== false &&
+                accommodation.status !== "hidden";
 
             card.innerHTML = `
 
-                <div
-                    class="accommodation-card-header"
-                >
+                <div class="accommodation-card-header">
 
-                    <div
-                        class="accommodation-card-heading"
-                    >
+                    <div class="accommodation-card-heading">
 
-                        <span
-                            class="accommodation-card-icon"
-                        >
-
-                            <i
-                                class="fa-solid fa-bed"
-                            ></i>
-
+                        <span class="accommodation-card-icon">
+                            <i class="fa-solid fa-bed"></i>
                         </span>
 
-
                         <div>
-
                             <strong>
-
-                                Accommodation
-                                ${accommodationCount}
-
+                                Accommodation ${accommodationCount}
                             </strong>
-
-
                             <small>
-
-                                Configure stay details
-                                and optional upgrade pricing.
-
+                                Photos, room details and per-night pricing
                             </small>
-
                         </div>
 
                     </div>
 
+                    <div class="accommodation-card-actions">
+                        <button
+                            type="button"
+                            class="toggle-accommodation"
+                            aria-expanded="false"
+                        >
+                            <i class="fa-solid fa-chevron-down"></i>
+                            <span>Edit</span>
+                        </button>
 
-                    <button
+                        <button
                         type="button"
                         class="remove-accommodation"
                         title="Remove accommodation"
                         aria-label="Remove accommodation ${accommodationCount}"
                     >
-
-                        <i
-                            class="fa-regular fa-trash-can"
-                        ></i>
-
-
-                        <span>
-                            Remove
-                        </span>
-
-                    </button>
+                        <i class="fa-regular fa-trash-can"></i>
+                        <span>Remove</span>
+                        </button>
+                    </div>
 
                 </div>
 
-
-                <div
-                    class="accommodation-layout"
+                <button
+                    type="button"
+                    class="accommodation-compact-summary"
                 >
+                    <strong class="compact-accommodation-name">
+                        ${escapeHtml(accommodation.name || "New Accommodation")}
+                    </strong>
+                    <span class="compact-resort-name">
+                        ${escapeHtml(resortName || "Resort not set")}
+                    </span>
+                    <span class="compact-separator">•</span>
+                    <span class="compact-units">
+                        ${escapeHtml(defaultAvailableUnits)} unit${defaultAvailableUnits === 1 ? "" : "s"}
+                    </span>
+                </button>
 
+                <div class="accommodation-layout">
 
-                    <div
-                        class="accommodation-photo-column"
-                    >
+                    <div class="accommodation-photo-column">
 
-                        <label>
-                            Accommodation Photo
-                        </label>
+                        <label>Main Photo</label>
 
-
-                        <div
-                            class="accommodation-photo-upload"
-                        >
+                        <div class="accommodation-photo-upload">
 
                             <input
                                 type="file"
@@ -2011,255 +2418,180 @@ if (
                                 hidden
                             >
 
-
                             <button
                                 type="button"
                                 class="accommodation-upload-button"
                             >
-
-                                <span
-                                    class="accommodation-upload-icon"
-                                >
-
-                                    <i
-                                        class="fa-regular fa-image"
-                                    ></i>
-
+                                <span class="accommodation-upload-icon">
+                                    <i class="fa-regular fa-image"></i>
                                 </span>
-
-
-                                <strong>
-                                    Add Photo
-                                </strong>
-
-
-                                <small>
-                                    JPG, PNG or WEBP
-                                </small>
-
+                                <strong>Add Main Photo</strong>
+                                <small>JPG, PNG or WEBP</small>
                             </button>
 
+                            <div class="accommodation-photo-preview"></div>
 
-                            <div
-                                class="accommodation-photo-preview"
-                            ></div>
+                        </div>
+
+                        <div class="accommodation-gallery-block">
+
+                            <div class="accommodation-gallery-head">
+                                <div>
+                                    <strong>Other Photos</strong>
+                                    <small>Shown inside the customer room modal.</small>
+                                </div>
+
+                                <button
+                                    type="button"
+                                    class="accommodation-gallery-add"
+                                >
+                                    <i class="fa-solid fa-plus"></i>
+                                    Add Photos
+                                </button>
+                            </div>
+
+                            <input
+                                type="file"
+                                class="accommodation-gallery-input"
+                                accept="image/*"
+                                multiple
+                                hidden
+                            >
+
+                            <div class="accommodation-gallery-preview"></div>
 
                         </div>
 
                     </div>
 
+                    <div class="accommodation-fields-column">
 
-                    <div
-                        class="accommodation-fields-column"
-                    >
+                        <div class="accommodation-grid">
 
+                            <div class="accommodation-field full">
+                                <label>Resort Name <span class="accommodation-required">*</span></label>
+                                <input
+                                    type="text"
+                                    class="accommodation-resort-name"
+                                    value="${escapeHtml(resortName)}"
+                                    placeholder="e.g. Tala Resort"
+                                    required
+                                >
+                                <small class="accommodation-field-help">
+                                    Automatically follows this accommodation in Trip Operations.
+                                </small>
+                            </div>
 
-                        <div
-                            class="accommodation-grid"
-                        >
-
-
-                            <div
-                                class="accommodation-field full"
-                            >
-
-                                <label>
-                                    Accommodation Name
-                                </label>
-
-
+                            <div class="accommodation-field full">
+                                <label>Accommodation Name <span class="accommodation-required">*</span></label>
                                 <input
                                     type="text"
                                     class="accommodation-name"
-                                    value="${escapeHtml(
-                                        accommodation.name ||
-                                        ""
-                                    )}"
-                                    placeholder="e.g. Tent Accommodation"
+                                    required
+                                    value="${escapeHtml(accommodation.name || "")}"
+                                    placeholder="e.g. Solo Room Upgrade"
                                 >
-
                             </div>
 
-
-                            <div
-                                class="accommodation-field"
-                            >
-
-                                <label>
-                                    Capacity
-                                </label>
-
-
+                            <div class="accommodation-field">
+                                <label>Maximum Guests <span class="accommodation-required">*</span></label>
                                 <input
-                                    type="text"
-                                    class="accommodation-capacity"
-                                    value="${escapeHtml(
-                                        accommodation.capacity ||
-                                        ""
-                                    )}"
-                                    placeholder="e.g. Good for 2–4 persons"
+                                    type="number"
+                                    class="accommodation-max-guests"
+                                    min="1"
+                                    step="1"
+                                    value="${escapeHtml(maxGuests)}"
+                                    required
                                 >
-
                             </div>
 
-
-                            <div
-                                class="accommodation-field"
-                            >
-
-                                <label>
-                                    Type
-                                </label>
-
-
-                                <select
-                                    class="accommodation-type"
+                            <div class="accommodation-field">
+                                <label>Default Available Units <span class="accommodation-required">*</span></label>
+                                <input
+                                    type="number"
+                                    class="accommodation-default-units"
+                                    min="0"
+                                    step="1"
+                                    value="${escapeHtml(defaultAvailableUnits)}"
+                                    required
                                 >
+                                <small class="accommodation-field-help">
+                                    Starting inventory copied to newly created schedules.
+                                </small>
+                            </div>
 
+                            <div class="accommodation-field">
+                                <label>Option Type <span class="accommodation-required">*</span></label>
+                                <select class="accommodation-type" required>
                                     <option
                                         value="included"
-                                        ${
-                                            accommodation.type ===
-                                            "included"
-                                                ? "selected"
-                                                : ""
-                                        }
+                                        ${accommodation.type === "included" ? "selected" : ""}
                                     >
-
                                         Included in Package
-
                                     </option>
-
-
                                     <option
                                         value="additional"
                                         ${
-                                            accommodation.type ===
-                                            "additional"
+                                            accommodation.type === "additional" ||
+                                            !accommodation.type
                                                 ? "selected"
                                                 : ""
                                         }
                                     >
-
-                                        Additional Upgrade
-
+                                        Optional Upgrade
                                     </option>
-
                                 </select>
-
                             </div>
 
-
-                                                        <div
-                                class="accommodation-field"
-                            >
-
-                                <label>
-                                    Pricing Type
-                                </label>
-
-
-                                <select
-                                    class="accommodation-price-type"
-                                >
-
-                                    <option
-                                        value="included"
-                                        ${
-                                            (
-                                                accommodation.priceType ||
-                                                (
-                                                    accommodation.type === "included"
-                                                        ? "included"
-                                                        : "per_night"
-                                                )
-                                            ) === "included"
-                                                ? "selected"
-                                                : ""
-                                        }
-                                    >
-                                        Included
-                                    </option>
-
-
-                                    <option
-                                        value="per_night"
-                                        ${
-                                            (
-                                                accommodation.priceType ||
-                                                (
-                                                    accommodation.type === "additional"
-                                                        ? "per_night"
-                                                        : ""
-                                                )
-                                            ) === "per_night"
-                                                ? "selected"
-                                                : ""
-                                        }
-                                    >
-                                        Per Night
-                                    </option>
-
-
-                                    <option
-                                        value="per_person_night"
-                                        ${
-                                            accommodation.priceType ===
-                                            "per_person_night"
-                                                ? "selected"
-                                                : ""
-                                        }
-                                    >
-                                        Per Person / Night
-                                    </option>
-
-
-                                    <option
-                                        value="flat_rate"
-                                        ${
-                                            accommodation.priceType ===
-                                            "flat_rate"
-                                                ? "selected"
-                                                : ""
-                                        }
-                                    >
-                                        Flat Rate
-                                    </option>
-
-                                </select>
-
-                            </div>
-
-                            <div
-                                class="accommodation-field full"
-                            >
-
-                                <label>
-                                    Additional Price
-                                </label>
-
-
-                                <div
-                                    class="accommodation-price-wrap"
-                                >
-
-                                    <span>
-                                        ₱
-                                    </span>
-
-
+                            <div class="accommodation-field">
+                                <label>Price per Night <span class="accommodation-required">*</span></label>
+                                <div class="accommodation-price-wrap">
+                                    <span>₱</span>
                                     <input
-                                        type="text"
+                                        type="number"
                                         class="accommodation-price"
-                                        value="${escapeHtml(
-                                            accommodation.price ||
-                                            "TBD"
-                                        )}"
-                                        placeholder="0 or TBD"
+                                        min="0"
+                                        step="0.01"
+                                        value="${escapeHtml(pricePerNight)}"
+                                        placeholder="1500"
                                     >
-
                                 </div>
+                                <small class="accommodation-field-help">
+                                    Customer total = price × nights × rooms.
+                                </small>
+                            </div>
 
+                            <div class="accommodation-field">
+                                <label>Status <span class="accommodation-required">*</span></label>
+                                <select class="accommodation-status" required>
+                                    <option value="active" ${isActive ? "selected" : ""}>
+                                        Active
+                                    </option>
+                                    <option value="hidden" ${!isActive ? "selected" : ""}>
+                                        Hidden
+                                    </option>
+                                </select>
+                            </div>
+
+                            <div class="accommodation-field full">
+                                <label>Room Description</label>
+                                <textarea
+                                    class="accommodation-description"
+                                    rows="4"
+                                    placeholder="Describe the room, location, sleeping setup, bathroom, air-conditioning, etc."
+                                >${escapeHtml(accommodation.description || "")}</textarea>
+                            </div>
+
+                            <div class="accommodation-field full">
+                                <label>Room Details / Amenities</label>
+                                <textarea
+                                    class="accommodation-amenities"
+                                    rows="4"
+                                    placeholder="One per line, e.g.&#10;Air-conditioned&#10;Private CR&#10;Beachfront&#10;Good for couples"
+                                >${escapeHtml(amenitiesValue)}</textarea>
+                                <small class="accommodation-field-help">
+                                    Enter one detail per line. These will appear in the customer room details modal.
+                                </small>
                             </div>
 
                         </div>
@@ -2267,236 +2599,483 @@ if (
                     </div>
 
                 </div>
-
             `;
 
+            accommodationList.appendChild(card);
 
-            accommodationList.appendChild(
-                card
+            updateAccommodationCompactSummary(card);
+            setAccommodationCardExpanded(card, false);
+
+
+            const accommodationTypeSelect =
+                card.querySelector(".accommodation-type");
+
+            const accommodationPriceInput =
+                card.querySelector(".accommodation-price");
+
+            function syncAccommodationPriceState() {
+                if (
+                    !accommodationTypeSelect ||
+                    !accommodationPriceInput
+                ) {
+                    return;
+                }
+
+                const included =
+                    accommodationTypeSelect.value ===
+                    "included";
+
+                if (included) {
+                    accommodationPriceInput.value = "0";
+                    accommodationPriceInput.disabled = true;
+                } else {
+                    accommodationPriceInput.disabled = false;
+                }
+            }
+
+            accommodationTypeSelect?.addEventListener(
+                "change",
+                syncAccommodationPriceState
             );
 
+            syncAccommodationPriceState();
 
-            // ==================================================
-            // PHOTO ELEMENTS
-            // ==================================================
 
             const photoInput =
-                card.querySelector(
-                    ".accommodation-photo-input"
-                );
-
-
+                card.querySelector(".accommodation-photo-input");
             const uploadButton =
-                card.querySelector(
-                    ".accommodation-upload-button"
-                );
-
-
+                card.querySelector(".accommodation-upload-button");
             const preview =
-                card.querySelector(
-                    ".accommodation-photo-preview"
-                );
+                card.querySelector(".accommodation-photo-preview");
 
-
-            // ==================================================
-            // EXISTING PHOTO
-            // ==================================================
-
-            if (
-                accommodation.photo
-            ) {
+            function renderMainPhoto(src) {
+                if (!src) {
+                    preview.innerHTML = "";
+                    uploadButton.style.display = "flex";
+                    return;
+                }
 
                 preview.innerHTML = `
-
-                    <div
-                        class="accommodation-preview-image"
-                    >
-
+                    <div class="accommodation-preview-image">
                         <img
-                            src="${escapeHtml(
-                                accommodation.photo
-                            )}"
-                            alt="Accommodation photo"
+                            src="${escapeHtml(src)}"
+                            alt="Accommodation main photo"
                         >
-
-
                         <button
                             type="button"
                             class="remove-accommodation-photo"
-                            title="Remove photo"
-                            aria-label="Remove accommodation photo"
+                            title="Remove main photo"
+                            aria-label="Remove accommodation main photo"
                         >
-
-                            <i
-                                class="fa-solid fa-trash-can"
-                            ></i>
-
+                            <i class="fa-solid fa-trash-can"></i>
                         </button>
-
                     </div>
-
                 `;
 
-
-                uploadButton.style.display =
-                    "none";
-
+                uploadButton.style.display = "none";
             }
 
-
-            // ==================================================
-            // OPEN PHOTO SELECTOR
-            // ==================================================
+            renderMainPhoto(legacyPhoto);
 
             uploadButton?.addEventListener(
                 "click",
-                () => {
-
-                    photoInput?.click();
-
-                }
+                () => photoInput?.click()
             );
-
-
-            // ==================================================
-            // NEW PHOTO
-            // ==================================================
 
             photoInput?.addEventListener(
                 "change",
                 () => {
 
-
                     const file =
                         photoInput.files?.[0];
 
+                    if (!file) return;
 
-                    if (
-                        !file
-                    ) {
+                    if (!file.type.startsWith("image/")) {
+                        alert("Please select a valid image file.");
+                        photoInput.value = "";
                         return;
                     }
-
-
-                    if (
-                        !file.type.startsWith(
-                            "image/"
-                        )
-                    ) {
-
-                        alert(
-                            "Please select a valid image file."
-                        );
-
-
-                        photoInput.value =
-                            "";
-
-
-                        return;
-
-                    }
-
 
                     const reader =
                         new FileReader();
 
-
                     reader.onload =
                         event => {
 
+                            renderMainPhoto(
+                                event.target.result
+                            );
 
-                            preview.innerHTML = `
-
-                                <div
-                                    class="accommodation-preview-image"
-                                >
-
-                                    <img
-                                        src="${event.target.result}"
-                                        alt="Accommodation photo"
-                                    >
-
-
-                                    <button
-                                        type="button"
-                                        class="remove-accommodation-photo"
-                                        title="Remove photo"
-                                        aria-label="Remove accommodation photo"
-                                    >
-
-                                        <i
-                                            class="fa-solid fa-trash-can"
-                                        ></i>
-
-                                    </button>
-
-                                </div>
-
-                            `;
-
-
-                            uploadButton.style.display =
-                                "none";
-
-
-                            card.dataset
-                                .existingPhoto =
+                            card.dataset.existingPhoto =
                                 "";
 
                         };
 
-
-                    reader.readAsDataURL(
-                        file
-                    );
+                    reader.readAsDataURL(file);
 
                 }
             );
 
-
-            // ==================================================
-            // REMOVE PHOTO
-            // ==================================================
-
             preview?.addEventListener(
                 "click",
                 event => {
-
 
                     const removePhotoButton =
                         event.target.closest(
                             ".remove-accommodation-photo"
                         );
 
+                    if (!removePhotoButton) return;
 
-                    if (
-                        !removePhotoButton
-                    ) {
+                    photoInput.value = "";
+                    card.dataset.existingPhoto = "";
+                    renderMainPhoto("");
+
+                }
+            );
+
+            // ==============================================
+            // ACCOMMODATION GALLERY
+            // ==============================================
+
+            const galleryInput =
+                card.querySelector(
+                    ".accommodation-gallery-input"
+                );
+
+            const galleryAddButton =
+                card.querySelector(
+                    ".accommodation-gallery-add"
+                );
+
+            const galleryPreview =
+                card.querySelector(
+                    ".accommodation-gallery-preview"
+                );
+
+            card._accommodationGalleryFiles = [];
+
+            function getExistingGallery() {
+
+                try {
+                    return JSON.parse(
+                        card.dataset.existingGallery ||
+                        "[]"
+                    );
+                } catch {
+                    return [];
+                }
+
+            }
+
+            function renderAccommodationGallery() {
+
+                const saved =
+                    getExistingGallery();
+
+                const newFiles =
+                    card._accommodationGalleryFiles ||
+                    [];
+
+                const savedHtml =
+                    saved.map(
+                        (url, index) => `
+                            <div class="accommodation-gallery-thumb">
+                                <img
+                                    src="${escapeHtml(url)}"
+                                    alt="Saved room photo ${index + 1}"
+                                >
+                                <button
+                                    type="button"
+                                    class="remove-saved-accommodation-gallery"
+                                    data-index="${index}"
+                                    aria-label="Remove saved room photo"
+                                >
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
+                            </div>
+                        `
+                    ).join("");
+
+                const newHtml =
+                    newFiles.map(
+                        (file, index) => `
+                            <div class="accommodation-gallery-thumb">
+                                <img
+                                    src="${escapeHtml(
+                                        URL.createObjectURL(file)
+                                    )}"
+                                    alt="New room photo ${index + 1}"
+                                >
+                                <button
+                                    type="button"
+                                    class="remove-new-accommodation-gallery"
+                                    data-index="${index}"
+                                    aria-label="Remove new room photo"
+                                >
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
+                            </div>
+                        `
+                    ).join("");
+
+                galleryPreview.innerHTML =
+                    savedHtml +
+                    newHtml +
+                    (
+                        saved.length === 0 &&
+                        newFiles.length === 0
+                            ? `<div class="accommodation-gallery-empty">
+                                   No additional photos yet.
+                               </div>`
+                            : ""
+                    );
+
+            }
+
+            renderAccommodationGallery();
+
+            galleryAddButton?.addEventListener(
+                "click",
+                () => galleryInput?.click()
+            );
+
+            galleryInput?.addEventListener(
+                "change",
+                () => {
+
+                    const files =
+                        Array.from(
+                            galleryInput.files ||
+                            []
+                        ).filter(
+                            file =>
+                                file.type.startsWith(
+                                    "image/"
+                                )
+                        );
+
+                    if (files.length === 0) return;
+
+                    card._accommodationGalleryFiles.push(
+                        ...files
+                    );
+
+                    galleryInput.value = "";
+
+                    renderAccommodationGallery();
+
+                }
+            );
+
+            galleryPreview?.addEventListener(
+                "click",
+                event => {
+
+                    const savedRemove =
+                        event.target.closest(
+                            ".remove-saved-accommodation-gallery"
+                        );
+
+                    if (savedRemove) {
+
+                        const saved =
+                            getExistingGallery();
+
+                        saved.splice(
+                            Number(savedRemove.dataset.index),
+                            1
+                        );
+
+                        card.dataset.existingGallery =
+                            JSON.stringify(saved);
+
+                        renderAccommodationGallery();
                         return;
+
                     }
 
+                    const newRemove =
+                        event.target.closest(
+                            ".remove-new-accommodation-gallery"
+                        );
 
-                    photoInput.value =
-                        "";
+                    if (newRemove) {
 
+                        card._accommodationGalleryFiles.splice(
+                            Number(newRemove.dataset.index),
+                            1
+                        );
 
-                    preview.innerHTML =
-                        "";
+                        renderAccommodationGallery();
 
-
-                    card.dataset
-                        .existingPhoto =
-                        "";
-
-
-                    uploadButton.style.display =
-                        "flex";
+                    }
 
                 }
             );
 
         }
+
+        // ======================================================
+        // COMPACT / EXPAND ACCOMMODATION
+        // ======================================================
+
+        function setAccommodationCardExpanded(
+            card,
+            expanded
+        ) {
+            if (!card) return;
+
+            card.classList.toggle(
+                "is-expanded",
+                expanded
+            );
+
+            const toggle =
+                card.querySelector(
+                    ".toggle-accommodation"
+                );
+
+            toggle?.setAttribute(
+                "aria-expanded",
+                String(expanded)
+            );
+
+            const icon =
+                toggle?.querySelector("i");
+
+            const label =
+                toggle?.querySelector("span");
+
+            if (icon) {
+                icon.className =
+                    expanded
+                        ? "fa-solid fa-chevron-up"
+                        : "fa-solid fa-chevron-down";
+            }
+
+            if (label) {
+                label.textContent =
+                    expanded
+                        ? "Minimize"
+                        : "Edit";
+            }
+        }
+
+        function updateAccommodationCompactSummary(
+            card
+        ) {
+            if (!card) return;
+
+            const name =
+                card.querySelector(
+                    ".accommodation-name"
+                )?.value?.trim() ||
+                "New Accommodation";
+
+            const resort =
+                card.querySelector(
+                    ".accommodation-resort-name"
+                )?.value?.trim() ||
+                "Resort not set";
+
+            const units =
+                Math.max(
+                    0,
+                    Number(
+                        card.querySelector(
+                            ".accommodation-default-units"
+                        )?.value
+                    ) || 0
+                );
+
+            const nameEl =
+                card.querySelector(
+                    ".compact-accommodation-name"
+                );
+
+            const resortEl =
+                card.querySelector(
+                    ".compact-resort-name"
+                );
+
+            const unitsEl =
+                card.querySelector(
+                    ".compact-units"
+                );
+
+            if (nameEl) {
+                nameEl.textContent = name;
+            }
+
+            if (resortEl) {
+                resortEl.textContent = resort;
+            }
+
+            if (unitsEl) {
+                unitsEl.textContent =
+                    `${units} unit${units === 1 ? "" : "s"}`;
+            }
+        }
+
+        accommodationList?.addEventListener(
+            "click",
+            event => {
+                const toggle =
+                    event.target.closest(
+                        ".toggle-accommodation, .accommodation-compact-summary"
+                    );
+
+                if (!toggle) return;
+
+                const card =
+                    toggle.closest(
+                        ".accommodation-card"
+                    );
+
+                if (!card) return;
+
+                setAccommodationCardExpanded(
+                    card,
+                    !card.classList.contains(
+                        "is-expanded"
+                    )
+                );
+            }
+        );
+
+        accommodationList?.addEventListener(
+            "input",
+            event => {
+                const card =
+                    event.target.closest(
+                        ".accommodation-card"
+                    );
+
+                if (card) {
+                    updateAccommodationCompactSummary(
+                        card
+                    );
+                }
+            }
+        );
+
+        accommodationList?.addEventListener(
+            "change",
+            event => {
+                const card =
+                    event.target.closest(
+                        ".accommodation-card"
+                    );
+
+                if (card) {
+                    updateAccommodationCompactSummary(
+                        card
+                    );
+                }
+            }
+        );
 
 
         // ======================================================
@@ -3083,8 +3662,154 @@ if (
             );
 
 
+            const passengerPricing =
+                packageItem.passengerPricing ||
+                {};
+
+            const exclusiveTour =
+                packageItem.exclusiveTour ||
+                {};
+
+
+            const kidsPricingEnabled =
+                document.getElementById(
+                    "kidsPricingEnabled"
+                );
+
+            const exclusiveTourEnabled =
+                document.getElementById(
+                    "exclusiveTourEnabled"
+                );
+
+
+            if (kidsPricingEnabled) {
+
+                kidsPricingEnabled.checked =
+                    passengerPricing
+                        .kidsPricingEnabled === true;
+
+            }
+
+
+            if (exclusiveTourEnabled) {
+
+                exclusiveTourEnabled.checked =
+                    exclusiveTour
+                        .enabled === true;
+
+            }
+
+
             setInputValue(
-                "formSchedule",
+                "childFreeMaxAge",
+                passengerPricing
+                    .childFreeMaxAge ?? 3
+            );
+
+            setInputValue(
+                "childDiscountMinAge",
+                passengerPricing
+                    .childDiscountMinAge ?? 4
+            );
+
+            setInputValue(
+                "childDiscountMaxAge",
+                passengerPricing
+                    .childDiscountMaxAge ?? 8
+            );
+
+            setInputValue(
+                "childDiscountAmount",
+                passengerPricing
+                    .childDiscountAmount ?? 500
+            );
+
+            setInputValue(
+                "exclusiveMinimumPayingPax",
+                exclusiveTour
+                    .minimumPayingPax ?? 12
+            );
+
+            setInputValue(
+                "exclusiveFreeStartsAt",
+                exclusiveTour
+                    .freeStartsAt ?? 13
+            );
+
+            setInputValue(
+                "exclusiveFreePax",
+                exclusiveTour
+                    .freePax ?? 1
+            );
+
+            setInputValue(
+                "exclusiveMaxFreePax",
+                exclusiveTour
+                    .maxFreePax ?? 1
+            );
+
+
+            updatePackageRuleVisibility();
+
+
+            const scheduleSettings =
+                packageItem.scheduleSettings ||
+                {};
+
+            const regularScheduleEnabled =
+                document.getElementById(
+                    "regularScheduleEnabled"
+                );
+
+            const day0Enabled =
+                document.getElementById(
+                    "day0Enabled"
+                );
+
+            if (regularScheduleEnabled) {
+                regularScheduleEnabled.checked =
+                    scheduleSettings.enabled === true;
+            }
+
+            if (day0Enabled) {
+                day0Enabled.checked =
+                    scheduleSettings.day0Enabled !== false;
+            }
+
+            setInputValue(
+                "regularStartDay",
+                scheduleSettings.startDay ?? 5
+            );
+
+            setInputValue(
+                "regularDurationDays",
+                scheduleSettings.durationDays ?? 3
+            );
+
+            setInputValue(
+                "day0Offset",
+                scheduleSettings.day0Offset ?? -1
+            );
+
+            setInputValue(
+                "pickupStartTime",
+                scheduleSettings.pickupStartTime || ""
+            );
+
+            setInputValue(
+                "pickupEndTime",
+                scheduleSettings.pickupEndTime || ""
+            );
+
+            setInputValue(
+                "departureNote",
+                scheduleSettings.departureNote || ""
+            );
+
+            updateScheduleSettingsVisibility();
+
+
+            populateItineraryBuilder(
                 packageItem.itinerary
             );
 
@@ -3732,6 +4457,473 @@ if (
 // COLLECT PICK UP LOCATIONS
 // ======================================================
 
+// ======================================================
+// ITINERARY BUILDER
+// Supports:
+// 1) Schedule entries: time + activity
+// 2) Section entries: title + bullet/activity list
+// Old itinerary rows remain compatible.
+// ======================================================
+
+function getItineraryList(day) {
+    const map = {
+        day0: "itineraryDay0List",
+        day1: "itineraryDay1List",
+        day2: "itineraryDay2List",
+        day3: "itineraryDay3List"
+    };
+
+    return document.getElementById(map[day]);
+}
+
+function addItineraryRow(day, item = {}) {
+    const list = getItineraryList(day);
+    if (!list) return;
+
+    const row = document.createElement("div");
+    row.className = "itinerary-schedule-row";
+    row.dataset.entryType = "schedule";
+
+    row.innerHTML = `
+        <div class="itinerary-field">
+            <label>Time</label>
+            <input
+                type="text"
+                class="itinerary-time"
+                placeholder="e.g. 05:00 AM"
+                value="${escapeHtml(item.time || "")}"
+            >
+        </div>
+
+        <div class="itinerary-field activity">
+            <label>Activity / Schedule</label>
+            <input
+                type="text"
+                class="itinerary-activity"
+                placeholder="e.g. Wake-up call"
+                value="${escapeHtml(item.activity || "")}"
+            >
+        </div>
+
+        <button
+            type="button"
+            class="itinerary-remove-row"
+            title="Remove schedule"
+            aria-label="Remove schedule"
+        >
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+    `;
+
+    row.querySelector(".itinerary-remove-row")?.addEventListener(
+        "click",
+        () => row.remove()
+    );
+
+    list.appendChild(row);
+}
+
+function addItinerarySectionItem(section, value = "") {
+    const itemsList = section.querySelector(".itinerary-section-items");
+    if (!itemsList) return;
+
+    const itemRow = document.createElement("div");
+    itemRow.className = "itinerary-section-item-row";
+
+    itemRow.innerHTML = `
+        <span class="itinerary-section-bullet">
+            <i class="fa-solid fa-circle"></i>
+        </span>
+
+        <input
+            type="text"
+            class="itinerary-section-item"
+            placeholder="e.g. Puno ng Walang Forever"
+            value="${escapeHtml(value)}"
+        >
+
+        <button
+            type="button"
+            class="itinerary-remove-item"
+            title="Remove item"
+            aria-label="Remove activity"
+        >
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+    `;
+
+    itemRow.querySelector(".itinerary-remove-item")?.addEventListener(
+        "click",
+        () => itemRow.remove()
+    );
+
+    itemsList.appendChild(itemRow);
+}
+
+function addItinerarySection(day, item = {}) {
+    const list = getItineraryList(day);
+    if (!list) return;
+
+    const section = document.createElement("div");
+    section.className = "itinerary-activity-section";
+    section.dataset.entryType = "section";
+
+    section.innerHTML = `
+        <div class="itinerary-section-header">
+            <div class="itinerary-section-title-field">
+                <label>Section Title</label>
+                <input
+                    type="text"
+                    class="itinerary-section-title"
+                    placeholder="e.g. PLACES TO VISIT"
+                    value="${escapeHtml(item.title || "")}"
+                >
+            </div>
+
+            <button
+                type="button"
+                class="itinerary-remove-section"
+                title="Remove section"
+                aria-label="Remove section"
+            >
+                <i class="fa-solid fa-trash-can"></i>
+            </button>
+        </div>
+
+        <div class="itinerary-section-items"></div>
+
+        <button type="button" class="itinerary-add-section-item">
+            <i class="fa-solid fa-plus"></i>
+            Add Activity / Item
+        </button>
+    `;
+
+    section.querySelector(".itinerary-remove-section")?.addEventListener(
+        "click",
+        () => section.remove()
+    );
+
+    section.querySelector(".itinerary-add-section-item")?.addEventListener(
+        "click",
+        () => addItinerarySectionItem(section)
+    );
+
+    const items = Array.isArray(item.items)
+        ? item.items
+        : [];
+
+    if (items.length) {
+        items.forEach(value => addItinerarySectionItem(section, value));
+    } else {
+        addItinerarySectionItem(section);
+    }
+
+    list.appendChild(section);
+}
+
+function normalizeItineraryEntry(item) {
+    if (!item) return null;
+
+    // New section format.
+    if (
+        item.type === "section" ||
+        (
+            item.title &&
+            Array.isArray(item.items) &&
+            !item.time &&
+            !item.activity
+        )
+    ) {
+        return {
+            type: "section",
+            title: item.title || "",
+            items: Array.isArray(item.items)
+                ? item.items.filter(Boolean)
+                : []
+        };
+    }
+
+    // Existing/old schedule format.
+    if (
+        typeof item === "object" &&
+        !Array.isArray(item)
+    ) {
+        return {
+            type: "schedule",
+            time: item.time || "",
+            activity: item.activity || ""
+        };
+    }
+
+    // Very old plain-string entry.
+    if (typeof item === "string") {
+        return {
+            type: "schedule",
+            time: "",
+            activity: item
+        };
+    }
+
+    return null;
+}
+
+function normalizeItinerary(value) {
+    const empty = {
+        day0: [],
+        day1: [],
+        day2: [],
+        day3: [],
+        notes: ""
+    };
+
+    if (!value) {
+        return empty;
+    }
+
+    // Current object format.
+    if (
+        typeof value === "object" &&
+        !Array.isArray(value)
+    ) {
+        const result = {
+            ...empty,
+            notes: value.notes || ""
+        };
+
+        ["day0", "day1", "day2", "day3"].forEach(day => {
+            const source = Array.isArray(value[day])
+                ? value[day]
+                : [];
+
+            result[day] = source
+                .map(normalizeItineraryEntry)
+                .filter(Boolean);
+        });
+
+        return result;
+    }
+
+    // Backward compatibility for the original textarea itinerary.
+    const result = { ...empty };
+    let currentDay = "day1";
+
+    String(value)
+        .split(/\r?\n/)
+        .forEach(rawLine => {
+            const line = rawLine.trim();
+            if (!line) return;
+
+            const heading = line.match(/^DAY\s*([0-3])\b/i);
+
+            if (heading) {
+                currentDay = `day${heading[1]}`;
+                return;
+            }
+
+            const parts = line.split(/\s+[—–-]\s+/);
+
+            if (parts.length >= 2) {
+                result[currentDay].push({
+                    type: "schedule",
+                    time: parts.shift().trim(),
+                    activity: parts.join(" - ").trim()
+                });
+            } else {
+                result[currentDay].push({
+                    type: "schedule",
+                    time: "",
+                    activity: line
+                });
+            }
+        });
+
+    return result;
+}
+
+function populateItineraryBuilder(value) {
+    const itinerary = normalizeItinerary(value);
+
+    ["day0", "day1", "day2", "day3"].forEach(day => {
+        const list = getItineraryList(day);
+        if (!list) return;
+
+        list.innerHTML = "";
+
+        itinerary[day].forEach(item => {
+            if (item.type === "section") {
+                addItinerarySection(day, item);
+            } else {
+                addItineraryRow(day, item);
+            }
+        });
+
+        // Keep one blank schedule row only for a completely empty day.
+        if (!itinerary[day].length) {
+            addItineraryRow(day);
+        }
+    });
+
+    setInputValue(
+        "itineraryNotes",
+        itinerary.notes
+    );
+}
+
+function resetItineraryBuilder() {
+    populateItineraryBuilder({
+        day0: [],
+        day1: [],
+        day2: [],
+        day3: [],
+        notes: ""
+    });
+
+    document
+        .querySelectorAll(".itinerary-tab")
+        .forEach(
+            (tab, index) =>
+                tab.classList.toggle(
+                    "active",
+                    index === 0
+                )
+        );
+
+    document
+        .querySelectorAll(".itinerary-panel")
+        .forEach(
+            panel =>
+                panel.classList.toggle(
+                    "active",
+                    panel.dataset.itineraryPanel === "day0"
+                )
+        );
+}
+
+function collectItineraryDay(day) {
+    const list = getItineraryList(day);
+    if (!list) return [];
+
+    return Array.from(list.children)
+        .map(entry => {
+            if (
+                entry.dataset.entryType === "section" ||
+                entry.classList.contains("itinerary-activity-section")
+            ) {
+                const title =
+                    entry
+                        .querySelector(".itinerary-section-title")
+                        ?.value
+                        .trim() || "";
+
+                const items =
+                    Array.from(
+                        entry.querySelectorAll(
+                            ".itinerary-section-item"
+                        )
+                    )
+                        .map(input => input.value.trim())
+                        .filter(Boolean);
+
+                if (!title && !items.length) {
+                    return null;
+                }
+
+                return {
+                    type: "section",
+                    title,
+                    items
+                };
+            }
+
+            const time =
+                entry
+                    .querySelector(".itinerary-time")
+                    ?.value
+                    .trim() || "";
+
+            const activity =
+                entry
+                    .querySelector(".itinerary-activity")
+                    ?.value
+                    .trim() || "";
+
+            if (!time && !activity) {
+                return null;
+            }
+
+            return {
+                type: "schedule",
+                time,
+                activity
+            };
+        })
+        .filter(Boolean);
+}
+
+function collectItinerary() {
+    return {
+        day0: collectItineraryDay("day0"),
+        day1: collectItineraryDay("day1"),
+        day2: collectItineraryDay("day2"),
+        day3: collectItineraryDay("day3"),
+        notes: getInputValue("itineraryNotes")
+    };
+}
+
+document
+    .querySelectorAll(".itinerary-tab")
+    .forEach(tab => {
+        tab.addEventListener(
+            "click",
+            () => {
+                const target =
+                    tab.dataset.itineraryTab;
+
+                document
+                    .querySelectorAll(".itinerary-tab")
+                    .forEach(
+                        item =>
+                            item.classList.toggle(
+                                "active",
+                                item === tab
+                            )
+                    );
+
+                document
+                    .querySelectorAll(".itinerary-panel")
+                    .forEach(
+                        panel =>
+                            panel.classList.toggle(
+                                "active",
+                                panel.dataset.itineraryPanel === target
+                            )
+                    );
+            }
+        );
+    });
+
+document
+    .querySelectorAll(".itinerary-add-row")
+    .forEach(button => {
+        button.addEventListener(
+            "click",
+            () => addItineraryRow(
+                button.dataset.day
+            )
+        );
+    });
+
+document
+    .querySelectorAll(".itinerary-add-section")
+    .forEach(button => {
+        button.addEventListener(
+            "click",
+            () => addItinerarySection(
+                button.dataset.day
+            )
+        );
+    });
+
 function collectPickupLocations() {
 
     if (!pickupLocationList) {
@@ -3749,6 +4941,227 @@ function collectPickupLocations() {
         .filter(Boolean);
 
 }
+
+
+
+        // ======================================================
+        // REQUIRED RESORT / ACCOMMODATION VALIDATION
+        // ======================================================
+
+        function clearAccommodationValidation() {
+            accommodationList
+                ?.querySelectorAll(".accommodation-field-error")
+                .forEach(item => item.remove());
+
+            accommodationList
+                ?.querySelectorAll(".accommodation-invalid")
+                .forEach(item =>
+                    item.classList.remove("accommodation-invalid")
+                );
+        }
+
+        function showAccommodationFieldError(
+            element,
+            message
+        ) {
+            if (!element) return;
+
+            element.classList.add(
+                "accommodation-invalid"
+            );
+
+            const field =
+                element.closest(
+                    ".accommodation-field"
+                );
+
+            if (
+                field &&
+                !field.querySelector(
+                    ".accommodation-field-error"
+                )
+            ) {
+                const error =
+                    document.createElement("small");
+
+                error.className =
+                    "accommodation-field-error";
+
+                error.textContent = message;
+
+                field.appendChild(error);
+            }
+        }
+
+        function validateAccommodationCards() {
+            clearAccommodationValidation();
+
+            const cards =
+                accommodationList
+                    ? Array.from(
+                        accommodationList.querySelectorAll(
+                            ".accommodation-card"
+                        )
+                    )
+                    : [];
+
+            if (cards.length === 0) {
+                alert(
+                    "Please add at least one resort accommodation before saving."
+                );
+
+                document
+                    .getElementById(
+                        "packageSectionAccommodation"
+                    )
+                    ?.scrollIntoView({
+                        behavior: "smooth",
+                        block: "start"
+                    });
+
+                return false;
+            }
+
+            let firstInvalid = null;
+
+            const invalidate = (
+                element,
+                message
+            ) => {
+                showAccommodationFieldError(
+                    element,
+                    message
+                );
+
+                if (!firstInvalid) {
+                    firstInvalid = element;
+                }
+            };
+
+            cards.forEach(card => {
+                const resort =
+                    card.querySelector(
+                        ".accommodation-resort-name"
+                    );
+
+                const name =
+                    card.querySelector(
+                        ".accommodation-name"
+                    );
+
+                const maxGuests =
+                    card.querySelector(
+                        ".accommodation-max-guests"
+                    );
+
+                const defaultUnits =
+                    card.querySelector(
+                        ".accommodation-default-units"
+                    );
+
+                const type =
+                    card.querySelector(
+                        ".accommodation-type"
+                    );
+
+                const price =
+                    card.querySelector(
+                        ".accommodation-price"
+                    );
+
+                const status =
+                    card.querySelector(
+                        ".accommodation-status"
+                    );
+
+                if (!resort?.value?.trim()) {
+                    invalidate(
+                        resort,
+                        "Resort name is required."
+                    );
+                }
+
+                if (!name?.value?.trim()) {
+                    invalidate(
+                        name,
+                        "Accommodation name is required."
+                    );
+                }
+
+                if (
+                    maxGuests?.value === "" ||
+                    Number(maxGuests.value) < 1
+                ) {
+                    invalidate(
+                        maxGuests,
+                        "Maximum guests must be at least 1."
+                    );
+                }
+
+                if (
+                    defaultUnits?.value === "" ||
+                    Number(defaultUnits.value) < 0
+                ) {
+                    invalidate(
+                        defaultUnits,
+                        "Default available units is required."
+                    );
+                }
+
+                if (!type?.value) {
+                    invalidate(
+                        type,
+                        "Option type is required."
+                    );
+                }
+
+                if (
+                    type?.value === "additional" &&
+                    (
+                        price?.value === "" ||
+                        Number(price.value) < 0
+                    )
+                ) {
+                    invalidate(
+                        price,
+                        "Price per night is required for an upgrade."
+                    );
+                }
+
+                if (!status?.value) {
+                    invalidate(
+                        status,
+                        "Status is required."
+                    );
+                }
+            });
+
+            if (firstInvalid) {
+                const invalidCard =
+                    firstInvalid.closest(
+                        ".accommodation-card"
+                    );
+
+                setAccommodationCardExpanded(
+                    invalidCard,
+                    true
+                );
+
+                invalidCard?.scrollIntoView({
+                    behavior: "smooth",
+                    block: "center"
+                });
+
+                window.setTimeout(
+                    () => firstInvalid.focus(),
+                    300
+                );
+
+                return false;
+            }
+
+            return true;
+        }
 
 
         // ======================================================
@@ -3828,6 +5241,155 @@ function collectPickupLocations() {
                         )?.value ||
                         "active",
 
+                    passengerPricing: {
+
+                        kidsPricingEnabled:
+                            document.getElementById(
+                                "kidsPricingEnabled"
+                            )?.checked === true,
+
+                        childFreeMaxAge:
+                            Math.max(
+                                0,
+                                getNumberInputValue(
+                                    "childFreeMaxAge",
+                                    3
+                                )
+                            ),
+
+                        childDiscountMinAge:
+                            Math.max(
+                                0,
+                                getNumberInputValue(
+                                    "childDiscountMinAge",
+                                    4
+                                )
+                            ),
+
+                        childDiscountMaxAge:
+                            Math.max(
+                                0,
+                                getNumberInputValue(
+                                    "childDiscountMaxAge",
+                                    8
+                                )
+                            ),
+
+                        childDiscountAmount:
+                            Math.max(
+                                0,
+                                getNumberInputValue(
+                                    "childDiscountAmount",
+                                    500
+                                )
+                            )
+
+                    },
+
+                    exclusiveTour: {
+
+                        enabled:
+                            document.getElementById(
+                                "exclusiveTourEnabled"
+                            )?.checked === true,
+
+                        minimumPayingPax:
+                            Math.max(
+                                1,
+                                getNumberInputValue(
+                                    "exclusiveMinimumPayingPax",
+                                    12
+                                )
+                            ),
+
+                        freeStartsAt:
+                            Math.max(
+                                1,
+                                getNumberInputValue(
+                                    "exclusiveFreeStartsAt",
+                                    13
+                                )
+                            ),
+
+                        freePax:
+                            Math.max(
+                                0,
+                                getNumberInputValue(
+                                    "exclusiveFreePax",
+                                    1
+                                )
+                            ),
+
+                        maxFreePax:
+                            Math.max(
+                                0,
+                                getNumberInputValue(
+                                    "exclusiveMaxFreePax",
+                                    1
+                                )
+                            )
+
+                    },
+
+                    scheduleSettings: {
+
+                        enabled:
+                            document.getElementById(
+                                "regularScheduleEnabled"
+                            )?.checked === true,
+
+                        startDay:
+                            Math.min(
+                                6,
+                                Math.max(
+                                    0,
+                                    getNumberInputValue(
+                                        "regularStartDay",
+                                        5
+                                    )
+                                )
+                            ),
+
+                        durationDays:
+                            Math.max(
+                                1,
+                                getNumberInputValue(
+                                    "regularDurationDays",
+                                    3
+                                )
+                            ),
+
+                        day0Enabled:
+                            document.getElementById(
+                                "day0Enabled"
+                            )?.checked === true,
+
+                        day0Offset:
+                            Math.min(
+                                0,
+                                getNumberInputValue(
+                                    "day0Offset",
+                                    -1
+                                )
+                            ),
+
+                        pickupStartTime:
+                            getInputValue(
+                                "pickupStartTime"
+                            ),
+
+                        pickupEndTime:
+                            getInputValue(
+                                "pickupEndTime"
+                            ),
+
+                        departureNote:
+                            getInputValue(
+                                "departureNote"
+                            )
+
+                    },
+
                     inclusions:
                         collectInclusions(),
 
@@ -3841,9 +5403,7 @@ function collectPickupLocations() {
                         [],
 
                     itinerary:
-                        getInputValue(
-                            "formSchedule"
-                        )
+                        collectItinerary()
 
                 };
 
@@ -3906,6 +5466,104 @@ function collectPickupLocations() {
 
                     return;
 
+                }
+
+
+
+                if (
+                    packageData.passengerPricing.kidsPricingEnabled
+                ) {
+
+                    if (
+                        packageData.passengerPricing.childDiscountMinAge <=
+                        packageData.passengerPricing.childFreeMaxAge
+                    ) {
+
+                        alert(
+                            "Discounted child starting age must be higher than the FREE child maximum age."
+                        );
+
+                        document
+                            .getElementById(
+                                "childDiscountMinAge"
+                            )
+                            ?.focus();
+
+                        return;
+
+                    }
+
+
+                    if (
+                        packageData.passengerPricing.childDiscountMaxAge <
+                        packageData.passengerPricing.childDiscountMinAge
+                    ) {
+
+                        alert(
+                            "Discounted child maximum age cannot be lower than the starting age."
+                        );
+
+                        document
+                            .getElementById(
+                                "childDiscountMaxAge"
+                            )
+                            ?.focus();
+
+                        return;
+
+                    }
+
+                }
+
+
+                if (
+                    packageData.exclusiveTour.enabled
+                ) {
+
+                    if (
+                        packageData.exclusiveTour.freeStartsAt <
+                        packageData.exclusiveTour.minimumPayingPax
+                    ) {
+
+                        alert(
+                            "Free Pax Starts At cannot be lower than Minimum Paying Pax."
+                        );
+
+                        document
+                            .getElementById(
+                                "exclusiveFreeStartsAt"
+                            )
+                            ?.focus();
+
+                        return;
+
+                    }
+
+
+                    if (
+                        packageData.exclusiveTour.freePax >
+                        packageData.exclusiveTour.maxFreePax
+                    ) {
+
+                        alert(
+                            "Free Pax cannot be higher than Maximum Free Pax."
+                        );
+
+                        document
+                            .getElementById(
+                                "exclusiveFreePax"
+                            )
+                            ?.focus();
+
+                        return;
+
+                    }
+
+                }
+
+
+                if (!validateAccommodationCards()) {
+                    return;
                 }
 
 
@@ -4067,95 +5725,109 @@ function collectPickupLocations() {
                             )
                             : [];
 
+                    for (const card of accommodationCards) {
 
-                    for (
-                        const card of
-                        accommodationCards
-                    ) {
+                        const resortName =
+                            card.querySelector(
+                                ".accommodation-resort-name"
+                            )?.value?.trim() ||
+                            "";
 
                         const name =
                             card.querySelector(
                                 ".accommodation-name"
-                            )?.value
-                                ?.trim() ||
+                            )?.value?.trim() ||
                             "";
 
+                        const defaultAvailableUnits =
+                            Math.max(
+                                0,
+                                Number(
+                                    card.querySelector(
+                                        ".accommodation-default-units"
+                                    )?.value
+                                ) || 0
+                            );
 
-                        const capacity =
-                            card.querySelector(
-                                ".accommodation-capacity"
-                            )?.value
-                                ?.trim() ||
-                            "";
-
+                        const maxGuests =
+                            Math.max(
+                                1,
+                                Number(
+                                    card.querySelector(
+                                        ".accommodation-max-guests"
+                                    )?.value
+                                ) || 1
+                            );
 
                         const type =
-    card.querySelector(
-        ".accommodation-type"
-    )?.value ||
-    "included";
+                            card.querySelector(
+                                ".accommodation-type"
+                            )?.value ||
+                            "additional";
 
+                        const status =
+                            card.querySelector(
+                                ".accommodation-status"
+                            )?.value ||
+                            "active";
 
-const priceType =
-    card.querySelector(
-        ".accommodation-price-type"
-    )?.value ||
-    (
-        type === "included"
-            ? "included"
-            : "per_night"
-    );
+                        const pricePerNight =
+                            Math.max(
+                                0,
+                                normalizePrice(
+                                    card.querySelector(
+                                        ".accommodation-price"
+                                    )?.value
+                                )
+                            );
 
-
-const price =
-    card.querySelector(
-        ".accommodation-price"
-    )?.value
-        ?.trim() ||
-    "TBD";
-
-
-                        let photo =
-                            card.dataset
-                                .existingPhoto ||
+                        const description =
+                            card.querySelector(
+                                ".accommodation-description"
+                            )?.value?.trim() ||
                             "";
 
+                        const amenities =
+                            (
+                                card.querySelector(
+                                    ".accommodation-amenities"
+                                )?.value ||
+                                ""
+                            )
+                                .split(/\r?\n|,/)
+                                .map(value =>
+                                    value.trim()
+                                )
+                                .filter(Boolean);
+
+                        let mainPhoto =
+                            card.dataset.existingPhoto ||
+                            "";
 
                         const photoInput =
                             card.querySelector(
                                 ".accommodation-photo-input"
                             );
 
-
                         if (
-                            photoInput &&
-                            photoInput.files &&
-                            photoInput.files.length >
-                                0
+                            photoInput?.files?.length >
+                            0
                         ) {
 
                             const file =
                                 photoInput.files[0];
 
-
                             const safeName =
-                                file.name
-                                    .replace(
-                                        /[^a-zA-Z0-9._-]/g,
-                                        "_"
-                                    );
-
-
-                            const fileName =
-                                `${Date.now()}_${safeName}`;
-
+                                file.name.replace(
+                                    /[^a-zA-Z0-9._-]/g,
+                                    "_"
+                                );
 
                             const accommodationStorageRef =
                                 ref(
                                     storage,
-                                    `packages/${packageId}/accommodations/${fileName}`
+                                    `packages/${packageId}/accommodations/main_${Date.now()}_${safeName}`
                                 );
-
 
                             const snapshot =
                                 await uploadBytes(
@@ -4163,53 +5835,138 @@ const price =
                                     file
                                 );
 
-
-                            photo =
+                            mainPhoto =
                                 await getDownloadURL(
                                     snapshot.ref
                                 );
 
                         }
 
+                        let gallery = [];
 
-                        const isBlank =
-                            !name &&
-                            !capacity &&
-                            !photo &&
-                            (
-                                !price ||
-                                price === "TBD"
-                            );
-
-
-                        if (
-                            isBlank
-                        ) {
-                            continue;
+                        try {
+                            gallery =
+                                JSON.parse(
+                                    card.dataset.existingGallery ||
+                                    "[]"
+                                );
+                        } catch {
+                            gallery = [];
                         }
 
+                        const galleryFiles =
+                            card._accommodationGalleryFiles ||
+                            [];
+
+                        for (
+                            const file of
+                            galleryFiles
+                        ) {
+
+                            const safeName =
+                                file.name.replace(
+                                    /[^a-zA-Z0-9._-]/g,
+                                    "_"
+                                );
+
+                            const galleryStorageRef =
+                                ref(
+                                    storage,
+                                    `packages/${packageId}/accommodations/gallery_${Date.now()}_${safeName}`
+                                );
+
+                            const snapshot =
+                                await uploadBytes(
+                                    galleryStorageRef,
+                                    file
+                                );
+
+                            gallery.push(
+                                await getDownloadURL(
+                                    snapshot.ref
+                                )
+                            );
+
+                        }
+
+                        const isBlank =
+                            !resortName &&
+                            !name &&
+                            !mainPhoto &&
+                            gallery.length === 0 &&
+                            !description;
+
+                        if (isBlank) continue;
 
                         packageData
                             .accommodations
                             .push({
 
-                                name:
-                                    name,
+                                id:
+                                    card.dataset.accommodationId ||
+                                    `acc_${Date.now()}_${Math.random()
+                                        .toString(36)
+                                        .slice(2, 8)}`,
 
-                                capacity:
-                                    capacity,
+                                resortName,
 
-                                type:
-                                    type,
+                                name,
+
+                                category:
+                                    "accommodation",
+
+                                type,
 
                                 priceType:
-                                    priceType,
+                                    type === "included"
+                                        ? "included"
+                                        : "per_night",
 
+                                pricePerNight:
+                                    type === "included"
+                                        ? 0
+                                        : pricePerNight,
+
+                                // Legacy field kept so older screens
+                                // continue to work until Booking is upgraded.
                                 price:
-                                    price,
+                                    type === "included"
+                                        ? 0
+                                        : pricePerNight,
 
+                                maxGuests,
+
+                                defaultAvailableUnits,
+
+                                defaultUnits:
+                                    defaultAvailableUnits,
+
+                                capacity:
+                                    `Good for up to ${maxGuests} guest${
+                                        maxGuests === 1
+                                            ? ""
+                                            : "s"
+                                    }`,
+
+                                description,
+
+                                amenities,
+
+                                mainPhoto,
+
+                                coverPhoto:
+                                    mainPhoto,
+
+                                // Legacy photo field.
                                 photo:
-                                    photo
+                                    mainPhoto,
+
+                                gallery,
+
+                                active:
+                                    status === "active",
+
+                                status
 
                             });
 

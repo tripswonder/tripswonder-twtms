@@ -42,6 +42,10 @@ import {
     httpsCallable
 } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-functions.js";
 
+import {
+    onSnapshot
+} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+
 
 // =========================================
 // AUTH
@@ -82,6 +86,31 @@ console.log(
 // AUTHENTICATION + PERMISSION GUARD
 // =========================================
 
+let currentAdminUser = null;
+let currentAdminProfile = null;
+
+function getCurrentReceiptProcessorName() {
+
+    const profile =
+        currentAdminProfile ||
+        {};
+
+    const user =
+        currentAdminUser ||
+        {};
+
+    return String(
+        profile.displayName ||
+        profile.fullName ||
+        profile.name ||
+        profile.adminName ||
+        user.displayName ||
+        user.email ||
+        "Admin"
+    ).trim();
+
+}
+
 requireAuth({
 
     allowedRoles: [
@@ -96,6 +125,13 @@ requireAuth({
         user,
         profile
     ) => {
+
+        currentAdminUser =
+            user;
+
+        currentAdminProfile =
+            profile ||
+            {};
 
         console.log(
             "TWTMS PAYMENTS ACCESS GRANTED:",
@@ -134,6 +170,13 @@ document.addEventListener(
         let payments = [];
 
         let editingPaymentId = null;
+
+        /*
+         * Realtime listener for customer booking payment submissions.
+         * This keeps Payment Verification updated even while the
+         * Payments page is already open.
+         */
+        let unsubscribeBookingVerification = null;
 
 
         // =====================================
@@ -283,6 +326,36 @@ const verifyBookingStatus =
         "verifyBookingStatus"
     );
 
+const verifyPromoSection =
+    document.getElementById(
+        "verifyPromoSection"
+    );
+
+const verifyOriginalAmount =
+    document.getElementById(
+        "verifyOriginalAmount"
+    );
+
+const verifyPromoTitle =
+    document.getElementById(
+        "verifyPromoTitle"
+    );
+
+const verifyPromoCode =
+    document.getElementById(
+        "verifyPromoCode"
+    );
+
+const verifyPromoDiscount =
+    document.getElementById(
+        "verifyPromoDiscount"
+    );
+
+const verifyFinalBookingTotal =
+    document.getElementById(
+        "verifyFinalBookingTotal"
+    );
+
 const verifyDepositAmount =
     document.getElementById(
         "verifyDepositAmount"
@@ -402,6 +475,31 @@ const receiptBookingTotal =
         "receiptBookingTotal"
     );
 
+const receiptBookingTotalLabel =
+    document.getElementById(
+        "receiptBookingTotalLabel"
+    );
+
+const receiptSummaryOriginalRow =
+    document.getElementById(
+        "receiptSummaryOriginalRow"
+    );
+
+const receiptSummaryDiscountRow =
+    document.getElementById(
+        "receiptSummaryDiscountRow"
+    );
+
+const receiptSummaryOriginalAmount =
+    document.getElementById(
+        "receiptSummaryOriginalAmount"
+    );
+
+const receiptSummaryPromoDiscount =
+    document.getElementById(
+        "receiptSummaryPromoDiscount"
+    );
+
 const receiptTotalPaid =
     document.getElementById(
         "receiptTotalPaid"
@@ -410,6 +508,36 @@ const receiptTotalPaid =
 const receiptRemainingBalance =
     document.getElementById(
         "receiptRemainingBalance"
+    );
+
+const receiptPromoSection =
+    document.getElementById(
+        "receiptPromoSection"
+    );
+
+const receiptOriginalAmount =
+    document.getElementById(
+        "receiptOriginalAmount"
+    );
+
+const receiptPromoTitle =
+    document.getElementById(
+        "receiptPromoTitle"
+    );
+
+const receiptPromoCode =
+    document.getElementById(
+        "receiptPromoCode"
+    );
+
+const receiptPromoDiscount =
+    document.getElementById(
+        "receiptPromoDiscount"
+    );
+
+const receiptFinalBookingTotal =
+    document.getElementById(
+        "receiptFinalBookingTotal"
     );
 
 const printReceiptBtn =
@@ -625,6 +753,36 @@ const sendReceiptMessage =
             document.getElementById(
                 "detailsPaymentNotes"
             );
+
+const detailsPromoSection =
+    document.getElementById(
+        "detailsPromoSection"
+    );
+
+const detailsOriginalAmount =
+    document.getElementById(
+        "detailsOriginalAmount"
+    );
+
+const detailsPromoTitle =
+    document.getElementById(
+        "detailsPromoTitle"
+    );
+
+const detailsPromoCode =
+    document.getElementById(
+        "detailsPromoCode"
+    );
+
+const detailsPromoDiscount =
+    document.getElementById(
+        "detailsPromoDiscount"
+    );
+
+const detailsFinalBookingTotal =
+    document.getElementById(
+        "detailsFinalBookingTotal"
+    );
 
 
         // =====================================
@@ -956,6 +1114,40 @@ const sendReceiptMessage =
         // BOOKING TOTAL
         // =================================
 
+        originalAmount:
+            normalizeNumber(
+                data.originalAmount ??
+                data.totalAmount ??
+                data.total ??
+                0
+            ),
+
+        promoId:
+            data.promoId ||
+            "",
+
+        promoCode:
+            data.promoCode ||
+            "",
+
+        promoTitle:
+            data.promoTitle ||
+            "",
+
+        promoDiscountType:
+            data.promoDiscountType ||
+            "",
+
+        promoDiscountValue:
+            normalizeNumber(
+                data.promoDiscountValue
+            ),
+
+        discountAmount:
+            normalizeNumber(
+                data.discountAmount
+            ),
+
         totalAmount:
             normalizeNumber(
                 data.totalAmount ??
@@ -1034,6 +1226,13 @@ updatedAt:
 
 
         // =================================
+        // PAYMENT VERIFICATION FLAG
+        // =================================
+
+        paymentVerified:
+            data.paymentVerified === true,
+
+        // =================================
         // PAYMENT STATUS
         // =================================
 
@@ -1094,6 +1293,52 @@ updatedAt:
             populateBookingOptions();
 
 renderPaymentVerifications();
+
+        }
+
+
+
+        // =====================================
+        // REALTIME BOOKING VERIFICATION
+        // =====================================
+
+        function startBookingVerificationRealtime() {
+
+            if (unsubscribeBookingVerification) {
+                return;
+            }
+
+            unsubscribeBookingVerification =
+                onSnapshot(
+                    collection(
+                        db,
+                        "bookings"
+                    ),
+                    snapshot => {
+
+                        bookings =
+                            snapshot.docs.map(
+                                normalizeBooking
+                            );
+
+                        console.log(
+                            "PAYMENTS: REALTIME BOOKINGS UPDATED:",
+                            bookings
+                        );
+
+                        populateBookingOptions();
+                        renderPaymentVerifications();
+
+                    },
+                    error => {
+
+                        console.error(
+                            "PAYMENTS: REALTIME BOOKING LISTENER ERROR:",
+                            error
+                        );
+
+                    }
+                );
 
         }
 
@@ -1208,9 +1453,81 @@ function getPendingPaymentVerifications() {
 
     return bookings
         .filter(
-            booking =>
-                booking.paymentStatus ===
-                "pending_verification"
+            booking => {
+
+                const status =
+                    String(
+                        booking.paymentStatus ||
+                        ""
+                    )
+                        .trim()
+                        .toLowerCase();
+
+                const method =
+                    String(
+                        booking.paymentMethod ||
+                        ""
+                    )
+                        .trim()
+                        .toLowerCase();
+
+                const reference =
+                    String(
+                        booking.transactionReference ||
+                        ""
+                    )
+                        .trim();
+
+                const source =
+                    String(
+                        booking.bookingSource ||
+                        ""
+                    )
+                        .trim()
+                        .toLowerCase();
+
+                /*
+                 * Primary/current rule:
+                 * customer booking form saves pending_verification.
+                 */
+                if (
+                    status ===
+                    "pending_verification"
+                ) {
+                    return true;
+                }
+
+                /*
+                 * Compatibility rule:
+                 * Some existing booking/payment code can recalculate
+                 * an unverified booking back to "unpaid" or "pending".
+                 * If it is a website booking with an actual submitted
+                 * payment method + reference and it has NOT been
+                 * verified yet, it still belongs in verification.
+                 */
+                const isWebsiteBooking =
+                    source === "website";
+
+                const hasSubmittedPayment =
+                    Boolean(method) &&
+                    Boolean(reference);
+
+                const stillUnverified =
+                    booking.paymentVerified !==
+                    true;
+
+                const compatibleStatus =
+                    status === "unpaid" ||
+                    status === "pending";
+
+                return (
+                    isWebsiteBooking &&
+                    hasSubmittedPayment &&
+                    stillUnverified &&
+                    compatibleStatus
+                );
+
+            }
         )
         .sort(
             (a, b) =>
@@ -2958,6 +3275,86 @@ function openPaymentDetails(
 
 
     // =================================
+    // PRICING / PROMO FROM LINKED BOOKING
+    // =================================
+
+    const linkedBooking =
+        getBookingById(
+            payment.bookingId
+        );
+
+    const detailsDiscountAmount =
+        normalizeNumber(
+            linkedBooking?.discountAmount
+        );
+
+    const detailsHasPromo =
+        Boolean(
+            String(
+                linkedBooking?.promoCode ||
+                linkedBooking?.promoTitle ||
+                ""
+            ).trim()
+        ) &&
+        detailsDiscountAmount > 0;
+
+    if (
+        detailsPromoSection
+    ) {
+        detailsPromoSection.hidden =
+            !detailsHasPromo;
+    }
+
+    if (detailsHasPromo) {
+
+        const detailsOriginal =
+            normalizeNumber(
+                linkedBooking?.originalAmount
+            ) ||
+            (
+                normalizeNumber(
+                    linkedBooking?.totalAmount
+                ) +
+                detailsDiscountAmount
+            );
+
+        if (detailsOriginalAmount) {
+            detailsOriginalAmount.textContent =
+                `₱${formatMoney(
+                    detailsOriginal
+                )}`;
+        }
+
+        if (detailsPromoTitle) {
+            detailsPromoTitle.textContent =
+                linkedBooking?.promoTitle ||
+                "Promo Applied";
+        }
+
+        if (detailsPromoCode) {
+            detailsPromoCode.textContent =
+                linkedBooking?.promoCode ||
+                "—";
+        }
+
+        if (detailsPromoDiscount) {
+            detailsPromoDiscount.textContent =
+                `−₱${formatMoney(
+                    detailsDiscountAmount
+                )}`;
+        }
+
+        if (detailsFinalBookingTotal) {
+            detailsFinalBookingTotal.textContent =
+                `₱${formatMoney(
+                    linkedBooking?.totalAmount
+                )}`;
+        }
+
+    }
+
+
+    // =================================
     // VOID PAYMENT DETAILS
     // =================================
 
@@ -3587,6 +3984,123 @@ if (receiptPaymentStatus) {
 
 
     // ---------------------------------
+    // PRICING / PROMO
+    // ---------------------------------
+
+    const receiptDiscountAmount =
+        normalizeNumber(
+            booking.discountAmount
+        );
+
+    const receiptHasPromo =
+        Boolean(
+            String(
+                booking.promoCode ||
+                booking.promoTitle ||
+                ""
+            ).trim()
+        ) &&
+        receiptDiscountAmount > 0;
+
+    if (
+        receiptPromoSection
+    ) {
+        receiptPromoSection.hidden =
+            !receiptHasPromo;
+    }
+
+    /*
+     * Show the same promo information directly
+     * inside Payment Summary for clearer accounting.
+     */
+    [
+        receiptSummaryOriginalRow,
+        receiptSummaryDiscountRow
+    ].forEach(
+        row => {
+            if (row) {
+                row.hidden =
+                    !receiptHasPromo;
+            }
+        }
+    );
+
+    if (
+        receiptBookingTotalLabel
+    ) {
+        receiptBookingTotalLabel.textContent =
+            receiptHasPromo
+                ? "Final Booking Total"
+                : "Booking Total";
+    }
+
+    if (receiptHasPromo) {
+
+        const receiptOriginal =
+            normalizeNumber(
+                booking.originalAmount
+            ) ||
+            (
+                bookingTotal +
+                receiptDiscountAmount
+            );
+
+        if (receiptOriginalAmount) {
+            receiptOriginalAmount.textContent =
+                `₱${formatMoney(
+                    receiptOriginal
+                )}`;
+        }
+
+        if (receiptPromoTitle) {
+            receiptPromoTitle.textContent =
+                booking.promoTitle ||
+                "Promo Applied";
+        }
+
+        if (receiptPromoCode) {
+            receiptPromoCode.textContent =
+                booking.promoCode ||
+                "—";
+        }
+
+        if (receiptPromoDiscount) {
+            receiptPromoDiscount.textContent =
+                `−₱${formatMoney(
+                    receiptDiscountAmount
+                )}`;
+        }
+
+        if (receiptFinalBookingTotal) {
+            receiptFinalBookingTotal.textContent =
+                `₱${formatMoney(
+                    bookingTotal
+                )}`;
+        }
+
+        if (
+            receiptSummaryOriginalAmount
+        ) {
+            receiptSummaryOriginalAmount.textContent =
+                `₱${formatMoney(
+                    receiptOriginal
+                )}`;
+        }
+
+
+        if (
+            receiptSummaryPromoDiscount
+        ) {
+            receiptSummaryPromoDiscount.textContent =
+                `−₱${formatMoney(
+                    receiptDiscountAmount
+                )}`;
+        }
+
+    }
+
+
+    // ---------------------------------
     // BOOKING TOTAL
     // ---------------------------------
 
@@ -3756,11 +4270,12 @@ if (receiptThisPayment) {
 
 if (receiptProcessedBy) {
 
+    /*
+     * The receipt shows the ADMIN/OWNER ACCOUNT
+     * that is currently opening/generating it.
+     */
     receiptProcessedBy.textContent =
-        payment.receivedBy ||
-        payment.processedBy ||
-        payment.recordedBy ||
-        "Admin";
+        getCurrentReceiptProcessorName();
 
 }
 
@@ -5438,6 +5953,33 @@ document.addEventListener(
         }
 
         // =====================================
+// CLIENT PAYMENT STILL NEEDS VERIFICATION
+// =====================================
+
+function isClientPaymentAwaitingVerification(booking) {
+
+    if (!booking) return false;
+
+    const status = String(booking.paymentStatus || "").trim().toLowerCase();
+    const method = String(booking.paymentMethod || "").trim().toLowerCase();
+    const reference = String(booking.transactionReference || "").trim();
+    const source = String(booking.bookingSource || "").trim().toLowerCase();
+
+    if (status === "pending_verification") {
+        return true;
+    }
+
+    return (
+        source === "website" &&
+        Boolean(method) &&
+        Boolean(reference) &&
+        booking.paymentVerified !== true &&
+        (status === "unpaid" || status === "pending")
+    );
+}
+
+
+        // =====================================
 // OPEN CLIENT PAYMENT VERIFICATION
 // =====================================
 
@@ -5466,8 +6008,9 @@ function openClientPaymentVerification(
 
 
     if (
-        booking.paymentStatus !==
-        "pending_verification"
+        !isClientPaymentAwaitingVerification(
+            booking
+        )
     ) {
 
         alert(
@@ -5548,6 +6091,86 @@ function openClientPaymentVerification(
             `₱${formatMoney(
                 booking.totalAmount
             )}`;
+
+    }
+
+
+    // PROMO / PRICING SUMMARY
+
+    const promoDiscountAmount =
+        normalizeNumber(
+            booking.discountAmount
+        );
+
+    const hasPromo =
+        Boolean(
+            String(
+                booking.promoCode ||
+                booking.promoTitle ||
+                ""
+            ).trim()
+        ) &&
+        promoDiscountAmount > 0;
+
+    if (
+        verifyPromoSection
+    ) {
+
+        verifyPromoSection.hidden =
+            !hasPromo;
+
+    }
+
+    if (hasPromo) {
+
+        if (
+            verifyOriginalAmount
+        ) {
+            verifyOriginalAmount.textContent =
+                `₱${formatMoney(
+                    booking.originalAmount ||
+                    (
+                        normalizeNumber(
+                            booking.totalAmount
+                        ) +
+                        promoDiscountAmount
+                    )
+                )}`;
+        }
+
+        if (
+            verifyPromoTitle
+        ) {
+            verifyPromoTitle.textContent =
+                booking.promoTitle ||
+                "Promo Applied";
+        }
+
+        if (
+            verifyPromoCode
+        ) {
+            verifyPromoCode.textContent =
+                booking.promoCode ||
+                "—";
+        }
+
+        if (
+            verifyPromoDiscount
+        ) {
+            verifyPromoDiscount.textContent =
+                `−₱${formatMoney(
+                    promoDiscountAmount
+                )}`;
+        }
+
+        if (
+            verifyFinalBookingTotal
+        ) {
+            verifyFinalBookingTotal.textContent =
+                `₱${formatMoney(
+                    booking.totalAmount
+                )}`;
+        }
 
     }
 
@@ -5752,8 +6375,9 @@ approveClientPaymentBtn
             // =================================
 
             if (
-                booking.paymentStatus !==
-                "pending_verification"
+                !isClientPaymentAwaitingVerification(
+                    booking
+                )
             ) {
 
                 alert(
@@ -6343,8 +6967,9 @@ rejectClientPaymentBtn
 
 
             if (
-                booking.paymentStatus !==
-                "pending_verification"
+                !isClientPaymentAwaitingVerification(
+                    booking
+                )
             ) {
 
                 alert(
@@ -7308,6 +7933,12 @@ if (
 
                 await loadPayments();
 
+                /*
+                 * Start live verification updates after the
+                 * initial page data has loaded successfully.
+                 */
+                startBookingVerificationRealtime();
+
 
                 hideLoading();
 
@@ -7342,6 +7973,19 @@ if (
 // =====================================
 
 initializePayments();
+
+        window.addEventListener(
+            "beforeunload",
+            () => {
+
+                if (unsubscribeBookingVerification) {
+                    unsubscribeBookingVerification();
+                    unsubscribeBookingVerification = null;
+                }
+
+            }
+        );
+
 
 });
 

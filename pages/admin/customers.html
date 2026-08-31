@@ -21,10 +21,16 @@
         href="../../assets/css/admin/customers.css"
     >
 
+    <!-- SHARED ADMIN NAVIGATION -->
+    <link
+        rel="stylesheet"
+        href="../../assets/css/shared/admin-nav.css"
+    >
+
     <!-- GLOBAL LOADING SCREEN -->
     <link
     rel="stylesheet"
-    href="../../../assets/css/shared/loading-screen.css">
+    href="../../assets/css/shared/loading-screen.css">
 
 
     <!-- Font Awesome -->
@@ -36,267 +42,19 @@
 </head>
 
 
-<body class="twtms-page-loading"></body>
+<body class="admin-shared-nav-page">
 
 
-<div class="admin-layout">
+<div class="admin-layout admin-wrapper">
 
 
     <!-- =====================================================
-         SIDEBAR
+         SHARED ADMIN SIDEBAR
     ====================================================== -->
 
-    <aside class="sidebar">
-
-
-        <!-- BRAND -->
-
-        <div class="sidebar-brand">
-
-            <div class="brand-logo">
-
-                <img
-                    src="../../assets/images/logo.png"
-                    alt="Trips Wonder Logo"
-                >
-
-            </div>
-
-
-            <div class="brand-text">
-
-                <h2>
-                    Trips Wonder
-                </h2>
-
-                <span>
-                    Travel Management System
-                </span>
-
-            </div>
-
-        </div>
-
-
-
-        <!-- =================================================
-             MAIN MENU
-        ================================================== -->
-
-        <div class="sidebar-menu">
-
-            <div class="menu-label">
-                MAIN MENU
-            </div>
-
-
-            <nav class="main-navigation">
-
-
-                <!-- DASHBOARD -->
-
-                <a
-                    href="dashboard.html"
-                    class="nav-item"
-                >
-
-                    <i class="fa-solid fa-chart-pie"></i>
-
-                    <span>
-                        Dashboard
-                    </span>
-
-                </a>
-
-
-
-                <!-- PACKAGES -->
-
-                <a
-                    href="packages.html"
-                    class="nav-item"
-                >
-
-                    <i class="fa-solid fa-suitcase"></i>
-
-                    <span>
-                        Packages
-                    </span>
-
-                </a>
-
-
-
-                <!-- BOOKINGS -->
-
-                <a
-                    href="bookings.html"
-                    class="nav-item"
-                >
-
-                    <i class="fa-solid fa-calendar-check"></i>
-
-                    <span>
-                        Bookings
-                    </span>
-
-                </a>
-
-
-
-                <!-- CUSTOMERS ACTIVE -->
-
-                <a
-                    href="customers.html"
-                    class="nav-item active"
-                >
-
-                    <i class="fa-solid fa-users"></i>
-
-                    <span>
-                        Customers
-                    </span>
-
-                </a>
-
-
-
-                <!-- PAYMENTS -->
-
-                <a
-                    href="payments.html"
-                    class="nav-item"
-                >
-
-                    <i class="fa-solid fa-credit-card"></i>
-
-                    <span>
-                        Payments
-                    </span>
-
-                </a>
-
-
-
-                <!-- INVOICES -->
-
-                <a
-                    href="invoices.html"
-                    class="nav-item"
-                >
-
-                    <i class="fa-solid fa-file-invoice"></i>
-
-                    <span>
-                        Invoices
-                    </span>
-
-                </a>
-
-
-
-                <!-- RESORT BOOKINGS -->
-
-                <a
-                    href="resort-bookings.html"
-                    class="nav-item"
-                >
-
-                    <i class="fa-solid fa-building"></i>
-
-                    <span>
-                        Resort Bookings
-                    </span>
-
-                </a>
-
-
-
-                <!-- REPORTS -->
-
-                <a
-                    href="reports.html"
-                    class="nav-item"
-                >
-
-                    <i class="fa-solid fa-chart-line"></i>
-
-                    <span>
-                        Reports
-                    </span>
-
-                </a>
-
-
-            </nav>
-
-        </div>
-
-
-
-        <!-- =====================================================
-             BOTTOM ACCOUNT AREA
-        ====================================================== -->
-
-        <div class="sidebar-bottom">
-
-
-            <!-- =================================================
-                 ADMIN PROFILE
-                 ONE CLICK ONLY
-            ================================================== -->
-
-            <a
-                href="admin-profile.html"
-                class="admin-profile"
-                id="adminProfile"
-            >
-
-                <div class="admin-avatar">
-
-                    <i class="fa-solid fa-user"></i>
-
-                </div>
-
-
-                <div class="admin-info">
-
-                    <strong>
-                        Admin Trips Wonder
-                    </strong>
-
-                    <span>
-                        Administrator
-                    </span>
-
-                </div>
-
-            </a>
-
-
-
-            <!-- =================================================
-                 LOGOUT
-            ================================================== -->
-
-            <button
-                type="button"
-                class="logout-button"
-                onclick="handleLogout()"
-            >
-
-                <i class="fa-solid fa-right-from-bracket"></i>
-
-                <span>
-                    Logout
-                </span>
-
-            </button>
-
-
-        </div>
-
-
+    <aside
+        id="adminSidebar"
+        class="admin-sidebar">
     </aside>
 
 
@@ -305,7 +63,7 @@
          MAIN CONTENT
     ========================================================== -->
 
-    <main class="main-content">
+    <main class="main-content main">
 
 
         <!-- PAGE HEADER -->
@@ -327,20 +85,39 @@
             </div>
 
 
-            <button
-                type="button"
-                class="primary-button"
-                id="addCustomerButton"
-                onclick="openCustomerModal()"
-            >
+            <div class="customer-header-actions">
 
-                <i class="fa-solid fa-plus"></i>
+                <button
+                    type="button"
+                    class="secondary-button customer-scan-button"
+                    id="scanCustomerQrButton"
+                >
 
-                <span>
-                    Add Customer
-                </span>
+                    <i class="fa-solid fa-qrcode"></i>
 
-            </button>
+                    <span>
+                        Scan QR
+                    </span>
+
+                </button>
+
+
+                <button
+                    type="button"
+                    class="primary-button"
+                    id="addCustomerButton"
+                    onclick="openCustomerModal()"
+                >
+
+                    <i class="fa-solid fa-plus"></i>
+
+                    <span>
+                        Add Customer
+                    </span>
+
+                </button>
+
+            </div>
 
 
         </section>
@@ -1145,6 +922,690 @@
 
 
 
+
+<!-- =============================================================
+     CUSTOMER QR SCANNER MODAL
+============================================================== -->
+
+<div
+    class="modal-overlay"
+    id="customerQrScannerModal"
+    aria-hidden="true"
+>
+
+    <div class="customer-qr-scanner-modal">
+
+        <div class="modal-header">
+
+            <div>
+
+                <h2>
+                    Scan Customer QR
+                </h2>
+
+                <p>
+                    Scan the QR shown in the customer's Trips Wonder account.
+                </p>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="modal-close"
+                id="closeCustomerQrScanner"
+                aria-label="Close"
+            >
+
+                <i class="fa-solid fa-xmark"></i>
+
+            </button>
+
+        </div>
+
+
+        <div class="customer-qr-scanner-body">
+
+            <div class="customer-qr-camera-frame">
+
+                <video
+                    id="customerQrVideo"
+                    autoplay
+                    playsinline
+                    muted
+                ></video>
+
+                <div class="customer-qr-guide">
+
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+
+                </div>
+
+            </div>
+
+
+            <div
+                class="customer-qr-status"
+                id="customerQrStatus"
+            >
+                Ready to scan.
+            </div>
+
+
+            <button
+                type="button"
+                class="secondary-button customer-qr-retry"
+                id="retryCustomerQrScanner"
+                hidden
+            >
+
+                <i class="fa-solid fa-rotate"></i>
+
+                Retry Scanner
+
+            </button>
+
+
+            <div class="customer-qr-upload-block">
+
+                <span>
+                    Or upload a QR image
+                </span>
+
+                <label
+                    class="secondary-button customer-qr-upload-button"
+                    for="customerQrImageInput"
+                >
+                    <i class="fa-regular fa-image"></i>
+                    Choose QR Image
+                </label>
+
+                <input
+                    type="file"
+                    id="customerQrImageInput"
+                    accept="image/*"
+                    hidden
+                >
+
+            </div>
+
+
+            <div class="customer-qr-fallback">
+
+                <span>
+                    Or paste the QR value
+                </span>
+
+                <div class="customer-qr-manual-row">
+
+                    <input
+                        type="text"
+                        id="customerQrManualInput"
+                        placeholder="Paste QR value here"
+                        autocomplete="off"
+                    >
+
+                    <button
+                        type="button"
+                        class="secondary-button"
+                        id="customerQrManualButton"
+                    >
+                        Find
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<style>
+
+    .customer-header-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .customer-scan-button {
+        min-height: 42px;
+        padding: 0 16px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        border: 1px solid #cfe0f4;
+        border-radius: 10px;
+        background: #ffffff;
+        color: #1768c5;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+    .customer-scan-button:hover {
+        background: #f4f8fd;
+    }
+
+    .customer-qr-scanner-modal {
+        width: min(440px, calc(100vw - 28px));
+        max-height: calc(100vh - 40px);
+        overflow: auto;
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 24px 70px rgba(17, 38, 68, 0.18);
+    }
+
+    .customer-qr-scanner-body {
+        padding: 18px;
+    }
+
+    .customer-qr-camera-frame {
+        position: relative;
+        aspect-ratio: 1 / 1;
+        overflow: hidden;
+        border-radius: 16px;
+        background: #0e1b2f;
+        border: 1px solid #dce6f2;
+    }
+
+    #customerQrVideo {
+        width: 100%;
+        height: 100%;
+        display: block;
+        object-fit: cover;
+    }
+
+    .customer-qr-guide {
+        position: absolute;
+        inset: 17%;
+        pointer-events: none;
+    }
+
+    .customer-qr-guide span {
+        position: absolute;
+        width: 42px;
+        height: 42px;
+        border-color: #ffffff;
+        border-style: solid;
+        filter: drop-shadow(0 1px 2px rgba(0,0,0,.35));
+    }
+
+    .customer-qr-guide span:nth-child(1) {
+        top: 0;
+        left: 0;
+        border-width: 3px 0 0 3px;
+        border-radius: 10px 0 0 0;
+    }
+
+    .customer-qr-guide span:nth-child(2) {
+        top: 0;
+        right: 0;
+        border-width: 3px 3px 0 0;
+        border-radius: 0 10px 0 0;
+    }
+
+    .customer-qr-guide span:nth-child(3) {
+        bottom: 0;
+        left: 0;
+        border-width: 0 0 3px 3px;
+        border-radius: 0 0 0 10px;
+    }
+
+    .customer-qr-guide span:nth-child(4) {
+        bottom: 0;
+        right: 0;
+        border-width: 0 3px 3px 0;
+        border-radius: 0 0 10px 0;
+    }
+
+    .customer-qr-status {
+        margin-top: 12px;
+        min-height: 42px;
+        padding: 10px 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        border-radius: 10px;
+        background: #f5f8fc;
+        color: #526984;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .customer-qr-status.success {
+        background: #edf9f2;
+        color: #16834f;
+    }
+
+    .customer-qr-status.error {
+        background: #fff2f2;
+        color: #c63e3e;
+    }
+
+    .customer-qr-retry {
+        width: 100%;
+        margin-top: 10px;
+    }
+
+    .customer-qr-upload-block {
+        margin-top: 14px;
+        padding-top: 14px;
+        border-top: 1px solid #e8eef5;
+    }
+
+    .customer-qr-upload-block > span {
+        display: block;
+        margin-bottom: 8px;
+        color: #6d7f96;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .customer-qr-upload-button {
+        width: 100%;
+        min-height: 42px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        cursor: pointer;
+    }
+
+    .customer-qr-fallback {
+        margin-top: 14px;
+        padding-top: 14px;
+        border-top: 1px solid #e8eef5;
+    }
+
+    .customer-qr-fallback > span {
+        display: block;
+        margin-bottom: 8px;
+        color: #6d7f96;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .customer-qr-manual-row {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 8px;
+    }
+
+    .customer-qr-manual-row input {
+        min-width: 0;
+        height: 42px;
+        padding: 0 12px;
+        border: 1px solid #d7e2ef;
+        border-radius: 9px;
+        outline: none;
+    }
+
+    .customer-qr-manual-row input:focus {
+        border-color: #1768c5;
+        box-shadow: 0 0 0 3px rgba(23, 104, 197, 0.08);
+    }
+
+</style>
+
+
+
+<!-- =============================================================
+     CUSTOMER PROFILE MODAL
+============================================================== -->
+
+<div
+    class="modal-overlay"
+    id="customerProfileModal"
+    aria-hidden="true"
+>
+
+    <div class="customer-profile-modal">
+
+        <div class="customer-profile-header">
+
+            <div class="customer-profile-title-wrap">
+
+                <div
+                    class="customer-profile-avatar"
+                    id="customerProfileAvatar"
+                >
+                    TW
+                </div>
+
+                <div>
+
+                    <h2 id="customerProfileName">
+                        Customer Profile
+                    </h2>
+
+                    <p id="customerProfileSubtitle">
+                        Customer account details
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="modal-close"
+                id="closeCustomerProfileModal"
+                aria-label="Close"
+            >
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+        </div>
+
+
+        <div class="customer-profile-body">
+
+            <div class="customer-profile-grid">
+
+                <div class="customer-profile-item">
+                    <span>Contact</span>
+                    <strong id="customerProfileContact">—</strong>
+                </div>
+
+                <div class="customer-profile-item">
+                    <span>Email</span>
+                    <strong id="customerProfileEmail">—</strong>
+                </div>
+
+                <div class="customer-profile-item">
+                    <span>Facebook</span>
+                    <strong id="customerProfileFacebook">—</strong>
+                </div>
+
+                <div class="customer-profile-item">
+                    <span>Status</span>
+                    <strong id="customerProfileStatus">—</strong>
+                </div>
+
+            </div>
+
+
+            <div class="customer-profile-summary">
+
+                <div>
+                    <span>Bookings</span>
+                    <strong id="customerProfileBookings">0</strong>
+                </div>
+
+                <div>
+                    <span>Total Spent</span>
+                    <strong id="customerProfileSpent">₱0</strong>
+                </div>
+
+                <div>
+                    <span>Last Trip</span>
+                    <strong id="customerProfileLastTrip">—</strong>
+                </div>
+
+            </div>
+
+
+            <div class="customer-profile-section">
+
+                <div class="customer-profile-section-title">
+                    <i class="fa-solid fa-suitcase-rolling"></i>
+                    Booking History
+                </div>
+
+                <div
+                    class="customer-profile-bookings"
+                    id="customerProfileBookingHistory"
+                >
+                    <div class="customer-profile-empty">
+                        No booking history.
+                    </div>
+                </div>
+
+            </div>
+
+
+            <div
+                class="customer-profile-section"
+                id="customerProfileNotesWrap"
+                hidden
+            >
+
+                <div class="customer-profile-section-title">
+                    <i class="fa-regular fa-note-sticky"></i>
+                    Notes
+                </div>
+
+                <div
+                    class="customer-profile-notes"
+                    id="customerProfileNotes"
+                ></div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<style>
+
+    .customer-profile-modal {
+        width: min(620px, calc(100vw - 28px));
+        max-height: calc(100vh - 40px);
+        overflow: auto;
+        background: #ffffff;
+        border-radius: 18px;
+        box-shadow: 0 24px 70px rgba(17, 38, 68, 0.18);
+    }
+
+    .customer-profile-header {
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        padding: 18px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        background: #ffffff;
+        border-bottom: 1px solid #e7edf5;
+    }
+
+    .customer-profile-title-wrap {
+        min-width: 0;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .customer-profile-avatar {
+        width: 46px;
+        height: 46px;
+        flex: 0 0 46px;
+        display: grid;
+        place-items: center;
+        border-radius: 14px;
+        background: #edf5ff;
+        color: #1768c5;
+        font-size: 15px;
+        font-weight: 800;
+    }
+
+    .customer-profile-title-wrap h2 {
+        margin: 0;
+        color: #17365f;
+        font-size: 18px;
+        font-weight: 800;
+    }
+
+    .customer-profile-title-wrap p {
+        margin: 3px 0 0;
+        color: #75879e;
+        font-size: 12px;
+    }
+
+    .customer-profile-body {
+        padding: 18px 20px 22px;
+    }
+
+    .customer-profile-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .customer-profile-item {
+        min-width: 0;
+        padding: 12px 13px;
+        border: 1px solid #e2eaf3;
+        border-radius: 12px;
+        background: #f9fbfd;
+    }
+
+    .customer-profile-item span {
+        display: block;
+        margin-bottom: 4px;
+        color: #7a8ca3;
+        font-size: 11px;
+        font-weight: 600;
+    }
+
+    .customer-profile-item strong {
+        display: block;
+        color: #203b61;
+        font-size: 13px;
+        line-height: 1.45;
+        overflow-wrap: anywhere;
+    }
+
+    .customer-profile-summary {
+        margin-top: 12px;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .customer-profile-summary > div {
+        padding: 12px;
+        text-align: center;
+        border: 1px solid #dce8f5;
+        border-radius: 12px;
+        background: #f4f8fd;
+    }
+
+    .customer-profile-summary span {
+        display: block;
+        color: #7a8ca3;
+        font-size: 10px;
+        font-weight: 700;
+    }
+
+    .customer-profile-summary strong {
+        display: block;
+        margin-top: 5px;
+        color: #1768c5;
+        font-size: 14px;
+        font-weight: 800;
+    }
+
+    .customer-profile-section {
+        margin-top: 16px;
+        padding-top: 14px;
+        border-top: 1px solid #e7edf5;
+    }
+
+    .customer-profile-section-title {
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        color: #17365f;
+        font-size: 13px;
+        font-weight: 800;
+    }
+
+    .customer-profile-section-title i {
+        color: #1768c5;
+    }
+
+    .customer-profile-bookings {
+        display: grid;
+        gap: 8px;
+    }
+
+    .customer-profile-booking-card {
+        padding: 11px 12px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        border: 1px solid #e2eaf3;
+        border-radius: 11px;
+        background: #ffffff;
+    }
+
+    .customer-profile-booking-card strong {
+        display: block;
+        color: #203b61;
+        font-size: 12px;
+    }
+
+    .customer-profile-booking-card span {
+        display: block;
+        margin-top: 3px;
+        color: #7a8ca3;
+        font-size: 10px;
+    }
+
+    .customer-profile-booking-date {
+        flex: 0 0 auto;
+        color: #1768c5 !important;
+        font-weight: 700;
+    }
+
+    .customer-profile-empty,
+    .customer-profile-notes {
+        padding: 12px;
+        border-radius: 10px;
+        background: #f7f9fc;
+        color: #6e8097;
+        font-size: 12px;
+        line-height: 1.55;
+    }
+
+    @media (max-width: 560px) {
+
+        .customer-profile-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .customer-profile-summary {
+            grid-template-columns: 1fr;
+        }
+
+        .customer-profile-booking-card {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+    }
+
+</style>
+
+
 <!-- =============================================================
      BASIC PAGE FUNCTIONS
 ============================================================== -->
@@ -1432,6 +1893,13 @@
 <!-- =============================================================
      CUSTOMER JAVASCRIPT
 ============================================================== -->
+
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+
+<script
+    type="module"
+    src="../../assets/js/shared/admin-nav.js">
+</script>
 
 <script
     type="module"

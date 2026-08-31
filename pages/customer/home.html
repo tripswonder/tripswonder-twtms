@@ -1,20 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
-
     <meta
         name="viewport"
-        content="width=device-width, initial-scale=1.0">
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 
-    <title>TWTMS Customer Home</title>
+    <meta
+        name="theme-color"
+        content="#f5f8fc">
 
-
-    <!-- ======================================================
-         GLOBAL CSS
-    ======================================================= -->
+    <title>Trips Wonder</title>
 
     <link
         rel="stylesheet"
@@ -24,19 +20,9 @@
         rel="stylesheet"
         href="../../assets/css/shared/global.css">
 
-
-    <!-- ======================================================
-         HOME CSS
-    ======================================================= -->
-
     <link
         rel="stylesheet"
         href="../../assets/css/customer/home.css">
-
-
-    <!-- ======================================================
-         GOOGLE FONT
-    ======================================================= -->
 
     <link
         rel="preconnect"
@@ -48,199 +34,182 @@
         crossorigin>
 
     <link
-        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
         rel="stylesheet">
-
-
-    <!-- ======================================================
-         FONT AWESOME
-    ======================================================= -->
 
     <link
         rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-
 </head>
-
 
 <body>
 
+<div class="mobile-shell">
 
-<!-- ==========================================================
-     APP CONTAINER
-========================================================== -->
+    <main class="home-page">
 
-<main class="app-container">
+        <!-- ======================================================
+             HEADER
+        ======================================================= -->
 
+        <header class="home-header">
 
-    <!-- ======================================================
-         HEADER
-    ======================================================= -->
+            <a
+                href="home.html"
+                class="home-brand"
+                aria-label="Trips Wonder Home">
 
-    <header class="home-header">
+                <img
+                    src="../../assets/images/logo.png"
+                    alt="Trips Wonder"
+                    class="home-brand-logo">
 
+                <div class="home-brand-copy">
 
-        <!-- LEFT : MENU + LOGO -->
+                    <strong>
+                        Trips Wonder
+                    </strong>
 
-        <div class="header-left">
+                    <span>
+                        Travel & Tours
+                    </span>
 
-            <button
-                type="button"
-                class="menu-btn"
-                aria-label="Open menu">
+                </div>
 
-                <i class="fa-solid fa-bars"></i>
-
-            </button>
-
-
-            <img
-                src="../../assets/images/logo.png"
-                alt="Trips Wonder"
-                class="header-logo">
-
-        </div>
+            </a>
 
 
-        <!-- RIGHT : SEARCH + NOTIFICATION -->
+            <div class="header-actions">
 
-        <div class="header-actions">
+                <button
+                    type="button"
+                    class="header-icon-btn"
+                    id="headerSearchButton"
+                    aria-label="Search tours">
+
+                    <i class="fa-solid fa-magnifying-glass"></i>
+
+                </button>
 
 
-            <!-- SEARCH BUTTON -->
+                <a
+                    href="message.html"
+                    class="header-icon-btn"
+                    aria-label="Messages">
 
-            <button
-                type="button"
-                class="header-icon-btn search-header-btn"
-                id="headerSearchButton"
-                aria-label="Search">
+                    <i class="fa-regular fa-comment"></i>
+
+                </a>
+
+            </div>
+
+        </header>
+
+
+        <!-- ======================================================
+             SEARCH
+        ======================================================= -->
+
+        <section
+            class="search-section"
+            id="searchSection"
+            hidden>
+
+            <div class="search-box">
 
                 <i class="fa-solid fa-magnifying-glass"></i>
 
-            </button>
+                <input
+                    id="searchInput"
+                    type="search"
+                    placeholder="Search destination or tour..."
+                    autocomplete="off">
+
+                <button
+                    type="button"
+                    class="search-close-btn"
+                    id="searchCloseButton"
+                    aria-label="Close search">
+
+                    <i class="fa-solid fa-xmark"></i>
+
+                </button>
+
+            </div>
+
+        </section>
 
 
-            <!-- NOTIFICATION -->
+        <!-- ======================================================
+             HERO
+        ======================================================= -->
 
-            <button
-                type="button"
-                class="header-icon-btn notification-btn"
-                aria-label="Notifications">
+        <section class="home-hero">
 
-                <i class="fa-solid fa-bell"></i>
+            <div class="home-hero-content">
 
-                <span class="notification-badge">
-                    2
+                <span class="home-hero-label">
+                    DISCOVER THE PHILIPPINES
                 </span>
 
-            </button>
+                <h2>
+                    Your next trip starts here.
+                </h2>
 
-        </div>
+                <p>
+                    Browse active Trips Wonder packages and book online.
+                </p>
 
-    </header>
-
-
-
-    <!-- ======================================================
-         GREETING
-    ======================================================= -->
-
-    <section class="greeting">
-
-        <h1>
-
-            Hi,
-            <span id="customerName">
-                Eric
-            </span>!
-            👋
-
-        </h1>
+            </div>
 
 
-        <p>
+            <div class="home-hero-icon">
 
-            Where will your next adventure take you?
+                <i class="fa-solid fa-location-dot"></i>
 
-        </p>
+            </div>
 
-    </section>
-
-
-
-    <!-- ======================================================
-         SEARCH
-    ======================================================= -->
-
-    <section
-        class="search-section"
-        id="searchSection"
-        hidden>
-
-        <div class="search-box">
+        </section>
 
 
-            <!-- SEARCH ICON -->
+        <!-- ======================================================
+             UPCOMING TRIP
+        ======================================================= -->
 
-            <i class="fa-solid fa-magnifying-glass"></i>
+        <section class="home-section">
 
+            <div class="section-heading">
 
-            <!-- SEARCH INPUT -->
+                <div>
 
-            <input
-                id="searchInput"
-                type="text"
-                placeholder="Search destination, tour code or keyword..."
-                autocomplete="off">
+                    <span class="section-eyebrow">
+                        YOUR TRIP
+                    </span>
 
+                    <h2>
+                        Upcoming Trip
+                    </h2>
 
-            <!-- CLOSE SEARCH -->
-
-            <button
-                type="button"
-                class="search-close-btn"
-                id="searchCloseButton"
-                aria-label="Close search">
-
-                <i class="fa-solid fa-xmark"></i>
-
-            </button>
-
-        </div>
-
-    </section>
+                </div>
 
 
+                <a
+                    href="my-trip.html"
+                    class="section-link">
 
-    <!-- ======================================================
-         UPCOMING TRIP
-    ======================================================= -->
+                    View
 
-    <section
-        class="upcoming-trip"
-        id="upcomingTripSection">
+                    <i class="fa-solid fa-chevron-right"></i>
 
+                </a>
 
-        <!-- ==================================================
-             DYNAMIC BOOKING CARD
-        =================================================== -->
-
-        <article
-            class="trip-card"
-            id="upcomingTripCard">
+            </div>
 
 
-            <!-- BACKGROUND -->
-
-            <div class="trip-card-background"></div>
-
-
-            <!-- CONTENT -->
-
-            <div class="trip-card-content">
-
-
-                <!-- IMAGE -->
+            <article
+                class="trip-card"
+                id="upcomingTripCard"
+                hidden>
 
                 <div class="trip-card-image">
 
@@ -252,12 +221,7 @@
                 </div>
 
 
-                <!-- INFORMATION -->
-
                 <div class="trip-card-info">
-
-
-                    <!-- CATEGORY -->
 
                     <span
                         id="upcomingTripCategory"
@@ -268,285 +232,254 @@
                     </span>
 
 
-                    <!-- TOUR NAME -->
-
-                    <h2 id="upcomingTripName">
-
+                    <h3 id="upcomingTripName">
                         Upcoming Trip
+                    </h3>
 
-                    </h2>
-
-
-                    <!-- LOCATION -->
 
                     <p id="upcomingTripLocation">
-
-                        No upcoming booking yet.
-
+                        —
                     </p>
 
-
-                    <!-- SCHEDULE -->
 
                     <p
                         id="upcomingTripSchedule"
                         class="trip-schedule">
 
-                        Explore our tours and book your next adventure.
+                        —
 
                     </p>
 
 
-                    <!-- PRICE -->
+                    <div class="trip-card-bottom">
 
-                    <div class="trip-card-price">
+                        <div>
 
-                        <span>
-                            From
-                        </span>
+                            <span class="trip-reference-label">
+                                Booking
+                            </span>
 
-                        <strong id="upcomingTripPrice">
+                            <strong id="upcomingTripReference">
+                                —
+                            </strong>
 
-                            —
+                        </div>
 
-                        </strong>
+
+                        <button
+                            type="button"
+                            id="upcomingTripButton"
+                            class="trip-button">
+
+                            My Trip
+
+                        </button>
 
                     </div>
 
                 </div>
 
+            </article>
 
-                <!-- MY TRIP BUTTON -->
+
+            <div
+                class="empty-trip"
+                id="noUpcomingTrip">
+
+                <div class="empty-trip-icon">
+
+                    <i class="fa-solid fa-suitcase-rolling"></i>
+
+                </div>
+
+
+                <div class="empty-trip-content">
+
+                    <strong>
+                        No upcoming trip yet
+                    </strong>
+
+                    <span>
+                        Browse available packages and reserve your next trip.
+                    </span>
+
+                </div>
+
+
+                <a
+                    href="#availableTours"
+                    class="empty-trip-button">
+
+                    Explore
+
+                </a>
+
+            </div>
+
+        </section>
+
+
+        <!-- ======================================================
+             CATEGORIES
+        ======================================================= -->
+
+        <section class="home-section">
+
+            <div class="section-heading">
+
+                <div>
+
+                    <span class="section-eyebrow">
+                        FIND YOUR STYLE
+                    </span>
+
+                    <h2>
+                        Explore by Category
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+            <div
+                class="tour-category-list"
+                id="tourCategoryList">
 
                 <button
                     type="button"
-                    id="upcomingTripButton"
-                    class="trip-button">
+                    class="tour-category-btn active"
+                    data-category="all">
 
-                    My Trip →
+                    All
 
                 </button>
 
             </div>
 
-        </article>
+        </section>
+
+
+        <!-- ======================================================
+     AVAILABLE TOURS
+======================================================= -->
+
+<section
+    class="home-section tours-section"
+    id="availableTours">
+
+    <div
+        class="explore-wrapper"
+        id="exploreTours">
+
+        <div class="home-loading-card"></div>
+        <div class="home-loading-card"></div>
+
+    </div>
+
+</section>
+
+</main>
 
 
 
-        <!-- ==================================================
-             NO BOOKING STATE
-        =================================================== -->
+    <!-- ==========================================================
+         PACKAGE DETAILS MODAL
+    ========================================================== -->
 
-        <div
-            class="no-upcoming-trip"
-            id="noUpcomingTrip"
-            hidden>
+    <div class="package-modal" id="packageDetailsModal" aria-hidden="true">
 
+        <div class="package-modal-backdrop" data-close-package-modal></div>
 
-            <div class="no-trip-icon">
+        <section class="package-modal-panel"
+                 role="dialog"
+                 aria-modal="true"
+                 aria-labelledby="packageModalTitle">
 
-                🧳
+            <header class="package-modal-header">
+
+                <div>
+                    <span class="package-modal-eyebrow">TOUR DETAILS</span>
+                    <h2 id="packageModalTitle">Tour Package</h2>
+                </div>
+
+                <button type="button"
+                        class="package-modal-close"
+                        id="packageModalClose"
+                        aria-label="Close tour details">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+
+            </header>
+
+            <div class="package-modal-body">
+
+                <div class="package-modal-gallery" id="packageModalGallery"></div>
+
+                <div class="package-modal-summary">
+                    <div>
+                        <span class="package-modal-category" id="packageModalCategory">Tour</span>
+                        <h3 id="packageModalName">Tour Package</h3>
+                        <p id="packageModalLocation">Philippines</p>
+                    </div>
+
+                    <div class="package-modal-price">
+                        <strong id="packageModalPrice">₱0</strong>
+                        <span id="packageModalDuration"></span>
+                    </div>
+                </div>
+
+                <div class="package-modal-section" id="packageModalAboutSection">
+                    <h4>About this tour</h4>
+                    <p id="packageModalAbout"></p>
+                </div>
+
+                <div class="package-modal-section" id="packageModalInclusionsSection">
+                    <h4>Inclusions</h4>
+                    <ul class="package-detail-list" id="packageModalInclusions"></ul>
+                </div>
+
+                <div class="package-modal-section" id="packageModalExclusionsSection">
+                    <h4>Exclusions</h4>
+                    <ul class="package-detail-list" id="packageModalExclusions"></ul>
+                </div>
+
+                <div class="package-modal-section" id="packageModalAccommodationSection">
+                    <h4>Accommodation</h4>
+                    <div class="package-accommodation-list" id="packageModalAccommodations"></div>
+                </div>
+
+                <div class="package-modal-section" id="packageModalItinerarySection">
+                    <h4>Itinerary</h4>
+                    <div class="package-modal-itinerary" id="packageModalItinerary"></div>
+                </div>
 
             </div>
 
-
-            <div>
-
-                <h3>
-
-                    Ready for your next adventure?
-
-                </h3>
-
-
-                <p>
-
-                    You don't have an upcoming trip yet.
-
-                </p>
-
-            </div>
-
-        </div>
-
-    </section>
-
-
-
-    <!-- ======================================================
-         READY FOR NEXT ADVENTURE
-    ======================================================= -->
-
-    <section class="ready-adventure">
-
-        <div class="ready-adventure-icon">
-
-            <i class="fa-solid fa-suitcase-rolling"></i>
-
-        </div>
-
-
-        <div class="ready-adventure-content">
-
-            <h3>
-
-                Ready for your next adventure?
-
-            </h3>
-
-
-            <p>
-
-                You don't have an upcoming trip yet.
-
-            </p>
-
-        </div>
-
-    </section>
-
-
-
-    <!-- ======================================================
-         TOUR CATEGORIES
-    ======================================================= -->
-
-    <section class="tour-category-section">
-
-
-        <div class="tour-category-header">
-
-            <h2>
-
-                Explore by Category
-
-            </h2>
-
-        </div>
-
-
-        <div class="tour-category-list">
-
-
-            <!-- ALL -->
-
-            <button
-                type="button"
-                class="tour-category-btn active"
-                data-category="all">
-
-                All
-
-            </button>
-
-
-            <!-- BEACH -->
-
-            <button
-                type="button"
-                class="tour-category-btn"
-                data-category="beach">
-
-                Beach & Island
-
-            </button>
-
-
-            <!-- CITY -->
-
-            <button
-                type="button"
-                class="tour-category-btn"
-                data-category="city">
-
-                City Tour
-
-            </button>
-
-
-            <!-- CAMPING -->
-
-            <button
-                type="button"
-                class="tour-category-btn"
-                data-category="camping">
-
-                Camping
-
-            </button>
-
-
-            <!-- HIKING -->
-
-            <button
-                type="button"
-                class="tour-category-btn"
-                data-category="hiking">
-
-                Hiking
-
-            </button>
-
-
-            <!-- ADVENTURE -->
-
-            <button
-                type="button"
-                class="tour-category-btn"
-                data-category="adventure">
-
-                Adventure
-
-            </button>
-
-        </div>
-
-    </section>
-
-
-
-    <!-- ======================================================
-         TOUR PACKAGES
-         
-         IMPORTANT:
-         Keep #exploreTours because home.js uses this
-         element to load packages dynamically.
-    ======================================================= -->
-
-    <section class="explore-tours">
-
-        <div
-            class="explore-wrapper"
-            id="exploreTours">
-
-            <!--
-                Tour packages will be loaded automatically
-                from package.js / home.js
-            -->
-
-        </div>
-
-    </section>
-
-
-
-    <!-- ======================================================
+            <footer class="package-modal-footer">
+                <button type="button"
+                        class="package-modal-book"
+                        id="packageModalBookButton">
+                    <i class="fa-solid fa-calendar-check"></i>
+                    Book Now
+                </button>
+            </footer>
+
+        </section>
+
+    </div>
+
+    <!-- ==========================================================
          BOTTOM NAVIGATION
-    ======================================================= -->
+    ========================================================== -->
 
     <nav
         class="bottom-nav"
-        aria-label="Main navigation">
-
-
-        <!-- ==================================================
-             HOME
-        =================================================== -->
+        aria-label="Customer navigation">
 
         <a
             href="home.html"
-            class="bottom-nav-item active"
-            aria-label="Home">
+            class="bottom-nav-item active">
 
             <span class="bottom-icon">
 
@@ -554,18 +487,16 @@
 
             </span>
 
+            <span class="bottom-label">
+                Home
+            </span>
+
         </a>
 
 
-
-        <!-- ==================================================
-             MY TRIP
-        =================================================== -->
-
         <a
             href="my-trip.html"
-            class="bottom-nav-item"
-            aria-label="My Trip">
+            class="bottom-nav-item">
 
             <span class="bottom-icon">
 
@@ -573,18 +504,16 @@
 
             </span>
 
+            <span class="bottom-label">
+                My Trip
+            </span>
+
         </a>
 
 
-
-        <!-- ==================================================
-             MESSAGE
-        =================================================== -->
-
         <a
             href="message.html"
-            class="bottom-nav-item"
-            aria-label="Message">
+            class="bottom-nav-item">
 
             <span class="bottom-icon">
 
@@ -592,18 +521,16 @@
 
             </span>
 
+            <span class="bottom-label">
+                Message
+            </span>
+
         </a>
 
 
-
-        <!-- ==================================================
-             PROMO
-        =================================================== -->
-
         <a
             href="promo.html"
-            class="bottom-nav-item"
-            aria-label="Promo">
+            class="bottom-nav-item">
 
             <span class="bottom-icon">
 
@@ -611,18 +538,16 @@
 
             </span>
 
+            <span class="bottom-label">
+                Promo
+            </span>
+
         </a>
 
 
-
-        <!-- ==================================================
-             PROFILE
-        =================================================== -->
-
         <a
             href="profile.html"
-            class="bottom-nav-item"
-            aria-label="Profile">
+            class="bottom-nav-item">
 
             <span class="bottom-icon">
 
@@ -630,33 +555,21 @@
 
             </span>
 
+            <span class="bottom-label">
+                Profile
+            </span>
+
         </a>
 
     </nav>
 
+</div>
 
-</main>
-
-
-
-<!-- ==========================================================
-     DATA
-========================================================== -->
-
-<script src="../../assets/data/package.js"></script>
-
-
-
-<!-- ==========================================================
-     HOME JAVASCRIPT
-========================================================== -->
 
 <script
     type="module"
     src="../../assets/js/customer/home.js">
 </script>
 
-
 </body>
-
 </html>

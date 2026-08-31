@@ -1,1464 +1,3649 @@
-/* ==========================================================
+/* =========================================================
    TRIPS WONDER
-   CUSTOMER BOOKING
-========================================================== */
+   CLIENT BOOKING PAGE
+   assets/js/client/booking.js
+
+   FLOW:
+   1. Read package ID from URL
+   2. Load actual package from Firestore
+   3. Calculate package total
+   4. Calculate initial deposit
+   5. Require GCash / Bank Transfer
+   6. Require payment reference
+   7. Check duplicate payment reference
+   8. Save booking request to Firestore
+   9. Admin verifies payment later
+   ========================================================= */
+
+"use strict";
 
 
-/* ==========================================================
-   FIRESTORE
-========================================================== */
+/* =========================================================
+   FIREBASE
+   ========================================================= */
 
 import {
+    auth,
+    db
+} from "../firebase/firebase-config.js";
 
-    db,
+
+import {
     collection,
-    addDoc
-
-} from "../firebase/firebase-db.js";
-
-
-import {
-
     doc,
     getDoc,
-    serverTimestamp
-
+    getDocs,
+    setDoc,
+    updateDoc,
+    query,  
+    where
 } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
-
-/* ==========================================================
-   PACKAGE ID
-========================================================== */
-
-const params =
-    new URLSearchParams(
-        window.location.search
-    );
+import {
+    onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
 
 
-const packageId =
-    params.get("id");
+/* =========================================================
+   DOM READY
+   ========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
 
 
-console.log(
-    "Booking Package ID:",
-    packageId
-);
+        /* =====================================================
+           CONFIG
+           ===================================================== */
+
+        const DEPOSIT_PER_PAX = 500;
 
 
-/* ==========================================================
-   ELEMENTS
-========================================================== */
+        /*
+         * TEMPORARY PAYMENT DETAILS
+         *
+         * Replace these later with your actual
+         * Trips Wonder payment information.
+         */
 
-const bookingForm =
-    document.getElementById(
-        "bookingForm"
-    );
+        const PAYMENT_DETAILS = {
 
+    gcash: {
+        label: "GCash",
+        accountName: "Eric Ramirez",
+        accountNumber: "0952 478 8316"
+    },
 
-const bookingBack =
-    document.getElementById(
-        "bookingBack"
-    );
-
-
-const packageImage =
-    document.getElementById(
-        "bookingPackageImage"
-    );
-
-
-const packageCategory =
-    document.getElementById(
-        "bookingPackageCategory"
-    );
-
-
-const packageName =
-    document.getElementById(
-        "bookingPackageName"
-    );
-
-
-const packageLocation =
-    document.getElementById(
-        "bookingPackageLocation"
-    );
-
-
-const packagePrice =
-    document.getElementById(
-        "bookingPackagePrice"
-    );
-
-
-const accommodationOptions =
-    document.getElementById(
-        "accommodationOptions"
-    );
-
-
-const bookingError =
-    document.getElementById(
-        "bookingError"
-    );
-
-
-const continueButton =
-    document.getElementById(
-        "continueBooking"
-    );
-
-
-/* ==========================================================
-   PACKAGE
-========================================================== */
-
-let selectedPackage = null;
-
-
-/* ==========================================================
-   BACK BUTTON
-========================================================== */
-
-if (bookingBack) {
-
-    bookingBack.addEventListener(
-        "click",
-        () => {
-
-            history.back();
-
-        }
-    );
-
-}
-
-
-/* ==========================================================
-   START TRAVEL DATE
-==========================================================
-
-   We support the old ID "travelDate" temporarily
-   so the page will not break while the HTML is being
-   updated to "startTravelDate".
-========================================================== */
-
-let startTravelDate =
-    document.getElementById(
-        "startTravelDate"
-    );
-
-
-if (!startTravelDate) {
-
-    startTravelDate =
-        document.getElementById(
-            "travelDate"
-        );
-
-}
-
-
-/* ==========================================================
-   END TRAVEL DATE
-========================================================== */
-
-let endTravelDate =
-    document.getElementById(
-        "endTravelDate"
-    );
-
-
-/* ==========================================================
-   DATE MINIMUM
-========================================================== */
-
-function setMinimumTravelDate() {
-
-    if (!startTravelDate) {
-
-        return;
-
+    bank: {
+        label: "Bank Transfer",
+        bankName: "Maribank",
+        accountName: "Eric Ramirez",
+        accountNumber: "1260 9823 206"
     }
 
+};
 
-    const today =
-        new Date();
 
+        /* =====================================================
+           STATE
+           ===================================================== */
+
+        let selectedPackage =
+            null;
+
+
+        let selectedAccommodation =
+            null;
+
+        let submittedBooking = null;
+        let selectedPostBookingAddon = null;
+
+
+        let isSubmitting =
+            false;
+
+        let appliedPromo =
+            null;
+
+        let currentCustomer =
+    null;
+
+let currentCustomerProfile =
+    null;
+
+
+        /* =====================================================
+           ELEMENTS
+           ===================================================== */
+
+        const packageLoading =
+            document.getElementById(
+                "packageLoading"
+            );
+
+
+        const packageContent =
+            document.getElementById(
+                "packageContent"
+            );
+
+
+        const packageError =
+            document.getElementById(
+                "packageError"
+            );
+
+
+        const packageImage =
+            document.getElementById(
+                "packageImage"
+            );
+
+
+        const packageName =
+            document.getElementById(
+                "packageName"
+            );
+
+
+        const packageLocation =
+            document.getElementById(
+                "packageLocation"
+            );
+
+
+        const packageDuration =
+            document.getElementById(
+                "packageDuration"
+            );
+
+
+        const packagePrice =
+            document.getElementById(
+                "packagePrice"
+            );
+
+
+        /* =====================================================
+           FORM
+           ===================================================== */
+
+        const clientBookingForm =
+            document.getElementById(
+                "clientBookingForm"
+            );
+
+
+        const customerName =
+            document.getElementById(
+                "customerName"
+            );
+
+
+        const customerContact =
+            document.getElementById(
+                "customerContact"
+            );
+
+
+        const customerEmail =
+            document.getElementById(
+                "customerEmail"
+            );
+
+
+        const customerFacebook =
+            document.getElementById(
+                "customerFacebook"
+            );
+
+
+        const travelDate =
+            document.getElementById(
+                "travelDate"
+            );
+
+
+        const numberOfGuests =
+            document.getElementById(
+                "numberOfGuests"
+            );
+
+
+        const children0To3 =
+            document.getElementById(
+                "children0To3"
+            );
+
+
+        const children4To8 =
+            document.getElementById(
+                "children4To8"
+            );
+
+
+        const childrenFreeField =
+            document.getElementById(
+                "childrenFreeField"
+            );
+
+
+        const childrenDiscountField =
+            document.getElementById(
+                "childrenDiscountField"
+            );
+
+
+        const childrenFreeLabel =
+            document.getElementById(
+                "childrenFreeLabel"
+            );
+
+
+        const childrenDiscountLabel =
+            document.getElementById(
+                "childrenDiscountLabel"
+            );
+
+
+        const childrenDiscountHelp =
+            document.getElementById(
+                "childrenDiscountHelp"
+            );
+
+
+        const pickupPoint =
+            document.getElementById(
+                "pickupPoint"
+            );
+
+
+        const otherPickupField =
+            document.getElementById(
+                "otherPickupField"
+            );
+
+
+        const otherPickup =
+            document.getElementById(
+                "otherPickup"
+            );
+
+
+        const accommodation =
+            document.getElementById(
+                "accommodation"
+            );
+
+
+        const specialRequest =
+            document.getElementById(
+                "specialRequest"
+            );
+
+
+        /* =====================================================
+           SUMMARY
+           ===================================================== */
+
+        const summaryPackageRate =
+            document.getElementById(
+                "summaryPackageRate"
+            );
+
+
+        const summaryPax =
+            document.getElementById(
+                "summaryPax"
+            );
+
+
+        const summarySubtotal =
+            document.getElementById(
+                "summarySubtotal"
+            );
+
+
+        const summaryAccommodation =
+            document.getElementById(
+                "summaryAccommodation"
+            );
+
+
+        const summaryChildFreeRow =
+            document.getElementById(
+                "summaryChildFreeRow"
+            );
+
+
+        const summaryChildFree =
+            document.getElementById(
+                "summaryChildFree"
+            );
+
+
+        const summaryChildDiscountRow =
+            document.getElementById(
+                "summaryChildDiscountRow"
+            );
+
+
+        const summaryChildDiscount =
+            document.getElementById(
+                "summaryChildDiscount"
+            );
+
+
+        const summaryExclusiveRow =
+            document.getElementById(
+                "summaryExclusiveRow"
+            );
+
+
+        const summaryExclusiveDiscount =
+            document.getElementById(
+                "summaryExclusiveDiscount"
+            );
+
+
+        const summaryTotal =
+            document.getElementById(
+                "summaryTotal"
+            );
+
+
+        const bookingPromoCode =
+            document.getElementById(
+                "bookingPromoCode"
+            );
+
+
+        const applyPromoButton =
+            document.getElementById(
+                "applyPromoButton"
+            );
+
+
+        const promoBookingMessage =
+            document.getElementById(
+                "promoBookingMessage"
+            );
+
+
+        const summaryPromoRow =
+            document.getElementById(
+                "summaryPromoRow"
+            );
+
+
+        const summaryPromoDiscount =
+            document.getElementById(
+                "summaryPromoDiscount"
+            );
+
+
+        const requiredDeposit =
+            document.getElementById(
+                "requiredDeposit"
+            );
+
+
+        const depositBreakdown =
+            document.getElementById(
+                "depositBreakdown"
+            );
+
+
+        /* =====================================================
+           PAYMENT
+           ===================================================== */
+
+        const paymentMethodInputs =
+            document.querySelectorAll(
+                'input[name="paymentMethod"]'
+            );
+
+
+        const paymentInstructions =
+            document.getElementById(
+                "paymentInstructions"
+            );
+
+
+        const paymentInstructionsContent =
+            document.getElementById(
+                "paymentInstructionsContent"
+            );
+
+
+        const paymentReference =
+            document.getElementById(
+                "paymentReference"
+            );
+
+
+        const bookingAgreement =
+            document.getElementById(
+                "bookingAgreement"
+            );
+
+
+        const submitBookingButton =
+            document.getElementById(
+                "submitBookingButton"
+            );
+
+
+        /* =====================================================
+           SUCCESS
+           ===================================================== */
+
+        const bookingSuccessModal =
+            document.getElementById(
+                "bookingSuccessModal"
+            );
+
+
+        const bookingRequestReference =
+            document.getElementById(
+                "bookingRequestReference"
+            );
+
+
+        const successDoneButton =
+            document.getElementById(
+                "successDoneButton"
+            );
+
+        const postBookingAddons = document.getElementById("postBookingAddons");
+        const postBookingAddonList = document.getElementById("postBookingAddonList");
+        const postBookingAddonMessage = document.getElementById("postBookingAddonMessage");
+        const addSelectedAddonButton = document.getElementById("addSelectedAddonButton");
+        const currentIncludedAccommodation = document.getElementById("currentIncludedAccommodation");
+        const postBookingSelectedSummary = document.getElementById("postBookingSelectedSummary");
+        const selectedAddonName = document.getElementById("selectedAddonName");
+        const selectedAddonAmount = document.getElementById("selectedAddonAmount");
+        const selectedAddonNewTotal = document.getElementById("selectedAddonNewTotal");
+
+
+        /* =====================================================
+           HELPERS
+           ===================================================== */
+
+        function normalizeText(
+            value
+        ) {
+
+            return String(
+                value ?? ""
+            )
+                .trim();
+
+        }
+
+
+        function normalizeLower(
+            value
+        ) {
+
+            return normalizeText(
+                value
+            ).toLowerCase();
+
+        }
+
+
+        function normalizeNumber(
+            value
+        ) {
+
+            const cleaned =
+                String(
+                    value ?? ""
+                )
+                    .replace(
+                        /,/g,
+                        ""
+                    )
+                    .replace(
+                        /[^0-9.-]/g,
+                        ""
+                    );
+
+
+            const number =
+                Number(
+                    cleaned
+                );
+
+
+            return Number.isFinite(
+                number
+            )
+                ? number
+                : 0;
+
+        }
+
+
+        function formatMoney(
+            value
+        ) {
+
+            return normalizeNumber(
+                value
+            ).toLocaleString(
+                "en-PH",
+                {
+                    minimumFractionDigits:
+                        0,
+
+                    maximumFractionDigits:
+                        2
+                }
+            );
+
+        }
+
+
+        function getSelectedPaymentMethod() {
+
+            const checked =
+                document.querySelector(
+                    'input[name="paymentMethod"]:checked'
+                );
+
+
+            return checked
+                ? checked.value
+                : "";
+
+        }
+
+
+        function getPax() {
+
+            const pax =
+                parseInt(
+                    numberOfGuests?.value,
+                    10
+                );
+
+
+            if (
+                !Number.isFinite(
+                    pax
+                ) ||
+                pax < 1
+            ) {
+
+                return 1;
+
+            }
+
+
+            return pax;
+
+        }
+
+
+
+        function getChildCount(
+            element
+        ) {
+
+            const value =
+                parseInt(
+                    element?.value,
+                    10
+                );
+
+            return Number.isFinite(value) && value > 0
+                ? value
+                : 0;
+
+        }
+
+
+
+        function getPackagePassengerPricing() {
+
+            const config =
+                selectedPackage?.passengerPricing ||
+                {};
+
+            return {
+
+                enabled:
+                    config.kidsPricingEnabled === true,
+
+                childFreeMaxAge:
+                    Math.max(
+                        0,
+                        normalizeNumber(
+                            config.childFreeMaxAge ?? 3
+                        )
+                    ),
+
+                childDiscountMinAge:
+                    Math.max(
+                        0,
+                        normalizeNumber(
+                            config.childDiscountMinAge ?? 4
+                        )
+                    ),
+
+                childDiscountMaxAge:
+                    Math.max(
+                        0,
+                        normalizeNumber(
+                            config.childDiscountMaxAge ?? 8
+                        )
+                    ),
+
+                childDiscountAmount:
+                    Math.max(
+                        0,
+                        normalizeNumber(
+                            config.childDiscountAmount ?? 500
+                        )
+                    )
+
+            };
+
+        }
+
+
+        function getPackageExclusiveTour() {
+
+            const config =
+                selectedPackage?.exclusiveTour ||
+                {};
+
+            return {
+
+                enabled:
+                    config.enabled === true,
+
+                minimumPayingPax:
+                    Math.max(
+                        1,
+                        normalizeNumber(
+                            config.minimumPayingPax ?? 12
+                        )
+                    ),
+
+                freeStartsAt:
+                    Math.max(
+                        1,
+                        normalizeNumber(
+                            config.freeStartsAt ?? 13
+                        )
+                    ),
+
+                freePax:
+                    Math.max(
+                        0,
+                        normalizeNumber(
+                            config.freePax ?? 1
+                        )
+                    ),
+
+                maxFreePax:
+                    Math.max(
+                        0,
+                        normalizeNumber(
+                            config.maxFreePax ?? 1
+                        )
+                    )
+
+            };
+
+        }
+
+
+        function getPassengerBreakdown() {
+
+            const totalPax =
+                getPax();
+
+            const enteredChild0To3 =
+                getChildCount(
+                    children0To3
+                );
+
+            const enteredChild4To8 =
+                getChildCount(
+                    children4To8
+                );
+
+            const childTotal =
+                enteredChild0To3 +
+                enteredChild4To8;
+
+            const regularPax =
+                Math.max(
+                    0,
+                    totalPax -
+                    childTotal
+                );
+
+
+            const passengerPricing =
+                getPackagePassengerPricing();
+
+            const exclusiveConfig =
+                getPackageExclusiveTour();
+
+
+            /*
+             * When Kids Discount is OFF:
+             * all travelers pay the regular package rate.
+             *
+             * When ON:
+             * the existing customer inputs represent the configured
+             * FREE-child and discounted-child groups.
+             */
+            const freeChildPax =
+                passengerPricing.enabled
+                    ? enteredChild0To3
+                    : 0;
+
+            const discountedChildPax =
+                passengerPricing.enabled
+                    ? enteredChild4To8
+                    : 0;
+
+
+            const payingPaxBeforeExclusive =
+                passengerPricing.enabled
+                    ? regularPax +
+                        discountedChildPax
+                    : totalPax;
+
+
+            const isExclusive =
+                exclusiveConfig.enabled &&
+                payingPaxBeforeExclusive >=
+                    exclusiveConfig.minimumPayingPax;
+
+
+            const exclusiveFreePax =
+                exclusiveConfig.enabled &&
+                payingPaxBeforeExclusive >=
+                    exclusiveConfig.freeStartsAt
+
+                    ? Math.min(
+                        exclusiveConfig.freePax,
+                        exclusiveConfig.maxFreePax,
+                        payingPaxBeforeExclusive
+                    )
+
+                    : 0;
+
+
+            const payablePax =
+                Math.max(
+                    0,
+                    payingPaxBeforeExclusive -
+                    exclusiveFreePax
+                );
+
+
+            return {
+
+                totalPax,
+
+                child0To3:
+                    enteredChild0To3,
+
+                child4To8:
+                    enteredChild4To8,
+
+                childTotal,
+
+                regularPax,
+
+                kidsPricingEnabled:
+                    passengerPricing.enabled,
+
+                freeChildPax,
+
+                discountedChildPax,
+
+                childDiscountPerPax:
+                    passengerPricing.childDiscountAmount,
+
+                payingPaxBeforeExclusive,
+
+                exclusiveTourEnabled:
+                    exclusiveConfig.enabled,
+
+                isExclusive,
+
+                exclusiveFreePax,
+
+                payablePax,
+
+                passengerPricing,
+
+                exclusiveConfig
+
+            };
+
+        }
+
+
+        /* =====================================================
+           REQUEST REFERENCE
+           ===================================================== */
+
+        function generateBookingNumber(
+    documentId
+) {
 
     const year =
-        today.getFullYear();
+        new Date().getFullYear();
 
 
-    const month =
-        String(
-            today.getMonth() + 1
-        ).padStart(
-            2,
-            "0"
-        );
+    const uniqueCode =
+        String(documentId)
+            .replace(
+                /[^a-zA-Z0-9]/g,
+                ""
+            )
+            .substring(
+                0,
+                6
+            )
+            .toUpperCase();
 
 
-    const day =
-        String(
-            today.getDate()
-        ).padStart(
-            2,
-            "0"
-        );
-
-
-    startTravelDate.min =
-        `${year}-${month}-${day}`;
+    return `TW-${year}-${uniqueCode}`;
 
 }
 
 
-setMinimumTravelDate();
+        /* =====================================================
+           TRAVEL END DATE
+           ===================================================== */
 
-
-/* ==========================================================
-   IMAGE PATH
-========================================================== */
-
-function getImagePath(
-    image
-) {
-
-    if (!image) {
-
-        return "../../assets/images/logo.png";
-
-    }
-
-
-    if (
-        image.startsWith("http://") ||
-        image.startsWith("https://") ||
-        image.startsWith("../../") ||
-        image.startsWith("../")
-    ) {
-
-        return image;
-
-    }
-
-
-    return `../../assets/images/${image}`;
-
-}
-
-
-/* ==========================================================
-   PACKAGE IMAGE
-========================================================== */
-
-function getPackageImage(
-    pkg
-) {
-
-    /*
-       Admin Packages may use gallery.
-    */
-
-    if (
-        Array.isArray(
-            pkg.gallery
-        ) &&
-        pkg.gallery.length > 0
-    ) {
-
-        const firstImage =
-            pkg.gallery[0];
-
-
-        if (
-            typeof firstImage ===
-            "string"
+        function calculateTravelEndDate(
+            startDate,
+            duration
         ) {
 
-            return firstImage;
+            if (
+                !startDate
+            ) {
+
+                return "";
+
+            }
+
+
+            const match =
+                String(
+                    duration || ""
+                ).match(
+                    /(\d+)\s*D/i
+                );
+
+
+            if (
+                !match
+            ) {
+
+                return startDate;
+
+            }
+
+
+            const days =
+                Number(
+                    match[1]
+                );
+
+
+            if (
+                !Number.isFinite(
+                    days
+                ) ||
+                days <= 1
+            ) {
+
+                return startDate;
+
+            }
+
+
+            const date =
+                new Date(
+                    `${startDate}T00:00:00`
+                );
+
+
+            date.setDate(
+                date.getDate() +
+                days -
+                1
+            );
+
+
+            const year =
+                date.getFullYear();
+
+
+            const month =
+                String(
+                    date.getMonth() + 1
+                ).padStart(
+                    2,
+                    "0"
+                );
+
+
+            const day =
+                String(
+                    date.getDate()
+                ).padStart(
+                    2,
+                    "0"
+                );
+
+
+            return `${year}-${month}-${day}`;
 
         }
 
 
-        if (
-            firstImage &&
-            firstImage.url
-        ) {
+        /* =====================================================
+           MINIMUM TRAVEL DATE
+           ===================================================== */
 
-            return firstImage.url;
+        function setMinimumTravelDate() {
+
+            if (
+                !travelDate
+            ) {
+
+                return;
+
+            }
+
+
+            const today =
+                new Date();
+
+
+            const year =
+                today.getFullYear();
+
+
+            const month =
+                String(
+                    today.getMonth() + 1
+                ).padStart(
+                    2,
+                    "0"
+                );
+
+
+            const day =
+                String(
+                    today.getDate()
+                ).padStart(
+                    2,
+                    "0"
+                );
+
+
+            travelDate.min =
+                `${year}-${month}-${day}`;
 
         }
 
-    }
+
+        function syncPassengerPricingForm() {
+
+            const config =
+                getPackagePassengerPricing();
+
+            const showKids =
+                config.enabled === true;
 
 
-    /*
-       Fallback to image field.
-    */
+            childrenFreeField
+                ?.classList.toggle(
+                    "hidden",
+                    !showKids
+                );
 
-    if (pkg.image) {
-
-        return pkg.image;
-
-    }
-
-
-    return "";
-
-}
+            childrenDiscountField
+                ?.classList.toggle(
+                    "hidden",
+                    !showKids
+                );
 
 
-/* ==========================================================
-   PRICE
-========================================================== */
+            if (!showKids) {
 
-function formatPrice(
-    value
+                if (children0To3) {
+                    children0To3.value = "0";
+                    children0To3.setCustomValidity("");
+                }
+
+                if (children4To8) {
+                    children4To8.value = "0";
+                    children4To8.setCustomValidity("");
+                }
+
+                summaryChildFreeRow
+                    ?.classList.add(
+                        "hidden"
+                    );
+
+                summaryChildDiscountRow
+                    ?.classList.add(
+                        "hidden"
+                    );
+
+                return;
+
+            }
+
+
+            if (childrenFreeLabel) {
+                childrenFreeLabel.textContent =
+                    `Children 0–${config.childFreeMaxAge} yrs`;
+            }
+
+
+            if (childrenDiscountLabel) {
+                childrenDiscountLabel.textContent =
+                    `Children ${config.childDiscountMinAge}–${config.childDiscountMaxAge} yrs`;
+            }
+
+
+            if (childrenDiscountHelp) {
+                childrenDiscountHelp.textContent =
+                    `₱${formatMoney(
+                        config.childDiscountAmount
+                    )} OFF per child`;
+            }
+
+        }
+
+
+        /* =====================================================
+   LOAD CUSTOMER PROFILE
+   ===================================================== */
+
+async function loadCustomerProfile(
+    user
 ) {
 
-    if (
-        value === null ||
-        value === undefined ||
-        value === ""
-    ) {
-
-        return "Price Coming Soon";
-
+    if (!user) {
+        return false;
     }
-
-
-    if (
-        typeof value === "number"
-    ) {
-
-        return `₱${value.toLocaleString(
-            "en-PH"
-        )}`;
-
-    }
-
-
-    const text =
-        String(value);
-
-
-    return text.startsWith("₱")
-        ? text
-        : `₱${text}`;
-
-}
-
-
-/* ==========================================================
-   LOAD PACKAGE FROM FIRESTORE
-========================================================== */
-
-async function loadPackage() {
-
-    if (!packageId) {
-
-        showError(
-            "No package was selected."
-        );
-
-        return;
-
-    }
-
 
     try {
 
-        console.log(
-            "Loading package:",
-            packageId
-        );
-
-
-        const packageRef =
-            doc(
-                db,
-                "packages",
-                packageId
-            );
-
-
-        const packageSnapshot =
+        const profileSnapshot =
             await getDoc(
-                packageRef
+                doc(
+                    db,
+                    "users",
+                    user.uid
+                )
             );
 
 
-        if (
-            !packageSnapshot.exists()
-        ) {
+        if (!profileSnapshot.exists()) {
 
-            showError(
-                "The selected package could not be found."
+            console.error(
+                "CUSTOMER PROFILE NOT FOUND"
             );
 
-            return;
+            return false;
 
         }
 
 
-        selectedPackage = {
+        const profile =
+            profileSnapshot.data();
 
-            id:
-                packageSnapshot.id,
 
-            ...packageSnapshot.data()
+        currentCustomer =
+            user;
 
-        };
+        currentCustomerProfile =
+            profile;
+
+
+        const fullName =
+            [
+                profile.firstName,
+                profile.middleName,
+                profile.lastName,
+                profile.suffix
+            ]
+                .map(
+                    value =>
+                        normalizeText(
+                            value
+                        )
+                )
+                .filter(Boolean)
+                .join(" ");
+
+
+        if (customerName) {
+
+            customerName.value =
+                fullName;
+
+        }
+
+
+        if (customerContact) {
+
+            customerContact.value =
+                normalizeText(
+                    profile.phone
+                );
+
+        }
+
+
+        if (customerEmail) {
+
+            customerEmail.value =
+                normalizeLower(
+                    user.email ||
+                    profile.email
+                );
+
+            customerEmail.readOnly =
+                true;
+
+        }
 
 
         console.log(
-            "Selected Package:",
-            selectedPackage
+            "BOOKING CUSTOMER PROFILE LOADED:",
+            {
+                uid:
+                    user.uid,
+
+                name:
+                    fullName,
+
+                phone:
+                    profile.phone ||
+                    "",
+
+                email:
+                    customerEmail?.value ||
+                    ""
+            }
         );
 
 
-        renderPackage();
-
-
-        setupEndDate();
+        return true;
 
 
     } catch (error) {
 
         console.error(
-            "PACKAGE LOAD ERROR:",
+            "LOAD CUSTOMER PROFILE ERROR:",
             error
         );
 
-
-        showError(
-            "Unable to load package information."
-        );
+        return false;
 
     }
 
 }
 
 
-/* ==========================================================
-   RENDER PACKAGE
-========================================================== */
-
-function renderPackage() {
-
-    if (!selectedPackage) {
-
-        return;
-
-    }
-
-
-    const pkg =
-        selectedPackage;
-
-
-    /* ======================================================
-       IMAGE
-    ====================================================== */
-
-    if (packageImage) {
-
-        packageImage.src =
-            getImagePath(
-                getPackageImage(
-                    pkg
-                )
-            );
-
-
-        packageImage.alt =
-            pkg.name ||
-            "Tour Package";
-
-    }
-
-
-    /* ======================================================
-       CATEGORY
-    ====================================================== */
-
-    if (packageCategory) {
-
-        packageCategory.textContent =
-            pkg.category ||
-            "Tour";
-
-    }
-
-
-    /* ======================================================
-       NAME
-    ====================================================== */
-
-    if (packageName) {
-
-        packageName.textContent =
-            pkg.name ||
-            "Tour Package";
-
-    }
-
-
-    /* ======================================================
-       LOCATION
-    ====================================================== */
-
-    if (packageLocation) {
-
-        packageLocation.textContent =
-            pkg.location ||
-            "";
-
-    }
-
-
-    /* ======================================================
-       PRICE
-    ====================================================== */
-
-    if (packagePrice) {
-
-        packagePrice.textContent =
-            formatPrice(
-                pkg.price
-            );
-
-    }
-
-
-    /* ======================================================
-       ACCOMMODATION
-    ====================================================== */
-
-    renderAccommodation();
-
-}
-
-
-/* ==========================================================
-   GET PACKAGE DAYS
-========================================================== */
-
-function getPackageDays(
-    pkg
-) {
-
-    /*
-       Example:
-       "2 Days" → 2
-       "3 Days" → 3
-       "4 Days" → 4
-    */
-
-    if (pkg.days) {
-
-        const daysMatch =
-            String(
-                pkg.days
-            ).match(
-                /\d+/
-            );
-
-
-        if (daysMatch) {
-
-            return Number(
-                daysMatch[0]
-            );
-
-        }
-
-    }
-
-
-    /*
-       Example:
-       "2D1N" → 2
-       "3D2N" → 3
-    */
-
-    const duration =
-        String(
-            pkg.duration ||
-            ""
-        );
-
-
-    const durationMatch =
-        duration.match(
-            /(\d+)\s*D/i
-        );
-
-
-    if (durationMatch) {
-
-        return Number(
-            durationMatch[1]
-        );
-
-    }
-
-
-    /*
-       Example:
-       "1 Night" → 2 Days
-       "2 Nights" → 3 Days
-    */
-
-    if (pkg.nights) {
-
-        const nightsMatch =
-            String(
-                pkg.nights
-            ).match(
-                /\d+/
-            );
-
-
-        if (nightsMatch) {
-
-            return (
-                Number(
-                    nightsMatch[0]
-                ) + 1
-            );
-
-        }
-
-    }
-
-
-    /*
-       Default
-    */
-
-    return 1;
-
-}
-
-
-/* ==========================================================
-   GET PACKAGE DURATION
-========================================================== */
-
-function getPackageDuration(
-    pkg
-) {
-
-    if (pkg.duration) {
-
-        return pkg.duration;
-
-    }
-
-
-    if (
-        pkg.days &&
-        pkg.nights
-    ) {
-
-        return `${pkg.days} / ${pkg.nights}`;
-
-    }
-
-
-    if (pkg.days) {
-
-        return String(
-            pkg.days
-        );
-
-    }
-
-
-    return "";
-
-}
-
-
-/* ==========================================================
-   ADD DAYS TO DATE
-========================================================== */
-
-function addDaysToDate(
-    dateValue,
-    days
-) {
-
-    if (!dateValue) {
-
-        return "";
-
-    }
-
-
-    const date =
-        new Date(
-            `${dateValue}T00:00:00`
-        );
-
-
-    if (
-        Number.isNaN(
-            date.getTime()
-        )
-    ) {
-
-        return "";
-
-    }
-
-
-    date.setDate(
-        date.getDate() + days
-    );
-
-
-    const year =
-        date.getFullYear();
-
-
-    const month =
-        String(
-            date.getMonth() + 1
-        ).padStart(
-            2,
-            "0"
-        );
-
-
-    const day =
-        String(
-            date.getDate()
-        ).padStart(
-            2,
-            "0"
-        );
-
-
-    return `${year}-${month}-${day}`;
-
-}
-
-
-/* ==========================================================
-   CREATE END DATE FIELD IF NEEDED
-========================================================== */
-
-function setupEndDate() {
-
-    if (!startTravelDate) {
-
-        return;
-
-    }
-
-
-    /*
-       If the HTML already has:
-       #endTravelDate
-
-       use it.
-
-       Otherwise create it automatically.
-    */
-
-    if (!endTravelDate) {
-
-        createEndDateField();
-
-    }
-
-
-    if (!endTravelDate) {
-
-        return;
-
-    }
-
-
-    endTravelDate.readOnly =
-        true;
-
-
-    endTravelDate.disabled =
-        true;
-
-
-    endTravelDate.addEventListener(
-        "change",
-        () => {
-
-            updateEndTravelDate();
-
-        }
-    );
-
-
-    startTravelDate.addEventListener(
-        "change",
-        () => {
-
-            updateEndTravelDate();
-
-        }
-    );
-
-
-    updateEndTravelDate();
-
-}
-
-
-/* ==========================================================
-   CREATE END DATE FIELD
-========================================================== */
-
-function createEndDateField() {
-
-    if (!startTravelDate) {
-
-        return;
-
-    }
-
-
-    const startGroup =
-        startTravelDate.closest(
-            ".form-group"
-        );
-
-
-    if (!startGroup) {
-
-        return;
-
-    }
-
-
-    const endGroup =
-        document.createElement(
-            "div"
-        );
-
-
-    endGroup.className =
-        "form-group";
-
-
-    endGroup.innerHTML = `
-
-        <label for="endTravelDate">
-
-            End Travel Date
-
-        </label>
-
-
-        <input
-            type="date"
-            id="endTravelDate"
-            readonly
-            disabled>
-
-
-        <small
-            id="endTravelDateHint"
-            class="travel-date-hint">
-
-            Automatically calculated
-            based on package duration.
-
-        </small>
-
-    `;
-
-
-    /*
-       Put End Date immediately
-       after Start Date.
-    */
-
-    startGroup.parentNode.insertBefore(
-        endGroup,
-        startGroup.nextSibling
-    );
-
-
-    endTravelDate =
-        document.getElementById(
-            "endTravelDate"
-        );
-
-}
-
-
-/* ==========================================================
-   UPDATE END TRAVEL DATE
-========================================================== */
-
-function updateEndTravelDate() {
-
-    if (
-        !startTravelDate ||
-        !endTravelDate ||
-        !selectedPackage
-    ) {
-
-        return;
-
-    }
-
-
-    const startDate =
-        startTravelDate.value;
-
-
-    if (!startDate) {
-
-        endTravelDate.value =
-            "";
-
-
-        endTravelDate.removeAttribute(
-            "min"
-        );
-
-
-        return;
-
-    }
-
-
-    const totalDays =
-        getPackageDays(
-            selectedPackage
-        );
-
-
-    /*
-       2D1N = start + 1
-       3D2N = start + 2
-       4D3N = start + 3
-    */
-
-    const additionalDays =
-        Math.max(
-            totalDays - 1,
-            0
-        );
-
-
-    const calculatedEndDate =
-        addDaysToDate(
-            startDate,
-            additionalDays
-        );
-
-
-    endTravelDate.value =
-        calculatedEndDate;
-
-
-    endTravelDate.min =
-        calculatedEndDate;
-
-
-    console.log(
-        "Travel Schedule:",
-        {
-            startTravelDate:
-                startDate,
-
-            endTravelDate:
-                calculatedEndDate,
-
-            packageDays:
-                totalDays
-        }
-    );
-
-}
-
-
-/* ==========================================================
-   ACCOMMODATION
-========================================================== */
-
-function renderAccommodation() {
-
-    if (!accommodationOptions) {
-
-        return;
-
-    }
-
-
-    accommodationOptions.innerHTML =
-        "";
-
-
-    const accommodations =
-        selectedPackage?.accommodations ||
-        selectedPackage?.accommodation ||
-        [];
-
-
-    /*
-       No accommodation data
-    */
-
-    if (
-        !Array.isArray(
-            accommodations
-        ) ||
-        accommodations.length === 0
-    ) {
-
-        createAccommodation(
-            {
-                name:
-                    "Standard Accommodation",
-
-                description:
-                    "Included in package",
-
-                image:
-                    getPackageImage(
-                        selectedPackage
-                    )
-
-            },
-            true
-        );
-
-
-        return;
-
-    }
-
-
-    accommodations.forEach(
-        (
-            item,
-            index
-        ) => {
-
-            createAccommodation(
-                item,
-                index === 0
-            );
-
-        }
-    );
-
-}
-
-
-/* ==========================================================
-   CREATE ACCOMMODATION
-========================================================== */
-
-function createAccommodation(
-    item,
-    selected
-) {
-
-    const option =
-        document.createElement(
-            "label"
-        );
-
-
-    option.className =
-        "accommodation-option";
-
-
-    if (selected) {
-
-        option.classList.add(
-            "selected"
-        );
-
-    }
-
-
-    const radio =
-        document.createElement(
-            "input"
-        );
-
-
-    radio.type =
-        "radio";
-
-
-    radio.name =
-        "accommodation";
-
-
-    radio.value =
-        item.name ||
-        item.type ||
-        "Standard Accommodation";
-
-
-    radio.checked =
-        selected;
-
-
-    const image =
-        document.createElement(
-            "img"
-        );
-
-
-    image.src =
-        getImagePath(
-            item.image ||
-            item.photo ||
-            getPackageImage(
-                selectedPackage
-            )
-        );
-
-
-    image.alt =
-        item.name ||
-        "Accommodation";
-
-
-    const info =
-        document.createElement(
-            "div"
-        );
-
-
-    info.className =
-        "accommodation-option-info";
-
-
-    const title =
-        document.createElement(
-            "h4"
-        );
-
-
-    title.textContent =
-        item.name ||
-        item.type ||
-        "Accommodation";
-
-
-    const description =
-        document.createElement(
-            "p"
-        );
-
-
-    description.textContent =
-        item.description ||
-        item.capacity ||
-        "Included in package";
-
-
-    info.appendChild(
-        title
-    );
-
-
-    info.appendChild(
-        description
-    );
-
-
-    const check =
-        document.createElement(
-            "div"
-        );
-
-
-    check.className =
-        "accommodation-check";
-
-
-    check.textContent =
-        "✓";
-
-
-    option.appendChild(
-        radio
-    );
-
-
-    option.appendChild(
-        image
-    );
-
-
-    option.appendChild(
-        info
-    );
-
-
-    option.appendChild(
-        check
-    );
-
-
-    radio.addEventListener(
-        "change",
-        () => {
-
-            document
-                .querySelectorAll(
-                    ".accommodation-option"
-                )
-                .forEach(
-                    accommodation => {
-
-                        accommodation.classList.remove(
-                            "selected"
-                        );
-
-                    }
+        /* =====================================================
+           LOAD PACKAGE
+           ===================================================== */
+
+        async function loadSelectedPackage() {
+
+            const params =
+                new URLSearchParams(
+                    window.location.search
                 );
 
 
-            option.classList.add(
-                "selected"
+            const packageId =
+                params.get(
+                    "package"
+                );
+
+
+            if (
+                !packageId
+            ) {
+
+                showPackageError();
+
+                return;
+
+            }
+
+
+            try {
+
+                const packageSnapshot =
+                    await getDoc(
+                        doc(
+                            db,
+                            "packages",
+                            packageId
+                        )
+                    );
+
+
+                if (
+                    !packageSnapshot.exists()
+                ) {
+
+                    showPackageError();
+
+                    return;
+
+                }
+
+
+                const data =
+                    packageSnapshot.data();
+
+
+                /*
+                 * Client cannot book an inactive package.
+                 */
+
+                const packageStatus =
+                    normalizeLower(
+                        data.status ||
+                        "active"
+                    );
+
+
+                if (
+                    packageStatus !==
+                    "active"
+                ) {
+
+                    showPackageError();
+
+                    return;
+
+                }
+
+
+                selectedPackage = {
+
+                    id:
+                        packageSnapshot.id,
+
+                    name:
+                        data.name ||
+                        "",
+
+                    category:
+                        data.category ||
+                        "",
+
+                    location:
+                        data.location ||
+                        "",
+
+                    price:
+                        normalizeNumber(
+                            data.price
+                        ),
+
+                    duration:
+                        data.duration ||
+                        "",
+
+                    description:
+                        data.description ||
+                        "",
+
+                    status:
+                        packageStatus,
+
+                    accommodations:
+    Array.isArray(
+        data.accommodations
+    )
+        ? data.accommodations
+        : [],
+
+pickupLocations:
+    Array.isArray(
+        data.pickupLocations
+    )
+        ? data.pickupLocations
+        : [],
+
+passengerPricing:
+    data.passengerPricing &&
+    typeof data.passengerPricing === "object"
+        ? data.passengerPricing
+        : {
+            kidsPricingEnabled: false,
+            childFreeMaxAge: 3,
+            childDiscountMinAge: 4,
+            childDiscountMaxAge: 8,
+            childDiscountAmount: 500
+        },
+
+exclusiveTour:
+    data.exclusiveTour &&
+    typeof data.exclusiveTour === "object"
+        ? data.exclusiveTour
+        : {
+            enabled: false,
+            minimumPayingPax: 12,
+            freeStartsAt: 13,
+            freePax: 1,
+            maxFreePax: 1
+        },
+
+gallery:
+    Array.isArray(
+        data.gallery
+    )
+        ? data.gallery
+        : []
+
+                };
+
+
+                renderSelectedPackage();
+
+                syncPassengerPricingForm();
+
+                populateAccommodations();
+
+                populatePickupLocations();
+
+                updateBookingSummary();
+
+
+            } catch (error) {
+
+                console.error(
+                    "LOAD SELECTED PACKAGE ERROR:",
+                    error
+                );
+
+
+                showPackageError();
+
+            }
+
+        }
+
+
+        /* =====================================================
+           PACKAGE ERROR
+           ===================================================== */
+
+        function showPackageError() {
+
+            packageLoading
+                ?.classList.add(
+                    "hidden"
+                );
+
+
+            packageContent
+                ?.classList.add(
+                    "hidden"
+                );
+
+
+            packageError
+                ?.classList.remove(
+                    "hidden"
+                );
+
+
+            if (
+                submitBookingButton
+            ) {
+
+                submitBookingButton.disabled =
+                    true;
+
+            }
+
+        }
+
+
+        /* =====================================================
+           RENDER PACKAGE
+           ===================================================== */
+
+        function renderSelectedPackage() {
+
+            if (
+                !selectedPackage
+            ) {
+
+                return;
+
+            }
+
+
+            packageLoading
+                ?.classList.add(
+                    "hidden"
+                );
+
+
+            packageError
+                ?.classList.add(
+                    "hidden"
+                );
+
+
+            packageContent
+                ?.classList.remove(
+                    "hidden"
+                );
+
+
+            const image =
+                selectedPackage.gallery
+                    ?.find(
+                        item =>
+                            item &&
+                            item.url
+                    )
+                    ?.url ||
+                "";
+
+
+            if (
+                packageImage
+            ) {
+
+                if (
+                    image
+                ) {
+
+                    packageImage.src =
+                        image;
+
+
+                    packageImage.style.display =
+                        "block";
+
+                } else {
+
+                    packageImage.removeAttribute(
+                        "src"
+                    );
+
+
+                    packageImage.style.display =
+                        "none";
+
+                }
+
+            }
+
+
+            if (
+                packageName
+            ) {
+
+                packageName.textContent =
+                    selectedPackage.name ||
+                    "Tour Package";
+
+            }
+
+
+            if (
+                packageLocation
+            ) {
+
+                packageLocation.textContent =
+                    selectedPackage.location ||
+                    "Philippines";
+
+            }
+
+
+            if (
+                packageDuration
+            ) {
+
+                packageDuration.textContent =
+                    selectedPackage.duration ||
+                    "—";
+
+            }
+
+
+            if (
+                packagePrice
+            ) {
+
+                packagePrice.textContent =
+                    `₱${formatMoney(
+                        selectedPackage.price
+                    )}`;
+
+            }
+
+        }
+
+
+        /* =====================================================
+           ACCOMMODATIONS
+           ===================================================== */
+
+        function packageAccommodations() {
+            return Array.isArray(selectedPackage?.accommodations)
+                ? selectedPackage.accommodations
+                : [];
+        }
+
+        function includedPackageAccommodation() {
+            return packageAccommodations().find(item => {
+                const type = normalizeLower(item?.type || item?.optionType || "included");
+                const status = normalizeLower(item?.status || "active");
+                return type === "included" && item?.active !== false && status !== "hidden";
+            }) || null;
+        }
+
+        function optionalPackageAccommodations() {
+            return packageAccommodations().filter(item => {
+                const type = normalizeLower(item?.type || item?.optionType || "included");
+                const status = normalizeLower(item?.status || "active");
+                return type !== "included" && item?.active !== false && status !== "hidden";
+            });
+        }
+
+        function populateAccommodations() {
+            if (!accommodation || !selectedPackage) return;
+
+            const included = includedPackageAccommodation();
+
+            selectedAccommodation = included
+                ? {
+                    id: normalizeText(included.id || included.accommodationId),
+                    name: normalizeText(included.name) || "Package Included Accommodation",
+                    resortName: normalizeText(included.resortName),
+                    capacity: normalizeText(included.capacity || included.maxGuests),
+                    type: "included",
+                    price: 0
+                }
+                : {
+                    id: "",
+                    name: "Standard / Package Included",
+                    resortName: "",
+                    capacity: "",
+                    type: "included",
+                    price: 0
+                };
+
+            accommodation.value = selectedAccommodation.name;
+            updateBookingSummary();
+        }
+
+        function updateSelectedAccommodation() {
+            populateAccommodations();
+        }
+
+
+        /* =====================================================
+           PROMO CODE
+           ===================================================== */
+
+        function getDateTimestamp(
+            value
+        ) {
+
+            if (!value) {
+                return 0;
+            }
+
+            if (
+                typeof value.toDate ===
+                "function"
+            ) {
+                return value
+                    .toDate()
+                    .getTime();
+            }
+
+            const timestamp =
+                Date.parse(
+                    value
+                );
+
+            return Number.isNaN(
+                timestamp
+            )
+                ? 0
+                : timestamp;
+
+        }
+
+
+        function showPromoMessage(
+            message,
+            type = ""
+        ) {
+
+            if (!promoBookingMessage) {
+                return;
+            }
+
+            promoBookingMessage.textContent =
+                message || "";
+
+            promoBookingMessage.classList.remove(
+                "hidden",
+                "success",
+                "error"
+            );
+
+            if (!message) {
+                promoBookingMessage.classList.add(
+                    "hidden"
+                );
+                return;
+            }
+
+            if (type) {
+                promoBookingMessage.classList.add(
+                    type
+                );
+            }
+
+        }
+
+
+        function clearAppliedPromo(
+            message = ""
+        ) {
+
+            appliedPromo =
+                null;
+
+            summaryPromoRow
+                ?.classList.add(
+                    "hidden"
+                );
+
+            if (summaryPromoDiscount) {
+                summaryPromoDiscount.textContent =
+                    "-₱0";
+            }
+
+            if (bookingPromoCode) {
+                bookingPromoCode.disabled =
+                    false;
+            }
+
+            if (applyPromoButton) {
+                applyPromoButton.disabled =
+                    false;
+
+                applyPromoButton.classList.remove(
+                    "remove-promo"
+                );
+
+                applyPromoButton.textContent =
+                    "Apply";
+            }
+
+            showPromoMessage(
+                message,
+                message ? "error" : ""
+            );
+
+            updateBookingSummary();
+
+        }
+
+
+        function promoAppliesToSelectedPackage(
+            promo
+        ) {
+
+            const applicableTo =
+                normalizeLower(
+                    promo.applicableTo ||
+                    "all"
+                );
+
+            if (
+                applicableTo === "all" ||
+                applicableTo === "all_packages"
+            ) {
+                return true;
+            }
+
+            const promoPackageId =
+                normalizeText(
+                    promo.packageId
+                );
+
+            if (
+                promoPackageId &&
+                promoPackageId ===
+                selectedPackage?.id
+            ) {
+                return true;
+            }
+
+            const promoPackageName =
+                normalizeLower(
+                    promo.packageName
+                );
+
+            return Boolean(
+                promoPackageName &&
+                promoPackageName ===
+                    normalizeLower(
+                        selectedPackage?.name
+                    )
+            );
+
+        }
+
+
+        function calculatePromoDiscount(
+            promo,
+            originalTotal,
+            promoPax = 1
+        ) {
+
+            const value =
+                Math.max(
+                    0,
+                    normalizeNumber(
+                        promo.discountValue
+                    )
+                );
+
+            const discountType =
+                normalizeLower(
+                    promo.discountType
+                );
+
+            let discount = 0;
+
+            if (
+                discountType === "percentage"
+            ) {
+
+                discount =
+                    originalTotal *
+                    (value / 100);
+
+            } else if (
+                discountType === "per_pax"
+            ) {
+
+                discount =
+                    value *
+                    Math.max(
+                        0,
+                        promoPax
+                    );
+
+            } else {
+
+                /*
+                 * Fixed per booking.
+                 */
+                discount =
+                    value;
+
+            }
+
+            const maximumDiscount =
+                Math.max(
+                    0,
+                    normalizeNumber(
+                        promo.maximumDiscount
+                    )
+                );
+
+            /*
+             * Maximum Discount applies to percentage and per-pax promos.
+             * A value of 0 means no cap.
+             */
+            if (
+                maximumDiscount > 0 &&
+                (
+                    discountType === "percentage" ||
+                    discountType === "per_pax"
+                )
+            ) {
+
+                discount =
+                    Math.min(
+                        discount,
+                        maximumDiscount
+                    );
+
+            }
+
+            return Math.min(
+                originalTotal,
+                Math.max(
+                    0,
+                    discount
+                )
+            );
+
+        }
+
+
+        async function countPromoUsage(
+            promoId,
+            customerUid
+        ) {
+
+            const allUsageQuery =
+                query(
+                    collection(
+                        db,
+                        "bookings"
+                    ),
+                    where(
+                        "promoId",
+                        "==",
+                        promoId
+                    )
+                );
+
+            const allUsageSnapshot =
+                await getDocs(
+                    allUsageQuery
+                );
+
+            let customerUsage =
+                0;
+
+            allUsageSnapshot.forEach(
+                item => {
+
+                    const data =
+                        item.data();
+
+                    if (
+                        normalizeText(
+                            data.customerUid
+                        ) ===
+                        normalizeText(
+                            customerUid
+                        )
+                    ) {
+                        customerUsage += 1;
+                    }
+
+                }
+            );
+
+            return {
+                total:
+                    allUsageSnapshot.size,
+                customer:
+                    customerUsage
+            };
+
+        }
+
+
+        async function validatePromoDocument(
+            promo,
+            promoId
+        ) {
+
+            if (!promo || !promoId) {
+                throw new Error(
+                    "Promo code not found."
+                );
+            }
+
+            if (
+                normalizeLower(
+                    promo.status
+                ) !== "active"
+            ) {
+                throw new Error(
+                    "This promo is not active."
+                );
+            }
+
+            const now =
+                Date.now();
+
+            const validFrom =
+                getDateTimestamp(
+                    promo.validFrom
+                );
+
+            const validUntil =
+                getDateTimestamp(
+                    promo.validUntil
+                );
+
+            if (
+                validFrom &&
+                now < validFrom
+            ) {
+                throw new Error(
+                    "This promo is not available yet."
+                );
+            }
+
+            if (
+                validUntil &&
+                now > validUntil
+            ) {
+                throw new Error(
+                    "This promo has already expired."
+                );
+            }
+
+            if (
+                !promoAppliesToSelectedPackage(
+                    promo
+                )
+            ) {
+                throw new Error(
+                    "This promo is not applicable to the selected package."
+                );
+            }
+
+            const calculation =
+                calculateBooking(
+                    false
+                );
+
+            const minimumPax =
+                Math.max(
+                    1,
+                    normalizeNumber(
+                        promo.minimumPax ||
+                        1
+                    )
+                );
+
+            if (
+                calculation.payablePax <
+                minimumPax
+            ) {
+                throw new Error(
+                    `Minimum ${minimumPax} paying pax required for this promo.`
+                );
+            }
+
+
+            const minimumAmount =
+                Math.max(
+                    0,
+                    normalizeNumber(
+                        promo.minimumAmount
+                    )
+                );
+
+            if (
+                minimumAmount > 0 &&
+                calculation.originalTotal <
+                    minimumAmount
+            ) {
+                throw new Error(
+                    `Minimum booking amount is ₱${formatMoney(
+                        minimumAmount
+                    )}.`
+                );
+            }
+
+            const usage =
+                await countPromoUsage(
+                    promoId,
+                    currentCustomer?.uid ||
+                        auth.currentUser?.uid ||
+                        ""
+                );
+
+            const usageLimit =
+                Math.max(
+                    0,
+                    normalizeNumber(
+                        promo.usageLimit
+                    )
+                );
+
+            if (
+                usageLimit > 0 &&
+                usage.total >= usageLimit
+            ) {
+                throw new Error(
+                    "This promo has reached its usage limit."
+                );
+            }
+
+            const perCustomerLimit =
+                Math.max(
+                    0,
+                    normalizeNumber(
+                        promo.perCustomerLimit
+                    )
+                );
+
+            if (
+                perCustomerLimit > 0 &&
+                usage.customer >=
+                    perCustomerLimit
+            ) {
+                throw new Error(
+                    "You have already reached the usage limit for this promo."
+                );
+            }
+
+            const discountAmount =
+                calculatePromoDiscount(
+                    promo,
+                    calculation.originalTotal,
+                    calculation.payablePax
+                );
+
+            if (
+                discountAmount <= 0
+            ) {
+                throw new Error(
+                    "This promo does not provide a valid discount."
+                );
+            }
+
+            return {
+                id:
+                    promoId,
+
+                code:
+                    normalizeText(
+                        promo.code
+                    ).toUpperCase(),
+
+                title:
+                    normalizeText(
+                        promo.title
+                    ),
+
+                discountType:
+                    normalizeLower(
+                        promo.discountType
+                    ),
+
+                discountValue:
+                    normalizeNumber(
+                        promo.discountValue
+                    ),
+
+                maximumDiscount:
+                    normalizeNumber(
+                        promo.maximumDiscount
+                    ),
+
+                minimumAmount:
+                    normalizeNumber(
+                        promo.minimumAmount
+                    ),
+
+
+                minimumPax:
+                    Math.max(
+                        1,
+                        normalizeNumber(
+                            promo.minimumPax ||
+                            1
+                        )
+                    ),
+
+                applicableTo:
+                    normalizeLower(
+                        promo.applicableTo
+                    ),
+
+                packageId:
+                    normalizeText(
+                        promo.packageId
+                    ),
+
+                packageName:
+                    normalizeText(
+                        promo.packageName
+                    ),
+
+                validFrom:
+                    promo.validFrom ||
+                    null,
+
+                validUntil:
+                    promo.validUntil ||
+                    null,
+
+                discountAmount:
+                    discountAmount
+            };
+
+        }
+
+
+        async function findAndValidatePromo(
+            rawCode
+        ) {
+
+            const code =
+                normalizeText(
+                    rawCode
+                ).toUpperCase();
+
+            if (!code) {
+                throw new Error(
+                    "Please enter a promo code."
+                );
+            }
+
+            const promoQuery =
+                query(
+                    collection(
+                        db,
+                        "promos"
+                    ),
+                    where(
+                        "status",
+                        "==",
+                        "active"
+                    ),
+                    where(
+                        "code",
+                        "==",
+                        code
+                    )
+                );
+
+            const snapshot =
+                await getDocs(
+                    promoQuery
+                );
+
+            if (snapshot.empty) {
+                throw new Error(
+                    "Invalid or unavailable promo code."
+                );
+            }
+
+            const promoDocument =
+                snapshot.docs[0];
+
+            return validatePromoDocument(
+                promoDocument.data(),
+                promoDocument.id
+            );
+
+        }
+
+
+        async function handleApplyPromo() {
+
+            if (appliedPromo) {
+                clearAppliedPromo();
+                return;
+            }
+
+            if (
+                !selectedPackage
+            ) {
+                showPromoMessage(
+                    "Please wait for the package to finish loading.",
+                    "error"
+                );
+                return;
+            }
+
+            const code =
+                normalizeText(
+                    bookingPromoCode?.value
+                ).toUpperCase();
+
+            if (bookingPromoCode) {
+                bookingPromoCode.value =
+                    code;
+            }
+
+            const originalButtonText =
+                applyPromoButton
+                    ?.textContent ||
+                "Apply";
+
+            try {
+
+                if (applyPromoButton) {
+                    applyPromoButton.disabled =
+                        true;
+
+                    applyPromoButton.innerHTML =
+                        '<i class="fa-solid fa-spinner fa-spin"></i>';
+                }
+
+                showPromoMessage("");
+
+                const validatedPromo =
+                    await findAndValidatePromo(
+                        code
+                    );
+
+                appliedPromo =
+                    validatedPromo;
+
+                if (bookingPromoCode) {
+                    bookingPromoCode.disabled =
+                        true;
+                }
+
+                if (applyPromoButton) {
+                    applyPromoButton.disabled =
+                        false;
+
+                    applyPromoButton.textContent =
+                        "Remove";
+
+                    applyPromoButton.classList.add(
+                        "remove-promo"
+                    );
+                }
+
+                showPromoMessage(
+                    `${validatedPromo.title || validatedPromo.code} applied successfully.`,
+                    "success"
+                );
+
+                updateBookingSummary();
+
+            } catch (error) {
+
+                console.error(
+                    "PROMO APPLY ERROR:",
+                    error
+                );
+
+                appliedPromo =
+                    null;
+
+                showPromoMessage(
+                    error?.message ||
+                    "Unable to apply promo code.",
+                    "error"
+                );
+
+                if (applyPromoButton) {
+                    applyPromoButton.disabled =
+                        false;
+
+                    applyPromoButton.textContent =
+                        originalButtonText;
+                }
+
+                updateBookingSummary();
+
+            }
+
+        }
+
+
+        async function revalidateAppliedPromo() {
+
+            if (!appliedPromo) {
+                return true;
+            }
+
+            try {
+
+                const refreshedPromo =
+                    await findAndValidatePromo(
+                        appliedPromo.code
+                    );
+
+                appliedPromo =
+                    refreshedPromo;
+
+                updateBookingSummary();
+
+                return true;
+
+            } catch (error) {
+
+                clearAppliedPromo(
+                    error?.message ||
+                    "Your promo is no longer available."
+                );
+
+                return false;
+
+            }
+
+        }
+
+
+        /* =====================================================
+           BOOKING CALCULATION
+           ===================================================== */
+
+        function calculateBooking(
+            includePromo = true
+        ) {
+
+            const passenger =
+                getPassengerBreakdown();
+
+            const packageRate =
+                selectedPackage
+                    ?.price ||
+                0;
+
+            /*
+             * Start from every traveler at the regular package rate,
+             * then remove the free-child and discount benefits.
+             */
+            const grossPackageAmount =
+                packageRate *
+                passenger.totalPax;
+
+            const childFreeAmount =
+                passenger.kidsPricingEnabled
+                    ? packageRate *
+                        passenger.freeChildPax
+                    : 0;
+
+            const childDiscountPerPax =
+                passenger.kidsPricingEnabled
+                    ? Math.min(
+                        packageRate,
+                        Math.max(
+                            0,
+                            passenger.childDiscountPerPax
+                        )
+                    )
+                    : 0;
+
+            const childDiscountAmount =
+                childDiscountPerPax *
+                passenger.discountedChildPax;
+
+            const exclusiveDiscountAmount =
+                packageRate *
+                passenger.exclusiveFreePax;
+
+            const packageSubtotal =
+                Math.max(
+                    0,
+                    grossPackageAmount -
+                    childFreeAmount -
+                    childDiscountAmount -
+                    exclusiveDiscountAmount
+                );
+
+            const accommodationAmount =
+                selectedAccommodation
+                    ?.price ||
+                0;
+
+            const originalTotal =
+                packageSubtotal +
+                accommodationAmount;
+
+            const discountAmount =
+                includePromo &&
+                appliedPromo
+                    ? calculatePromoDiscount(
+                        appliedPromo,
+                        originalTotal,
+                        passenger.payablePax
+                    )
+                    : 0;
+
+            const total =
+                Math.max(
+                    0,
+                    originalTotal -
+                    discountAmount
+                );
+
+            /*
+             * Deposit is collected only from payable package passengers.
+             * Only payable package passengers are included in the deposit.
+             */
+            const deposit =
+                DEPOSIT_PER_PAX *
+                passenger.payablePax;
+
+            return {
+
+                pax:
+                    passenger.totalPax,
+
+                totalPax:
+                    passenger.totalPax,
+
+                child0To3:
+                    passenger.child0To3,
+
+                child4To8:
+                    passenger.child4To8,
+
+                kidsPricingEnabled:
+                    passenger.kidsPricingEnabled,
+
+                freeChildPax:
+                    passenger.freeChildPax,
+
+                discountedChildPax:
+                    passenger.discountedChildPax,
+
+                childDiscountPerPax,
+
+                regularPax:
+                    passenger.regularPax,
+
+                payingPaxBeforeExclusive:
+                    passenger.payingPaxBeforeExclusive,
+
+                payablePax:
+                    passenger.payablePax,
+
+                exclusiveTourEnabled:
+                    passenger.exclusiveTourEnabled,
+
+                isExclusive:
+                    passenger.isExclusive,
+
+                exclusiveFreePax:
+                    passenger.exclusiveFreePax,
+
+                passengerPricing:
+                    passenger.passengerPricing,
+
+                exclusiveConfig:
+                    passenger.exclusiveConfig,
+
+                packageRate,
+                grossPackageAmount,
+                childFreeAmount,
+                childDiscountAmount,
+                exclusiveDiscountAmount,
+                packageSubtotal,
+                accommodationAmount,
+                originalTotal,
+                discountAmount,
+                total,
+                deposit
+
+            };
+
+        }
+
+
+        /* =====================================================
+           UPDATE SUMMARY
+           ===================================================== */
+
+        function updateBookingSummary() {
+
+            if (
+                !selectedPackage
+            ) {
+
+                return;
+
+            }
+
+
+            const calculation =
+                calculateBooking();
+
+
+            if (!calculation.kidsPricingEnabled) {
+
+                summaryChildFreeRow
+                    ?.classList.add(
+                        "hidden"
+                    );
+
+                summaryChildDiscountRow
+                    ?.classList.add(
+                        "hidden"
+                    );
+
+            }
+
+
+            if (
+                summaryPackageRate
+            ) {
+
+                summaryPackageRate.textContent =
+                    `₱${formatMoney(
+                        calculation.packageRate
+                    )}`;
+
+            }
+
+
+            if (
+                summaryPax
+            ) {
+
+                summaryPax.textContent =
+                    String(
+                        calculation.pax
+                    );
+
+            }
+
+
+            if (
+                summarySubtotal
+            ) {
+
+                summarySubtotal.textContent =
+                    `₱${formatMoney(
+                        calculation.packageSubtotal
+                    )}`;
+
+            }
+
+
+            if (
+                summaryChildFreeRow &&
+                summaryChildFree
+            ) {
+
+                if (
+                    calculation.kidsPricingEnabled &&
+                    calculation.freeChildPax > 0
+                ) {
+
+                    summaryChildFreeRow.classList.remove(
+                        "hidden"
+                    );
+
+                    summaryChildFree.textContent =
+                        `${calculation.freeChildPax} ${
+                            calculation.freeChildPax === 1
+                                ? "pax"
+                                : "pax"
+                        } • FREE`;
+
+                } else {
+
+                    summaryChildFreeRow.classList.add(
+                        "hidden"
+                    );
+
+                }
+
+            }
+
+
+            if (
+                summaryChildDiscountRow &&
+                summaryChildDiscount
+            ) {
+
+                if (
+                    calculation.childDiscountAmount > 0
+                ) {
+
+                    summaryChildDiscountRow.classList.remove(
+                        "hidden"
+                    );
+
+                    summaryChildDiscount.textContent =
+                        `-₱${formatMoney(
+                            calculation.childDiscountAmount
+                        )}`;
+
+                } else {
+
+                    summaryChildDiscountRow.classList.add(
+                        "hidden"
+                    );
+
+                }
+
+            }
+
+
+            if (
+                summaryExclusiveRow &&
+                summaryExclusiveDiscount
+            ) {
+
+                if (
+                    calculation.exclusiveFreePax > 0
+                ) {
+
+                    summaryExclusiveRow.classList.remove(
+                        "hidden"
+                    );
+
+                    summaryExclusiveDiscount.textContent =
+                        `${calculation.exclusiveFreePax} FREE pax (-₱${formatMoney(
+                            calculation.exclusiveDiscountAmount
+                        )})`;
+
+                } else {
+
+                    summaryExclusiveRow.classList.add(
+                        "hidden"
+                    );
+
+                }
+
+            }
+
+
+            if (
+                summaryAccommodation
+            ) {
+
+                if (
+                    selectedAccommodation
+                ) {
+
+                    summaryAccommodation.textContent =
+                        selectedAccommodation.price >
+                        0
+
+                            ? `${selectedAccommodation.name} (+₱${formatMoney(
+                                selectedAccommodation.price
+                            )})`
+
+                            : selectedAccommodation.name;
+
+                } else {
+
+                    summaryAccommodation.textContent =
+                        "Included";
+
+                }
+
+            }
+
+
+            if (
+                summaryPromoRow &&
+                summaryPromoDiscount
+            ) {
+
+                if (
+                    calculation.discountAmount >
+                    0
+                ) {
+
+                    summaryPromoRow.classList.remove(
+                        "hidden"
+                    );
+
+                    summaryPromoDiscount.textContent =
+                        `-₱${formatMoney(
+                            calculation.discountAmount
+                        )}`;
+
+                } else {
+
+                    summaryPromoRow.classList.add(
+                        "hidden"
+                    );
+
+                    summaryPromoDiscount.textContent =
+                        "-₱0";
+
+                }
+
+            }
+
+
+            if (
+                summaryTotal
+            ) {
+
+                summaryTotal.textContent =
+                    `₱${formatMoney(
+                        calculation.total
+                    )}`;
+
+            }
+
+
+            if (
+                requiredDeposit
+            ) {
+
+                requiredDeposit.textContent =
+                    `₱${formatMoney(
+                        calculation.deposit
+                    )}`;
+
+            }
+
+
+            if (
+                depositBreakdown
+            ) {
+
+                depositBreakdown.textContent =
+                    `₱${formatMoney(
+                        DEPOSIT_PER_PAX
+                    )} × ${calculation.payablePax} pax`;
+
+            }
+
+        }
+
+        /* =====================================================
+   POPULATE PICKUP LOCATIONS
+   ===================================================== */
+
+function populatePickupLocations() {
+
+    if (!pickupPoint) {
+        return;
+    }
+
+    pickupPoint.innerHTML = `
+        <option value="">
+            Select pick up location
+        </option>
+    `;
+
+    const locations =
+        Array.isArray(
+            selectedPackage?.pickupLocations
+        )
+            ? selectedPackage.pickupLocations
+            : [];
+
+    locations.forEach(
+        location => {
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+            option.value =
+                location;
+
+            option.textContent =
+                location;
+
+            pickupPoint.appendChild(
+                option
             );
 
         }
     );
 
+    const otherOption =
+        document.createElement(
+            "option"
+        );
 
-    accommodationOptions.appendChild(
-        option
+    otherOption.value =
+        "Other / Along the Way";
+
+    otherOption.textContent =
+        "Other / Along the Way";
+
+    pickupPoint.appendChild(
+        otherOption
     );
 
 }
 
 
-/* ==========================================================
-   ERROR
-========================================================== */
+        /* =====================================================
+           PICKUP
+           ===================================================== */
 
-function showError(
-    message
-) {
+        function handlePickupChange() {
 
-    if (bookingError) {
-
-        bookingError.textContent =
-            message;
-
-    }
-
-}
+            const isOther =
+                pickupPoint?.value ===
+                "Other / Along the Way";
 
 
-/* ==========================================================
-   VALIDATE BOOKING
-========================================================== */
+            if (
+                isOther
+            ) {
 
-function validateBooking() {
-
-    showError("");
-
-
-    if (!selectedPackage) {
-
-        showError(
-            "Package information is not available."
-        );
-
-        return false;
-
-    }
+                otherPickupField
+                    ?.classList.remove(
+                        "hidden"
+                    );
 
 
-    if (
-        !startTravelDate ||
-        !startTravelDate.value
-    ) {
+                if (
+                    otherPickup
+                ) {
 
-        showError(
-            "Please select your Start Travel Date."
-        );
+                    otherPickup.required =
+                        true;
+
+                }
+
+            } else {
+
+                otherPickupField
+                    ?.classList.add(
+                        "hidden"
+                    );
 
 
-        if (startTravelDate) {
+                if (
+                    otherPickup
+                ) {
 
-            startTravelDate.focus();
+                    otherPickup.required =
+                        false;
+
+
+                    otherPickup.value =
+                        "";
+
+                }
+
+            }
 
         }
 
 
-        return false;
+        /* =====================================================
+           PAYMENT INSTRUCTIONS
+           ===================================================== */
 
-    }
+        function showPaymentInstructions() {
 
-
-    if (
-        !endTravelDate ||
-        !endTravelDate.value
-    ) {
-
-        showError(
-            "Unable to calculate the End Travel Date."
-        );
+            const method =
+                getSelectedPaymentMethod();
 
 
-        return false;
+            if (
+                !method ||
+                !PAYMENT_DETAILS[
+                    method
+                ]
+            ) {
 
-    }
-
-
-    const pax =
-        document.getElementById(
-            "numberOfGuests"
-        );
-
-
-    const pickup =
-        document.getElementById(
-            "pickupPoint"
-        );
+                paymentInstructions
+                    ?.classList.add(
+                        "hidden"
+                    );
 
 
-    const name =
-        document.getElementById(
-            "customerNameInput"
-        );
+                return;
+
+            }
 
 
-    const contact =
-        document.getElementById(
-            "contactNumber"
-        );
+            const details =
+                PAYMENT_DETAILS[
+                    method
+                ];
 
 
-    const terms =
-        document.getElementById(
-            "agreeTerms"
-        );
+            const calculation =
+                calculateBooking();
 
 
-    if (
-        !pax ||
-        !pax.value ||
-        Number(
-            pax.value
-        ) < 1
-    ) {
+            if (
+                method ===
+                "gcash"
+            ) {
 
-        showError(
-            "Please enter the number of guests."
-        );
+                paymentInstructionsContent.innerHTML = `
 
+                    <strong>
+                        Send your initial deposit via GCash
+                    </strong>
 
-        pax?.focus();
+                    <div class="payment-detail-row">
 
+                        <span>
+                            Account Name
+                        </span>
 
-        return false;
+                        <span>
+                            ${details.accountName}
+                        </span>
 
-    }
-
-
-    if (
-        !pickup ||
-        !pickup.value
-    ) {
-
-        showError(
-            "Please select your pick-up point."
-        );
+                    </div>
 
 
-        pickup?.focus();
+                    <div class="payment-detail-row">
+
+    <span>
+        GCash Number
+    </span>
+
+    <div class="payment-copy-value">
+
+        <span>
+            ${details.accountNumber}
+        </span>
+
+        <button
+            type="button"
+            class="payment-copy-btn"
+            data-copy="${details.accountNumber}"
+        >
+            <i class="fa-regular fa-copy"></i>
+            Copy
+        </button>
+
+    </div>
+
+</div>
 
 
-        return false;
+                    <div class="payment-detail-row">
 
-    }
+                        <span>
+                            Amount to Send
+                        </span>
 
+                        <span>
+                            ₱${formatMoney(
+                                calculation.deposit
+                            )}
+                        </span>
 
-    if (
-        !name ||
-        !name.value.trim()
-    ) {
+                    </div>
 
-        showError(
-            "Please enter your full name."
-        );
+                `;
 
+            } else {
 
-        name?.focus();
+                paymentInstructionsContent.innerHTML = `
 
-
-        return false;
-
-    }
-
-
-    if (
-        !contact ||
-        !contact.value.trim()
-    ) {
-
-        showError(
-            "Please enter your contact number."
-        );
+                    <strong>
+                        Send your initial deposit via Bank Transfer
+                    </strong>
 
 
-        contact?.focus();
+                    <div class="payment-detail-row">
+
+                        <span>
+                            Bank
+                        </span>
+
+                        <span>
+                            ${details.bankName}
+                        </span>
+
+                    </div>
 
 
-        return false;
+                    <div class="payment-detail-row">
 
-    }
+                        <span>
+                            Account Name
+                        </span>
 
+                        <span>
+                            ${details.accountName}
+                        </span>
 
-    if (
-        !terms ||
-        !terms.checked
-    ) {
-
-        showError(
-            "Please agree to the booking terms."
-        );
+                    </div>
 
 
-        return false;
+                   <div class="payment-detail-row">
 
-    }
+    <span>
+        Account Number
+    </span>
+
+    <div class="payment-copy-value">
+
+        <span>
+            ${details.accountNumber}
+        </span>
+
+        <button
+            type="button"
+            class="payment-copy-btn"
+            data-copy="${details.accountNumber}"
+        >
+            <i class="fa-regular fa-copy"></i>
+            Copy
+        </button>
+
+    </div>
+
+</div>
 
 
-    return true;
+                    <div class="payment-detail-row">
 
-}
+                        <span>
+                            Amount to Send
+                        </span>
+
+                        <span>
+                            ₱${formatMoney(
+                                calculation.deposit
+                            )}
+                        </span>
+
+                    </div>
+
+                `;
+
+            }
 
 
-/* ==========================================================
-   SUBMIT BOOKING
-========================================================== */
+            paymentInstructions
+                ?.classList.remove(
+                    "hidden"
+                );
 
-if (bookingForm) {
+        }
 
-    bookingForm.addEventListener(
-        "submit",
-        async event => {
+
+        /* =====================================================
+           DUPLICATE PAYMENT REFERENCE
+           ===================================================== */
+
+        async function paymentReferenceExists(
+            reference
+        ) {
+
+            const normalizedReference =
+                normalizeLower(
+                    reference
+                );
+
+
+            if (
+                !normalizedReference
+            ) {
+
+                return false;
+
+            }
+
+
+            /*
+             * Query normalized field.
+             * New client submissions will always store this.
+             */
+
+            const paymentQuery =
+                query(
+                    collection(
+                        db,
+                        "bookings"
+                    ),
+                    where(
+                        "paymentReferenceNormalized",
+                        "==",
+                        normalizedReference
+                    )
+                );
+
+
+            const snapshot =
+                await getDocs(
+                    paymentQuery
+                );
+
+
+            return !snapshot.empty;
+
+        }
+
+
+        /* =====================================================
+           VALIDATION
+           ===================================================== */
+
+        function validateBooking() {
+
+            if (
+                !selectedPackage
+            ) {
+
+                alert(
+                    "Please select a valid tour package."
+                );
+
+
+                return false;
+
+            }
+
+
+            if (
+                !clientBookingForm
+                    ?.checkValidity()
+            ) {
+
+                clientBookingForm
+                    ?.reportValidity();
+
+
+                return false;
+
+            }
+
+
+            const pax =
+                getPax();
+
+
+            if (
+                pax < 1
+            ) {
+
+                alert(
+                    "Please enter a valid number of guests."
+                );
+
+
+                return false;
+
+            }
+
+
+            const passenger =
+                getPassengerBreakdown();
+
+            if (
+                passenger.childTotal >
+                passenger.totalPax
+            ) {
+
+                alert(
+                    "Children count cannot be greater than the total number of pax."
+                );
+
+                return false;
+
+            }
+
+
+            const method =
+                getSelectedPaymentMethod();
+
+
+            if (
+                !method
+            ) {
+
+                alert(
+                    "Please select GCash or Bank Transfer."
+                );
+
+
+                return false;
+
+            }
+
+
+            const reference =
+                normalizeText(
+                    paymentReference
+                        ?.value
+                );
+
+
+            if (
+                !reference
+            ) {
+
+                alert(
+                    "Payment reference number is required."
+                );
+
+
+                paymentReference
+                    ?.focus();
+
+
+                return false;
+
+            }
+
+
+            if (
+                reference.length <
+                4
+            ) {
+
+                alert(
+                    "Please enter a valid payment reference number."
+                );
+
+
+                paymentReference
+                    ?.focus();
+
+
+                return false;
+
+            }
+
+
+            if (
+                !bookingAgreement
+                    ?.checked
+            ) {
+
+                alert(
+                    "Please confirm the booking agreement."
+                );
+
+
+                return false;
+
+            }
+
+
+            return true;
+
+        }
+
+
+        /* =====================================================
+           CREATE BOOKING DATA
+           ===================================================== */
+
+        function createBookingData(
+    bookingNumber
+) {
+
+            const calculation =
+                calculateBooking();
+
+
+            const startDate =
+                travelDate.value;
+
+
+            const endDate =
+                calculateTravelEndDate(
+                    startDate,
+                    selectedPackage.duration
+                );
+
+
+            const paymentMethod =
+                getSelectedPaymentMethod();
+
+
+            const paymentReferenceValue =
+                normalizeText(
+                    paymentReference.value
+                );
+
+
+            const finalPickup =
+                pickupPoint.value ===
+                "Other / Along the Way"
+
+                    ? normalizeText(
+                        otherPickup.value
+                    )
+
+                    : pickupPoint.value;
+
+
+            const now =
+                new Date()
+                    .toISOString();
+
+
+            return {
+
+                /* =============================================
+                   REQUEST
+                   ============================================= */
+
+                bookingReference:
+    bookingNumber,
+
+bookingNumber:
+    bookingNumber,
+
+
+                /* =============================================
+                   CUSTOMER
+                   ============================================= */
+
+                customerUid:
+    currentCustomer?.uid ||
+    auth.currentUser?.uid ||
+    "",
+
+customerName:
+    normalizeText(
+        customerName.value
+    ),
+
+customerContact:
+    normalizeText(
+        customerContact.value
+    ),
+
+customerEmail:
+    normalizeLower(
+        customerEmail.value
+    ),
+
+customerFb:
+    normalizeText(
+        customerFacebook.value
+    ),
+
+
+                /* =============================================
+                   PACKAGE
+                   ============================================= */
+
+                packageId:
+                    selectedPackage.id,
+
+                packageName:
+                    selectedPackage.name,
+
+                packageCategory:
+                    selectedPackage.category,
+
+                packageLocation:
+                    selectedPackage.location,
+
+                duration:
+                    selectedPackage.duration,
+
+                packageRate:
+                    calculation.packageRate,
+
+
+                /* =============================================
+                   TRAVEL
+                   ============================================= */
+
+                travelStartDate:
+                    startDate,
+
+                travelEndDate:
+                    endDate,
+
+                pax:
+                    calculation.pax,
+
+                totalPax:
+                    calculation.totalPax,
+
+                child0To3:
+                    calculation.child0To3,
+
+                child4To8:
+                    calculation.child4To8,
+
+                regularPax:
+                    calculation.regularPax,
+
+                payingPax:
+                    calculation.payablePax,
+
+                payingPaxBeforeExclusive:
+                    calculation.payingPaxBeforeExclusive,
+
+                exclusiveTour:
+                    calculation.isExclusive,
+
+                exclusiveFreePax:
+                    calculation.exclusiveFreePax,
+
+                kidsPricingEnabled:
+                    calculation.kidsPricingEnabled,
+
+                childDiscountPerPax:
+                    calculation.childDiscountPerPax,
+
+                passengerPricingSnapshot: {
+                    kidsPricingEnabled:
+                        calculation.passengerPricing.enabled,
+                    childFreeMaxAge:
+                        calculation.passengerPricing.childFreeMaxAge,
+                    childDiscountMinAge:
+                        calculation.passengerPricing.childDiscountMinAge,
+                    childDiscountMaxAge:
+                        calculation.passengerPricing.childDiscountMaxAge,
+                    childDiscountAmount:
+                        calculation.passengerPricing.childDiscountAmount
+                },
+
+                exclusiveTourEnabled:
+                    calculation.exclusiveTourEnabled,
+
+                exclusiveTourSnapshot: {
+                    enabled:
+                        calculation.exclusiveConfig.enabled,
+                    minimumPayingPax:
+                        calculation.exclusiveConfig.minimumPayingPax,
+                    freeStartsAt:
+                        calculation.exclusiveConfig.freeStartsAt,
+                    freePax:
+                        calculation.exclusiveConfig.freePax,
+                    maxFreePax:
+                        calculation.exclusiveConfig.maxFreePax
+                },
+
+                pickup:
+                    finalPickup,
+
+                specialRequest:
+                    normalizeText(
+                        specialRequest.value
+                    ),
+
+
+                /* =============================================
+                   ACCOMMODATION
+                   ============================================= */
+
+                accommodation:
+                    selectedAccommodation?.name ||
+                    "Standard / Package Included",
+
+                accommodationId:
+                    selectedAccommodation?.id || "",
+
+                accommodationResortName:
+                    selectedAccommodation?.resortName || "",
+
+                accommodationType:
+                    "included",
+
+                accommodationPrice:
+                    0,
+
+                addons: [],
+                addonsTotal: 0,
+
+
+/* =============================================
+                   AMOUNTS
+                   ============================================= */
+
+                grossPackageAmount:
+                    calculation.grossPackageAmount,
+
+                childFreeAmount:
+                    calculation.childFreeAmount,
+
+                childDiscountAmount:
+                    calculation.childDiscountAmount,
+
+                exclusiveDiscountAmount:
+                    calculation.exclusiveDiscountAmount,
+
+                packageSubtotal:
+                    calculation.packageSubtotal,
+
+                originalAmount:
+                    calculation.originalTotal,
+
+                promoId:
+                    appliedPromo?.id ||
+                    "",
+
+                promoCode:
+                    appliedPromo?.code ||
+                    "",
+
+                promoTitle:
+                    appliedPromo?.title ||
+                    "",
+
+                promoDiscountType:
+                    appliedPromo?.discountType ||
+                    "",
+
+                promoDiscountValue:
+                    appliedPromo?.discountValue ||
+                    0,
+
+                discountAmount:
+                    calculation.discountAmount,
+
+                totalAmount:
+                    calculation.total,
+
+                requiredDeposit:
+                    calculation.deposit,
+
+                depositPerPax:
+                    DEPOSIT_PER_PAX,
+
+                amountPaid:
+                    0,
+
+                balance:
+                    calculation.total,
+
+
+                /* =============================================
+                   PAYMENT
+                   ============================================= */
+
+                paymentMethod:
+                    paymentMethod,
+
+                paymentReference:
+                    paymentReferenceValue,
+
+                paymentReferenceNormalized:
+                    normalizeLower(
+                        paymentReferenceValue
+                    ),
+
+                paymentStatus:
+                    "pending_verification",
+
+                paymentVerified:
+                    false,
+
+                paymentVerifiedAt:
+                    null,
+
+                paymentVerifiedBy:
+                    "",
+
+
+                /* =============================================
+                   BOOKING STATUS
+                   ============================================= */
+
+                bookingStatus:
+                    "pending",
+
+                bookingSource:
+                    "website",
+
+                source:
+                    "client_booking_form",
+
+
+                /* =============================================
+                   EMAIL
+                   ============================================= */
+
+                confirmationEmailSent:
+                    false,
+
+                confirmationEmailSentAt:
+                    null,
+
+
+                /* =============================================
+                   TIMESTAMPS
+                   ============================================= */
+
+                createdAt:
+                    now,
+
+                updatedAt:
+                    now
+
+            };
+
+        }
+
+
+        /* =====================================================
+           SUBMIT
+           ===================================================== */
+
+        async function submitBooking(
+            event
+        ) {
 
             event.preventDefault();
+
+
+            if (
+                isSubmitting
+            ) {
+
+                return;
+
+            }
 
 
             if (
@@ -1470,236 +3655,203 @@ if (bookingForm) {
             }
 
 
-            if (continueButton) {
-
-                continueButton.disabled =
-                    true;
-
-
-                continueButton.innerHTML =
-                    "Saving Booking...";
-
-            }
+            const originalButtonContent =
+                submitBookingButton
+                    ?.innerHTML;
 
 
             try {
 
-                const accommodation =
-                    document.querySelector(
-                        'input[name="accommodation"]:checked'
+                isSubmitting =
+                    true;
+
+
+                if (
+                    submitBookingButton
+                ) {
+
+                    submitBookingButton.disabled =
+                        true;
+
+
+                    submitBookingButton.innerHTML = `
+
+                        <i class="fa-solid fa-spinner fa-spin"></i>
+
+                        Submitting...
+
+                    `;
+
+                }
+
+
+                const reference =
+                    normalizeText(
+                        paymentReference.value
                     );
-
-
-                const selectedPackageImage =
-                    getPackageImage(
-                        selectedPackage
-                    );
-
-
-                const packageDuration =
-                    getPackageDuration(
-                        selectedPackage
-                    );
-
-
-                /* ==================================================
-                   BOOKING DATA
-                ================================================== */
-
-                const bookingData = {
-
-                    /* PACKAGE */
-
-                    packageId:
-                        selectedPackage.id,
-
-                    packageName:
-                        selectedPackage.name ||
-                        "",
-
-                    packageCategory:
-                        selectedPackage.category ||
-                        "",
-
-                    packageLocation:
-                        selectedPackage.location ||
-                        "",
-
-                    packageImage:
-                        selectedPackageImage ||
-                        "",
-
-                    packagePrice:
-                        selectedPackage.price ||
-                        "",
-
-                    packageDuration:
-                        packageDuration ||
-                        "",
-
-
-                    /* TRAVEL */
-
-                    startTravelDate:
-                        startTravelDate.value,
-
-                    endTravelDate:
-                        endTravelDate.value,
-
-
-                    /* GUESTS */
-
-                    numberOfGuests:
-                        Number(
-                            document.getElementById(
-                                "numberOfGuests"
-                            ).value
-                        ),
-
-
-                    /* PICKUP */
-
-                    pickupPoint:
-                        document.getElementById(
-                            "pickupPoint"
-                        ).value,
-
-
-                    /* CUSTOMER */
-
-                    customerName:
-                        document.getElementById(
-                            "customerNameInput"
-                        ).value.trim(),
-
-                    contactNumber:
-                        document.getElementById(
-                            "contactNumber"
-                        ).value.trim(),
-
-                    emailAddress:
-                        document.getElementById(
-                            "emailAddress"
-                        ).value.trim(),
-
-                    facebookName:
-                        document.getElementById(
-                            "facebookName"
-                        ).value.trim(),
-
-
-                    /* ACCOMMODATION */
-
-                    accommodation:
-                        accommodation
-                            ? accommodation.value
-                            : "Standard Accommodation",
-
-
-                    /* REQUEST */
-
-                    specialRequest:
-                        document.getElementById(
-                            "specialRequest"
-                        ).value.trim(),
-
-
-                    /* STATUS */
-
-                    status:
-                        "Pending",
-
-                    paymentStatus:
-                        "Unpaid",
-
-
-                    /* TIMESTAMP */
-
-                    createdAt:
-                        serverTimestamp()
-
-                };
-
-
-                console.log(
-                    "BOOKING DATA:",
-                    bookingData
-                );
-
-
-                /* ==================================================
-                   SAVE TO FIRESTORE
-                ================================================== */
-
-                const booking =
-                    await addDoc(
-                        collection(
-                            db,
-                            "bookings"
-                        ),
-                        bookingData
-                    );
-
-
-                console.log(
-                    "Booking created:",
-                    booking.id
-                );
-
-
-                /* ==================================================
-                   SAVE LATEST BOOKING
-                ================================================== */
-
-                localStorage.setItem(
-                    "latestBookingId",
-                    booking.id
-                );
-
-
-                /* ==================================================
-                   SUCCESS
-                ================================================== */
-
-                alert(
-                    "Booking request submitted successfully!"
-                );
 
 
                 /*
-                   Temporary behavior:
-                   return to previous page.
+                 * Revalidate an applied promo immediately
+                 * before saving the booking.
+                 */
+                const promoStillValid =
+                    await revalidateAppliedPromo();
 
-                   Later this will become:
-                   booking-summary.html?id=...
-                */
 
-                history.back();
+                if (!promoStillValid) {
+
+                    alert(
+                        "Your promo could not be applied. Please review the promo message and submit again."
+                    );
+
+                    return;
+                }
+
+
+                /*
+                 * Check if payment reference
+                 * has already been submitted.
+                 */
+
+                const duplicate =
+                    await paymentReferenceExists(
+                        reference
+                    );
+
+
+                if (
+                    duplicate
+                ) {
+
+                    alert(
+                        "This payment reference number has already been submitted. Please check your reference number or contact Trips Wonder."
+                    );
+
+
+                    paymentReference.focus();
+
+
+                    return;
+
+                }
+
+
+                /*
+ * Generate Firestore document reference first.
+ * Hindi pa ito nagsa-save.
+ */
+const bookingDocRef =
+    doc(
+        collection(
+            db,
+            "bookings"
+        )
+    );
+
+
+/*
+ * Use part of Firestore's unique ID
+ * for the permanent booking number.
+ */
+const bookingNumber =
+    generateBookingNumber(
+        bookingDocRef.id
+    );
+
+
+const bookingData =
+    createBookingData(
+        bookingNumber
+    );
+
+
+/*
+ * Save once only.
+ */
+await setDoc(
+    bookingDocRef,
+    bookingData
+);
+
+
+                console.log(
+    "CLIENT BOOKING SUBMITTED:",
+    {
+        id:
+            bookingDocRef.id,
+
+        bookingNumber:
+            bookingNumber,
+
+        package:
+            selectedPackage.name,
+
+        paymentStatus:
+            bookingData.paymentStatus,
+
+        bookingStatus:
+            bookingData.bookingStatus
+    }
+);
+
+
+                submittedBooking = {
+                    id: bookingDocRef.id,
+                    ref: bookingDocRef,
+                    bookingNumber,
+                    data: bookingData
+                };
+
+                showSuccessModal(
+                    bookingNumber
+                );
 
 
             } catch (error) {
 
                 console.error(
-                    "BOOKING ERROR:",
+                    "CLIENT BOOKING SUBMIT ERROR:",
                     error
                 );
 
 
-                showError(
-                    "Unable to submit your booking. Please try again."
-                );
+                if (
+                    !navigator.onLine
+                ) {
+
+                    alert(
+                        "No internet connection. Please check your connection and try again."
+                    );
+
+                } else {
+
+                    alert(
+                        "Unable to submit your booking request. Please try again."
+                    );
+
+                }
 
 
-                if (continueButton) {
+            } finally {
 
-                    continueButton.disabled =
+                isSubmitting =
+                    false;
+
+
+                if (
+                    submitBookingButton
+                ) {
+
+                    submitBookingButton.disabled =
                         false;
 
 
-                    continueButton.innerHTML =
+                    submitBookingButton.innerHTML =
+                        originalButtonContent ||
                         `
-                        Continue to Booking Summary
-                        <span>→</span>
+                            <i class="fa-solid fa-paper-plane"></i>
+                            Submit Booking Request
                         `;
 
                 }
@@ -1707,13 +3859,567 @@ if (bookingForm) {
             }
 
         }
-    );
-
-}
 
 
-/* ==========================================================
-   START
-========================================================== */
+        /* =====================================================
+           SUCCESS MODAL
+           ===================================================== */
 
-loadPackage();
+        function addonPricePerNight(item) {
+            return Math.max(0, normalizeNumber(item?.pricePerNight ?? item?.price ?? 0));
+        }
+
+        function addonPhoto(item) {
+            const direct = item?.mainPhoto?.url || item?.mainPhoto ||
+                item?.photo?.url || item?.photo || "";
+
+            if (normalizeText(direct)) return normalizeText(direct);
+
+            const gallery = Array.isArray(item?.gallery) ? item.gallery : [];
+            const first = gallery.find(photo =>
+                normalizeText(photo?.url || (typeof photo === "string" ? photo : ""))
+            );
+
+            return normalizeText(first?.url || (typeof first === "string" ? first : ""));
+        }
+
+        function bookingNights() {
+            const duration = normalizeText(selectedPackage?.duration);
+            const match = duration.match(/(\d+)\s*D\s*(\d+)\s*N/i);
+            if (match) return Math.max(1, Number(match[2]) || 1);
+
+            const days = duration.match(/(\d+)\s*D/i);
+            return days ? Math.max(1, (Number(days[1]) || 1) - 1) : 1;
+        }
+
+        function renderPostBookingAddons() {
+            if (!postBookingAddons || !postBookingAddonList) return;
+
+            const upgrades = optionalPackageAccommodations();
+
+            selectedPostBookingAddon = null;
+            postBookingAddonList.innerHTML = "";
+            addSelectedAddonButton?.classList.add("hidden");
+            postBookingSelectedSummary?.classList.add("hidden");
+
+            if (currentIncludedAccommodation) {
+                currentIncludedAccommodation.textContent =
+                    selectedAccommodation?.name ||
+                    "Package Included Accommodation";
+            }
+
+            if (!upgrades.length) {
+                postBookingAddons.classList.add("hidden");
+                return;
+            }
+
+            postBookingAddons.classList.remove("hidden");
+
+            const nights = bookingNights();
+            const currentTotal = Math.max(
+                0,
+                normalizeNumber(submittedBooking?.data?.totalAmount)
+            );
+
+            upgrades.forEach(item => {
+                const price = addonPricePerNight(item);
+                const image = addonPhoto(item);
+                const resort = normalizeText(item.resortName);
+                const roomName = normalizeText(item.name) || "Accommodation Upgrade";
+                const maxGuests = Math.max(
+                    0,
+                    normalizeNumber(item.maxGuests || item.capacity)
+                );
+                const totalUpgrade = price * nights;
+
+                const card = document.createElement("article");
+                card.className = "post-booking-addon-card";
+
+                card.innerHTML = `
+                    <div class="post-booking-addon-photo">
+                        ${
+                            image
+                                ? `<img src="${image}" alt="${roomName}" loading="lazy">`
+                                : `<div class="post-booking-addon-placeholder"><i class="fa-solid fa-bed"></i></div>`
+                        }
+                    </div>
+
+                    <div class="post-booking-addon-info">
+                        <div class="post-booking-addon-top">
+                            <div>
+                                <strong>${roomName}</strong>
+                                ${resort ? `<span><i class="fa-solid fa-location-dot"></i> ${resort}</span>` : ""}
+                            </div>
+                            <span class="optional-badge">Optional</span>
+                        </div>
+
+                        <div class="post-booking-addon-meta">
+                            ${
+                                maxGuests > 0
+                                    ? `<span><i class="fa-solid fa-user-group"></i> Up to ${maxGuests} guest${maxGuests === 1 ? "" : "s"}</span>`
+                                    : ""
+                            }
+                            <span><i class="fa-regular fa-moon"></i> ${nights} night${nights === 1 ? "" : "s"}</span>
+                        </div>
+
+                        <div class="post-booking-addon-price-row">
+                            <div>
+                                <small>Upgrade Rate</small>
+                                <b>₱${formatMoney(price)} <em>/ night</em></b>
+                            </div>
+
+                            <div class="post-booking-addon-total">
+                                <small>Total Upgrade</small>
+                                <strong>+₱${formatMoney(totalUpgrade)}</strong>
+                            </div>
+                        </div>
+
+                        <button type="button" class="post-booking-select-addon">
+                            Select Upgrade
+                        </button>
+                    </div>
+                `;
+
+                const selectButton = card.querySelector(".post-booking-select-addon");
+
+                selectButton?.addEventListener("click", () => {
+                    postBookingAddonList
+                        .querySelectorAll(".post-booking-addon-card")
+                        .forEach(element => {
+                            element.classList.remove("selected");
+                            const button = element.querySelector(".post-booking-select-addon");
+                            if (button) button.innerHTML = "Select Upgrade";
+                        });
+
+                    card.classList.add("selected");
+
+                    if (selectButton) {
+                        selectButton.innerHTML =
+                            `<i class="fa-solid fa-check"></i> Selected`;
+                    }
+
+                    selectedPostBookingAddon = {
+                        ...item,
+                        pricePerNight: price,
+                        nights,
+                        amount: totalUpgrade
+                    };
+
+                    if (selectedAddonName) selectedAddonName.textContent = roomName;
+                    if (selectedAddonAmount) {
+                        selectedAddonAmount.textContent =
+                            `+₱${formatMoney(totalUpgrade)}`;
+                    }
+                    if (selectedAddonNewTotal) {
+                        selectedAddonNewTotal.textContent =
+                            `New booking total: ₱${formatMoney(currentTotal + totalUpgrade)}`;
+                    }
+
+                    postBookingSelectedSummary?.classList.remove("hidden");
+                    addSelectedAddonButton?.classList.remove("hidden");
+                });
+
+                postBookingAddonList.appendChild(card);
+            });
+        }
+
+
+        function showPostBookingMessage(message, type = "error") {
+            if (!postBookingAddonMessage) return;
+            postBookingAddonMessage.textContent = message;
+            postBookingAddonMessage.className = `post-booking-addon-message ${type}`;
+        }
+
+        async function addSelectedAddonToBooking() {
+            if (!submittedBooking?.ref || !selectedPostBookingAddon) return;
+
+            const original = addSelectedAddonButton?.innerHTML;
+
+            try {
+                if (addSelectedAddonButton) {
+                    addSelectedAddonButton.disabled = true;
+                    addSelectedAddonButton.innerHTML =
+                        `<i class="fa-solid fa-spinner fa-spin"></i> Adding...`;
+                }
+
+                const addon = selectedPostBookingAddon;
+                const amount = Math.max(0, normalizeNumber(addon.amount));
+                const previousTotal = Math.max(
+                    0, normalizeNumber(submittedBooking.data?.totalAmount)
+                );
+                const previousPaid = Math.max(
+                    0, normalizeNumber(submittedBooking.data?.amountPaid)
+                );
+                const newTotal = previousTotal + amount;
+
+                const addonRecord = {
+                    category: "accommodation",
+                    accommodationId: normalizeText(addon.id || addon.accommodationId),
+                    resortName: normalizeText(addon.resortName),
+                    name: normalizeText(addon.name) || "Accommodation Upgrade",
+                    quantity: 1,
+                    unitPrice: addon.pricePerNight,
+                    nights: addon.nights,
+                    amount,
+                    status: "requested",
+                    addedBy: "customer",
+                    addedAt: new Date().toISOString()
+                };
+
+                await updateDoc(submittedBooking.ref, {
+                    addons: [addonRecord],
+                    addonsTotal: amount,
+                    totalAmount: newTotal,
+                    balance: Math.max(0, newTotal - previousPaid),
+                    updatedAt: new Date().toISOString()
+                });
+
+                showPostBookingMessage(
+                    `${addonRecord.name} was added to booking ${submittedBooking.bookingNumber}.`,
+                    "success"
+                );
+
+                if (addSelectedAddonButton) {
+                    addSelectedAddonButton.innerHTML =
+                        `<i class="fa-solid fa-check"></i> Added to Booking`;
+                }
+
+                window.setTimeout(() => {
+                    window.location.href = "home.html";
+                }, 900);
+
+            } catch (error) {
+                console.error("ADD POST-BOOKING ADDON ERROR:", error);
+                showPostBookingMessage(
+                    "Unable to add the accommodation upgrade. Your original booking is still saved.",
+                    "error"
+                );
+
+                if (addSelectedAddonButton) {
+                    addSelectedAddonButton.disabled = false;
+                    addSelectedAddonButton.innerHTML =
+                        original || `<i class="fa-solid fa-plus"></i> Add to Booking`;
+                }
+            }
+        }
+
+        function showSuccessModal(requestReference) {
+            if (bookingRequestReference) {
+                bookingRequestReference.textContent = requestReference;
+            }
+
+            renderPostBookingAddons();
+            bookingSuccessModal?.classList.add("show");
+            bookingSuccessModal?.setAttribute("aria-hidden", "false");
+            document.body.style.overflow = "hidden";
+        }
+
+        function closeSuccessModal() {
+            bookingSuccessModal?.classList.remove("show");
+            bookingSuccessModal?.setAttribute("aria-hidden", "true");
+            document.body.style.overflow = "";
+            window.location.href = "home.html";
+        }
+
+
+        /* =====================================================
+   COPY PAYMENT DETAILS
+   ===================================================== */
+
+document.addEventListener("click", async event => {
+
+    const copyButton =
+        event.target.closest(".payment-copy-btn");
+
+    if (!copyButton) {
+        return;
+    }
+
+    const value =
+        copyButton.dataset.copy || "";
+
+    if (!value) {
+        return;
+    }
+
+    try {
+
+        await navigator.clipboard.writeText(
+            value.replace(/\s+/g, "")
+        );
+
+        const originalHTML =
+            copyButton.innerHTML;
+
+        copyButton.innerHTML = `
+            <i class="fa-solid fa-check"></i>
+            Copied
+        `;
+
+        copyButton.classList.add("copied");
+
+        setTimeout(() => {
+
+            copyButton.innerHTML =
+                originalHTML;
+
+            copyButton.classList.remove(
+                "copied"
+            );
+
+        }, 1500);
+
+    } catch (error) {
+
+        console.error(
+            "COPY PAYMENT DETAIL ERROR:",
+            error
+        );
+
+    }
+
+});
+
+
+        /* =====================================================
+           EVENTS
+           ===================================================== */
+
+        numberOfGuests
+            ?.addEventListener(
+                "input",
+                () => {
+
+                    const passenger =
+                        getPassengerBreakdown();
+
+                    if (
+                        passenger.childTotal >
+                        passenger.totalPax
+                    ) {
+
+                        numberOfGuests.setCustomValidity(
+                            "Total pax must be equal to or greater than the children count."
+                        );
+
+                    } else {
+
+                        numberOfGuests.setCustomValidity(
+                            ""
+                        );
+
+                        children0To3
+                            ?.setCustomValidity(
+                                ""
+                            );
+
+                        children4To8
+                            ?.setCustomValidity(
+                                ""
+                            );
+
+                    }
+
+                    if (appliedPromo) {
+                        clearAppliedPromo(
+                            "Booking amount changed. Please apply the promo again."
+                        );
+                    } else {
+                        updateBookingSummary();
+                    }
+
+                    showPaymentInstructions();
+                }
+            );
+
+
+        [
+            children0To3,
+            children4To8
+        ].forEach(
+            element => {
+
+                element
+                    ?.addEventListener(
+                        "input",
+                        () => {
+
+                            const passenger =
+                                getPassengerBreakdown();
+
+                            if (
+                                passenger.childTotal >
+                                passenger.totalPax
+                            ) {
+
+                                element.setCustomValidity(
+                                    "Children count cannot be greater than total pax."
+                                );
+
+                            } else {
+
+                                children0To3
+                                    ?.setCustomValidity(
+                                        ""
+                                    );
+
+                                children4To8
+                                    ?.setCustomValidity(
+                                        ""
+                                    );
+
+                            }
+
+                            if (appliedPromo) {
+
+                                clearAppliedPromo(
+                                    "Passenger pricing changed. Please apply the promo again."
+                                );
+
+                            } else {
+
+                                updateBookingSummary();
+
+                            }
+
+                            showPaymentInstructions();
+
+                        }
+                    );
+
+            }
+        );
+
+
+        applyPromoButton
+            ?.addEventListener(
+                "click",
+                handleApplyPromo
+            );
+
+
+        bookingPromoCode
+            ?.addEventListener(
+                "keydown",
+                event => {
+
+                    if (
+                        event.key ===
+                        "Enter"
+                    ) {
+
+                        event.preventDefault();
+                        handleApplyPromo();
+
+                    }
+
+                }
+            );
+
+
+
+        pickupPoint
+            ?.addEventListener(
+                "change",
+                handlePickupChange
+            );
+
+
+        paymentMethodInputs
+            .forEach(
+                input => {
+
+                    input.addEventListener(
+                        "change",
+                        showPaymentInstructions
+                    );
+
+                }
+            );
+
+
+        clientBookingForm
+            ?.addEventListener(
+                "submit",
+                submitBooking
+            );
+
+
+        successDoneButton
+            ?.addEventListener(
+                "click",
+                closeSuccessModal
+            );
+
+
+        addSelectedAddonButton
+            ?.addEventListener(
+                "click",
+                addSelectedAddonToBooking
+            );
+
+
+        /* =====================================================
+           INITIALIZE
+           ===================================================== */
+        setMinimumTravelDate();
+handlePickupChange();
+
+
+onAuthStateChanged(
+    auth,
+    async user => {
+
+        if (!user) {
+
+            console.warn(
+                "BOOKING: NO LOGGED-IN CUSTOMER"
+            );
+
+            window.location.href =
+                "../../index.html";
+
+            return;
+
+        }
+
+
+        const profileLoaded =
+            await loadCustomerProfile(
+                user
+            );
+
+
+        if (!profileLoaded) {
+
+            alert(
+                "Unable to load your customer profile."
+            );
+
+            return;
+
+        }
+
+
+        await loadSelectedPackage();
+
+
+        console.log(
+            "CUSTOMER BOOKING READY:",
+            {
+                uid:
+                    user.uid,
+
+                email:
+                    user.email
+            }
+        );
+
+    }
+);  // closes onAuthStateChanged
+        
+        
+
+/* CLOSE DOMContentLoaded */
+    }
+);

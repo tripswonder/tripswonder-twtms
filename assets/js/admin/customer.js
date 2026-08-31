@@ -38,6 +38,10 @@ import {
 
 } from "../firebase/firebase-db.js";
 
+import {
+    getDoc
+} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+
 
 /* =========================================================
    MODULE START
@@ -62,6 +66,8 @@ document.addEventListener(
         let manualCustomers = [];
 
         let bookings = [];
+
+        let payments = [];
 
         let editingCustomerId = null;
 
@@ -142,6 +148,85 @@ document.addEventListener(
 
 
         /* =====================================================
+           CUSTOMER QR SCANNER ELEMENTS
+           ===================================================== */
+
+        const scanCustomerQrButton =
+            document.getElementById(
+                "scanCustomerQrButton"
+            );
+
+        const customerQrScannerModal =
+            document.getElementById(
+                "customerQrScannerModal"
+            );
+
+        const closeCustomerQrScanner =
+            document.getElementById(
+                "closeCustomerQrScanner"
+            );
+
+        const customerQrVideo =
+            document.getElementById(
+                "customerQrVideo"
+            );
+
+        const customerQrStatus =
+            document.getElementById(
+                "customerQrStatus"
+            );
+
+        const retryCustomerQrScanner =
+            document.getElementById(
+                "retryCustomerQrScanner"
+            );
+
+        const customerQrImageInput =
+            document.getElementById(
+                "customerQrImageInput"
+            );
+
+        const customerQrManualInput =
+            document.getElementById(
+                "customerQrManualInput"
+            );
+
+        const customerQrManualButton =
+            document.getElementById(
+                "customerQrManualButton"
+            );
+
+        let customerQrStream =
+            null;
+
+        let customerQrDetector =
+            null;
+
+        const customerQrCanvas =
+            document.createElement(
+                "canvas"
+            );
+
+        const customerQrCanvasContext =
+            customerQrCanvas.getContext(
+                "2d",
+                {
+                    willReadFrequently:
+                        true
+                }
+            );
+
+        let customerQrScannerMode =
+            "";
+
+        let customerQrScanFrame =
+            null;
+
+        let customerQrProcessing =
+            false;
+
+
+        /* =====================================================
            MODAL ELEMENTS
            ===================================================== */
 
@@ -188,6 +273,86 @@ document.addEventListener(
         const saveCustomerButton =
             document.getElementById(
                 "saveCustomerButton"
+            );
+
+
+        /* =====================================================
+           CUSTOMER PROFILE MODAL ELEMENTS
+           ===================================================== */
+
+        const customerProfileModal =
+            document.getElementById(
+                "customerProfileModal"
+            );
+
+        const closeCustomerProfileModal =
+            document.getElementById(
+                "closeCustomerProfileModal"
+            );
+
+        const customerProfileAvatar =
+            document.getElementById(
+                "customerProfileAvatar"
+            );
+
+        const customerProfileName =
+            document.getElementById(
+                "customerProfileName"
+            );
+
+        const customerProfileSubtitle =
+            document.getElementById(
+                "customerProfileSubtitle"
+            );
+
+        const customerProfileContact =
+            document.getElementById(
+                "customerProfileContact"
+            );
+
+        const customerProfileEmail =
+            document.getElementById(
+                "customerProfileEmail"
+            );
+
+        const customerProfileFacebook =
+            document.getElementById(
+                "customerProfileFacebook"
+            );
+
+        const customerProfileStatus =
+            document.getElementById(
+                "customerProfileStatus"
+            );
+
+        const customerProfileBookings =
+            document.getElementById(
+                "customerProfileBookings"
+            );
+
+        const customerProfileSpent =
+            document.getElementById(
+                "customerProfileSpent"
+            );
+
+        const customerProfileLastTrip =
+            document.getElementById(
+                "customerProfileLastTrip"
+            );
+
+        const customerProfileBookingHistory =
+            document.getElementById(
+                "customerProfileBookingHistory"
+            );
+
+        const customerProfileNotesWrap =
+            document.getElementById(
+                "customerProfileNotesWrap"
+            );
+
+        const customerProfileNotes =
+            document.getElementById(
+                "customerProfileNotes"
             );
 
 
@@ -674,6 +839,18 @@ document.addEventListener(
                     data.travelEndDate ||
                     "",
 
+                duration:
+                    data.packageDuration ||
+                    data.duration ||
+                    "",
+
+                accommodationName:
+                    data.accommodationName ||
+                    data.accommodation ||
+                    data.roomType ||
+                    data.selectedAccommodation ||
+                    "",
+
                 totalAmount:
                     normalizeNumber(
                         data.totalAmount
@@ -683,6 +860,16 @@ document.addEventListener(
                     normalizeNumber(
                         data.amountPaid
                     ),
+
+                remainingBalance:
+                    normalizeNumber(
+                        data.remainingBalance
+                    ),
+
+                bookingReference:
+                    data.bookingReference ||
+                    data.displayReference ||
+                    "",
 
                 bookingStatus:
                     data.bookingStatus ||
@@ -751,6 +938,180 @@ document.addEventListener(
         }
 
                 /* =====================================================
+           NORMALIZE PAYMENT
+           ===================================================== */
+
+        function normalizePayment(
+            documentSnapshot
+        ) {
+
+            const data =
+                documentSnapshot.data();
+
+
+            return {
+
+                id:
+                    documentSnapshot.id,
+
+                bookingId:
+                    data.bookingId ||
+                    data.bookingDocumentId ||
+                    "",
+
+                bookingReference:
+                    data.bookingReference ||
+                    "",
+
+                amount:
+                    normalizeNumber(
+                        data.amount ||
+                        data.paymentAmount
+                    ),
+
+                status:
+                    normalizeText(
+                        data.status ||
+                        data.paymentStatus ||
+                        "pending"
+                    ),
+
+                paymentDate:
+                    data.paymentDate ||
+                    data.createdAt ||
+                    "",
+
+                createdAt:
+                    data.createdAt ||
+                    ""
+
+            };
+
+        }
+
+
+        /* =====================================================
+           LOAD PAYMENTS
+           ===================================================== */
+
+        async function loadPayments() {
+
+            const snapshot =
+                await getDocs(
+                    collection(
+                        db,
+                        "payments"
+                    )
+                );
+
+
+            payments =
+                snapshot.docs.map(
+                    normalizePayment
+                );
+
+        }
+
+
+        /* =====================================================
+           EFFECTIVE PAYMENT AMOUNT
+           ===================================================== */
+
+        function getEffectivePaymentAmount(
+            payment
+        ) {
+
+            if (!payment) {
+                return 0;
+            }
+
+
+            const status =
+                normalizeText(
+                    payment.status
+                );
+
+
+            /*
+             * Keep this consistent with the Payments module:
+             * only collected money counts toward Total Spent.
+             */
+            if (
+                status === "paid" ||
+                status === "partial"
+            ) {
+
+                return normalizeNumber(
+                    payment.amount
+                );
+
+            }
+
+
+            return 0;
+
+        }
+
+
+        /* =====================================================
+           BOOKING COLLECTED AMOUNT
+           ===================================================== */
+
+        function getBookingCollectedAmount(
+            booking
+        ) {
+
+            if (!booking) {
+                return 0;
+            }
+
+
+            const bookingPayments =
+                payments.filter(
+                    payment =>
+                        payment.bookingId ===
+                        booking.id
+                );
+
+
+            /*
+             * If payment documents exist for this booking,
+             * they are the source of truth. This avoids
+             * double-counting booking.amountPaid, which the
+             * Payments module also updates.
+             */
+            if (
+                bookingPayments.length
+            ) {
+
+                return bookingPayments.reduce(
+                    (
+                        total,
+                        payment
+                    ) =>
+                        total +
+                        getEffectivePaymentAmount(
+                            payment
+                        ),
+                    0
+                );
+
+            }
+
+
+            /*
+             * Legacy / older booking fallback:
+             * use the booking snapshot when no payment docs
+             * exist yet.
+             */
+            return normalizeNumber(
+                booking.amountPaid
+            );
+
+        }
+
+
+        /* =====================================================
            BUILD CUSTOMERS FROM BOOKINGS
            ===================================================== */
 
@@ -854,8 +1215,8 @@ document.addEventListener(
 
 
                     customer.totalSpent +=
-                        normalizeNumber(
-                            booking.amountPaid
+                        getBookingCollectedAmount(
+                            booking
                         );
 
 
@@ -1107,7 +1468,8 @@ document.addEventListener(
 
                 await Promise.all([
                     loadManualCustomers(),
-                    loadBookings()
+                    loadBookings(),
+                    loadPayments()
                 ]);
 
 
@@ -1718,6 +2080,1184 @@ document.addEventListener(
 
 
         /* =====================================================
+           CUSTOMER QR SCANNER
+           ===================================================== */
+
+        function setCustomerQrStatus(
+            message,
+            type = ""
+        ) {
+
+            if (!customerQrStatus) {
+                return;
+            }
+
+
+            customerQrStatus.textContent =
+                message;
+
+
+            customerQrStatus.classList.remove(
+                "success",
+                "error"
+            );
+
+
+            if (
+                type === "success" ||
+                type === "error"
+            ) {
+
+                customerQrStatus.classList.add(
+                    type
+                );
+
+            }
+
+        }
+
+
+        function stopCustomerQrScanner() {
+
+            if (
+                customerQrScanFrame
+            ) {
+
+                cancelAnimationFrame(
+                    customerQrScanFrame
+                );
+
+                customerQrScanFrame =
+                    null;
+
+            }
+
+
+            if (
+                customerQrStream
+            ) {
+
+                customerQrStream
+                    .getTracks()
+                    .forEach(
+                        track =>
+                            track.stop()
+                    );
+
+                customerQrStream =
+                    null;
+
+            }
+
+
+            if (
+                customerQrVideo
+            ) {
+
+                customerQrVideo.srcObject =
+                    null;
+
+            }
+
+
+            customerQrProcessing =
+                false;
+
+        }
+
+
+        function closeCustomerQrScannerModal() {
+
+            stopCustomerQrScanner();
+
+
+            if (
+                customerQrScannerModal
+            ) {
+
+                customerQrScannerModal
+                    .classList
+                    .remove(
+                        "show"
+                    );
+
+
+                customerQrScannerModal
+                    .setAttribute(
+                        "aria-hidden",
+                        "true"
+                    );
+
+            }
+
+
+            document.body.style.overflow =
+                "";
+
+        }
+
+
+        function extractCustomerUidFromQr(
+            rawValue
+        ) {
+
+            const value =
+                String(
+                    rawValue ||
+                    ""
+                )
+                    .trim();
+
+
+            if (!value) {
+
+                return "";
+
+            }
+
+
+            const prefix =
+                "TWTMS:CUSTOMER:";
+
+
+            if (
+                value
+                    .toUpperCase()
+                    .startsWith(
+                        prefix
+                    )
+            ) {
+
+                return value
+                    .slice(
+                        prefix.length
+                    )
+                    .trim();
+
+            }
+
+
+            /*
+             * We intentionally do not treat arbitrary QR text
+             * as a Firebase UID. Only Trips Wonder customer QR
+             * payloads are accepted here.
+             */
+
+            return "";
+
+        }
+
+
+        function getCustomerByAuthUid(
+            uid
+        ) {
+
+            const normalizedUid =
+                String(
+                    uid ||
+                    ""
+                )
+                    .trim();
+
+
+            if (!normalizedUid) {
+
+                return null;
+
+            }
+
+
+            return customers.find(
+                customer => {
+
+                    return (
+                        String(
+                            customer.authUid ||
+                            customer.customerUid ||
+                            ""
+                        )
+                            .trim() ===
+                        normalizedUid
+                    );
+
+                }
+            ) || null;
+
+        }
+
+
+        async function findCustomerFromUserProfile(
+            uid
+        ) {
+
+            try {
+
+                const userSnapshot =
+                    await getDoc(
+                        doc(
+                            db,
+                            "users",
+                            uid
+                        )
+                    );
+
+
+                if (
+                    !userSnapshot.exists()
+                ) {
+
+                    return null;
+
+                }
+
+
+                const profile =
+                    userSnapshot.data() ||
+                    {};
+
+
+                const profileEmail =
+                    normalizeText(
+                        profile.email ||
+                        profile.customerEmail ||
+                        ""
+                    );
+
+
+                const profileContact =
+                    normalizeText(
+                        profile.contact ||
+                        profile.phone ||
+                        profile.mobile ||
+                        profile.customerContact ||
+                        ""
+                    );
+
+
+                const profileName =
+                    normalizeText(
+                        profile.name ||
+                        profile.fullName ||
+                        profile.displayName ||
+                        profile.customerName ||
+                        ""
+                    );
+
+
+                const matched =
+                    customers.find(
+                        customer => {
+
+                            const customerEmail =
+                                normalizeText(
+                                    customer.email ||
+                                    ""
+                                );
+
+
+                            const customerContact =
+                                normalizeText(
+                                    customer.contact ||
+                                    ""
+                                );
+
+
+                            const customerName =
+                                normalizeText(
+                                    customer.name ||
+                                    ""
+                                );
+
+
+                            if (
+                                profileEmail &&
+                                customerEmail &&
+                                profileEmail ===
+                                customerEmail
+                            ) {
+
+                                return true;
+
+                            }
+
+
+                            if (
+                                profileContact &&
+                                customerContact &&
+                                profileContact ===
+                                customerContact
+                            ) {
+
+                                return true;
+
+                            }
+
+
+                            if (
+                                profileName &&
+                                customerName &&
+                                profileName ===
+                                customerName
+                            ) {
+
+                                return true;
+
+                            }
+
+
+                            return false;
+
+                        }
+                    ) ||
+                    null;
+
+
+                if (matched) {
+
+                    matched.authUid =
+                        uid;
+
+                    matched.customerUid =
+                        uid;
+
+
+                    console.log(
+                        "CUSTOMER QR FALLBACK MATCH:",
+                        {
+                            uid,
+                            profile,
+                            customer:
+                                matched
+                        }
+                    );
+
+                }
+
+
+                return matched;
+
+            } catch (error) {
+
+                console.warn(
+                    "CUSTOMER QR USER PROFILE LOOKUP ERROR:",
+                    error
+                );
+
+
+                return null;
+
+            }
+
+        }
+
+
+        async function resolveCustomerQr(
+            rawValue
+        ) {
+
+            if (
+                customerQrProcessing
+            ) {
+
+                return;
+
+            }
+
+
+            customerQrProcessing =
+                true;
+
+
+            const uid =
+                extractCustomerUidFromQr(
+                    rawValue
+                );
+
+
+            if (!uid) {
+
+                setCustomerQrStatus(
+                    "This is not a valid Trips Wonder Customer QR.",
+                    "error"
+                );
+
+
+                customerQrProcessing =
+                    false;
+
+
+                return;
+
+            }
+
+
+            /*
+             * Ensure the customer list is current before resolving
+             * the QR. This also picks up a newly-created booking.
+             */
+
+            await loadCustomers();
+
+
+            let customer =
+                getCustomerByAuthUid(
+                    uid
+                );
+
+
+            /*
+             * Older bookings/customer records may not have
+             * customerUid/authUid yet. In that case, use the
+             * Firebase users/{uid} profile to match the existing
+             * customer by email, contact number, or exact name.
+             */
+
+            if (!customer) {
+
+                customer =
+                    await findCustomerFromUserProfile(
+                        uid
+                    );
+
+            }
+
+
+            if (!customer) {
+
+                setCustomerQrStatus(
+                    "Customer account was recognized, but it could not be matched to an existing customer profile.",
+                    "error"
+                );
+
+
+                console.warn(
+                    "CUSTOMER QR UID NOT LINKED:",
+                    uid
+                );
+
+
+                customerQrProcessing =
+                    false;
+
+
+                return;
+
+            }
+
+
+            setCustomerQrStatus(
+                `Customer found: ${customer.name || "Customer"}`,
+                "success"
+            );
+
+
+            console.log(
+                "CUSTOMER QR MATCH:",
+                {
+                    uid,
+                    customer
+                }
+            );
+
+
+            stopCustomerQrScanner();
+
+
+            setTimeout(
+                () => {
+
+                    closeCustomerQrScannerModal();
+
+
+                    /*
+                     * Reuse the current customer profile action.
+                     * Later this can open the dedicated profile modal/page.
+                     */
+
+                    viewCustomer(
+                        customer.id
+                    );
+
+                },
+                450
+            );
+
+        }
+
+
+        async function scanCustomerQrFrame() {
+
+            if (
+                !customerQrVideo ||
+                customerQrVideo.readyState < 2
+            ) {
+
+                customerQrScanFrame =
+                    requestAnimationFrame(
+                        scanCustomerQrFrame
+                    );
+
+                return;
+
+            }
+
+
+            try {
+
+                let rawValue =
+                    "";
+
+
+                if (
+                    customerQrScannerMode ===
+                    "barcode-detector" &&
+                    customerQrDetector
+                ) {
+
+                    const codes =
+                        await customerQrDetector.detect(
+                            customerQrVideo
+                        );
+
+
+                    rawValue =
+                        codes[0]
+                            ?.rawValue ||
+                        "";
+
+                }
+
+
+                else if (
+                    customerQrScannerMode ===
+                    "jsqr" &&
+                    typeof window.jsQR ===
+                    "function" &&
+                    customerQrCanvasContext
+                ) {
+
+                    const width =
+                        customerQrVideo.videoWidth;
+
+
+                    const height =
+                        customerQrVideo.videoHeight;
+
+
+                    if (
+                        width > 0 &&
+                        height > 0
+                    ) {
+
+                        customerQrCanvas.width =
+                            width;
+
+
+                        customerQrCanvas.height =
+                            height;
+
+
+                        customerQrCanvasContext.drawImage(
+                            customerQrVideo,
+                            0,
+                            0,
+                            width,
+                            height
+                        );
+
+
+                        const imageData =
+                            customerQrCanvasContext.getImageData(
+                                0,
+                                0,
+                                width,
+                                height
+                            );
+
+
+                        const code =
+                            window.jsQR(
+                                imageData.data,
+                                width,
+                                height,
+                                {
+                                    inversionAttempts:
+                                        "dontInvert"
+                                }
+                            );
+
+
+                        rawValue =
+                            code?.data ||
+                            "";
+
+                    }
+
+                }
+
+
+                if (rawValue) {
+
+                    await resolveCustomerQr(
+                        rawValue
+                    );
+
+
+                    if (
+                        !customerQrStream
+                    ) {
+
+                        return;
+
+                    }
+
+                }
+
+            } catch (error) {
+
+                console.warn(
+                    "CUSTOMER QR FRAME ERROR:",
+                    error
+                );
+
+            }
+
+
+            customerQrScanFrame =
+                requestAnimationFrame(
+                    scanCustomerQrFrame
+                );
+
+        }
+
+
+        async function startCustomerQrScanner() {
+
+            stopCustomerQrScanner();
+
+
+            customerQrProcessing =
+                false;
+
+
+            setCustomerQrStatus(
+                "Starting camera..."
+            );
+
+
+            if (
+                retryCustomerQrScanner
+            ) {
+
+                retryCustomerQrScanner.hidden =
+                    true;
+
+            }
+
+
+            customerQrScannerMode =
+                "";
+
+
+            customerQrDetector =
+                null;
+
+
+            if (
+                "BarcodeDetector" in window
+            ) {
+
+                try {
+
+                    const supportedFormats =
+                        await BarcodeDetector
+                            .getSupportedFormats();
+
+
+                    if (
+                        supportedFormats.includes(
+                            "qr_code"
+                        )
+                    ) {
+
+                        customerQrDetector =
+                            new BarcodeDetector({
+                                formats: [
+                                    "qr_code"
+                                ]
+                            });
+
+
+                        customerQrScannerMode =
+                            "barcode-detector";
+
+                    }
+
+                } catch (error) {
+
+                    console.warn(
+                        "Native QR scanner unavailable:",
+                        error
+                    );
+
+                }
+
+            }
+
+
+            if (
+                !customerQrScannerMode &&
+                typeof window.jsQR ===
+                "function"
+            ) {
+
+                customerQrScannerMode =
+                    "jsqr";
+
+            }
+
+
+            if (
+                !customerQrScannerMode
+            ) {
+
+                setCustomerQrStatus(
+                    "QR scanner library did not load. Refresh the page and try again.",
+                    "error"
+                );
+
+
+                if (
+                    retryCustomerQrScanner
+                ) {
+
+                    retryCustomerQrScanner.hidden =
+                        false;
+
+                }
+
+
+                return;
+
+            }
+
+
+            if (
+                !navigator.mediaDevices ||
+                !navigator.mediaDevices.getUserMedia
+            ) {
+
+                setCustomerQrStatus(
+                    "Camera access is not available on this device.",
+                    "error"
+                );
+
+
+                return;
+
+            }
+
+
+            try {
+
+                customerQrStream =
+                    await navigator
+                        .mediaDevices
+                        .getUserMedia({
+                            video: {
+                                facingMode: {
+                                    ideal:
+                                        "environment"
+                                }
+                            },
+                            audio:
+                                false
+                        });
+
+
+                if (
+                    customerQrVideo
+                ) {
+
+                    customerQrVideo.srcObject =
+                        customerQrStream;
+
+
+                    await customerQrVideo.play();
+
+                }
+
+
+                setCustomerQrStatus(
+                    customerQrScannerMode ===
+                    "jsqr"
+                        ? "Camera ready. Point it at the customer's QR."
+                        : "Point the camera at the customer's QR."
+                );
+
+
+                customerQrScanFrame =
+                    requestAnimationFrame(
+                        scanCustomerQrFrame
+                    );
+
+            } catch (error) {
+
+                console.error(
+                    "CUSTOMER QR CAMERA ERROR:",
+                    error
+                );
+
+
+                stopCustomerQrScanner();
+
+
+                setCustomerQrStatus(
+                    "Unable to open the camera. Check camera permission, then retry.",
+                    "error"
+                );
+
+
+                if (
+                    retryCustomerQrScanner
+                ) {
+
+                    retryCustomerQrScanner.hidden =
+                        false;
+
+                }
+
+            }
+
+        }
+
+
+        async function decodeCustomerQrImage(
+            file
+        ) {
+
+            if (!file) {
+                return;
+            }
+
+
+            if (
+                typeof window.jsQR !==
+                "function"
+            ) {
+
+                setCustomerQrStatus(
+                    "QR image reader is unavailable. Refresh the page and try again.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            try {
+
+                setCustomerQrStatus(
+                    "Reading QR image..."
+                );
+
+
+                const bitmap =
+                    await createImageBitmap(
+                        file
+                    );
+
+
+                const canvas =
+                    document.createElement(
+                        "canvas"
+                    );
+
+
+                const context =
+                    canvas.getContext(
+                        "2d",
+                        {
+                            willReadFrequently:
+                                true
+                        }
+                    );
+
+
+                canvas.width =
+                    bitmap.width;
+
+
+                canvas.height =
+                    bitmap.height;
+
+
+                context.drawImage(
+                    bitmap,
+                    0,
+                    0
+                );
+
+
+                const imageData =
+                    context.getImageData(
+                        0,
+                        0,
+                        canvas.width,
+                        canvas.height
+                    );
+
+
+                const code =
+                    window.jsQR(
+                        imageData.data,
+                        canvas.width,
+                        canvas.height,
+                        {
+                            inversionAttempts:
+                                "attemptBoth"
+                        }
+                    );
+
+
+                bitmap.close?.();
+
+
+                if (
+                    !code ||
+                    !code.data
+                ) {
+
+                    setCustomerQrStatus(
+                        "No QR code was found in that image.",
+                        "error"
+                    );
+
+                    return;
+                }
+
+
+                await resolveCustomerQr(
+                    code.data
+                );
+
+            } catch (error) {
+
+                console.error(
+                    "CUSTOMER QR IMAGE ERROR:",
+                    error
+                );
+
+
+                setCustomerQrStatus(
+                    "Unable to read that QR image.",
+                    "error"
+                );
+
+            }
+
+        }
+
+
+        async function openCustomerQrScannerModal() {
+
+            if (
+                !customerQrScannerModal
+            ) {
+
+                return;
+
+            }
+
+
+            customerQrScannerModal
+                .classList
+                .add(
+                    "show"
+                );
+
+
+            customerQrScannerModal
+                .setAttribute(
+                    "aria-hidden",
+                    "false"
+                );
+
+
+            document.body.style.overflow =
+                "hidden";
+
+
+            if (
+                customerQrManualInput
+            ) {
+
+                customerQrManualInput.value =
+                    "";
+
+            }
+
+
+            await startCustomerQrScanner();
+
+        }
+
+
+        if (
+            scanCustomerQrButton
+        ) {
+
+            scanCustomerQrButton.addEventListener(
+                "click",
+                event => {
+
+                    event.preventDefault();
+
+
+                    openCustomerQrScannerModal();
+
+                }
+            );
+
+        }
+
+
+        if (
+            closeCustomerQrScanner
+        ) {
+
+            closeCustomerQrScanner.addEventListener(
+                "click",
+                () => {
+
+                    closeCustomerQrScannerModal();
+
+                }
+            );
+
+        }
+
+
+        if (
+            retryCustomerQrScanner
+        ) {
+
+            retryCustomerQrScanner.addEventListener(
+                "click",
+                () => {
+
+                    startCustomerQrScanner();
+
+                }
+            );
+
+        }
+
+
+        if (
+            customerQrManualButton
+        ) {
+
+            customerQrManualButton.addEventListener(
+                "click",
+                () => {
+
+                    resolveCustomerQr(
+                        customerQrManualInput
+                            ?.value ||
+                        ""
+                    );
+
+                }
+            );
+
+        }
+
+
+        if (
+            customerQrManualInput
+        ) {
+
+            customerQrManualInput.addEventListener(
+                "keydown",
+                event => {
+
+                    if (
+                        event.key ===
+                        "Enter"
+                    ) {
+
+                        event.preventDefault();
+
+
+                        resolveCustomerQr(
+                            customerQrManualInput.value
+                        );
+
+                    }
+
+                }
+            );
+
+        }
+
+
+        if (
+            customerQrImageInput
+        ) {
+
+            customerQrImageInput.addEventListener(
+                "change",
+                async event => {
+
+                    const file =
+                        event.target.files?.[0] ||
+                        null;
+
+
+                    if (!file) {
+                        return;
+                    }
+
+
+                    await decodeCustomerQrImage(
+                        file
+                    );
+
+
+                    event.target.value =
+                        "";
+
+                }
+            );
+
+        }
+
+
+        if (
+            customerQrScannerModal
+        ) {
+
+            customerQrScannerModal.addEventListener(
+                "click",
+                event => {
+
+                    if (
+                        event.target ===
+                        customerQrScannerModal
+                    ) {
+
+                        closeCustomerQrScannerModal();
+
+                    }
+
+                }
+            );
+
+        }
+
+
+        /* =====================================================
            FIND CUSTOMER
            ===================================================== */
 
@@ -2035,6 +3575,180 @@ document.addEventListener(
            VIEW CUSTOMER
            ===================================================== */
 
+        function formatTravelDateRange(
+            booking
+        ) {
+
+            if (!booking) {
+                return "—";
+            }
+
+
+            const start =
+                booking.travelDate ||
+                "";
+
+
+            const end =
+                booking.travelEndDate ||
+                "";
+
+
+            if (
+                !start &&
+                !end
+            ) {
+
+                return "—";
+
+            }
+
+
+            if (
+                start &&
+                end &&
+                start !== end
+            ) {
+
+                return (
+                    `${formatDate(start)} – ${formatDate(end)}`
+                );
+
+            }
+
+
+            return formatDate(
+                start ||
+                end
+            );
+
+        }
+
+
+        function getBookingDurationLabel(
+            booking
+        ) {
+
+            const savedDuration =
+                String(
+                    booking?.duration ||
+                    ""
+                )
+                    .trim();
+
+
+            if (savedDuration) {
+
+                return savedDuration;
+
+            }
+
+
+            const startDate =
+                booking?.travelDate
+                    ? new Date(
+                        `${booking.travelDate}T00:00:00`
+                    )
+                    : null;
+
+
+            const endDate =
+                booking?.travelEndDate
+                    ? new Date(
+                        `${booking.travelEndDate}T00:00:00`
+                    )
+                    : null;
+
+
+            if (
+                startDate &&
+                endDate &&
+                !Number.isNaN(
+                    startDate.getTime()
+                ) &&
+                !Number.isNaN(
+                    endDate.getTime()
+                )
+            ) {
+
+                const dayCount =
+                    Math.max(
+                        1,
+                        Math.round(
+                            (
+                                endDate.getTime() -
+                                startDate.getTime()
+                            ) /
+                            86400000
+                        ) + 1
+                    );
+
+
+                const nightCount =
+                    Math.max(
+                        0,
+                        dayCount - 1
+                    );
+
+
+                return (
+                    `${dayCount} Day${dayCount === 1 ? "" : "s"} ` +
+                    `${nightCount} Night${nightCount === 1 ? "" : "s"}`
+                );
+
+            }
+
+
+            return "—";
+
+        }
+
+
+        function getAccommodationLabel(
+            booking
+        ) {
+
+            const value =
+                String(
+                    booking?.accommodationName ||
+                    ""
+                )
+                    .trim();
+
+
+            return value || "Not specified";
+
+        }
+
+
+        function closeCustomerProfile() {
+
+            if (
+                customerProfileModal
+            ) {
+
+                customerProfileModal
+                    .classList
+                    .remove(
+                        "show"
+                    );
+
+
+                customerProfileModal
+                    .setAttribute(
+                        "aria-hidden",
+                        "true"
+                    );
+
+            }
+
+
+            document.body.style.overflow =
+                "";
+
+        }
+
+
         function viewCustomer(
             id
         ) {
@@ -2081,75 +3795,350 @@ document.addEventListener(
                     );
 
 
-            let bookingHistory =
-                "";
-
-
             if (
-                customerBookings.length ===
-                0
+                customerProfileAvatar
             ) {
 
-                bookingHistory =
-                    "No booking history.";
-
-            } else {
-
-                bookingHistory =
-                    customerBookings
-                        .map(
-                            (
-                                booking,
-                                index
-                            ) => {
-
-                                return (
-                                    `${index + 1}. ` +
-                                    `${booking.packageName || "Tour Package"} - ` +
-                                    `${formatDate(booking.travelDate)}`
-                                );
-
-                            }
-                        )
-                        .join(
-                            "\n"
-                        );
+                customerProfileAvatar.textContent =
+                    getInitials(
+                        customer.name
+                    );
 
             }
 
 
-            alert(
-                [
-                    `CUSTOMER PROFILE`,
-                    ``,
-                    `Name: ${customer.name || "—"}`,
-                    `Contact: ${customer.contact || "—"}`,
-                    `Email: ${customer.email || "—"}`,
-                    `Facebook: ${customer.facebook || "—"}`,
-                    `Status: ${
-                        normalizeText(
-                            customer.status
-                        ) === "inactive"
-                            ? "Inactive"
-                            : "Active"
-                    }`,
-                    ``,
-                    `Bookings: ${customer.bookingCount || 0}`,
-                    `Total Spent: ₱${formatMoney(customer.totalSpent)}`,
-                    `Last Trip: ${formatDate(customer.lastTrip)}`,
-                    ``,
-                    `BOOKING HISTORY`,
-                    bookingHistory,
-                    ``,
-                    customer.notes
-                        ? `Notes: ${customer.notes}`
-                        : ""
-                ]
-                    .filter(Boolean)
-                    .join(
-                        "\n"
+            if (
+                customerProfileName
+            ) {
+
+                customerProfileName.textContent =
+                    customer.name ||
+                    "Customer Profile";
+
+            }
+
+
+            if (
+                customerProfileSubtitle
+            ) {
+
+                customerProfileSubtitle.textContent =
+                    customer.authUid ||
+                    customer.customerUid
+                        ? "Trips Wonder customer account"
+                        : "Customer profile";
+
+            }
+
+
+            if (
+                customerProfileContact
+            ) {
+
+                customerProfileContact.textContent =
+                    customer.contact ||
+                    "—";
+
+            }
+
+
+            if (
+                customerProfileEmail
+            ) {
+
+                customerProfileEmail.textContent =
+                    customer.email ||
+                    "—";
+
+            }
+
+
+            if (
+                customerProfileFacebook
+            ) {
+
+                customerProfileFacebook.textContent =
+                    customer.facebook ||
+                    "—";
+
+            }
+
+
+            if (
+                customerProfileStatus
+            ) {
+
+                customerProfileStatus.textContent =
+                    normalizeText(
+                        customer.status
+                    ) ===
+                    "inactive"
+                        ? "Inactive"
+                        : "Active";
+
+            }
+
+
+            if (
+                customerProfileBookings
+            ) {
+
+                customerProfileBookings.textContent =
+                    String(
+                        customer.bookingCount ||
+                        0
+                    );
+
+            }
+
+
+            if (
+                customerProfileSpent
+            ) {
+
+                customerProfileSpent.textContent =
+                    `₱${formatMoney(
+                        customer.totalSpent
+                    )}`;
+
+            }
+
+
+            if (
+                customerProfileLastTrip
+            ) {
+
+                customerProfileLastTrip.textContent =
+                    formatDate(
+                        customer.lastTrip
+                    );
+
+            }
+
+
+            if (
+                customerProfileBookingHistory
+            ) {
+
+                customerProfileBookingHistory.innerHTML =
+                    "";
+
+
+                if (
+                    customerBookings.length ===
+                    0
+                ) {
+
+                    customerProfileBookingHistory.innerHTML = `
+                        <div class="customer-profile-empty">
+                            No booking history.
+                        </div>
+                    `;
+
+                }
+
+
+                else {
+
+                    customerBookings.forEach(
+                        booking => {
+
+                            const card =
+                                document.createElement(
+                                    "div"
+                                );
+
+
+                            card.className =
+                                "customer-profile-booking-card";
+
+
+                            const info =
+                                document.createElement(
+                                    "div"
+                                );
+
+
+                            const name =
+                                document.createElement(
+                                    "strong"
+                                );
+
+
+                            name.textContent =
+                                booking.packageName ||
+                                "Tour Package";
+
+
+                            const travelLine =
+                                document.createElement(
+                                    "span"
+                                );
+
+
+                            travelLine.textContent =
+                                `Travel Date: ${formatTravelDateRange(booking)}`;
+
+
+                            const durationLine =
+                                document.createElement(
+                                    "span"
+                                );
+
+
+                            durationLine.textContent =
+                                `Duration: ${getBookingDurationLabel(booking)}`;
+
+
+                            const accommodationLine =
+                                document.createElement(
+                                    "span"
+                                );
+
+
+                            accommodationLine.textContent =
+                                `Accommodation: ${getAccommodationLabel(booking)}`;
+
+
+                            const bookingMeta =
+                                document.createElement(
+                                    "span"
+                                );
+
+
+                            const collectedAmount =
+                                getBookingCollectedAmount(
+                                    booking
+                                );
+
+
+                            const bookingStatusText =
+                                booking.bookingStatus ||
+                                "pending";
+
+
+                            const paymentStatusText =
+                                booking.paymentStatus ||
+                                (
+                                    collectedAmount > 0
+                                        ? "partial"
+                                        : "unpaid"
+                                );
+
+
+                            bookingMeta.textContent =
+                                `Booking: ${bookingStatusText} · Payment: ${paymentStatusText} · Paid: ₱${formatMoney(collectedAmount)}`;
+
+
+                            info.appendChild(
+                                name
+                            );
+
+
+                            info.appendChild(
+                                travelLine
+                            );
+
+
+                            info.appendChild(
+                                durationLine
+                            );
+
+
+                            info.appendChild(
+                                accommodationLine
+                            );
+
+
+                            info.appendChild(
+                                bookingMeta
+                            );
+
+
+                            const date =
+                                document.createElement(
+                                    "span"
+                                );
+
+
+                            date.className =
+                                "customer-profile-booking-date";
+
+
+                            date.textContent =
+                                getBookingDurationLabel(
+                                    booking
+                                );
+
+
+                            card.appendChild(
+                                info
+                            );
+
+
+                            card.appendChild(
+                                date
+                            );
+
+
+                            customerProfileBookingHistory
+                                .appendChild(
+                                    card
+                                );
+
+                        }
+                    );
+
+                }
+
+            }
+
+
+            if (
+                customerProfileNotesWrap &&
+                customerProfileNotes
+            ) {
+
+                const notes =
+                    String(
+                        customer.notes ||
+                        ""
                     )
-            );
+                        .trim();
+
+
+                customerProfileNotesWrap.hidden =
+                    !notes;
+
+
+                customerProfileNotes.textContent =
+                    notes;
+
+            }
+
+
+            if (
+                customerProfileModal
+            ) {
+
+                customerProfileModal
+                    .classList
+                    .add(
+                        "show"
+                    );
+
+
+                customerProfileModal
+                    .setAttribute(
+                        "aria-hidden",
+                        "false"
+                    );
+
+
+                document.body.style.overflow =
+                    "hidden";
+
+            }
 
         }
 
@@ -2731,6 +4720,49 @@ document.addEventListener(
 
 
         /* =====================================================
+           CUSTOMER PROFILE MODAL EVENTS
+           ===================================================== */
+
+        if (
+            closeCustomerProfileModal
+        ) {
+
+            closeCustomerProfileModal.addEventListener(
+                "click",
+                () => {
+
+                    closeCustomerProfile();
+
+                }
+            );
+
+        }
+
+
+        if (
+            customerProfileModal
+        ) {
+
+            customerProfileModal.addEventListener(
+                "click",
+                event => {
+
+                    if (
+                        event.target ===
+                        customerProfileModal
+                    ) {
+
+                        closeCustomerProfile();
+
+                    }
+
+                }
+            );
+
+        }
+
+
+        /* =====================================================
            SEARCH
            ===================================================== */
 
@@ -2966,6 +4998,10 @@ document.addEventListener(
 
 
                 window.closeCustomerModal();
+
+                closeCustomerQrScannerModal();
+
+                closeCustomerProfile();
 
             }
         );

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messages | Trips Wonder Admin</title>
+
+    <link rel="stylesheet" href="../../assets/css/shared/variables.css">
+    <link rel="stylesheet" href="../../assets/css/shared/global.css">
+    <link rel="stylesheet" href="../../assets/css/admin/messages.css">
+    <link rel="stylesheet" href="../../assets/css/shared/admin-nav.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+
+<body class="twtms-page-loading admin-shared-nav-page">
+
+<div class="admin-wrapper">
+    <aside id="adminSidebar" class="admin-sidebar"></aside>
+
+    <main class="main messages-main">
+        <div class="messages-page">
+
+            <header class="messages-page-header">
+                <div>
+                    <h1>Messages</h1>
+                    <p>Manage live customer conversations and inquiries.</p>
+                </div>
+
+                <div class="message-status-pill">
+                    <span class="status-dot"></span>
+                    Live Inbox
+                </div>
+            </header>
+
+            <section class="messages-workspace">
+
+                <aside class="conversation-panel">
+                    <div class="conversation-panel-head">
+                        <div class="conversation-title-row">
+                            <div>
+                                <h2>Inbox</h2>
+                                <span id="conversationCount">0 conversations</span>
+                            </div>
+                            <span class="unread-total" id="adminUnreadTotal">0</span>
+                        </div>
+
+                        <label class="conversation-search">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <input id="conversationSearch" type="search" placeholder="Search customer...">
+                        </label>
+
+                        <div class="conversation-filters" id="conversationFilters">
+                            <button type="button" class="filter-btn active" data-filter="all">All</button>
+                            <button type="button" class="filter-btn" data-filter="unread">Unread</button>
+                            <button type="button" class="filter-btn" data-filter="booking">Booking</button>
+                            <button type="button" class="filter-btn" data-filter="inquiry">Inquiry</button>
+                        </div>
+                    </div>
+
+                    <div class="conversation-list" id="conversationList">
+                        <div class="panel-state">
+                            <i class="fa-regular fa-comments"></i>
+                            <strong>Loading conversations...</strong>
+                        </div>
+                    </div>
+                </aside>
+
+                <section class="chat-panel">
+                    <div class="empty-chat" id="emptyChat">
+                        <div class="empty-chat-icon">
+                            <i class="fa-regular fa-comments"></i>
+                        </div>
+                        <h2>Select a conversation</h2>
+                        <p>Choose a customer from the inbox to view and reply.</p>
+                    </div>
+
+                    <div class="active-chat" id="activeChat" hidden>
+                        <header class="chat-header">
+                            <div class="chat-customer">
+                                <div class="customer-avatar" id="chatAvatar">TW</div>
+                                <div>
+                                    <h2 id="chatCustomerName">Customer</h2>
+                                    <p id="chatCustomerMeta">Trips Wonder customer</p>
+                                </div>
+                            </div>
+
+                            <button type="button" class="mobile-details-btn" id="mobileDetailsButton" aria-label="Customer details">
+                                <i class="fa-solid fa-circle-info"></i>
+                            </button>
+                        </header>
+
+                        <div class="message-stream" id="messageStream"></div>
+
+                        <form class="message-composer" id="adminMessageForm">
+                            <textarea
+                                id="adminMessageInput"
+                                rows="1"
+                                maxlength="2000"
+                                placeholder="Type a message..."
+                                required></textarea>
+
+                            <button type="submit" id="adminSendButton" aria-label="Send message">
+                                <i class="fa-solid fa-paper-plane"></i>
+                            </button>
+                        </form>
+                    </div>
+                </section>
+
+                <aside class="customer-details-panel" id="customerDetailsPanel">
+                    <div class="details-empty" id="detailsEmpty">
+                        <i class="fa-regular fa-user"></i>
+                        <p>Customer details will appear here.</p>
+                    </div>
+
+                    <div id="detailsContent" hidden>
+                        <div class="details-profile">
+                            <div class="details-avatar" id="detailsAvatar">TW</div>
+                            <h3 id="detailsName">Customer</h3>
+                            <p id="detailsEmail">—</p>
+                        </div>
+
+                        <div class="details-card">
+                            <span>Contact</span>
+                            <strong id="detailsContact">—</strong>
+                        </div>
+
+                        <div class="details-card">
+                            <span>Conversation Type</span>
+                            <strong id="detailsType">Inquiry</strong>
+                        </div>
+
+                        <div class="details-card">
+                            <span>Booking</span>
+                            <strong id="detailsBooking">No linked booking</strong>
+                        </div>
+
+                        <div class="details-card">
+                            <span>Travel Date</span>
+                            <strong id="detailsTravelDate">—</strong>
+                        </div>
+
+                        <div class="details-actions">
+                            <button type="button" id="viewCustomerButton">
+                                <i class="fa-regular fa-user"></i>
+                                View Customer
+                            </button>
+                            <button type="button" id="viewBookingButton">
+                                <i class="fa-solid fa-suitcase"></i>
+                                View Booking
+                            </button>
+                        </div>
+                    </div>
+                </aside>
+
+            </section>
+
+        </div>
+    </main>
+</div>
+
+<script type="module" src="../../assets/js/admin/messages.js"></script>
+<script type="module" src="../../assets/js/shared/admin-nav.js"></script>
+</body>
+</html>

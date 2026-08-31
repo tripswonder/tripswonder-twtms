@@ -2144,6 +2144,39 @@ else if (
                                     data.notes ||
                                     "",
 
+                                originalAmount:
+                                    normalizeNumber(
+                                        data.originalAmount ??
+                                        data.packageSubtotal ??
+                                        totalValue
+                                    ),
+
+                                promoId:
+                                    data.promoId ||
+                                    "",
+
+                                promoCode:
+                                    data.promoCode ||
+                                    "",
+
+                                promoTitle:
+                                    data.promoTitle ||
+                                    "",
+
+                                promoDiscountType:
+                                    data.promoDiscountType ||
+                                    "",
+
+                                promoDiscountValue:
+                                    normalizeNumber(
+                                        data.promoDiscountValue
+                                    ),
+
+                                discountAmount:
+                                    normalizeNumber(
+                                        data.discountAmount
+                                    ),
+
                                 totalAmount:
                                     totalValue,
 
@@ -2400,6 +2433,10 @@ else if (
                                 booking.customerFb,
 
                                 booking.packageName,
+
+                                booking.promoCode,
+
+                                booking.promoTitle,
 
                                 booking.pickupPoint,
 
@@ -4520,26 +4557,116 @@ function openBookingView(
             </h3>
 
 
+            ${
+                booking.promoCode &&
+                normalizeNumber(
+                    booking.discountAmount
+                ) > 0
+                    ? `
+                        <div class="booking-promo-summary">
+
+                            <div class="booking-promo-summary-head">
+
+                                <div>
+                                    <span class="booking-promo-eyebrow">
+                                        PROMO APPLIED
+                                    </span>
+
+                                    <strong>
+                                        ${escapeHtml(
+                                            booking.promoTitle ||
+                                            booking.promoCode
+                                        )}
+                                    </strong>
+                                </div>
+
+                                <span class="booking-promo-code">
+                                    ${escapeHtml(
+                                        booking.promoCode
+                                    )}
+                                </span>
+
+                            </div>
+
+
+                            <div class="booking-promo-breakdown">
+
+                                <div>
+                                    <span>Original Amount</span>
+                                    <strong>
+                                        ₱${escapeHtml(
+                                            formatMoney(
+                                                booking.originalAmount ||
+                                                (
+                                                    normalizeNumber(
+                                                        booking.totalAmount
+                                                    ) +
+                                                    normalizeNumber(
+                                                        booking.discountAmount
+                                                    )
+                                                )
+                                            )
+                                        )}
+                                    </strong>
+                                </div>
+
+                                <div class="discount">
+                                    <span>Promo Discount</span>
+                                    <strong>
+                                        -₱${escapeHtml(
+                                            formatMoney(
+                                                booking.discountAmount
+                                            )
+                                        )}
+                                    </strong>
+                                </div>
+
+                                <div class="final">
+                                    <span>Final Amount</span>
+                                    <strong>
+                                        ₱${escapeHtml(
+                                            formatMoney(
+                                                booking.totalAmount
+                                            )
+                                        )}
+                                    </strong>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    `
+                    : ""
+            }
+
+
             <div class="booking-view-grid">
 
 
-                <div class="booking-view-field">
+                ${
+                    !booking.promoCode ||
+                    normalizeNumber(
+                        booking.discountAmount
+                    ) <= 0
+                        ? `
+                            <div class="booking-view-field">
 
-                    <span class="booking-view-label">
-                        Total Amount
-                    </span>
+                                <span class="booking-view-label">
+                                    Total Amount
+                                </span>
 
-                    <div class="booking-view-value">
+                                <div class="booking-view-value">
+                                    ₱${escapeHtml(
+                                        formatMoney(
+                                            booking.totalAmount
+                                        )
+                                    )}
+                                </div>
 
-                        ₱${escapeHtml(
-                            formatMoney(
-                                booking.totalAmount
-                            )
-                        )}
-
-                    </div>
-
-                </div>
+                            </div>
+                        `
+                        : ""
+                }
 
 
                 <div class="booking-view-field">
@@ -4549,13 +4676,11 @@ function openBookingView(
                     </span>
 
                     <div class="booking-view-value">
-
                         ₱${escapeHtml(
                             formatMoney(
                                 booking.amountPaid
                             )
                         )}
-
                     </div>
 
                 </div>
@@ -4568,13 +4693,11 @@ function openBookingView(
                     </span>
 
                     <div class="booking-view-value">
-
                         ₱${escapeHtml(
                             formatMoney(
                                 booking.remainingBalance
                             )
                         )}
-
                     </div>
 
                 </div>
@@ -4588,7 +4711,7 @@ function openBookingView(
 
                     <div class="booking-view-value">
 
-                        <span class="payment-badge ${
+                        <span class="booking-detail-badge ${
                             booking.paymentStatus ||
                             "unpaid"
                         }">
@@ -4614,12 +4737,10 @@ function openBookingView(
                     </span>
 
                     <div class="booking-view-value">
-
                         ${escapeHtml(
                             booking.paymentMethod ||
                             "—"
                         )}
-
                     </div>
 
                 </div>
@@ -4632,16 +4753,37 @@ function openBookingView(
                     </span>
 
                     <div class="booking-view-value">
-
                         ${escapeHtml(
                             booking.paymentReference ||
                             "—"
                         )}
-
                     </div>
 
                 </div>
 
+
+                ${
+                    booking.promoCode &&
+                    normalizeNumber(
+                        booking.discountAmount
+                    ) > 0
+                        ? `
+                            <div class="booking-view-field">
+
+                                <span class="booking-view-label">
+                                    Promo Code
+                                </span>
+
+                                <div class="booking-view-value">
+                                    ${escapeHtml(
+                                        booking.promoCode
+                                    )}
+                                </div>
+
+                            </div>
+                        `
+                        : ""
+                }
 
             </div>
 

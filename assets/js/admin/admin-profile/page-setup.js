@@ -109,6 +109,15 @@ const defaultPageSetupSettings = {
         "",
 
     businessLogo:
+        "../../assets/images/logo.png",
+
+    supportName:
+        "Trips Wonder Support",
+
+    supportStatus:
+        "We’re here to help",
+
+    supportPhoto:
         "../../assets/images/logo.png"
 };
 
@@ -547,6 +556,106 @@ function ensurePageSetupMarkup() {
 
 
                 <!-- =====================================
+                     CUSTOMER SUPPORT PROFILE
+                ====================================== -->
+
+                <div class="page-setup-block">
+
+                    <div class="page-setup-block-header">
+
+                        <div class="page-setup-block-icon">
+                            <i class="fa-solid fa-headset"></i>
+                        </div>
+
+                        <div>
+                            <h3>Customer Support Profile</h3>
+                            <p>
+                                Identity displayed to customers
+                                in the Message module.
+                            </p>
+                        </div>
+
+                    </div>
+
+                    <div class="page-setup-grid">
+
+                        <div class="form-group">
+
+                            <label for="supportName">
+                                Support Name
+                            </label>
+
+                            <input
+                                type="text"
+                                id="supportName"
+                                name="supportName"
+                                placeholder="Trips Wonder Support"
+                                autocomplete="off"
+                            >
+
+                        </div>
+
+                        <div class="form-group">
+
+                            <label for="supportStatus">
+                                Support Status
+                            </label>
+
+                            <input
+                                type="text"
+                                id="supportStatus"
+                                name="supportStatus"
+                                placeholder="We’re here to help"
+                                autocomplete="off"
+                            >
+
+                        </div>
+
+                    </div>
+
+                    <div class="page-setup-logo-area">
+
+                        <div class="page-setup-logo-preview">
+
+                            <img
+                                id="supportPhotoPreview"
+                                src="../../assets/images/logo.png"
+                                alt="Support Profile Photo"
+                            >
+
+                        </div>
+
+                        <div class="page-setup-logo-actions">
+
+                            <input
+                                type="file"
+                                id="supportPhotoInput"
+                                accept="image/jpeg,image/png,image/webp"
+                                hidden
+                            >
+
+                            <button
+                                type="button"
+                                id="changeSupportPhotoButton"
+                                class="page-setup-secondary-button"
+                            >
+                                <i class="fa-solid fa-camera"></i>
+                                Change Support Photo
+                            </button>
+
+                            <p>
+                                JPG, PNG or WEBP.
+                                Maximum 2MB.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =====================================
                      FORM MESSAGE
                 ====================================== -->
 
@@ -665,6 +774,31 @@ function collectPageSetupElements() {
         changeBusinessLogoButton:
             document.getElementById(
                 "changeBusinessLogoButton"
+            ),
+
+        supportName:
+            document.getElementById(
+                "supportName"
+            ),
+
+        supportStatus:
+            document.getElementById(
+                "supportStatus"
+            ),
+
+        supportPhotoPreview:
+            document.getElementById(
+                "supportPhotoPreview"
+            ),
+
+        supportPhotoInput:
+            document.getElementById(
+                "supportPhotoInput"
+            ),
+
+        changeSupportPhotoButton:
+            document.getElementById(
+                "changeSupportPhotoButton"
             ),
 
         resetButton:
@@ -1171,6 +1305,27 @@ function populatePageSetupForm(
 
     }
 
+
+    if (pageSetupElements.supportName) {
+        pageSetupElements.supportName.value =
+            settings.supportName || "";
+    }
+
+
+    if (pageSetupElements.supportStatus) {
+        pageSetupElements.supportStatus.value =
+            settings.supportStatus || "";
+    }
+
+
+    if (
+        pageSetupElements.supportPhotoPreview &&
+        settings.supportPhoto
+    ) {
+        pageSetupElements.supportPhotoPreview.src =
+            settings.supportPhoto;
+    }
+
 }
 
 
@@ -1220,7 +1375,24 @@ function collectPageSetupSettings() {
         businessLogo:
             pageSetupElements.businessLogoPreview
                 ?.src ||
-            defaultPageSetupSettings.businessLogo
+            defaultPageSetupSettings.businessLogo,
+
+        supportName:
+            pageSetupElements.supportName
+                ?.value
+                ?.trim() ||
+            defaultPageSetupSettings.supportName,
+
+        supportStatus:
+            pageSetupElements.supportStatus
+                ?.value
+                ?.trim() ||
+            defaultPageSetupSettings.supportStatus,
+
+        supportPhoto:
+            pageSetupElements.supportPhotoPreview
+                ?.src ||
+            defaultPageSetupSettings.supportPhoto
 
     };
 
@@ -1713,6 +1885,81 @@ function handleBusinessLogoChange(
 
 
 /* =========================================================
+   SUPPORT PHOTO PICKER
+========================================================= */
+
+function openSupportPhotoPicker() {
+
+    pageSetupElements.supportPhotoInput
+        ?.click();
+
+}
+
+
+function handleSupportPhotoChange(event) {
+
+    const file =
+        event.target.files?.[0];
+
+    if (!file) return;
+
+    const allowedTypes = [
+        "image/jpeg",
+        "image/png",
+        "image/webp"
+    ];
+
+    if (!allowedTypes.includes(file.type)) {
+
+        showPageSetupMessage(
+            "Please select a JPG, PNG, or WEBP support photo.",
+            "error"
+        );
+
+        event.target.value = "";
+        return;
+    }
+
+    const maxSize =
+        2 * 1024 * 1024;
+
+    if (file.size > maxSize) {
+
+        showPageSetupMessage(
+            "Support photo must be 2MB or smaller.",
+            "error"
+        );
+
+        event.target.value = "";
+        return;
+    }
+
+    const reader =
+        new FileReader();
+
+    reader.onload = readerEvent => {
+
+        if (pageSetupElements.supportPhotoPreview) {
+            pageSetupElements.supportPhotoPreview.src =
+                readerEvent.target.result;
+        }
+
+    };
+
+    reader.onerror = () => {
+
+        showPageSetupMessage(
+            "Unable to read the selected support photo.",
+            "error"
+        );
+
+    };
+
+    reader.readAsDataURL(file);
+}
+
+
+/* =========================================================
    EVENTS
 ========================================================= */
 
@@ -1797,6 +2044,23 @@ function initializePageSetupEvents() {
         );
 
     }
+
+
+    /*
+     * Support photo
+     */
+
+    pageSetupElements.changeSupportPhotoButton
+        ?.addEventListener(
+            "click",
+            openSupportPhotoPicker
+        );
+
+    pageSetupElements.supportPhotoInput
+        ?.addEventListener(
+            "change",
+            handleSupportPhotoChange
+        );
 
 
     /*
