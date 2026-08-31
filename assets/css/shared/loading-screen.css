@@ -1,0 +1,444 @@
+/* =========================================================
+   TWTMS v2
+   GLOBAL MODULE LOADING SCREEN
+   assets/css/shared/loading-screen.css
+========================================================= */
+
+/* =========================================================
+   PREVENT PAGE FLASH BEFORE LOADER
+========================================================= */
+
+body.twtms-page-loading {
+    overflow: hidden;
+}
+
+body.twtms-page-loading .admin-wrapper {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.twtms-loader {
+    position: fixed;
+    inset: 0;
+
+    z-index: 99999;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 24px;
+
+    background: rgba(245, 248, 252, 0.96);
+
+    opacity: 1;
+    visibility: visible;
+
+    transition:
+        opacity 0.25s ease,
+        visibility 0.25s ease;
+}
+
+
+/* =========================================================
+   HIDDEN
+========================================================= */
+
+.twtms-loader.is-hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+
+/* =========================================================
+   CARD
+========================================================= */
+
+.twtms-loader-card {
+    width: 100%;
+    max-width: 390px;
+
+    padding: 34px 30px;
+
+    background: #ffffff;
+
+    border: 1px solid #e4ebf4;
+    border-radius: 18px;
+
+    box-shadow:
+        0 18px 50px rgba(20, 55, 95, 0.12);
+
+    text-align: center;
+}
+
+
+/* =========================================================
+   LOGO
+========================================================= */
+
+.twtms-loader-logo {
+    width: 66px;
+    height: 66px;
+
+    margin: 0 auto 22px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #ffffff;
+
+    border: 1px solid #e4ebf4;
+    border-radius: 50%;
+
+    overflow: hidden;
+}
+
+
+.twtms-loader-logo img {
+    width: 82%;
+    height: 82%;
+
+    object-fit: contain;
+}
+
+
+/* =========================================================
+   SPINNER
+========================================================= */
+
+.twtms-loader-spinner {
+    width: 34px;
+    height: 34px;
+
+    margin: 0 auto 20px;
+
+    border: 3px solid #dce8f7;
+    border-top-color: #1557a6;
+
+    border-radius: 50%;
+
+    animation:
+        twtmsLoaderSpin 0.8s linear infinite;
+}
+
+
+@keyframes twtmsLoaderSpin {
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+
+/* =========================================================
+   STATUS ICON
+========================================================= */
+
+.twtms-loader-status-icon {
+    width: 54px;
+    height: 54px;
+
+    margin: 0 auto 18px;
+
+    display: none;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    font-size: 22px;
+}
+
+
+/* ERROR */
+
+.twtms-loader.is-error
+.twtms-loader-status-icon {
+    display: flex;
+
+    background: #fff1f1;
+    color: #c63d3d;
+}
+
+
+.twtms-loader.is-error
+.twtms-loader-spinner {
+    display: none;
+}
+
+
+/* OFFLINE */
+
+.twtms-loader.is-offline
+.twtms-loader-status-icon {
+    display: flex;
+
+    background: #fff6e4;
+    color: #c88413;
+}
+
+
+.twtms-loader.is-offline
+.twtms-loader-spinner {
+    display: none;
+}
+
+
+/* =========================================================
+   TEXT
+========================================================= */
+
+.twtms-loader-title {
+    margin: 0;
+
+    color: #17365f;
+
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.35;
+}
+
+
+.twtms-loader-message {
+    margin: 8px 0 0;
+
+    color: #7d91ad;
+
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+
+/* =========================================================
+   CONNECTION STATUS
+========================================================= */
+
+.twtms-loader-connection {
+    margin-top: 18px;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+
+    color: #8a9db5;
+
+    font-size: 10px;
+    font-weight: 500;
+}
+
+
+.twtms-loader-connection-dot {
+    width: 7px;
+    height: 7px;
+
+    background: #15966a;
+
+    border-radius: 50%;
+}
+
+
+/* SLOW */
+
+.twtms-loader.is-slow
+.twtms-loader-connection-dot {
+    background: #c88413;
+}
+
+
+/* OFFLINE */
+
+.twtms-loader.is-offline
+.twtms-loader-connection-dot,
+.twtms-loader.is-error
+.twtms-loader-connection-dot {
+    background: #c63d3d;
+}
+
+
+/* =========================================================
+   RETRY BUTTON
+========================================================= */
+
+.twtms-loader-retry {
+    min-width: 130px;
+    min-height: 42px;
+
+    margin: 22px auto 0;
+    padding: 0 18px;
+
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    background: #1557a6;
+    color: #ffffff;
+
+    border: 1px solid #1557a6;
+    border-radius: 9px;
+
+    font: inherit;
+    font-size: 11px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        background 0.18s ease,
+        transform 0.18s ease;
+}
+
+
+.twtms-loader-retry:hover {
+    background: #104b92;
+
+    transform: translateY(-1px);
+}
+
+
+.twtms-loader.is-error
+.twtms-loader-retry,
+.twtms-loader.is-offline
+.twtms-loader-retry {
+    display: inline-flex;
+}
+
+
+/* =========================================================
+   CONNECTION RESTORED TOAST
+========================================================= */
+
+.twtms-connection-toast {
+    position: fixed;
+
+    right: 24px;
+    bottom: 24px;
+
+    z-index: 100000;
+
+    min-width: 240px;
+    max-width: 360px;
+
+    padding: 14px 17px;
+
+    display: flex;
+    align-items: center;
+    gap: 11px;
+
+    background: #ffffff;
+    color: #17365f;
+
+    border: 1px solid #dfe8f2;
+    border-radius: 11px;
+
+    box-shadow:
+        0 12px 32px rgba(20, 55, 95, 0.14);
+
+    opacity: 0;
+
+    transform: translateY(15px);
+
+    pointer-events: none;
+
+    transition:
+        opacity 0.22s ease,
+        transform 0.22s ease;
+}
+
+
+.twtms-connection-toast.show {
+    opacity: 1;
+
+    transform: translateY(0);
+}
+
+
+.twtms-connection-toast-icon {
+    width: 32px;
+    height: 32px;
+
+    flex: 0 0 32px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #eaf8f2;
+    color: #15966a;
+
+    border-radius: 50%;
+}
+
+
+.twtms-connection-toast strong {
+    display: block;
+
+    font-size: 11px;
+    font-weight: 700;
+}
+
+
+.twtms-connection-toast span {
+    display: block;
+
+    margin-top: 2px;
+
+    color: #7d91ad;
+
+    font-size: 9px;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 600px) {
+
+    .twtms-loader {
+        padding: 18px;
+    }
+
+
+    .twtms-loader-card {
+        max-width: 340px;
+
+        padding: 30px 22px;
+    }
+
+
+    .twtms-loader-title {
+        font-size: 17px;
+    }
+
+
+    .twtms-connection-toast {
+        left: 16px;
+        right: 16px;
+        bottom: 16px;
+
+        min-width: 0;
+        max-width: none;
+    }
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .twtms-loader,
+    .twtms-loader-retry,
+    .twtms-connection-toast {
+        transition: none;
+    }
+
+
+    .twtms-loader-spinner {
+        animation-duration: 1.5s;
+    }
+}

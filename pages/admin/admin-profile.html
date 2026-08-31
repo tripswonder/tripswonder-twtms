@@ -1,0 +1,2610 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="Trips Wonder Travel and Tours - Admin Profile"
+    >
+
+    <title>
+        Admin Profile | Trips Wonder
+    </title>
+
+
+    <!-- =====================================================
+         GOOGLE FONT
+    ====================================================== -->
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+
+    <!-- =====================================================
+         FONT AWESOME
+    ====================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    >
+
+
+    <!-- =====================================================
+         GLOBAL CSS
+    ====================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="../../assets/css/variables.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="../../assets/css/global.css"
+    >
+
+
+    <!-- =====================================================
+         ADMIN PROFILE CSS
+    ====================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="../../assets/css/admin/admin-profile/admin-profile.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="../../assets/css/admin/admin-profile/security.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="../../assets/css/admin/admin-profile/page-setup.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="../../assets/css/admin/admin-profile/page-access.css"
+    >
+
+</head>
+
+
+<body>
+
+
+    <!-- =====================================================
+         ADMIN PROFILE PAGE
+    ====================================================== -->
+
+    <div class="admin-profile-page">
+
+
+        <!-- =================================================
+             SIDEBAR
+        ================================================== -->
+
+        <aside class="settings-sidebar">
+
+
+            <!-- SIDEBAR HEADER -->
+
+            <div class="settings-sidebar-header">
+
+                <h1>
+                    ADMIN PROFILE
+                </h1>
+
+                <p>
+                    Manage your account and system settings
+                </p>
+
+            </div>
+
+
+            <!-- SETTINGS NAVIGATION -->
+
+            <nav
+                class="settings-navigation"
+                aria-label="Admin Profile Settings"
+            >
+
+
+                <!-- MY PROFILE -->
+
+                <button
+                    type="button"
+                    class="settings-nav-item active"
+                    data-settings-section="profile"
+                >
+
+                    <span class="settings-nav-icon">
+
+                        <i class="fa-regular fa-user"></i>
+
+                    </span>
+
+                    <span class="settings-nav-content">
+
+                        <strong>
+                            My Profile
+                        </strong>
+
+                        <small>
+                            Profile information
+                        </small>
+
+                    </span>
+
+                </button>
+
+
+                <!-- SECURITY -->
+
+                <button
+                    type="button"
+                    class="settings-nav-item"
+                    data-settings-section="security"
+                >
+
+                    <span class="settings-nav-icon">
+
+                        <i class="fa-solid fa-shield-halved"></i>
+
+                    </span>
+
+                    <span class="settings-nav-content">
+
+                        <strong>
+                            Security
+                        </strong>
+
+                        <small>
+                            Email and password
+                        </small>
+
+                    </span>
+
+                </button>
+
+
+                <!-- PAGE SETUP -->
+
+                <button
+                    type="button"
+                    class="settings-nav-item"
+                    data-settings-section="page-setup"
+                >
+
+                    <span class="settings-nav-icon">
+
+                        <i class="fa-solid fa-gear"></i>
+
+                    </span>
+
+                    <span class="settings-nav-content">
+
+                        <strong>
+                            Page Setup
+                        </strong>
+
+                        <small>
+                            Business information
+                        </small>
+
+                    </span>
+
+                </button>
+
+
+                <!-- PAGE ACCESS -->
+
+                <button
+                    type="button"
+                    class="settings-nav-item"
+                    data-settings-section="page-access"
+                >
+
+                    <span class="settings-nav-icon">
+
+                        <i class="fa-solid fa-lock"></i>
+
+                    </span>
+
+                    <span class="settings-nav-content">
+
+                        <strong>
+                            Page Access
+                        </strong>
+
+                        <small>
+                            Manage permissions
+                        </small>
+
+                    </span>
+
+                </button>
+
+
+                <!-- LEGAL & POLICIES -->
+
+                <button
+                    type="button"
+                    class="settings-nav-item"
+                    data-settings-section="legal"
+                >
+
+                    <span class="settings-nav-icon">
+
+                        <i class="fa-regular fa-file-lines"></i>
+
+                    </span>
+
+                    <span class="settings-nav-content">
+
+                        <strong>
+                            Legal &amp; Policies
+                        </strong>
+
+                        <small>
+                            Terms and policies
+                        </small>
+
+                    </span>
+
+                </button>
+
+
+                <!-- SYSTEM SETTINGS -->
+
+                <button
+                    type="button"
+                    class="settings-nav-item"
+                    data-settings-section="system"
+                >
+
+                    <span class="settings-nav-icon">
+
+                        <i class="fa-solid fa-sliders"></i>
+
+                    </span>
+
+                    <span class="settings-nav-content">
+
+                        <strong>
+                            System Settings
+                        </strong>
+
+                        <small>
+                            System configuration
+                        </small>
+
+                    </span>
+
+                </button>
+
+
+                <!-- ACCOUNT ACTIVITY -->
+
+                <button
+                    type="button"
+                    class="settings-nav-item"
+                    data-settings-section="activity"
+                >
+
+                    <span class="settings-nav-icon">
+
+                        <i class="fa-regular fa-clock"></i>
+
+                    </span>
+
+                    <span class="settings-nav-content">
+
+                        <strong>
+                            Account Activity
+                        </strong>
+
+                        <small>
+                            Login and activity logs
+                        </small>
+
+                    </span>
+
+                </button>
+
+
+            </nav>
+
+        </aside>
+
+
+
+        <!-- =================================================
+             MAIN CONTENT
+        ================================================== -->
+
+        <main class="settings-main">
+
+
+            <!-- BACK BUTTON -->
+
+            <div class="admin-profile-back">
+
+                <button
+                    type="button"
+                    id="adminProfileBackButton"
+                    class="back-button"
+                >
+
+                    <i class="fa-solid fa-arrow-left"></i>
+
+                    <span>
+                        Back
+                    </span>
+
+                </button>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 MY PROFILE
+            ================================================== -->
+
+            <section
+                class="settings-section"
+                id="profileSection"
+                data-settings-section="profile"
+            >
+
+
+                <div class="section-heading">
+
+                    <h2>
+                        My Profile
+                    </h2>
+
+                    <p>
+                        Manage your personal account information
+                        and administrator profile.
+                    </p>
+
+                </div>
+
+
+
+                <!-- PROFILE CARD -->
+
+                <div class="profile-card">
+
+
+                    <div class="profile-card-content">
+
+
+                        <!-- PROFILE PHOTO -->
+
+                        <div class="profile-photo-area">
+
+                            <div class="profile-photo-wrapper">
+
+                                <img
+                                    src="../../assets/images/logo.png"
+                                    alt="Admin Profile Photo"
+                                    id="profilePhoto"
+                                    class="profile-photo"
+                                >
+
+                            </div>
+
+
+                            <button
+                                type="button"
+                                id="changePhotoButton"
+                                class="change-photo-button"
+                            >
+
+                                <i class="fa-regular fa-image"></i>
+
+                                Change Photo
+
+                            </button>
+
+
+                            <p class="photo-note">
+
+                                JPG, PNG or WEBP.
+                                Maximum 2MB.
+
+                            </p>
+
+
+                            <input
+                                type="file"
+                                id="profilePhotoInput"
+                                accept="image/jpeg,image/png,image/webp"
+                                hidden
+                            >
+
+                        </div>
+
+
+
+                        <!-- PROFILE FORM -->
+
+                        <form
+                            id="profileForm"
+                            class="profile-form"
+                            autocomplete="off"
+                        >
+
+                            <!-- FIRST NAME -->
+
+                            <div class="form-field">
+
+                                <label for="firstName">
+
+                                    First Name
+
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="firstName"
+                                    name="firstName"
+                                    placeholder="First name"
+                                    autocomplete="given-name"
+                                    required
+                                >
+
+                            </div>
+
+
+
+                            <!-- LAST NAME -->
+
+                            <div class="form-field">
+
+                                <label for="lastName">
+
+                                    Last Name
+
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="lastName"
+                                    name="lastName"
+                                    placeholder="Last name"
+                                    autocomplete="family-name"
+                                    required
+                                >
+
+                            </div>
+
+
+
+                            <!-- EMAIL -->
+
+                            <div class="form-field">
+
+                                <label for="email">
+
+                                    Email Address
+
+                                </label>
+
+                                <input
+                                    type="email"
+                                    id="email"
+                                    name="email"
+                                    placeholder="Loading..."
+                                    autocomplete="email"
+                                    readonly
+                                >
+
+                                <small>
+
+                                    To change your email address,
+                                    go to Security.
+
+                                </small>
+
+                            </div>
+
+
+
+                            <!-- CONTACT NUMBER -->
+
+                            <div class="form-field">
+
+                                <label for="contactNumber">
+
+                                    Contact Number
+
+                                </label>
+
+                                <input
+                                    type="tel"
+                                    id="contactNumber"
+                                    name="contactNumber"
+                                    placeholder="Enter contact number"
+                                    autocomplete="tel"
+                                >
+
+                            </div>
+
+
+
+                            <!-- ROLE -->
+
+                            <div class="form-field">
+
+                                <label>
+
+                                    Role
+
+                                </label>
+
+                                <div
+                                    class="profile-readonly-value"
+                                    id="role"
+                                >
+
+                                    Loading...
+
+                                </div>
+
+                            </div>
+
+
+
+                            <!-- ACCOUNT STATUS -->
+
+                            <div class="form-field">
+
+                                <label>
+
+                                    Account Status
+
+                                </label>
+
+                                <div
+                                    class="profile-readonly-value"
+                                    id="accountStatus"
+                                >
+
+                                    Loading...
+
+                                </div>
+
+                            </div>
+
+
+
+                            <!-- ACCOUNT CREATED -->
+
+                            <div class="form-field">
+
+                                <label>
+
+                                    Account Created
+
+                                </label>
+
+                                <div
+                                    class="profile-readonly-value"
+                                    id="accountCreated"
+                                >
+
+                                    Loading...
+
+                                </div>
+
+                            </div>
+
+
+
+                            <!-- ACCOUNT ID -->
+
+                            <div class="form-field">
+
+                                <label>
+
+                                    Account ID
+
+                                </label>
+
+                                <div
+                                    class="profile-readonly-value profile-account-id"
+                                    id="accountId"
+                                >
+
+                                    Loading...
+
+                                </div>
+
+                            </div>
+
+
+                        </form>
+
+
+                    </div>
+
+
+
+                    <!-- PROFILE FOOTER -->
+
+                    <div class="profile-card-footer">
+
+                        <button
+                            type="submit"
+                            form="profileForm"
+                            id="saveChangesButton"
+                            class="save-button"
+                        >
+
+                            <i class="fa-solid fa-check"></i>
+
+                            <span>
+                                Save Changes
+                            </span>
+
+                        </button>
+
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- =================================================
+                     CONNECTED ACCOUNT
+                ================================================== -->
+
+                <div class="connected-accounts-card">
+
+
+                    <div class="connected-header">
+
+                        <h3>
+                            Connected Account
+                        </h3>
+
+                        <p>
+                            Firebase Authentication account
+                            currently signed in.
+                        </p>
+
+                    </div>
+
+
+
+                    <div class="connected-account">
+
+
+                        <div class="connected-account-left">
+
+
+                            <div class="facebook-icon">
+
+                                <i class="fa-solid fa-shield-halved"></i>
+
+                            </div>
+
+
+                            <div class="connected-account-info">
+
+                                <strong>
+                                    Firebase Authentication
+                                </strong>
+
+                                <span id="connectedAccountEmail">
+
+                                    Checking account...
+
+                                </span>
+
+                            </div>
+
+
+                        </div>
+
+
+
+                        <div class="connected-account-right">
+
+                            <span class="connected-badge">
+
+                                Connected
+
+                            </span>
+
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+
+            </section>
+
+
+
+            <!-- =================================================
+                 SECURITY
+            ================================================== -->
+
+            <!-- =====================================================
+     SECURITY SECTION
+====================================================== -->
+
+<section
+    class="settings-section"
+    data-settings-section="security"
+    id="securitySection">
+
+
+    <!-- SECURITY HEADER -->
+
+    <div class="section-header">
+
+        <div class="section-header-icon">
+
+            <i class="fa-solid fa-shield-halved"></i>
+
+        </div>
+
+        <div>
+
+            <h2>
+                Security
+            </h2>
+
+            <p>
+                Manage your account email, password,
+                and security preferences.
+            </p>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =================================================
+         SECURITY STATUS
+    ================================================== -->
+
+    <div class="security-status-card">
+
+        <div class="security-status-icon">
+
+            <i class="fa-solid fa-shield-check"></i>
+
+        </div>
+
+
+        <div class="security-status-content">
+
+            <strong>
+                Account Security
+            </strong>
+
+            <span>
+                Your account is protected by
+                Firebase Authentication.
+            </span>
+
+        </div>
+
+
+        <div
+            class="security-status-badge"
+            id="securityStatus">
+
+            Secure
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =================================================
+         CHANGE EMAIL ADDRESS
+    ================================================== -->
+
+    <div class="security-card">
+
+        <div class="security-card-header">
+
+            <div>
+
+                <h3>
+                    Change Email Address
+                </h3>
+
+                <p>
+                    Update the email address used
+                    to sign in to your account.
+                </p>
+
+            </div>
+
+            <i class="fa-regular fa-envelope"></i>
+
+        </div>
+
+
+        <form
+            id="securityEmailForm"
+            autocomplete="off">
+
+
+            <!-- CURRENT EMAIL -->
+
+            <div class="security-field">
+
+                <label for="currentEmail">
+                    Current Email Address
+                </label>
+
+                <div class="security-input-wrapper">
+
+                    <i class="fa-regular fa-envelope"></i>
+
+                    <input
+                        type="email"
+                        id="currentEmail"
+                        name="currentEmail"
+                        readonly
+                        placeholder="Loading...">
+
+                </div>
+
+            </div>
+
+
+            <!-- CURRENT PASSWORD -->
+
+            <div class="security-field">
+
+                <label for="emailCurrentPassword">
+                    Current Password
+                </label>
+
+                <div class="security-input-wrapper">
+
+                    <i class="fa-solid fa-lock"></i>
+
+                    <input
+                        type="password"
+                        id="emailCurrentPassword"
+                        name="emailCurrentPassword"
+                        autocomplete="current-password"
+                        placeholder="Enter your current password">
+
+                    <button
+                        type="button"
+                        class="security-password-toggle"
+                        data-target="emailCurrentPassword"
+                        aria-label="Show password">
+
+                        <i class="fa-regular fa-eye"></i>
+
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- NEW EMAIL -->
+
+            <div class="security-field">
+
+                <label for="newEmail">
+                    New Email Address
+                </label>
+
+                <div class="security-input-wrapper">
+
+                    <i class="fa-regular fa-envelope"></i>
+
+                    <input
+                        type="email"
+                        id="newEmail"
+                        name="newEmail"
+                        autocomplete="email"
+                        placeholder="Enter your new email address">
+
+                </div>
+
+            </div>
+
+
+            <!-- CONFIRM EMAIL -->
+
+            <div class="security-field">
+
+                <label for="confirmEmail">
+                    Confirm New Email Address
+                </label>
+
+                <div class="security-input-wrapper">
+
+                    <i class="fa-regular fa-envelope"></i>
+
+                    <input
+                        type="email"
+                        id="confirmEmail"
+                        name="confirmEmail"
+                        autocomplete="email"
+                        placeholder="Re-enter your new email address">
+
+                </div>
+
+            </div>
+
+
+            <!-- EMAIL ACTION -->
+
+            <div class="security-card-actions">
+
+                <button
+                    type="submit"
+                    class="security-primary-button"
+                    id="changeEmailButton">
+
+                    <i class="fa-solid fa-envelope-circle-check"></i>
+
+                    <span>
+                        Change Email Address
+                    </span>
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+
+
+    <!-- =================================================
+         CHANGE PASSWORD
+    ================================================== -->
+
+    <div class="security-card">
+
+        <div class="security-card-header">
+
+            <div>
+
+                <h3>
+                    Change Password
+                </h3>
+
+                <p>
+                    Create a strong password to protect
+                    your Trips Wonder account.
+                </p>
+
+            </div>
+
+            <i class="fa-solid fa-key"></i>
+
+        </div>
+
+
+        <form
+            id="securityPasswordForm"
+            autocomplete="off">
+
+
+            <!-- CURRENT PASSWORD -->
+
+            <div class="security-field">
+
+                <label for="currentPassword">
+                    Current Password
+                </label>
+
+                <div class="security-input-wrapper">
+
+                    <i class="fa-solid fa-lock"></i>
+
+                    <input
+                        type="password"
+                        id="currentPassword"
+                        name="currentPassword"
+                        autocomplete="current-password"
+                        placeholder="Enter your current password">
+
+                    <button
+                        type="button"
+                        class="security-password-toggle"
+                        data-target="currentPassword"
+                        aria-label="Show password">
+
+                        <i class="fa-regular fa-eye"></i>
+
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- NEW PASSWORD -->
+
+            <div class="security-field">
+
+                <label for="newPassword">
+                    New Password
+                </label>
+
+                <div class="security-input-wrapper">
+
+                    <i class="fa-solid fa-lock"></i>
+
+                    <input
+                        type="password"
+                        id="newPassword"
+                        name="newPassword"
+                        autocomplete="new-password"
+                        placeholder="Enter your new password">
+
+                    <button
+                        type="button"
+                        class="security-password-toggle"
+                        data-target="newPassword"
+                        aria-label="Show password">
+
+                        <i class="fa-regular fa-eye"></i>
+
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- PASSWORD REQUIREMENTS -->
+
+            <div class="password-requirements">
+
+                <div class="requirements-title">
+
+                    Password must contain:
+
+                </div>
+
+
+                <div
+                    class="password-requirement"
+                    id="requirementLength">
+
+                    <i class="fa-regular fa-circle"></i>
+
+                    <span>
+                        At least 8 characters
+                    </span>
+
+                </div>
+
+
+                <div
+                    class="password-requirement"
+                    id="requirementUppercase">
+
+                    <i class="fa-regular fa-circle"></i>
+
+                    <span>
+                        At least one uppercase letter
+                    </span>
+
+                </div>
+
+
+                <div
+                    class="password-requirement"
+                    id="requirementLowercase">
+
+                    <i class="fa-regular fa-circle"></i>
+
+                    <span>
+                        At least one lowercase letter
+                    </span>
+
+                </div>
+
+
+                <div
+                    class="password-requirement"
+                    id="requirementNumber">
+
+                    <i class="fa-regular fa-circle"></i>
+
+                    <span>
+                        At least one number
+                    </span>
+
+                </div>
+
+
+                <div
+                    class="password-requirement"
+                    id="requirementSpecial">
+
+                    <i class="fa-regular fa-circle"></i>
+
+                    <span>
+                        At least one special character
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- CONFIRM PASSWORD -->
+
+            <div class="security-field">
+
+                <label for="confirmPassword">
+                    Confirm New Password
+                </label>
+
+                <div class="security-input-wrapper">
+
+                    <i class="fa-solid fa-lock"></i>
+
+                    <input
+                        type="password"
+                        id="confirmPassword"
+                        name="confirmPassword"
+                        autocomplete="new-password"
+                        placeholder="Re-enter your new password">
+
+                    <button
+                        type="button"
+                        class="security-password-toggle"
+                        data-target="confirmPassword"
+                        aria-label="Show password">
+
+                        <i class="fa-regular fa-eye"></i>
+
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- PASSWORD ACTION -->
+
+            <div class="security-card-actions">
+
+                <button
+                    type="submit"
+                    class="security-primary-button"
+                    id="changePasswordButton">
+
+                    <i class="fa-solid fa-key"></i>
+
+                    <span>
+                        Change Password
+                    </span>
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+
+
+    <!-- =================================================
+         SECURITY INFORMATION
+    ================================================== -->
+
+    <div class="security-info-card">
+
+        <div class="security-info-icon">
+
+            <i class="fa-solid fa-circle-info"></i>
+
+        </div>
+
+
+        <div>
+
+            <h3>
+                Security Reminder
+            </h3>
+
+            <p>
+                Never share your password with anyone.
+                Trips Wonder will never ask you to send
+                your password through Messenger, email,
+                or other communication channels.
+            </p>
+
+        </div>
+
+    </div>
+
+
+</section>
+
+
+            <!-- =================================================
+                 PAGE SETUP
+            ================================================== -->
+
+            <section
+                class="settings-section"
+                id="pageSetupSection"
+                data-settings-section="page-setup"
+                hidden
+            >
+
+                <div class="section-heading">
+
+                    <h2>
+                        Page Setup
+                    </h2>
+
+                    <p>
+                        Manage your business and website information.
+                    </p>
+
+                </div>
+
+
+                <div class="page-setup-page">
+
+                    <!--
+                        PAGE SETUP CONTENT IS CONTROLLED
+                        BY page-setup.js
+                    -->
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 PAGE ACCESS
+            ================================================== -->
+
+            <!-- =================================================
+     PAGE ACCESS
+================================================== -->
+
+<section
+    class="settings-section"
+    id="pageAccessSection"
+    data-settings-section="page-access"
+    hidden
+>
+
+    <div class="section-heading">
+
+        <h2>
+            Page Access
+        </h2>
+
+        <p>
+            Manage administrator accounts and control
+            their access to system modules.
+        </p>
+
+    </div>
+
+
+    <!-- =================================================
+         ADMIN ACCOUNTS CARD
+    ================================================== -->
+
+    <div class="page-access-card">
+
+        <div class="page-access-header">
+
+            <div>
+
+                <h3>
+                    Admin Accounts
+                </h3>
+
+                <p>
+                    Create and manage administrator accounts
+                    and their assigned system access.
+                </p>
+
+            </div>
+
+
+            <button
+                type="button"
+                id="addAdminButton"
+                class="page-access-primary-button"
+            >
+
+                <i class="fa-solid fa-plus"></i>
+
+                <span>
+                    Add Admin
+                </span>
+
+            </button>
+
+        </div>
+
+
+        <!-- =================================================
+             ADMIN ACCOUNTS LIST
+        ================================================== -->
+
+        <div
+            id="adminAccountsList"
+            class="admin-accounts-list"
+        >
+
+            <!-- ADMIN ACCOUNT ITEMS
+                 Will be loaded by page-access.js -->
+
+            <div
+                class="admin-accounts-empty"
+                id="adminAccountsEmpty"
+            >
+
+                <div class="admin-accounts-empty-icon">
+
+                    <i class="fa-solid fa-user-shield"></i>
+
+                </div>
+
+                <strong>
+                    No administrator accounts
+                </strong>
+
+                <span>
+                    Create an administrator account to
+                    manage access to your system.
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =================================================
+         CREATE ADMIN ACCOUNT
+    ================================================== -->
+
+    <div
+        class="page-access-card admin-form-card"
+        id="adminFormCard"
+        hidden
+    >
+
+        <div class="page-access-card-header">
+
+            <div>
+
+                <h3>
+                    Create Admin Account
+                </h3>
+
+                <p>
+                    Create a new administrator and choose
+                    which modules they can access.
+                </p>
+
+            </div>
+
+
+            <button
+                type="button"
+                id="closeAdminFormButton"
+                class="page-access-close-button"
+                aria-label="Close"
+            >
+
+                <i class="fa-solid fa-xmark"></i>
+
+            </button>
+
+        </div>
+
+
+        <form
+            id="adminAccountForm"
+            class="admin-account-form"
+            autocomplete="off"
+        >
+
+            <!-- =================================================
+                 PERSONAL INFORMATION
+            ================================================== -->
+
+            <div class="page-access-form-section">
+
+                <div class="page-access-form-title">
+
+                    <i class="fa-regular fa-user"></i>
+
+                    <div>
+
+                        <strong>
+                            Administrator Information
+                        </strong>
+
+                        <span>
+                            Basic information for the
+                            administrator account.
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="page-access-form-grid">
+
+                    <!-- FIRST NAME -->
+
+                    <div class="page-access-field">
+
+                        <label for="adminFirstName">
+                            First Name
+                        </label>
+
+                        <input
+                            type="text"
+                            id="adminFirstName"
+                            name="adminFirstName"
+                            placeholder="First name"
+                            autocomplete="given-name"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- LAST NAME -->
+
+                    <div class="page-access-field">
+
+                        <label for="adminLastName">
+                            Last Name
+                        </label>
+
+                        <input
+                            type="text"
+                            id="adminLastName"
+                            name="adminLastName"
+                            placeholder="Last name"
+                            autocomplete="family-name"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- EMAIL -->
+
+                    <div class="page-access-field">
+
+                        <label for="adminEmail">
+                            Email Address
+                        </label>
+
+                        <input
+                            type="email"
+                            id="adminEmail"
+                            name="adminEmail"
+                            placeholder="admin@email.com"
+                            autocomplete="email"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- CONTACT NUMBER -->
+
+                    <div class="page-access-field">
+
+                        <label for="adminContactNumber">
+                            Contact Number
+                        </label>
+
+                        <input
+                            type="tel"
+                            id="adminContactNumber"
+                            name="adminContactNumber"
+                            placeholder="09XXXXXXXXX"
+                            autocomplete="tel"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 ACCOUNT INFORMATION
+            ================================================== -->
+
+            <div class="page-access-form-section">
+
+                <div class="page-access-form-title">
+
+                    <i class="fa-solid fa-user-lock"></i>
+
+                    <div>
+
+                        <strong>
+                            Account Information
+                        </strong>
+
+                        <span>
+                            Set the initial account status
+                            and temporary password.
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="page-access-form-grid">
+
+                    <!-- ROLE -->
+
+                    <div class="page-access-field">
+
+                        <label for="adminRole">
+                            Role
+                        </label>
+
+                        <select
+                            id="adminRole"
+                            name="adminRole"
+                            disabled
+                        >
+
+                            <option value="admin">
+                                Admin
+                            </option>
+
+                        </select>
+
+                        <small>
+                            Administrator accounts are
+                            always assigned the Admin role.
+                        </small>
+
+                    </div>
+
+
+                    <!-- STATUS -->
+
+                    <div class="page-access-field">
+
+                        <label for="adminStatus">
+                            Account Status
+                        </label>
+
+                        <select
+                            id="adminStatus"
+                            name="adminStatus"
+                        >
+
+                            <option value="active">
+                                Active
+                            </option>
+
+                            <option value="inactive">
+                                Inactive
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- TEMPORARY PASSWORD -->
+
+                    <div
+                        class="page-access-field page-access-field-full"
+                    >
+
+                        <label for="adminTemporaryPassword">
+                            Temporary Password
+                        </label>
+
+                        <div class="page-access-password">
+
+                            <input
+                                type="password"
+                                id="adminTemporaryPassword"
+                                name="adminTemporaryPassword"
+                                placeholder="Create temporary password"
+                                autocomplete="new-password"
+                                required
+                            >
+
+                            <button
+                                type="button"
+                                id="toggleAdminPassword"
+                                class="page-access-password-toggle"
+                                aria-label="Show password"
+                            >
+
+                                <i class="fa-regular fa-eye"></i>
+
+                            </button>
+
+                        </div>
+
+
+                        <small>
+                            The administrator should change this
+                            password after the first login.
+                        </small>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 MODULE ACCESS
+            ================================================== -->
+
+            <div class="page-access-form-section">
+
+                <div class="page-access-form-title">
+
+                    <i class="fa-solid fa-layer-group"></i>
+
+                    <div>
+
+                        <strong>
+                            Module Access
+                        </strong>
+
+                        <span>
+                            Select which operational modules
+                            this administrator can access.
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    class="module-access-list"
+                    id="moduleAccessList"
+                >
+
+
+                    <!-- DASHBOARD -->
+
+                    <label class="module-access-item">
+
+                        <div class="module-access-info">
+
+                            <span class="module-access-icon">
+                                <i class="fa-solid fa-chart-line"></i>
+                            </span>
+
+                            <span class="module-access-text">
+
+                                <strong>
+                                    Dashboard
+                                </strong>
+
+                                <small>
+                                    View the main dashboard
+                                </small>
+
+                            </span>
+
+                        </div>
+
+
+                        <input
+                            type="checkbox"
+                            name="moduleAccess"
+                            value="dashboard"
+                            data-module="dashboard"
+                        >
+
+                        <span class="module-access-check">
+                            <i class="fa-solid fa-check"></i>
+                        </span>
+
+                    </label>
+
+
+
+                    <!-- BOOKINGS -->
+
+                    <label class="module-access-item">
+
+                        <div class="module-access-info">
+
+                            <span class="module-access-icon">
+                                <i class="fa-solid fa-calendar-check"></i>
+                            </span>
+
+                            <span class="module-access-text">
+
+                                <strong>
+                                    Bookings
+                                </strong>
+
+                                <small>
+                                    Manage customer bookings
+                                </small>
+
+                            </span>
+
+                        </div>
+
+
+                        <input
+                            type="checkbox"
+                            name="moduleAccess"
+                            value="bookings"
+                            data-module="bookings"
+                        >
+
+                        <span class="module-access-check">
+                            <i class="fa-solid fa-check"></i>
+                        </span>
+
+                    </label>
+
+
+
+                    <!-- PACKAGES -->
+
+                    <label class="module-access-item">
+
+                        <div class="module-access-info">
+
+                            <span class="module-access-icon">
+                                <i class="fa-solid fa-suitcase-rolling"></i>
+                            </span>
+
+                            <span class="module-access-text">
+
+                                <strong>
+                                    Packages
+                                </strong>
+
+                                <small>
+                                    Manage tour packages
+                                </small>
+
+                            </span>
+
+                        </div>
+
+
+                        <input
+                            type="checkbox"
+                            name="moduleAccess"
+                            value="packages"
+                            data-module="packages"
+                        >
+
+                        <span class="module-access-check">
+                            <i class="fa-solid fa-check"></i>
+                        </span>
+
+                    </label>
+
+
+
+                    <!-- PAYMENTS -->
+
+                    <label class="module-access-item">
+
+                        <div class="module-access-info">
+
+                            <span class="module-access-icon">
+                                <i class="fa-solid fa-money-bill-wave"></i>
+                            </span>
+
+                            <span class="module-access-text">
+
+                                <strong>
+                                    Payments
+                                </strong>
+
+                                <small>
+                                    Manage customer payments
+                                </small>
+
+                            </span>
+
+                        </div>
+
+
+                        <input
+                            type="checkbox"
+                            name="moduleAccess"
+                            value="payments"
+                            data-module="payments"
+                        >
+
+                        <span class="module-access-check">
+                            <i class="fa-solid fa-check"></i>
+                        </span>
+
+                    </label>
+
+
+
+                    <!-- INVOICES -->
+
+                    <label class="module-access-item">
+
+                        <div class="module-access-info">
+
+                            <span class="module-access-icon">
+                                <i class="fa-solid fa-file-invoice"></i>
+                            </span>
+
+                            <span class="module-access-text">
+
+                                <strong>
+                                    Invoices
+                                </strong>
+
+                                <small>
+                                    Create and manage invoices
+                                </small>
+
+                            </span>
+
+                        </div>
+
+
+                        <input
+                            type="checkbox"
+                            name="moduleAccess"
+                            value="invoices"
+                            data-module="invoices"
+                        >
+
+                        <span class="module-access-check">
+                            <i class="fa-solid fa-check"></i>
+                        </span>
+
+                    </label>
+
+
+
+                    <!-- RESORT BOOKINGS -->
+
+                    <label class="module-access-item">
+
+                        <div class="module-access-info">
+
+                            <span class="module-access-icon">
+                                <i class="fa-solid fa-hotel"></i>
+                            </span>
+
+                            <span class="module-access-text">
+
+                                <strong>
+                                    Resort Bookings
+                                </strong>
+
+                                <small>
+                                    Manage resort reservations
+                                </small>
+
+                            </span>
+
+                        </div>
+
+
+                        <input
+                            type="checkbox"
+                            name="moduleAccess"
+                            value="resortBookings"
+                            data-module="resortBookings"
+                        >
+
+                        <span class="module-access-check">
+                            <i class="fa-solid fa-check"></i>
+                        </span>
+
+                    </label>
+
+
+
+                    <!-- CUSTOMERS -->
+
+                    <label class="module-access-item">
+
+                        <div class="module-access-info">
+
+                            <span class="module-access-icon">
+                                <i class="fa-solid fa-users"></i>
+                            </span>
+
+                            <span class="module-access-text">
+
+                                <strong>
+                                    Customers
+                                </strong>
+
+                                <small>
+                                    Manage customer information
+                                </small>
+
+                            </span>
+
+                        </div>
+
+
+                        <input
+                            type="checkbox"
+                            name="moduleAccess"
+                            value="customers"
+                            data-module="customers"
+                        >
+
+                        <span class="module-access-check">
+                            <i class="fa-solid fa-check"></i>
+                        </span>
+
+                    </label>
+
+
+
+                    <!-- REPORTS -->
+
+                    <label class="module-access-item">
+
+                        <div class="module-access-info">
+
+                            <span class="module-access-icon">
+                                <i class="fa-solid fa-chart-pie"></i>
+                            </span>
+
+                            <span class="module-access-text">
+
+                                <strong>
+                                    Reports
+                                </strong>
+
+                                <small>
+                                    View reports and analytics
+                                </small>
+
+                            </span>
+
+                        </div>
+
+
+                        <input
+                            type="checkbox"
+                            name="moduleAccess"
+                            value="reports"
+                            data-module="reports"
+                        >
+
+                        <span class="module-access-check">
+                            <i class="fa-solid fa-check"></i>
+                        </span>
+
+                    </label>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 OWNER ONLY MODULES
+            ================================================== -->
+
+            <div class="page-access-form-section">
+
+                <div class="page-access-form-title">
+
+                    <i class="fa-solid fa-shield-halved"></i>
+
+                    <div>
+
+                        <strong>
+                            Owner-Only Access
+                        </strong>
+
+                        <span>
+                            These sections are restricted to
+                            the Owner and cannot be assigned
+                            to Admin accounts.
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="owner-only-list">
+
+
+                    <div class="owner-only-item">
+
+                        <div class="owner-only-info">
+
+                            <span class="owner-only-icon">
+                                <i class="fa-solid fa-lock"></i>
+                            </span>
+
+                            <div>
+
+                                <strong>
+                                    Page Access
+                                </strong>
+
+                                <small>
+                                    Administrator account management
+                                </small>
+
+                            </div>
+
+                        </div>
+
+
+                        <span class="owner-only-badge">
+                            Owner Only
+                        </span>
+
+                    </div>
+
+
+
+                    <div class="owner-only-item">
+
+                        <div class="owner-only-info">
+
+                            <span class="owner-only-icon">
+                                <i class="fa-solid fa-lock"></i>
+                            </span>
+
+                            <div>
+
+                                <strong>
+                                    Page Setup
+                                </strong>
+
+                                <small>
+                                    Business and website information
+                                </small>
+
+                            </div>
+
+                        </div>
+
+
+                        <span class="owner-only-badge">
+                            Owner Only
+                        </span>
+
+                    </div>
+
+
+
+                    <div class="owner-only-item">
+
+                        <div class="owner-only-info">
+
+                            <span class="owner-only-icon">
+                                <i class="fa-solid fa-lock"></i>
+                            </span>
+
+                            <div>
+
+                                <strong>
+                                    Legal &amp; Policies
+                                </strong>
+
+                                <small>
+                                    Company legal documents and policies
+                                </small>
+
+                            </div>
+
+                        </div>
+
+
+                        <span class="owner-only-badge">
+                            Owner Only
+                        </span>
+
+                    </div>
+
+
+
+                    <div class="owner-only-item">
+
+                        <div class="owner-only-info">
+
+                            <span class="owner-only-icon">
+                                <i class="fa-solid fa-lock"></i>
+                            </span>
+
+                            <div>
+
+                                <strong>
+                                    System Settings
+                                </strong>
+
+                                <small>
+                                    Global system configuration
+                                </small>
+
+                            </div>
+
+                        </div>
+
+
+                        <span class="owner-only-badge">
+                            Owner Only
+                        </span>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 FORM MESSAGE
+            ================================================== -->
+
+            <div
+                id="pageAccessMessage"
+                class="page-access-message"
+                hidden
+                role="status"
+                aria-live="polite"
+            ></div>
+
+
+
+            <!-- =================================================
+                 FORM ACTIONS
+            ================================================== -->
+
+            <div class="page-access-form-actions">
+
+                <button
+                    type="button"
+                    id="cancelAdminButton"
+                    class="page-access-secondary-button"
+                >
+
+                    Cancel
+
+                </button>
+
+
+                <button
+                    type="submit"
+                    id="createAdminButton"
+                    class="page-access-primary-button"
+                >
+
+                    <i class="fa-solid fa-user-plus"></i>
+
+                    <span>
+                        Create Admin
+                    </span>
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</section>
+
+            <!-- =================================================
+                 LEGAL & POLICIES
+            ================================================== -->
+
+            <section
+                class="settings-section"
+                id="legalSection"
+                data-settings-section="legal"
+                hidden
+            >
+
+
+                <div class="section-heading">
+
+                    <h2>
+                        Legal &amp; Policies
+                    </h2>
+
+                    <p>
+                        Manage your business legal documents
+                        and policies.
+                    </p>
+
+                </div>
+
+
+
+                <div class="policy-list">
+
+
+                    <button
+                        type="button"
+                        class="policy-item"
+                    >
+
+                        <div>
+
+                            <strong>
+                                Terms &amp; Conditions
+                            </strong>
+
+                            <span>
+                                Booking terms and conditions
+                            </span>
+
+                        </div>
+
+                        <i class="fa-solid fa-chevron-right"></i>
+
+                    </button>
+
+
+
+                    <button
+                        type="button"
+                        class="policy-item"
+                    >
+
+                        <div>
+
+                            <strong>
+                                Privacy Policy
+                            </strong>
+
+                            <span>
+                                Personal data and privacy policy
+                            </span>
+
+                        </div>
+
+                        <i class="fa-solid fa-chevron-right"></i>
+
+                    </button>
+
+
+
+                    <button
+                        type="button"
+                        class="policy-item"
+                    >
+
+                        <div>
+
+                            <strong>
+                                Booking Policy
+                            </strong>
+
+                            <span>
+                                Reservation and booking rules
+                            </span>
+
+                        </div>
+
+                        <i class="fa-solid fa-chevron-right"></i>
+
+                    </button>
+
+
+
+                    <button
+                        type="button"
+                        class="policy-item"
+                    >
+
+                        <div>
+
+                            <strong>
+                                Cancellation &amp; Rescheduling
+                            </strong>
+
+                            <span>
+                                Cancellation and rescheduling rules
+                            </span>
+
+                        </div>
+
+                        <i class="fa-solid fa-chevron-right"></i>
+
+                    </button>
+
+
+
+                    <button
+                        type="button"
+                        class="policy-item"
+                    >
+
+                        <div>
+
+                            <strong>
+                                Payment &amp; Refund Policy
+                            </strong>
+
+                            <span>
+                                Payment and refund guidelines
+                            </span>
+
+                        </div>
+
+                        <i class="fa-solid fa-chevron-right"></i>
+
+                    </button>
+
+
+
+                    <button
+                        type="button"
+                        class="policy-item"
+                    >
+
+                        <div>
+
+                            <strong>
+                                Travel Waiver
+                            </strong>
+
+                            <span>
+                                Guest travel agreement and waiver
+                            </span>
+
+                        </div>
+
+                        <i class="fa-solid fa-chevron-right"></i>
+
+                    </button>
+
+
+                </div>
+
+
+            </section>
+
+
+
+            <!-- =================================================
+                 SYSTEM SETTINGS
+            ================================================== -->
+
+            <section
+                class="settings-section"
+                id="systemSection"
+                data-settings-section="system"
+                hidden
+            >
+
+
+                <div class="section-heading">
+
+                    <h2>
+                        System Settings
+                    </h2>
+
+                    <p>
+                        Configure system-wide preferences
+                        and administrative options.
+                    </p>
+
+                </div>
+
+
+
+                <div class="settings-content-card">
+
+
+                    <div class="settings-card-icon">
+
+                        <i class="fa-solid fa-sliders"></i>
+
+                    </div>
+
+
+                    <div class="settings-card-body">
+
+                        <h3>
+                            System Configuration
+                        </h3>
+
+                        <p>
+                            Manage currency, date format,
+                            timezone, invoice settings,
+                            booking preferences, and other
+                            system-wide options.
+                        </p>
+
+                    </div>
+
+
+                </div>
+
+
+            </section>
+
+
+
+            <!-- =================================================
+                 ACCOUNT ACTIVITY
+            ================================================== -->
+
+            <section
+                class="settings-section"
+                id="activitySection"
+                data-settings-section="activity"
+                hidden
+            >
+
+
+                <div class="section-heading">
+
+                    <h2>
+                        Account Activity
+                    </h2>
+
+                    <p>
+                        View login history and recent
+                        administrator activity.
+                    </p>
+
+                </div>
+
+
+
+                <div class="activity-card">
+
+
+                    <div class="activity-item">
+
+
+                        <div class="activity-icon">
+
+                            <i class="fa-solid fa-right-to-bracket"></i>
+
+                        </div>
+
+
+                        <div class="activity-details">
+
+                            <strong>
+                                Account Login
+                            </strong>
+
+                            <span>
+                                Administrator account activity
+                            </span>
+
+                        </div>
+
+
+                        <span class="activity-status">
+                            Recent
+                        </span>
+
+
+                    </div>
+
+
+                </div>
+
+
+            </section>
+
+
+        </main>
+
+
+    </div>
+
+
+
+    <!-- =====================================================
+         JAVASCRIPT MODULES
+    ====================================================== -->
+
+    <script
+        type="module"
+        src="../../assets/js/admin/admin-profile/admin-profile.js"
+    ></script>
+
+    <script
+        type="module"
+        src="../../assets/js/admin/admin-profile/security.js"
+    ></script>
+
+    <script
+        type="module"
+        src="../../assets/js/admin/admin-profile/page-setup.js"
+    ></script>
+
+    <script
+        type="module"
+        src="../../assets/js/admin/admin-profile/page-access.js"
+    ></script>
+
+
+</body>
+
+</html>

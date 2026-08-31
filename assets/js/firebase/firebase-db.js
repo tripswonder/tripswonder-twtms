@@ -8,6 +8,7 @@ import {
 
 } from "./firebase-config.js";
 
+
 import {
 
     collection,
@@ -30,7 +31,9 @@ import {
 
     where,
 
-    orderBy
+    orderBy,
+
+    runTransaction
 
 } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
@@ -63,6 +66,8 @@ export {
 
     where,
 
-    orderBy
+    orderBy,
+
+    runTransaction
 
 };

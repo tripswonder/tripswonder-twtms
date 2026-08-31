@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>Package Details | Trips Wonder</title>
+
+    <link
+        rel="stylesheet"
+        href="../../assets/css/shared/global.css">
+
+    <link
+        rel="stylesheet"
+        href="../../assets/css/customer/package-details.css">
+
+</head>
+
+<body>
+
+<main class="package-page">
+
+    <!-- HEADER -->
+
+    <header class="package-header">
+
+        <button
+            class="back-button"
+            onclick="history.back()">
+
+            ←
+
+        </button>
+
+        <h1>Package Details</h1>
+
+        <div class="header-space"></div>
+
+    </header>
+
+
+    <!-- PACKAGE -->
+
+    <section class="package-details">
+
+        <!-- PACKAGE PHOTO GALLERY -->
+
+<div class="package-gallery">
+
+    <div class="package-main-photo">
+
+        <img
+            id="packageMainImage"
+            src=""
+            alt="Package Photo">
+
+        <!-- CATEGORY BADGE -->
+        <span
+            id="packageCategory"
+            class="package-category">
+            Beach Tour
+        </span>
+
+    </div>
+
+    <div
+        class="package-thumbnails"
+        id="packageGallery">
+    </div>
+
+</div>
+
+        <!-- CONTENT -->
+
+        <div class="package-content">
+
+
+
+            <h2 id="packageName">
+                Jomalig Island
+            </h2>
+
+
+            <p
+                id="packageLocation"
+                class="package-location">
+                Quezon, Philippines
+            </p>
+
+
+            <div class="package-price">
+
+                <span>From</span>
+
+                <strong id="packagePrice">
+                    ₱4,699
+                </strong>
+
+            </div>
+
+
+            <div class="package-meta">
+
+                <div>
+                    <strong id="packageDays">
+                        3 Days
+                    </strong>
+
+                    <span>Duration</span>
+                </div>
+
+                <div>
+                    <strong id="packageNights">
+                        2 Nights
+                    </strong>
+
+                    <span>Accommodation</span>
+                </div>
+
+            </div>
+
+
+            <!-- DESCRIPTION -->
+
+            <div class="package-section">
+
+                <h3>About This Tour</h3>
+
+                <p id="packageDescription">
+                    Enjoy a relaxing island getaway with
+                    beautiful beaches and unforgettable
+                    travel experiences.
+                </p>
+
+            </div>
+
+
+            <!-- ======================================================
+     INCLUSIONS
+====================================================== -->
+
+<div class="package-section">
+
+    <h3>Package Inclusions</h3>
+
+    <ul id="packageInclusions"></ul>
+
+</div>
+
+
+<!-- ======================================================
+     EXCLUSIONS
+====================================================== -->
+
+<div class="package-section">
+
+    <h3>Package Exclusions</h3>
+
+    <ul
+        id="packageExclusions"
+        class="package-exclusions">
+    </ul>
+
+</div>
+
+
+<!-- ======================================================
+     ACCOMMODATION
+====================================================== -->
+
+<div class="package-section">
+
+    <h3>Accommodation</h3>
+
+    <div
+        id="packageAccommodations"
+        class="package-accommodations">
+    </div>
+
+</div>
+
+
+            <!-- SCHEDULE -->
+
+            <div class="package-section">
+
+                <h3>Tour Information</h3>
+
+                <div
+                    id="packageSchedule"
+                    class="tour-info">
+                </div>
+
+            </div>
+
+
+            <!-- BOOK -->
+
+            <button
+                id="bookButton"
+                class="book-now-button">
+
+                Book Now
+
+            </button>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<script
+    type="module"
+    src="../../assets/js/customer/package-details.js">
+</script>
+
+</body>
+
+</html>

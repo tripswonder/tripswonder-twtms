@@ -1,0 +1,189 @@
+/* ==========================================================
+   CUSTOMER SHARED BOTTOM NAVIGATION
+   MASTER DESIGN: MY TRIP
+========================================================== */
+
+.bottom-nav {
+
+    position: fixed;
+
+    left: 50%;
+    bottom: 0;
+
+    transform: translateX(-50%);
+
+    width: 100%;
+    max-width: 430px;
+
+    height: 68px;
+
+    padding: 5px 8px 7px;
+
+    display: flex;
+
+    align-items: stretch;
+    justify-content: space-around;
+
+    background: rgba(255, 255, 255, 0.97);
+
+    border-top: 1px solid #e2e8f0;
+
+    box-shadow:
+        0 -4px 15px rgba(16, 35, 79, 0.06);
+
+    backdrop-filter: blur(10px);
+
+    z-index: 100;
+}
+
+
+.bottom-nav-item {
+
+    min-width: 54px;
+
+    flex: 1;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 3px;
+
+    color: #64748b;
+
+    font-size: 9px;
+
+    font-weight: 500;
+
+    position: relative;
+
+    transition:
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+.bottom-icon {
+
+    height: 27px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    font-size: 17px;
+}
+
+
+.bottom-label {
+
+    line-height: 1;
+
+    white-space: nowrap;
+}
+
+
+/* ACTIVE */
+
+.bottom-nav-item.active {
+
+    color: #1264e8;
+
+    font-weight: 700;
+}
+
+
+.bottom-nav-item.active .bottom-icon {
+
+    font-size: 18px;
+
+    transform: translateY(-1px);
+}
+
+
+.bottom-nav-item.active::after {
+
+    content: "";
+
+    position: absolute;
+
+    left: 18px;
+    right: 18px;
+
+    bottom: 0;
+
+    height: 3px;
+
+    background: #1264e8;
+
+    border-radius: 5px 5px 0 0;
+}
+
+
+/* HOVER */
+
+.bottom-nav-item:hover {
+
+    color: #1264e8;
+}
+
+
+/* MOBILE */
+
+@media (max-width: 430px) {
+
+    .bottom-nav {
+
+        max-width: 430px;
+
+        padding-left: 6px;
+        padding-right: 6px;
+
+    }
+
+    .bottom-nav-item {
+
+        min-width: 0;
+
+    }
+
+    .bottom-nav-item.active::after {
+
+        left: 15px;
+        right: 15px;
+
+    }
+
+}
+
+
+/* SMALL MOBILE */
+
+@media (max-width: 360px) {
+
+    .bottom-nav {
+
+        height: 66px;
+
+        padding-left: 3px;
+        padding-right: 3px;
+
+    }
+
+    .bottom-nav-item {
+
+        font-size: 8px;
+
+    }
+
+    .bottom-icon {
+
+        font-size: 16px;
+
+    }
+
+}

@@ -1,1 +1,1197 @@
+<!DOCTYPE html>
+<html lang="en">
 
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="description"
+        content="Trips Wonder Travel Management System Dashboard">
+
+    <title>Dashboard | Trips Wonder</title>
+
+
+    <!-- =====================================================
+         FAVICON
+    ====================================================== -->
+
+    <link
+        rel="icon"
+        type="image/jpeg"
+        href="../../../favicon.jpg">
+
+
+    <!-- =====================================================
+         GOOGLE FONT
+    ====================================================== -->
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com">
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+
+    <!-- =====================================================
+         FONT AWESOME
+    ====================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+
+    <!-- =====================================================
+         DASHBOARD CSS
+    ====================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="../../../assets/css/admin/dashboard.css">
+        
+    <!-- GLOBAL LOADING SCREEN -->
+    <link
+    rel="stylesheet"
+    href="../../../assets/css/shared/loading-screen.css">
+
+</head>
+
+
+<body class="twtms-page-loading">
+
+
+<!-- =========================================================
+     ADMIN WRAPPER
+========================================================= -->
+
+<div class="admin-wrapper">
+
+
+    <!-- =====================================================
+         SIDEBAR
+    ====================================================== -->
+
+    <aside class="sidebar">
+
+
+        <!-- =================================================
+             BRAND
+        ================================================== -->
+
+        <div class="brand">
+
+            <div class="brand-logo">
+
+                <img
+                    src="../../../assets/images/logo.png"
+                    alt="Trips Wonder Logo">
+
+            </div>
+
+
+            <div class="brand-text">
+
+                <strong>
+                    Trips Wonder
+                </strong>
+
+                <span>
+                    Travel Management System
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             MENU TITLE
+        ================================================== -->
+
+        <div class="menu-title">
+            MAIN MENU
+        </div>
+
+
+        <!-- =================================================
+             MAIN NAVIGATION
+        ================================================== -->
+
+        <nav
+            class="nav-menu"
+            aria-label="Main Navigation">
+
+
+            <!-- DASHBOARD -->
+
+            <a
+                href="dashboard.html"
+                class="nav-link active">
+
+                <i class="fa-solid fa-chart-pie"></i>
+
+                <span>
+                    Dashboard
+                </span>
+
+            </a>
+
+
+            <!-- PACKAGES -->
+
+            <a
+                href="packages.html"
+                class="nav-link">
+
+                <i class="fa-solid fa-suitcase"></i>
+
+                <span>
+                    Packages
+                </span>
+
+            </a>
+
+
+            <!-- BOOKINGS -->
+
+            <a
+                href="bookings.html"
+                class="nav-link">
+
+                <i class="fa-regular fa-calendar-check"></i>
+
+                <span>
+                    Bookings
+                </span>
+
+            </a>
+
+
+            <!-- CUSTOMERS -->
+
+            <a
+                href="customers.html"
+                class="nav-link">
+
+                <i class="fa-solid fa-user-group"></i>
+
+                <span>
+                    Customers
+                </span>
+
+            </a>
+
+
+            <!-- PAYMENTS -->
+
+            <a
+                href="payments.html"
+                class="nav-link">
+
+                <i class="fa-regular fa-credit-card"></i>
+
+                <span>
+                    Payments
+                </span>
+
+            </a>
+
+
+            <!-- INVOICES -->
+
+            <a
+                href="invoices.html"
+                class="nav-link">
+
+                <i class="fa-solid fa-file-invoice"></i>
+
+                <span>
+                    Invoices
+                </span>
+
+            </a>
+
+
+            <!-- RESORT BOOKINGS -->
+
+            <a
+                href="resort-bookings.html"
+                class="nav-link">
+
+                <i class="fa-solid fa-building"></i>
+
+                <span>
+                    Resort Bookings
+                </span>
+
+            </a>
+
+
+            <!-- REPORTS -->
+
+            <a
+                href="reports.html"
+                class="nav-link">
+
+                <i class="fa-solid fa-chart-line"></i>
+
+                <span>
+                    Reports
+                </span>
+
+            </a>
+
+
+        </nav>
+
+
+        <!-- =================================================
+             SIDEBAR BOTTOM
+        ================================================== -->
+
+        <div class="sidebar-bottom">
+
+
+           <!-- =================================================
+     ADMIN PROFILE
+     ONE CLICK
+================================================== -->
+
+<a
+    href="admin-profile.html"
+    class="sidebar-admin-profile"
+    id="adminProfileLink"
+>
+
+    <div class="sidebar-admin-avatar">
+
+        <i class="fa-solid fa-user"></i>
+
+    </div>
+
+
+    <div class="sidebar-admin-info">
+
+        <strong id="adminName">
+            Admin Trips Wonder
+        </strong>
+
+        <span>
+            Administrator
+        </span>
+
+    </div>
+
+</a>
+<!-- =================================================
+                 LOGOUT
+                 ALWAYS VISIBLE
+            ================================================== -->
+
+            <button
+                type="button"
+                id="logoutBtn"
+                class="sidebar-admin-action logout-btn">
+
+                <i class="fa-solid fa-right-from-bracket"></i>
+
+                <span>
+                    Logout
+                </span>
+
+            </button>
+
+
+        </div>
+
+
+    </aside>
+
+
+    <!-- =====================================================
+         MAIN CONTENT
+    ====================================================== -->
+
+    <main class="main">
+        <section class="content" id="dashboardContent">
+
+            <section class="welcome-card">
+                <div class="welcome-content">
+                    <span class="welcome-eyebrow">TRIPS WONDER ADMIN</span>
+                    <h1 id="welcomeText">Welcome back, Admin!</h1>
+                    <p>Here's what's happening with your tours, bookings and payments today.</p>
+                </div>
+                <div class="welcome-icon">
+                    <i class="fa-solid fa-plane-departure"></i>
+                </div>
+            </section>
+
+            <div class="section-title">
+                <div>
+                    <h2>Overview</h2>
+                    <span>Current business summary</span>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <article class="stat-card">
+                    <div class="stat-card-header">
+                        <span class="stat-label">Total Packages</span>
+                        <div class="stat-icon packages-icon"><i class="fa-solid fa-suitcase"></i></div>
+                    </div>
+                    <div class="stat-value"><strong id="totalPackages">—</strong></div>
+                    <span class="stat-description">Active tour packages</span>
+                    <span class="stat-change positive" id="packagesChange">Live data</span>
+                </article>
+
+                <article class="stat-card">
+                    <div class="stat-card-header">
+                        <span class="stat-label">Total Bookings</span>
+                        <div class="stat-icon bookings-icon"><i class="fa-regular fa-calendar-check"></i></div>
+                    </div>
+                    <div class="stat-value"><strong id="totalBookings">—</strong></div>
+                    <span class="stat-description">All reservations</span>
+                    <span class="stat-change positive" id="bookingsChange">Live data</span>
+                </article>
+
+                <article class="stat-card">
+                    <div class="stat-card-header">
+                        <span class="stat-label">Total Customers</span>
+                        <div class="stat-icon customers-icon"><i class="fa-solid fa-users"></i></div>
+                    </div>
+                    <div class="stat-value"><strong id="totalCustomers">—</strong></div>
+                    <span class="stat-description">Registered customers</span>
+                    <span class="stat-change positive" id="customersChange">Live data</span>
+                </article>
+
+                <article class="stat-card">
+                    <div class="stat-card-header">
+                        <span class="stat-label">Total Revenue</span>
+                        <div class="stat-icon revenue-icon"><i class="fa-solid fa-peso-sign"></i></div>
+                    </div>
+                    <div class="stat-value"><strong id="totalRevenue">—</strong></div>
+                    <span class="stat-description">Recorded payments</span>
+                    <span class="stat-change positive" id="revenueChange">Live data</span>
+                </article>
+            </div>
+
+            <div class="dashboard-main-grid">
+
+                <section class="dashboard-card new-bookings-card">
+                    <div class="dashboard-card-header">
+                        <div>
+                            <h2>New Bookings</h2>
+                            <span>Latest customer reservations</span>
+                        </div>
+                        <a href="bookings.html" class="view-all-link">View All <i class="fa-solid fa-arrow-right"></i></a>
+                    </div>
+                    <div class="booking-list" id="newBookingsList">
+                        <div class="dashboard-empty-state">
+                            <i class="fa-regular fa-calendar-plus"></i>
+                            <strong>No recent bookings</strong>
+                            <span>New customer reservations will appear here automatically.</span>
+                        </div>
+                    </div>
+                    <div class="dashboard-card-footer">
+                        <a href="bookings.html">View All Bookings <i class="fa-solid fa-arrow-right"></i></a>
+                    </div>
+                </section>
+
+                <section class="dashboard-card recent-payments-card">
+                    <div class="dashboard-card-header">
+                        <div>
+                            <h2>Recent Payments</h2>
+                            <span>Latest payment activity</span>
+                        </div>
+                        <a href="payments.html" class="view-all-link">View All <i class="fa-solid fa-arrow-right"></i></a>
+                    </div>
+                    <div class="payment-list" id="recentPaymentsList">
+                        <div class="dashboard-empty-state">
+                            <i class="fa-solid fa-receipt"></i>
+                            <strong>No recent payments</strong>
+                            <span>Recorded payments will appear here automatically.</span>
+                        </div>
+                    </div>
+                    <div class="dashboard-card-footer">
+                        <a href="payments.html">View All Payments <i class="fa-solid fa-arrow-right"></i></a>
+                    </div>
+                </section>
+
+                <section class="dashboard-card upcoming-trips-card">
+                    <div class="dashboard-card-header">
+                        <div>
+                            <h2>Upcoming Trips</h2>
+                            <span>Scheduled tours</span>
+                        </div>
+                        <a href="bookings.html" class="view-all-link">View All <i class="fa-solid fa-arrow-right"></i></a>
+                    </div>
+                    <div class="upcoming-trips-list" id="upcomingTripsList">
+                        <div class="dashboard-empty-state">
+                            <i class="fa-solid fa-route"></i>
+                            <strong>No upcoming trips</strong>
+                            <span>Confirmed future tours will appear here automatically.</span>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="dashboard-card booking-status-card">
+                    <div class="dashboard-card-header">
+                        <div>
+                            <h2>Booking Status</h2>
+                            <span>Reservation summary</span>
+                        </div>
+                        <a href="bookings.html" class="view-all-link">View All <i class="fa-solid fa-arrow-right"></i></a>
+                    </div>
+                    <div class="booking-status-grid">
+                        <div class="booking-status pending">
+                            <span>Pending</span>
+                            <strong id="pendingBookingCount">—</strong>
+                            <div class="booking-status-icon"><i class="fa-regular fa-clock"></i></div>
+                        </div>
+                        <div class="booking-status confirmed">
+                            <span>Confirmed</span>
+                            <strong id="confirmedBookingCount">—</strong>
+                            <div class="booking-status-icon"><i class="fa-solid fa-check"></i></div>
+                        </div>
+                        <div class="booking-status completed">
+                            <span>Completed</span>
+                            <strong id="completedBookingCount">—</strong>
+                            <div class="booking-status-icon"><i class="fa-solid fa-check"></i></div>
+                        </div>
+                        <div class="booking-status cancelled">
+                            <span>Cancelled</span>
+                            <strong id="cancelledBookingCount">—</strong>
+                            <div class="booking-status-icon"><i class="fa-solid fa-xmark"></i></div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <section class="account-section">
+                <div class="section-title">
+                    <div>
+                        <h2>Account Information</h2>
+                        <span>Current administrator account</span>
+                    </div>
+                </div>
+                <div class="account-information-card">
+                    <div class="account-information-item">
+                        <div class="account-information-icon"><i class="fa-regular fa-user"></i></div>
+                        <div class="account-information-content">
+                            <span>Account Name</span>
+                            <strong id="accountName">Admin Trips Wonder</strong>
+                        </div>
+                    </div>
+                    <div class="account-information-item">
+                        <div class="account-information-icon"><i class="fa-regular fa-envelope"></i></div>
+                        <div class="account-information-content">
+                            <span>Email</span>
+                            <strong id="accountEmail">—</strong>
+                        </div>
+                    </div>
+                    <div class="account-information-item">
+                        <div class="account-information-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                        <div class="account-information-content">
+                            <span>Role</span>
+                            <strong id="accountRole">Administrator</strong>
+                        </div>
+                    </div>
+                    <div class="account-information-item">
+                        <div class="account-information-icon"><i class="fa-regular fa-circle-check"></i></div>
+                        <div class="account-information-content">
+                            <span>Account Status</span>
+                            <strong class="account-active"><span class="status-dot"></span> Active</strong>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </section>
+    </main>
+
+
+<!-- =========================================================
+     MOBILE SIDEBAR OVERLAY
+========================================================= -->
+
+<div
+    class="admin-sidebar-overlay"
+    id="adminSidebarOverlay">
+</div>
+
+
+<!-- =========================================================
+     PAGE ACCESS MODAL
+========================================================= -->
+
+<div
+    id="pageAccessModal"
+    class="page-access-modal"
+    aria-hidden="true">
+
+
+    <div
+        class="page-access-backdrop"
+        id="pageAccessBackdrop">
+    </div>
+
+
+    <section
+        class="page-access-panel"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="pageAccessTitle">
+
+
+        <!-- MODAL HEADER -->
+
+        <div class="page-access-header">
+
+            <div>
+
+                <span class="page-access-eyebrow">
+                    ADMINISTRATION
+                </span>
+
+                <h2 id="pageAccessTitle">
+                    Page Access
+                </h2>
+
+                <p>
+                    Manage people with task access.
+                </p>
+
+            </div>
+
+
+            <button
+                type="button"
+                id="closePageAccessBtn"
+                class="page-access-close"
+                aria-label="Close Page Access">
+
+                <i class="fa-solid fa-xmark"></i>
+
+            </button>
+
+        </div>
+
+
+        <!-- MODAL BODY -->
+
+        <div class="page-access-body">
+
+
+            <!-- OWNER ACCESS -->
+
+            <div class="access-section">
+
+                <div class="access-section-title">
+
+                    <div>
+
+                        <h3>
+                            Owner Access
+                        </h3>
+
+                        <span>
+                            Full control
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="owner-access-card">
+
+                    <div class="access-avatar owner">
+
+                        <i class="fa-solid fa-crown"></i>
+
+                    </div>
+
+
+                    <div class="access-person">
+
+                        <strong id="ownerAccessName">
+                            Owner
+                        </strong>
+
+                        <span>
+                            Owner Access
+                        </span>
+
+                    </div>
+
+
+                    <div class="full-access-badge">
+
+                        <i class="fa-solid fa-shield-halved"></i>
+
+                        Full Control
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- TASK ACCESS -->
+
+            <div class="access-section">
+
+                <div class="access-section-title task-title-row">
+
+                    <div>
+
+                        <h3>
+                            People with Task Access
+                        </h3>
+
+                        <span>
+                            Admin accounts with assigned tasks
+                        </span>
+
+                    </div>
+
+
+                    <button
+                        type="button"
+                        id="addAdminBtn"
+                        class="add-admin-btn">
+
+                        <i class="fa-solid fa-plus"></i>
+
+                        <span>
+                            Add New
+                        </span>
+
+                    </button>
+
+                </div>
+
+
+                <div
+                    id="taskAdminList"
+                    class="task-admin-list">
+
+
+                    <div class="empty-task-access">
+
+                        <div class="empty-task-icon">
+
+                            <i class="fa-solid fa-user-shield"></i>
+
+                        </div>
+
+
+                        <strong>
+                            No task access accounts yet
+                        </strong>
+
+
+                        <span>
+                            Click “Add New” to create an admin account
+                            and assign the pages they can manage.
+                        </span>
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+    </section>
+
+
+</div>
+
+
+<!-- =========================================================
+     ADD NEW ADMIN MODAL
+========================================================= -->
+
+<div
+    id="addAdminModal"
+    class="add-admin-modal"
+    aria-hidden="true">
+
+
+    <div
+        class="add-admin-backdrop"
+        id="addAdminBackdrop">
+    </div>
+
+
+    <section
+        class="add-admin-panel"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="addAdminTitle">
+
+
+        <!-- HEADER -->
+
+        <div class="add-admin-header">
+
+            <div>
+
+                <span class="page-access-eyebrow">
+                    OWNER ACCESS
+                </span>
+
+                <h2 id="addAdminTitle">
+                    Add New Admin
+                </h2>
+
+                <p>
+                    Create a task access account and choose
+                    which pages it can manage.
+                </p>
+
+            </div>
+
+
+            <button
+                type="button"
+                id="closeAddAdminBtn"
+                class="page-access-close"
+                aria-label="Close Add Admin">
+
+                <i class="fa-solid fa-xmark"></i>
+
+            </button>
+
+        </div>
+
+
+        <!-- FORM -->
+
+        <form
+            id="addAdminForm"
+            class="add-admin-form">
+
+
+            <!-- ADMIN NAME -->
+
+            <div class="form-field">
+
+                <label for="newAdminName">
+                    Admin Name
+                </label>
+
+
+                <div class="form-input">
+
+                    <i class="fa-solid fa-user"></i>
+
+                    <input
+                        type="text"
+                        id="newAdminName"
+                        placeholder="Enter admin name"
+                        autocomplete="name"
+                        required>
+
+                </div>
+
+            </div>
+
+
+            <!-- EMAIL -->
+
+            <div class="form-field">
+
+                <label for="newAdminEmail">
+                    Email Address
+                </label>
+
+
+                <div class="form-input">
+
+                    <i class="fa-solid fa-envelope"></i>
+
+                    <input
+                        type="email"
+                        id="newAdminEmail"
+                        placeholder="Enter email address"
+                        autocomplete="email"
+                        required>
+
+                </div>
+
+            </div>
+
+
+            <!-- PASSWORD ROW -->
+
+            <div class="form-row">
+
+
+                <div class="form-field">
+
+                    <label for="newAdminPassword">
+                        Password
+                    </label>
+
+
+                    <div class="form-input">
+
+                        <i class="fa-solid fa-lock"></i>
+
+                        <input
+                            type="password"
+                            id="newAdminPassword"
+                            placeholder="Create password"
+                            autocomplete="new-password"
+                            minlength="6"
+                            required>
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-field">
+
+                    <label for="confirmAdminPassword">
+                        Confirm Password
+                    </label>
+
+
+                    <div class="form-input">
+
+                        <i class="fa-solid fa-lock"></i>
+
+                        <input
+                            type="password"
+                            id="confirmAdminPassword"
+                            placeholder="Confirm password"
+                            autocomplete="new-password"
+                            minlength="6"
+                            required>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+            <!-- PERMISSIONS -->
+
+            <div class="permission-box">
+
+
+                <div class="permission-heading">
+
+                    <div>
+
+                        <h3>
+                            Task Access
+                        </h3>
+
+                        <p>
+                            Admin can manage the following:
+                        </p>
+
+                    </div>
+
+
+                    <span id="permissionCount">
+                        0 selected
+                    </span>
+
+                </div>
+
+
+                <div class="permission-list">
+
+
+                    <!-- DASHBOARD -->
+
+                    <label class="permission-item">
+
+                        <span class="permission-info">
+
+                            <i class="fa-solid fa-chart-pie"></i>
+
+                            <span>
+                                Dashboard
+                            </span>
+
+                        </span>
+
+
+                        <input
+                            type="checkbox"
+                            class="permission-toggle"
+                            data-permission="dashboard">
+
+                        <span class="toggle-ui"></span>
+
+                    </label>
+
+
+                    <!-- PACKAGES -->
+
+                    <label class="permission-item">
+
+                        <span class="permission-info">
+
+                            <i class="fa-solid fa-suitcase"></i>
+
+                            <span>
+                                Packages
+                            </span>
+
+                        </span>
+
+
+                        <input
+                            type="checkbox"
+                            class="permission-toggle"
+                            data-permission="packages">
+
+                        <span class="toggle-ui"></span>
+
+                    </label>
+
+
+                    <!-- BOOKINGS -->
+
+                    <label class="permission-item">
+
+                        <span class="permission-info">
+
+                            <i class="fa-regular fa-calendar-check"></i>
+
+                            <span>
+                                Bookings
+                            </span>
+
+                        </span>
+
+
+                        <input
+                            type="checkbox"
+                            class="permission-toggle"
+                            data-permission="bookings">
+
+                        <span class="toggle-ui"></span>
+
+                    </label>
+
+
+                    <!-- CUSTOMERS -->
+
+                    <label class="permission-item">
+
+                        <span class="permission-info">
+
+                            <i class="fa-solid fa-users"></i>
+
+                            <span>
+                                Customers
+                            </span>
+
+                        </span>
+
+
+                        <input
+                            type="checkbox"
+                            class="permission-toggle"
+                            data-permission="customers">
+
+                        <span class="toggle-ui"></span>
+
+                    </label>
+
+
+                    <!-- PAYMENTS -->
+
+                    <label class="permission-item">
+
+                        <span class="permission-info">
+
+                            <i class="fa-regular fa-credit-card"></i>
+
+                            <span>
+                                Payments
+                            </span>
+
+                        </span>
+
+
+                        <input
+                            type="checkbox"
+                            class="permission-toggle"
+                            data-permission="payments">
+
+                        <span class="toggle-ui"></span>
+
+                    </label>
+
+
+                    <!-- INVOICES -->
+
+                    <label class="permission-item">
+
+                        <span class="permission-info">
+
+                            <i class="fa-solid fa-file-invoice"></i>
+
+                            <span>
+                                Invoices
+                            </span>
+
+                        </span>
+
+
+                        <input
+                            type="checkbox"
+                            class="permission-toggle"
+                            data-permission="invoices">
+
+                        <span class="toggle-ui"></span>
+
+                    </label>
+
+
+                    <!-- RESORT BOOKINGS -->
+
+                    <label class="permission-item">
+
+                        <span class="permission-info">
+
+                            <i class="fa-solid fa-building"></i>
+
+                            <span>
+                                Resort Bookings
+                            </span>
+
+                        </span>
+
+
+                        <input
+                            type="checkbox"
+                            class="permission-toggle"
+                            data-permission="resort-bookings">
+
+                        <span class="toggle-ui"></span>
+
+                    </label>
+
+
+                    <!-- REPORTS -->
+
+                    <label class="permission-item">
+
+                        <span class="permission-info">
+
+                            <i class="fa-solid fa-chart-line"></i>
+
+                            <span>
+                                Reports
+                            </span>
+
+                        </span>
+
+
+                        <input
+                            type="checkbox"
+                            class="permission-toggle"
+                            data-permission="reports">
+
+                        <span class="toggle-ui"></span>
+
+                    </label>
+
+
+                </div>
+
+
+            </div>
+
+
+            <!-- MESSAGE -->
+
+            <div
+                id="addAdminMessage"
+                class="add-admin-message"
+                hidden>
+            </div>
+
+
+            <!-- FORM FOOTER -->
+
+            <div class="add-admin-footer">
+
+
+                <button
+                    type="button"
+                    id="cancelAddAdminBtn"
+                    class="secondary-action-btn">
+
+                    Cancel
+
+                </button>
+
+
+                <button
+                    type="submit"
+                    id="createAdminBtn"
+                    class="primary-action-btn">
+
+                    <i class="fa-solid fa-user-plus"></i>
+
+                    Create Account
+
+                </button>
+
+
+            </div>
+
+
+        </form>
+
+
+    </section>
+
+
+</div>
+
+
+<!-- =========================================================
+     DASHBOARD JAVASCRIPT
+========================================================= -->
+
+<script
+    type="module"
+    src="../../../assets/js/admin/dashboard.js">
+</script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,1885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Resort Bookings | Trips Wonder Admin</title>
+
+    <link
+        rel="stylesheet"
+        href="../../assets/css/admin/resort-bookings.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+</head>
+
+<body>
+
+<div class="admin-layout">
+
+    <!-- =====================================================
+         SIDEBAR
+    ====================================================== -->
+    <aside class="sidebar">
+
+        <div class="sidebar-brand">
+
+            <div class="brand-logo">
+                <img
+                    src="../../assets/images/logo.png"
+                    alt="Trips Wonder Logo"
+                >
+            </div>
+
+            <div class="brand-text">
+                <h2>Trips Wonder</h2>
+                <span>Travel Management System</span>
+            </div>
+
+        </div>
+
+
+        <div class="sidebar-menu">
+
+            <div class="menu-label">
+                MAIN MENU
+            </div>
+
+            <nav class="main-navigation">
+
+                <a href="dashboard.html" class="nav-item">
+                    <i class="fa-solid fa-chart-pie"></i>
+                    <span>Dashboard</span>
+                </a>
+
+                <a href="packages.html" class="nav-item">
+                    <i class="fa-solid fa-suitcase"></i>
+                    <span>Packages</span>
+                </a>
+
+                <a href="bookings.html" class="nav-item">
+                    <i class="fa-solid fa-calendar-check"></i>
+                    <span>Bookings</span>
+                </a>
+
+                <a href="customers.html" class="nav-item">
+                    <i class="fa-solid fa-users"></i>
+                    <span>Customers</span>
+                </a>
+
+                <a href="payments.html" class="nav-item">
+                    <i class="fa-solid fa-credit-card"></i>
+                    <span>Payments</span>
+                </a>
+
+                <a href="invoices.html" class="nav-item">
+                    <i class="fa-solid fa-file-invoice"></i>
+                    <span>Invoices</span>
+                </a>
+
+                <a
+                    href="resort-bookings.html"
+                    class="nav-item active"
+                >
+                    <i class="fa-solid fa-building"></i>
+                    <span>Resort Bookings</span>
+                </a>
+
+                <a href="reports.html" class="nav-item">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>Reports</span>
+                </a>
+
+            </nav>
+
+        </div>
+
+
+        <!-- =================================================
+             ADMIN PROFILE
+             ONE CLICK
+        ================================================== -->
+        <div class="sidebar-bottom">
+
+            <a
+                href="admin-profile.html"
+                class="admin-profile"
+                id="adminProfile"
+            >
+
+                <div class="admin-avatar">
+                    <i class="fa-solid fa-user"></i>
+                </div>
+
+                <div class="admin-info">
+                    <strong>Admin Trips Wonder</strong>
+                    <span>Administrator</span>
+                </div>
+
+            </a>
+
+
+            <!-- LOGOUT ALWAYS VISIBLE -->
+            <button
+                type="button"
+                class="logout-button"
+                onclick="handleLogout()"
+            >
+
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <span>Logout</span>
+
+            </button>
+
+        </div>
+
+    </aside>
+
+
+    <!-- =====================================================
+         MAIN CONTENT
+    ====================================================== -->
+    <main class="main-content">
+
+        <!-- PAGE HEADER -->
+        <section class="page-header">
+
+            <div class="page-heading">
+
+                <h1>Resort Bookings</h1>
+
+                <p>
+                    Manage resort reservations, rooms, check-in,
+                    check-out and accommodation status.
+                </p>
+
+            </div>
+
+            <button
+                type="button"
+                class="primary-button"
+                onclick="openResortBookingModal()"
+            >
+                <i class="fa-solid fa-plus"></i>
+                <span>New Resort Booking</span>
+            </button>
+
+        </section>
+
+
+        <!-- =================================================
+             SUMMARY CARDS
+        ================================================== -->
+        <section class="resort-summary">
+
+            <div class="summary-card">
+
+                <div class="summary-icon blue">
+                    <i class="fa-solid fa-building"></i>
+                </div>
+
+                <div class="summary-content">
+
+                    <span class="summary-label">
+                        Total Bookings
+                    </span>
+
+                    <strong
+                        class="summary-value"
+                        id="totalResortBookings"
+                    >
+                        —
+                    </strong>
+
+                    <small>
+                        All resort reservations
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <div class="summary-icon green">
+                    <i class="fa-solid fa-circle-check"></i>
+                </div>
+
+                <div class="summary-content">
+
+                    <span class="summary-label">
+                        Confirmed
+                    </span>
+
+                    <strong
+                        class="summary-value"
+                        id="confirmedResortBookings"
+                    >
+                        —
+                    </strong>
+
+                    <small>
+                        Confirmed reservations
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <div class="summary-icon orange">
+                    <i class="fa-regular fa-clock"></i>
+                </div>
+
+                <div class="summary-content">
+
+                    <span class="summary-label">
+                        Pending
+                    </span>
+
+                    <strong
+                        class="summary-value"
+                        id="pendingResortBookings"
+                    >
+                        —
+                    </strong>
+
+                    <small>
+                        Awaiting confirmation
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <div class="summary-icon purple">
+                    <i class="fa-solid fa-bed"></i>
+                </div>
+
+                <div class="summary-content">
+
+                    <span class="summary-label">
+                        Checked In / Active
+                    </span>
+
+                    <strong
+                        class="summary-value"
+                        id="activeResortBookings"
+                    >
+                        —
+                    </strong>
+
+                    <small>
+                        Current resort stays
+                    </small>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             SEARCH & FILTERS
+        ================================================== -->
+        <section class="resort-toolbar">
+
+            <div class="search-box">
+
+                <i class="fa-solid fa-magnifying-glass"></i>
+
+                <input
+                    type="search"
+                    id="resortBookingSearch"
+                    placeholder="Search booking, resort or customer..."
+                    autocomplete="off"
+                >
+
+            </div>
+
+
+            <div class="filter-select">
+
+                <select id="resortFilter">
+
+                    <option value="all">
+                        All Resorts
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="filter-select">
+
+                <select id="resortStatusFilter">
+
+                    <option value="all">
+                        All Status
+                    </option>
+
+                    <option value="pending">
+                        Pending
+                    </option>
+
+                    <option value="confirmed">
+                        Confirmed
+                    </option>
+
+                    <option value="checked-in">
+                        Checked In
+                    </option>
+
+                    <option value="checked-out">
+                        Checked Out
+                    </option>
+
+                    <option value="rescheduled">
+                        Rescheduled
+                    </option>
+
+                    <option value="cancelled">
+                        Cancelled
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="filter-select">
+
+                <select id="resortSort">
+
+                    <option value="newest">
+                        Newest First
+                    </option>
+
+                    <option value="oldest">
+                        Oldest First
+                    </option>
+
+                    <option value="checkin-nearest">
+                        Nearest Check-in
+                    </option>
+
+                    <option value="checkout-nearest">
+                        Nearest Check-out
+                    </option>
+
+                </select>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             RESORT BOOKINGS SECTION
+        ================================================== -->
+        <section class="resort-bookings-section">
+
+            <div class="section-header">
+
+                <div>
+
+                    <h2>
+                        All Resort Bookings
+                    </h2>
+
+                    <p id="resortResultText">
+                        Showing live resort booking records
+                    </p>
+
+                </div>
+
+                <button
+                    type="button"
+                    class="refresh-button"
+                    onclick="refreshResortBookings()"
+                >
+                    <i class="fa-solid fa-rotate"></i>
+                    <span>Refresh</span>
+                </button>
+
+            </div>
+
+
+            <!-- TABLE -->
+            <div class="resort-table-wrapper">
+
+                <table class="resort-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Booking
+                            </th>
+
+                            <th>
+                                Customer
+                            </th>
+
+                            <th>
+                                Resort
+                            </th>
+
+                            <th>
+                                Room Type
+                            </th>
+
+                            <th>
+                                Check-in
+                            </th>
+
+                            <th>
+                                Check-out
+                            </th>
+
+                            <th>
+                                Pax
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                            <th>
+                                Actions
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="resortBookingsTableBody">
+
+                        <!--
+                            ACTUAL RESORT BOOKING DATA WILL
+                            BE INSERTED BY resort-bookings.js
+                        -->
+
+                    </tbody>
+
+                </table>
+
+
+                <!-- EMPTY STATE -->
+                <div
+                    class="empty-resort-bookings"
+                    id="emptyResortBookings"
+                >
+
+                    <div class="empty-icon">
+                        <i class="fa-solid fa-building"></i>
+                    </div>
+
+                    <h3>
+                        No resort bookings to display
+                    </h3>
+
+                    <p>
+                        Live resort booking records will appear
+                        here automatically.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<!-- =============================================================
+     NEW / EDIT RESORT BOOKING MODAL
+============================================================== -->
+<div
+    class="modal-overlay"
+    id="resortBookingModal"
+    aria-hidden="true"
+>
+
+    <div class="resort-booking-modal">
+
+        <div class="modal-header">
+
+            <div>
+
+                <span class="modal-eyebrow">
+                    RESORT RESERVATION
+                </span>
+
+                <h2 id="resortBookingModalTitle">
+                    New Resort Booking
+                </h2>
+
+                <p>
+                    Create an accommodation reservation.
+                </p>
+
+            </div>
+
+            <button
+                type="button"
+                class="modal-close"
+                onclick="closeResortBookingModal()"
+                aria-label="Close"
+            >
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+        </div>
+
+
+        <form
+            id="resortBookingForm"
+            class="resort-booking-form"
+        >
+
+            <input
+                type="hidden"
+                id="resortBookingId"
+            >
+
+
+            <!-- =================================================
+                 01 — BOOKING INFORMATION
+            ================================================== -->
+
+            <div class="form-section-title">
+
+                <span>01</span>
+
+                <div>
+                    <strong>Booking Information</strong>
+
+                    <small>
+                        Connect the resort reservation to a customer
+                        and tour booking.
+                    </small>
+                </div>
+
+            </div>
+
+
+            <div class="form-row">
+
+                <div class="form-group">
+
+                    <label for="resortBookingCustomer">
+                        Customer
+                    </label>
+
+                    <select
+                        id="resortBookingCustomer"
+                        name="customer"
+                        required
+                    >
+
+                        <option value="">
+                            Select customer
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="resortBookingTour">
+                        Related Tour Booking
+                    </label>
+
+                    <select
+                        id="resortBookingTour"
+                        name="tourBooking"
+                    >
+
+                        <option value="">
+                            Select booking
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <div class="form-row">
+
+                <div class="form-group">
+
+                    <label for="resortBookingReference">
+                        Booking Reference
+                    </label>
+
+                    <input
+                        type="text"
+                        id="resortBookingReference"
+                        name="bookingReference"
+                        placeholder="Auto-generated"
+                        readonly
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="resortName">
+                        Resort
+                    </label>
+
+                    <select
+                        id="resortName"
+                        name="resort"
+                        required
+                    >
+
+                        <option value="">
+                            Select resort
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 02 — STAY DETAILS
+            ================================================== -->
+
+            <div class="form-section-title">
+
+                <span>02</span>
+
+                <div>
+                    <strong>Stay Details</strong>
+
+                    <small>
+                        Set the room, dates and number of guests.
+                    </small>
+                </div>
+
+            </div>
+
+
+            <div class="form-row">
+
+                <div class="form-group">
+
+                    <label for="resortRoomType">
+                        Room Type
+                    </label>
+
+                    <select
+                        id="resortRoomType"
+                        name="roomType"
+                        required
+                    >
+
+                        <option value="">
+                            Select room type
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="resortNumberOfRooms">
+                        Number of Rooms
+                    </label>
+
+                    <input
+                        type="number"
+                        id="resortNumberOfRooms"
+                        name="numberOfRooms"
+                        min="1"
+                        step="1"
+                        value="1"
+                        required
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div class="form-row">
+
+                <div class="form-group">
+
+                    <label for="resortCheckIn">
+                        Check-in
+                    </label>
+
+                    <input
+                        type="date"
+                        id="resortCheckIn"
+                        name="checkIn"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="resortCheckOut">
+                        Check-out
+                    </label>
+
+                    <input
+                        type="date"
+                        id="resortCheckOut"
+                        name="checkOut"
+                        required
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div class="form-row three-columns">
+
+                <div class="form-group">
+
+                    <label for="resortNights">
+                        Number of Nights
+                    </label>
+
+                    <input
+                        type="number"
+                        id="resortNights"
+                        name="nights"
+                        min="1"
+                        step="1"
+                        placeholder="0"
+                        readonly
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="resortAdults">
+                        Adults
+                    </label>
+
+                    <input
+                        type="number"
+                        id="resortAdults"
+                        name="adults"
+                        min="0"
+                        step="1"
+                        value="1"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="resortChildren">
+                        Children
+                    </label>
+
+                    <input
+                        type="number"
+                        id="resortChildren"
+                        name="children"
+                        min="0"
+                        step="1"
+                        value="0"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 03 — PAYMENT
+            ================================================== -->
+
+            <div class="form-section-title">
+
+                <span>03</span>
+
+                <div>
+                    <strong>Reservation Payment</strong>
+
+                    <small>
+                        Record the accommodation charges and payment.
+                    </small>
+                </div>
+
+            </div>
+
+
+            <div class="form-row three-columns">
+
+                <div class="form-group">
+
+                    <label for="resortRoomRate">
+                        Room Rate
+                    </label>
+
+                    <input
+                        type="number"
+                        id="resortRoomRate"
+                        name="roomRate"
+                        min="0"
+                        step="0.01"
+                        placeholder="0.00"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="resortAdditionalCharges">
+                        Additional Charges
+                    </label>
+
+                    <input
+                        type="number"
+                        id="resortAdditionalCharges"
+                        name="additionalCharges"
+                        min="0"
+                        step="0.01"
+                        placeholder="0.00"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="resortDiscount">
+                        Discount
+                    </label>
+
+                    <input
+                        type="number"
+                        id="resortDiscount"
+                        name="discount"
+                        min="0"
+                        step="0.01"
+                        placeholder="0.00"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div class="form-row three-columns">
+
+                <div class="form-group">
+
+                    <label for="resortTotal">
+                        Total
+                    </label>
+
+                    <input
+                        type="number"
+                        id="resortTotal"
+                        name="total"
+                        min="0"
+                        step="0.01"
+                        placeholder="0.00"
+                        readonly
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="resortAmountPaid">
+                        Amount Paid
+                    </label>
+
+                    <input
+                        type="number"
+                        id="resortAmountPaid"
+                        name="amountPaid"
+                        min="0"
+                        step="0.01"
+                        placeholder="0.00"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="resortBalance">
+                        Remaining Balance
+                    </label>
+
+                    <input
+                        type="number"
+                        id="resortBalance"
+                        name="balance"
+                        min="0"
+                        step="0.01"
+                        placeholder="0.00"
+                        readonly
+                    >
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 04 — STATUS
+            ================================================== -->
+
+            <div class="form-section-title">
+
+                <span>04</span>
+
+                <div>
+                    <strong>Reservation Status</strong>
+
+                    <small>
+                        Update the current accommodation status.
+                    </small>
+                </div>
+
+            </div>
+
+
+            <div class="form-row">
+
+                <div class="form-group">
+
+                    <label for="resortBookingStatus">
+                        Status
+                    </label>
+
+                    <select
+                        id="resortBookingStatus"
+                        name="status"
+                    >
+
+                        <option value="pending">
+                            Pending
+                        </option>
+
+                        <option value="confirmed">
+                            Confirmed
+                        </option>
+
+                        <option value="checked-in">
+                            Checked In
+                        </option>
+
+                        <option value="checked-out">
+                            Checked Out
+                        </option>
+
+                        <option value="rescheduled">
+                            Rescheduled
+                        </option>
+
+                        <option value="cancelled">
+                            Cancelled
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="resortPaymentStatus">
+                        Payment Status
+                    </label>
+
+                    <select
+                        id="resortPaymentStatus"
+                        name="paymentStatus"
+                    >
+
+                        <option value="pending">
+                            Pending
+                        </option>
+
+                        <option value="partial">
+                            Partial
+                        </option>
+
+                        <option value="paid">
+                            Paid
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 05 — NOTES
+            ================================================== -->
+
+            <div class="form-section-title">
+
+                <span>05</span>
+
+                <div>
+                    <strong>Notes</strong>
+
+                    <small>
+                        Add special requests or internal resort notes.
+                    </small>
+                </div>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="resortSpecialRequest">
+                    Special Request
+                </label>
+
+                <textarea
+                    id="resortSpecialRequest"
+                    name="specialRequest"
+                    rows="3"
+                    placeholder="Guest requests..."
+                ></textarea>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="resortInternalNotes">
+                    Internal Notes
+                </label>
+
+                <textarea
+                    id="resortInternalNotes"
+                    name="internalNotes"
+                    rows="3"
+                    placeholder="Internal notes for the admin/team..."
+                ></textarea>
+
+            </div>
+
+
+            <!-- ACTIONS -->
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    class="secondary-button"
+                    onclick="closeResortBookingModal()"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    class="primary-button"
+                >
+                    <i class="fa-solid fa-floppy-disk"></i>
+                    Save Resort Booking
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- =============================================================
+     RESORT BOOKING DETAILS MODAL
+============================================================== -->
+<div
+    class="modal-overlay"
+    id="resortDetailsModal"
+    aria-hidden="true"
+>
+
+    <div class="resort-details-modal">
+
+        <div class="modal-header">
+
+            <div>
+
+                <span class="modal-eyebrow">
+                    RESORT RESERVATION
+                </span>
+
+                <h2>
+                    Booking Details
+                </h2>
+
+                <p>
+                    Complete accommodation reservation information.
+                </p>
+
+            </div>
+
+            <button
+                type="button"
+                class="modal-close"
+                onclick="closeResortDetails()"
+                aria-label="Close"
+            >
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+        </div>
+
+
+        <div class="resort-details-content">
+
+            <div class="resort-reference">
+
+                <div class="resort-reference-icon">
+                    <i class="fa-solid fa-building"></i>
+                </div>
+
+                <div>
+
+                    <span>
+                        Booking Reference
+                    </span>
+
+                    <strong id="detailsResortReference">
+                        —
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="details-grid">
+
+                <div class="detail-item">
+                    <span>Customer</span>
+                    <strong id="detailsResortCustomer">—</strong>
+                </div>
+
+                <div class="detail-item">
+                    <span>Tour Booking</span>
+                    <strong id="detailsResortTour">—</strong>
+                </div>
+
+                <div class="detail-item">
+                    <span>Resort</span>
+                    <strong id="detailsResortName">—</strong>
+                </div>
+
+                <div class="detail-item">
+                    <span>Room Type</span>
+                    <strong id="detailsResortRoom">—</strong>
+                </div>
+
+                <div class="detail-item">
+                    <span>Check-in</span>
+                    <strong id="detailsResortCheckIn">—</strong>
+                </div>
+
+                <div class="detail-item">
+                    <span>Check-out</span>
+                    <strong id="detailsResortCheckOut">—</strong>
+                </div>
+
+                <div class="detail-item">
+                    <span>Nights</span>
+                    <strong id="detailsResortNights">—</strong>
+                </div>
+
+                <div class="detail-item">
+                    <span>Guests</span>
+                    <strong id="detailsResortGuests">—</strong>
+                </div>
+
+                <div class="detail-item">
+                    <span>Total</span>
+                    <strong id="detailsResortTotal">—</strong>
+                </div>
+
+                <div class="detail-item">
+                    <span>Amount Paid</span>
+                    <strong id="detailsResortPaid">—</strong>
+                </div>
+
+                <div class="detail-item">
+                    <span>Balance</span>
+                    <strong id="detailsResortBalance">—</strong>
+                </div>
+
+                <div class="detail-item">
+                    <span>Status</span>
+                    <strong id="detailsResortStatus">—</strong>
+                </div>
+
+            </div>
+
+
+            <div class="details-notes">
+
+                <span>
+                    Special Request
+                </span>
+
+                <p id="detailsResortRequest">
+                    No special request.
+                </p>
+
+            </div>
+
+
+            <div class="details-notes">
+
+                <span>
+                    Internal Notes
+                </span>
+
+                <p id="detailsResortNotes">
+                    No internal notes.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =============================================================
+     PAGE ACCESS MODAL
+============================================================== -->
+<div
+    class="modal-overlay"
+    id="pageAccessModal"
+    aria-hidden="true"
+>
+
+    <div class="access-modal">
+
+        <div class="modal-header">
+
+            <div>
+
+                <h2>
+                    Page Access
+                </h2>
+
+                <p>
+                    Manage administrator access.
+                </p>
+
+            </div>
+
+            <button
+                type="button"
+                class="modal-close"
+                onclick="closePageAccess()"
+                aria-label="Close"
+            >
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+        </div>
+
+
+        <div class="access-content">
+
+            <div class="access-account">
+
+                <div class="admin-avatar large">
+                    <i class="fa-solid fa-user"></i>
+                </div>
+
+                <div>
+
+                    <strong>
+                        Admin Trips Wonder
+                    </strong>
+
+                    <span>
+                        Administrator
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="access-list">
+
+                <div class="access-row">
+                    <span>Dashboard</span>
+                    <span class="access-status granted">Granted</span>
+                </div>
+
+                <div class="access-row">
+                    <span>Packages</span>
+                    <span class="access-status granted">Granted</span>
+                </div>
+
+                <div class="access-row">
+                    <span>Bookings</span>
+                    <span class="access-status granted">Granted</span>
+                </div>
+
+                <div class="access-row">
+                    <span>Customers</span>
+                    <span class="access-status granted">Granted</span>
+                </div>
+
+                <div class="access-row">
+                    <span>Payments</span>
+                    <span class="access-status granted">Granted</span>
+                </div>
+
+                <div class="access-row">
+                    <span>Invoices</span>
+                    <span class="access-status granted">Granted</span>
+                </div>
+
+                <div class="access-row">
+                    <span>Resort Bookings</span>
+                    <span class="access-status granted">Granted</span>
+                </div>
+
+                <div class="access-row">
+                    <span>Reports</span>
+                    <span class="access-status granted">Granted</span>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =============================================================
+     BASIC PAGE FUNCTIONS
+============================================================== -->
+<script>
+
+    /* =========================================================
+       ADMIN PROFILE
+    ========================================================== */
+    
+
+
+    /* =========================================================
+       PAGE ACCESS
+    ========================================================== */
+
+    function openPageAccess(event) {
+
+        if (event) {
+            event.stopPropagation();
+        }
+
+        const modal =
+            document.getElementById("pageAccessModal");
+
+        if (!modal) return;
+
+        modal.classList.add("show");
+
+        modal.setAttribute(
+            "aria-hidden",
+            "false"
+        );
+
+    }
+
+
+    function closePageAccess() {
+
+        const modal =
+            document.getElementById("pageAccessModal");
+
+        if (!modal) return;
+
+        modal.classList.remove("show");
+
+        modal.setAttribute(
+            "aria-hidden",
+            "true"
+        );
+
+    }
+
+
+    /* =========================================================
+       RESORT BOOKING MODAL
+    ========================================================== */
+
+    function openResortBookingModal() {
+
+        const modal =
+            document.getElementById("resortBookingModal");
+
+        const title =
+            document.getElementById("resortBookingModalTitle");
+
+        if (!modal) return;
+
+        if (title) {
+            title.textContent =
+                "New Resort Booking";
+        }
+
+        modal.classList.add("show");
+
+        modal.setAttribute(
+            "aria-hidden",
+            "false"
+        );
+
+    }
+
+
+    function closeResortBookingModal() {
+
+        const modal =
+            document.getElementById("resortBookingModal");
+
+        if (!modal) return;
+
+        modal.classList.remove("show");
+
+        modal.setAttribute(
+            "aria-hidden",
+            "true"
+        );
+
+    }
+
+
+    /* =========================================================
+       DETAILS MODAL
+    ========================================================== */
+
+    function closeResortDetails() {
+
+        const modal =
+            document.getElementById("resortDetailsModal");
+
+        if (!modal) return;
+
+        modal.classList.remove("show");
+
+        modal.setAttribute(
+            "aria-hidden",
+            "true"
+        );
+
+    }
+
+
+    /* =========================================================
+       REFRESH
+    ========================================================== */
+
+    function refreshResortBookings() {
+
+        if (
+            typeof window.loadResortBookings ===
+            "function"
+        ) {
+
+            window.loadResortBookings();
+
+        }
+
+    }
+
+
+    /* =========================================================
+       LOGOUT
+    ========================================================== */
+
+    function handleLogout() {
+
+        const confirmed =
+            window.confirm(
+                "Are you sure you want to logout?"
+            );
+
+        if (!confirmed) return;
+
+        console.log(
+            "Logout requested."
+        );
+
+    }
+
+
+    /* =========================================================
+       STAY CALCULATION
+    ========================================================== */
+
+    const checkIn =
+        document.getElementById(
+            "resortCheckIn"
+        );
+
+    const checkOut =
+        document.getElementById(
+            "resortCheckOut"
+        );
+
+    const nights =
+        document.getElementById(
+            "resortNights"
+        );
+
+
+    function calculateNights() {
+
+        if (
+            !checkIn ||
+            !checkOut ||
+            !nights
+        ) {
+            return;
+        }
+
+        if (
+            !checkIn.value ||
+            !checkOut.value
+        ) {
+
+            nights.value = "";
+
+            return;
+        }
+
+
+        const start =
+            new Date(
+                checkIn.value + "T00:00:00"
+            );
+
+        const end =
+            new Date(
+                checkOut.value + "T00:00:00"
+            );
+
+
+        const difference =
+            end.getTime() -
+            start.getTime();
+
+
+        const calculatedNights =
+            Math.ceil(
+                difference /
+                (1000 * 60 * 60 * 24)
+            );
+
+
+        nights.value =
+            calculatedNights > 0
+                ? calculatedNights
+                : "";
+
+    }
+
+
+    if (checkIn) {
+        checkIn.addEventListener(
+            "change",
+            calculateNights
+        );
+    }
+
+    if (checkOut) {
+        checkOut.addEventListener(
+            "change",
+            calculateNights
+        );
+    }
+
+
+    /* =========================================================
+       PAYMENT CALCULATION
+    ========================================================== */
+
+    const roomRate =
+        document.getElementById(
+            "resortRoomRate"
+        );
+
+    const additionalCharges =
+        document.getElementById(
+            "resortAdditionalCharges"
+        );
+
+    const discount =
+        document.getElementById(
+            "resortDiscount"
+        );
+
+    const total =
+        document.getElementById(
+            "resortTotal"
+        );
+
+    const amountPaid =
+        document.getElementById(
+            "resortAmountPaid"
+        );
+
+    const balance =
+        document.getElementById(
+            "resortBalance"
+        );
+
+
+    function calculateResortPayment() {
+
+        if (!total) return;
+
+
+        const rate =
+            parseFloat(
+                roomRate?.value
+            ) || 0;
+
+        const additional =
+            parseFloat(
+                additionalCharges?.value
+            ) || 0;
+
+        const discountValue =
+            parseFloat(
+                discount?.value
+            ) || 0;
+
+        const paid =
+            parseFloat(
+                amountPaid?.value
+            ) || 0;
+
+
+        const calculatedTotal =
+            Math.max(
+                rate +
+                additional -
+                discountValue,
+                0
+            );
+
+
+        const calculatedBalance =
+            Math.max(
+                calculatedTotal -
+                paid,
+                0
+            );
+
+
+        total.value =
+            calculatedTotal.toFixed(2);
+
+
+        if (balance) {
+
+            balance.value =
+                calculatedBalance.toFixed(2);
+
+        }
+
+    }
+
+
+    [
+        roomRate,
+        additionalCharges,
+        discount,
+        amountPaid
+    ].forEach(function(field) {
+
+        if (field) {
+
+            field.addEventListener(
+                "input",
+                calculateResortPayment
+            );
+
+        }
+
+    });
+
+
+    /* =========================================================
+       FORM SUBMIT
+    ========================================================== */
+
+    const resortBookingForm =
+        document.getElementById(
+            "resortBookingForm"
+        );
+
+
+    if (resortBookingForm) {
+
+        resortBookingForm.addEventListener(
+            "submit",
+            function(event) {
+
+                event.preventDefault();
+
+                /*
+                 * Actual saving will be handled by
+                 * resort-bookings.js.
+                 *
+                 * No fake booking is created here.
+                 */
+
+                console.log(
+                    "Resort booking form submitted."
+                );
+
+                closeResortBookingModal();
+
+            }
+        );
+
+    }
+
+
+    /* =========================================================
+       BACKDROP CLOSE
+    ========================================================== */
+
+    document.addEventListener(
+        "click",
+        function(event) {
+
+            const resortModal =
+                document.getElementById(
+                    "resortBookingModal"
+                );
+
+            const detailsModal =
+                document.getElementById(
+                    "resortDetailsModal"
+                );
+
+            const accessModal =
+                document.getElementById(
+                    "pageAccessModal"
+                );
+
+
+            if (
+                event.target === resortModal
+            ) {
+
+                closeResortBookingModal();
+
+            }
+
+
+            if (
+                event.target === detailsModal
+            ) {
+
+                closeResortDetails();
+
+            }
+
+
+            if (
+                event.target === accessModal
+            ) {
+
+                closePageAccess();
+
+            }
+
+        }
+    );
+
+
+    /* =========================================================
+       ESC KEY
+    ========================================================== */
+
+    document.addEventListener(
+        "keydown",
+        function(event) {
+
+            if (
+                event.key !== "Escape"
+            ) {
+                return;
+            }
+
+            closeResortBookingModal();
+            closeResortDetails();
+            closePageAccess();
+
+        }
+    );
+
+</script>
+
+
+<!-- =============================================================
+     RESORT BOOKING JAVASCRIPT
+============================================================== -->
+<script src="../../assets/js/admin/resort-bookings.js"></script>
+
+</body>
+</html>

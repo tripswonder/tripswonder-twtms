@@ -1,0 +1,848 @@
+/* ==========================================================
+   MY TRIP
+   Trips Wonder Customer Module
+========================================================== */
+
+:root {
+    --my-blue: #1264e8;
+    --my-blue-dark: #0d47b5;
+    --my-text: #10234f;
+    --my-muted: #64748b;
+    --my-border: #e5eaf2;
+    --my-bg: #f4f7fb;
+    --my-white: #ffffff;
+    --my-green: #159447;
+    --my-green-bg: #e8f7ee;
+    --my-orange: #e99800;
+}
+
+
+/* ==========================================================
+   PAGE
+========================================================== */
+
+body {
+    background: var(--my-bg);
+    overflow: hidden;
+}
+
+.my-trip-page {
+    width: 100%;
+    max-width: 430px;
+    min-height: 100vh;
+    margin: 0 auto;
+    background: #f7f9fc;
+    position: relative;
+    overflow: hidden;
+}
+
+
+/* ==========================================================
+   HEADER
+========================================================== */
+
+.my-trip-header {
+    height: 100px;
+    padding: 18px 18px 12px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    background: none;
+    position: relative;
+    z-index: 10;
+}
+
+.back-btn {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--my-text);
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.header-title {
+    flex: 1;
+}
+
+.header-title h1 {
+    margin: 0;
+    font-size: 26px;
+    line-height: 1.15;
+    font-weight: 700;
+    color: var(--my-text);
+}
+
+.header-title p {
+    margin: 5px 0 0;
+    font-size: 11px;
+    line-height: 1.35;
+    color: var(--my-muted);
+}
+
+.notification-btn {
+    width: 34px;
+    height: 34px;
+    position: relative;
+    color: var(--my-text);
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+.notification-count {
+    position: absolute;
+    top: -2px;
+    right: -3px;
+    min-width: 16px;
+    height: 16px;
+    padding: 0 4px;
+    border-radius: 20px;
+    background: #e53935;
+    color: #ffffff;
+    font-size: 9px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+/* ==========================================================
+   MAIN SCROLL AREA
+========================================================== */
+
+.trip-content {
+    height: calc(100vh - 100px);
+    overflow-y: auto;
+    padding: 0 12px 90px;
+    scrollbar-width: none;
+}
+
+.trip-content::-webkit-scrollbar {
+    display: none;
+}
+
+
+/* ==========================================================
+   LOADING
+========================================================== */
+
+.trip-loading {
+    height: calc(100vh - 100px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--my-muted);
+    font-size: 12px;
+}
+
+.loading-spinner {
+    width: 30px;
+    height: 30px;
+    border: 3px solid #dbe5f5;
+    border-top-color: var(--my-blue);
+    border-radius: 50%;
+    animation: tripSpin 0.8s linear infinite;
+    margin-bottom: 10px;
+}
+
+@keyframes tripSpin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+
+/* ==========================================================
+   NO TRIP
+========================================================== */
+
+.no-trip-state {
+    min-height: calc(100vh - 100px);
+    padding: 30px 25px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.no-trip-icon {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: #e9f1ff;
+    color: var(--my-blue);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    margin-bottom: 18px;
+}
+
+.no-trip-state h2 {
+    margin: 0 0 7px;
+    color: var(--my-text);
+    font-size: 20px;
+}
+
+.no-trip-state p {
+    margin: 0 0 20px;
+    color: var(--my-muted);
+    font-size: 12px;
+}
+
+.primary-btn {
+    min-height: 42px;
+    padding: 0 20px;
+    border-radius: 10px;
+    background: var(--my-blue);
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+
+/* ==========================================================
+   HERO
+========================================================== */
+
+.trip-hero {
+    min-height: 235px;
+    position: relative;
+    overflow: hidden;
+    border-radius: 18px;
+    background: #dbeafe;
+    box-shadow: 0 5px 18px rgba(16, 35, 79, 0.08);
+}
+
+.trip-hero-background {
+    position: absolute;
+    inset: 0;
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+.trip-hero-overlay {
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(
+            90deg,
+            rgba(255, 255, 255, 0.97) 0%,
+            rgba(255, 255, 255, 0.91) 42%,
+            rgba(255, 255, 255, 0.25) 76%,
+            rgba(255, 255, 255, 0.02) 100%
+        );
+}
+
+.trip-hero-content {
+    position: relative;
+    z-index: 2;
+    width: 70%;
+    padding: 18px 16px;
+}
+
+.trip-status-row {
+    margin-bottom: 12px;
+}
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 9px;
+    border-radius: 20px;
+    background: var(--my-green-bg);
+    color: var(--my-green);
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.trip-hero h2 {
+    margin: 0;
+    color: var(--my-text);
+    font-size: 25px;
+    line-height: 1.15;
+    font-weight: 700;
+}
+
+.trip-duration {
+    margin: 6px 0 14px;
+    color: #4d5d79;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.trip-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.trip-meta > div {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    color: #40516f;
+    font-size: 10px;
+    line-height: 1.3;
+}
+
+.trip-meta i {
+    width: 13px;
+    margin-top: 1px;
+    color: var(--my-blue);
+}
+
+.booking-id-label {
+    color: #40516f;
+}
+
+.trip-meta strong {
+    color: var(--my-text);
+    font-weight: 600;
+}
+
+.copy-btn {
+    margin-left: 2px;
+    color: var(--my-blue);
+    font-size: 11px;
+}
+
+
+/* ==========================================================
+   TABS
+========================================================== */
+
+.trip-tabs {
+    margin-top: 10px;
+    display: flex;
+    overflow-x: auto;
+    background: none;
+    border: 1px solid var(--my-border);
+    border-radius: 15px;
+    box-shadow: 0 3px 12px rgba(16, 35, 79, 0.05);
+    scrollbar-width: none;
+}
+
+.trip-tabs::-webkit-scrollbar {
+    display: none;
+}
+
+.trip-tab {
+    min-width: 86px;
+    height: 76px;
+    padding: 9px 6px 7px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    color: #64748b;
+    font-size: 9px;
+    font-weight: 500;
+    position: relative;
+    flex-shrink: 0;
+}
+
+.trip-tab i {
+    font-size: 21px;
+}
+
+.trip-tab.active {
+    color: var(--my-blue);
+    font-weight: 600;
+}
+
+.trip-tab.active::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 10px;
+    right: 10px;
+    height: 3px;
+    background: var(--my-blue);
+    border-radius: 5px 5px 0 0;
+}
+
+
+/* ==========================================================
+   TAB PANEL
+========================================================== */
+
+.tab-panel {
+    display: none;
+    padding-top: 10px;
+}
+
+.tab-panel.active {
+    display: block;
+}
+
+
+/* ==========================================================
+   INFORMATION CARD
+========================================================== */
+
+.info-card {
+    background: #ffffff;
+    border: 1px solid var(--my-border);
+    border-radius: 16px;
+    padding: 14px;
+    margin-bottom: 10px;
+    box-shadow: 0 3px 12px rgba(16, 35, 79, 0.045);
+}
+
+.info-card h3 {
+    margin: 0 0 12px;
+    color: var(--my-text);
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.info-card h3 i {
+    margin-right: 5px;
+    color: var(--my-blue);
+}
+
+.info-list {
+    border: 1px solid #edf0f5;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.info-row {
+    min-height: 48px;
+    padding: 9px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    border-bottom: 1px solid #edf0f5;
+}
+
+.info-row:last-child {
+    border-bottom: none;
+}
+
+.info-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #334155;
+    font-size: 11px;
+}
+
+.info-label i {
+    width: 15px;
+    color: #64748b;
+}
+
+.info-row strong {
+    max-width: 58%;
+    text-align: right;
+    color: var(--my-text);
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.inline-status {
+    color: var(--my-green) !important;
+}
+
+.payment-status {
+    color: var(--my-blue) !important;
+}
+
+
+/* ==========================================================
+   INCLUDED
+========================================================== */
+
+.included-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 9px 12px;
+}
+
+.included-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
+    color: #3c4b64;
+    font-size: 10px;
+    line-height: 1.35;
+}
+
+.included-item i {
+    color: #36ad5a;
+    margin-top: 1px;
+    flex-shrink: 0;
+}
+
+
+/* ==========================================================
+   QR CARD
+========================================================== */
+
+.qr-card {
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 10px;
+    background: linear-gradient(135deg, #f9fbff, #eef5ff);
+    border: 1px solid #dce8fa;
+    border-radius: 16px;
+    box-shadow: 0 3px 12px rgba(16, 35, 79, 0.045);
+}
+
+.qr-background {
+    position: absolute;
+    right: -40px;
+    bottom: -55px;
+    width: 190px;
+    height: 190px;
+    border-radius: 50%;
+    background:
+        radial-gradient(
+            circle,
+            rgba(18, 100, 232, 0.07),
+            rgba(18, 100, 232, 0)
+        );
+}
+
+.qr-content {
+    position: relative;
+    padding: 14px;
+}
+
+.qr-content h3 {
+    margin: 0 0 12px;
+    color: var(--my-text);
+    font-size: 15px;
+}
+
+.qr-main {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+}
+
+.qr-image-wrapper {
+    width: 105px;
+    height: 105px;
+    padding: 7px;
+    flex-shrink: 0;
+    background: #ffffff;
+    border: 1px solid #d9e2f0;
+    border-radius: 11px;
+    box-shadow: 0 2px 8px rgba(16, 35, 79, 0.08);
+}
+
+.qr-image-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.qr-info {
+    flex: 1;
+}
+
+.qr-info h4 {
+    margin: 0 0 5px;
+    color: var(--my-text);
+    font-size: 13px;
+}
+
+.qr-info p {
+    margin: 0 0 10px;
+    color: #64748b;
+    font-size: 9px;
+    line-height: 1.45;
+}
+
+.qr-fullscreen-btn {
+    height: 31px;
+    padding: 0 10px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    border: 1px solid var(--my-blue);
+    border-radius: 7px;
+    color: var(--my-blue);
+    background: #ffffff;
+    font-size: 9px;
+    font-weight: 600;
+}
+
+
+/* ==========================================================
+   REMINDERS
+========================================================== */
+
+.reminder-card {
+    margin-bottom: 15px;
+    padding: 14px;
+    background: #fffaf0;
+    border: 1px solid #f4dfb2;
+    border-radius: 16px;
+}
+
+.reminder-card h3 {
+    margin: 0 0 9px;
+    color: var(--my-orange);
+    font-size: 14px;
+}
+
+.reminder-card h3 i {
+    margin-right: 5px;
+}
+
+.reminder-card ul {
+    margin: 0;
+    padding-left: 18px;
+}
+
+.reminder-card li {
+    margin-bottom: 5px;
+    color: #4b5563;
+    font-size: 10px;
+    line-height: 1.4;
+}
+
+.reminder-card li:last-child {
+    margin-bottom: 0;
+}
+
+
+/* ==========================================================
+   DETAIL BOX
+========================================================== */
+
+.detail-box {
+    margin-bottom: 9px;
+    padding: 13px;
+    background: #f8fafc;
+    border: 1px solid #e7edf5;
+    border-radius: 11px;
+}
+
+.detail-box:last-child {
+    margin-bottom: 0;
+}
+
+.detail-box span {
+    display: block;
+    margin-bottom: 5px;
+    color: #64748b;
+    font-size: 10px;
+}
+
+.detail-box strong {
+    color: var(--my-text);
+    font-size: 12px;
+}
+
+
+/* ==========================================================
+   EMPTY TAB
+========================================================== */
+
+.empty-tab-content {
+    padding: 25px 10px;
+    text-align: center;
+    color: #64748b;
+    font-size: 11px;
+}
+
+
+/* ==========================================================
+   BOTTOM NAVIGATION
+========================================================== */
+
+.bottom-nav {
+    position: fixed;
+    left: 50%;
+    bottom: 0;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 430px;
+    height: 68px;
+    padding: 5px 8px 7px;
+    display: flex;
+    align-items: stretch;
+    justify-content: space-around;
+    background: rgba(255, 255, 255, 0.97);
+    border-top: 1px solid #e2e8f0;
+    box-shadow: 0 -4px 15px rgba(16, 35, 79, 0.06);
+    backdrop-filter: blur(10px);
+    z-index: 100;
+}
+
+.bottom-nav-item {
+    min-width: 54px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    color: #64748b;
+    font-size: 9px;
+    font-weight: 500;
+}
+
+.bottom-icon {
+    height: 27px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 17px;
+}
+
+.bottom-nav-item.active {
+    color: var(--my-blue);
+    font-weight: 700;
+}
+
+.bottom-nav-item.active .bottom-icon {
+    font-size: 18px;
+}
+
+.notification-item {
+    position: relative;
+}
+
+.notification-badge {
+    position: absolute;
+    top: -5px;
+    right: -8px;
+    min-width: 14px;
+    height: 14px;
+    padding: 0 3px;
+    border-radius: 20px;
+    background: #e53935;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 8px;
+    font-weight: 700;
+}
+
+
+/* ==========================================================
+   QR MODAL
+========================================================== */
+
+.qr-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 500;
+    background: rgba(8, 18, 39, 0.94);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 25px;
+}
+
+/* IMPORTANT:
+   Keep QR modal hidden until user clicks
+   "View Full Screen"
+*/
+.qr-modal[hidden] {
+    display: none !important;
+}
+
+.qr-modal img {
+    width: min(330px, 80vw);
+    height: min(330px, 80vw);
+    padding: 12px;
+    background: #ffffff;
+    border-radius: 14px;
+    object-fit: contain;
+}
+
+.qr-modal-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #ffffff;
+    color: #172554;
+    font-size: 18px;
+}
+
+
+/* ==========================================================
+   MOBILE
+========================================================== */
+
+@media (max-width: 430px) {
+
+    .my-trip-page {
+        max-width: 430px;
+    }
+
+    .trip-hero-content {
+        width: 76%;
+    }
+
+    .trip-hero h2 {
+        font-size: 22px;
+    }
+
+    .trip-tab {
+        min-width: 82px;
+    }
+
+}
+
+
+/* ==========================================================
+   VERY SMALL DEVICES
+========================================================== */
+
+@media (max-width: 360px) {
+
+    .my-trip-header {
+        padding-left: 13px;
+        padding-right: 13px;
+    }
+
+    .trip-content {
+        padding-left: 8px;
+        padding-right: 8px;
+    }
+
+    .trip-hero-content {
+        width: 80%;
+        padding: 15px;
+    }
+
+    .trip-hero h2 {
+        font-size: 20px;
+    }
+
+    .included-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .qr-main {
+        gap: 9px;
+    }
+
+    .qr-image-wrapper {
+        width: 90px;
+        height: 90px;
+    }
+
+}

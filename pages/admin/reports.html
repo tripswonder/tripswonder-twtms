@@ -1,1 +1,1176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <title>Reports | Trips Wonder Admin</title>
+
+    <link
+        rel="stylesheet"
+        href="../../assets/css/admin/reports.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+</head>
+
+<body class="twtms-page-loading"></body>
+
+<div class="admin-layout">
+
+    <!-- =====================================================
+         SIDEBAR
+    ====================================================== -->
+    <aside class="sidebar">
+
+        <div class="sidebar-brand">
+
+            <div class="brand-logo">
+                <img
+                    src="../../assets/images/logo.png"
+                    alt="Trips Wonder Logo"
+                >
+            </div>
+
+            <div class="brand-text">
+                <h2>Trips Wonder</h2>
+                <span>Travel Management System</span>
+            </div>
+
+        </div>
+
+
+        <div class="sidebar-menu">
+
+            <div class="menu-label">
+                MAIN MENU
+            </div>
+
+            <nav class="main-navigation">
+
+                <a href="dashboard.html" class="nav-item">
+                    <i class="fa-solid fa-chart-pie"></i>
+                    <span>Dashboard</span>
+                </a>
+
+                <a href="packages.html" class="nav-item">
+                    <i class="fa-solid fa-suitcase"></i>
+                    <span>Packages</span>
+                </a>
+
+                <a href="bookings.html" class="nav-item">
+                    <i class="fa-solid fa-calendar-check"></i>
+                    <span>Bookings</span>
+                </a>
+
+                <a href="customers.html" class="nav-item">
+                    <i class="fa-solid fa-users"></i>
+                    <span>Customers</span>
+                </a>
+
+                <a href="payments.html" class="nav-item">
+                    <i class="fa-solid fa-credit-card"></i>
+                    <span>Payments</span>
+                </a>
+
+                <a href="invoices.html" class="nav-item">
+                    <i class="fa-solid fa-file-invoice"></i>
+                    <span>Invoices</span>
+                </a>
+
+                <a href="resort-bookings.html" class="nav-item">
+                    <i class="fa-solid fa-building"></i>
+                    <span>Resort Bookings</span>
+                </a>
+
+                <a href="reports.html" class="nav-item active">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>Reports</span>
+                </a>
+
+            </nav>
+
+        </div>
+
+
+        <!-- =================================================
+             ADMIN PROFILE
+             ONE CLICK
+        ================================================== -->
+        <div class="sidebar-bottom">
+
+            <a
+                href="admin-profile.html"
+                class="admin-profile"
+                id="adminProfile"
+            >
+
+                <div class="admin-avatar">
+                    <i class="fa-solid fa-user"></i>
+                </div>
+
+                <div class="admin-info">
+                    <strong>Admin Trips Wonder</strong>
+                    <span>Administrator</span>
+                </div>
+
+            </a>
+
+
+            <!-- LOGOUT ALWAYS VISIBLE -->
+            <button
+                type="button"
+                class="logout-button"
+                onclick="handleLogout()"
+            >
+
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <span>Logout</span>
+
+            </button>
+
+        </div>
+
+    </aside>
+
+
+    <!-- =====================================================
+         MAIN CONTENT
+    ====================================================== -->
+    <main class="main-content">
+
+        <!-- PAGE HEADER -->
+        <section class="page-header">
+
+            <div class="page-heading">
+
+                <h1>Reports</h1>
+
+                <p>
+                    Analyze bookings, payments, sales, packages,
+                    customers and resort reservations.
+                </p>
+
+            </div>
+
+
+            <div class="report-header-actions">
+
+                <div class="date-range-control">
+
+                    <i class="fa-regular fa-calendar"></i>
+
+                    <input
+                        type="date"
+                        id="reportStartDate"
+                        aria-label="Report start date"
+                    >
+
+                    <span>to</span>
+
+                    <input
+                        type="date"
+                        id="reportEndDate"
+                        aria-label="Report end date"
+                    >
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="primary-button"
+                    onclick="generateReport()"
+                >
+                    <i class="fa-solid fa-arrows-rotate"></i>
+                    <span>Generate Report</span>
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             REPORT SUMMARY
+        ================================================== -->
+        <section class="report-summary">
+
+            <div class="summary-card">
+
+                <div class="summary-icon blue">
+                    <i class="fa-solid fa-peso-sign"></i>
+                </div>
+
+                <div class="summary-content">
+
+                    <span class="summary-label">
+                        Total Revenue
+                    </span>
+
+                    <strong
+                        class="summary-value amount"
+                        id="reportTotalRevenue"
+                    >
+                        —
+                    </strong>
+
+                    <small>
+                        Based on selected period
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <div class="summary-icon green">
+                    <i class="fa-solid fa-calendar-check"></i>
+                </div>
+
+                <div class="summary-content">
+
+                    <span class="summary-label">
+                        Total Bookings
+                    </span>
+
+                    <strong
+                        class="summary-value"
+                        id="reportTotalBookings"
+                    >
+                        —
+                    </strong>
+
+                    <small>
+                        All booking records
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <div class="summary-icon purple">
+                    <i class="fa-solid fa-users"></i>
+                </div>
+
+                <div class="summary-content">
+
+                    <span class="summary-label">
+                        Total Customers
+                    </span>
+
+                    <strong
+                        class="summary-value"
+                        id="reportTotalCustomers"
+                    >
+                        —
+                    </strong>
+
+                    <small>
+                        Customers in selected period
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <div class="summary-icon orange">
+                    <i class="fa-solid fa-wallet"></i>
+                </div>
+
+                <div class="summary-content">
+
+                    <span class="summary-label">
+                        Outstanding Balance
+                    </span>
+
+                    <strong
+                        class="summary-value amount"
+                        id="reportOutstandingBalance"
+                    >
+                        —
+                    </strong>
+
+                    <small>
+                        Unpaid or partially paid
+                    </small>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             REPORT CONTENT
+        ================================================== -->
+        <section class="report-grid">
+
+            <!-- SALES & REVENUE -->
+            <article class="report-panel revenue-panel">
+
+                <div class="panel-header">
+
+                    <div>
+
+                        <span class="panel-eyebrow">
+                            FINANCIAL
+                        </span>
+
+                        <h2>
+                            Sales &amp; Revenue
+                        </h2>
+
+                        <p>
+                            Financial performance for the selected period.
+                        </p>
+
+                    </div>
+
+                    <div class="panel-icon blue">
+                        <i class="fa-solid fa-chart-column"></i>
+                    </div>
+
+                </div>
+
+
+                <div class="financial-metrics">
+
+                    <div class="financial-item">
+                        <span>Total Sales</span>
+                        <strong id="reportTotalSales">—</strong>
+                    </div>
+
+                    <div class="financial-item">
+                        <span>Amount Collected</span>
+                        <strong id="reportAmountCollected">—</strong>
+                    </div>
+
+                    <div class="financial-item">
+                        <span>Outstanding</span>
+                        <strong id="reportFinancialOutstanding">—</strong>
+                    </div>
+
+                    <div class="financial-item">
+                        <span>Discounts</span>
+                        <strong id="reportDiscounts">—</strong>
+                    </div>
+
+                </div>
+
+
+                <div class="chart-container">
+
+                    <div class="chart-header">
+
+                        <div>
+                            <strong>
+                                Revenue Trend
+                            </strong>
+
+                            <span>
+                                Selected date range
+                            </span>
+                        </div>
+
+                        <span
+                            class="chart-value"
+                            id="reportRevenueTrendValue"
+                        >
+                            —
+                        </span>
+
+                    </div>
+
+
+                    <div
+                        class="chart-placeholder"
+                        id="revenueChart"
+                    >
+
+                        <div class="chart-empty-icon">
+                            <i class="fa-solid fa-chart-area"></i>
+                        </div>
+
+                        <span>
+                            Revenue data will appear here
+                        </span>
+
+                        <small>
+                            Connect report data to display the actual trend.
+                        </small>
+
+                    </div>
+
+                </div>
+
+            </article>
+
+
+            <!-- BOOKING REPORT -->
+            <article class="report-panel booking-panel">
+
+                <div class="panel-header">
+
+                    <div>
+
+                        <span class="panel-eyebrow">
+                            BOOKINGS
+                        </span>
+
+                        <h2>
+                            Booking Report
+                        </h2>
+
+                        <p>
+                            Current booking distribution.
+                        </p>
+
+                    </div>
+
+                    <div class="panel-icon green">
+                        <i class="fa-solid fa-calendar-days"></i>
+                    </div>
+
+                </div>
+
+
+                <div class="status-list">
+
+                    <div class="status-row">
+
+                        <div class="status-label">
+                            <span class="status-dot confirmed"></span>
+                            Confirmed
+                        </div>
+
+                        <strong id="reportConfirmedBookings">
+                            —
+                        </strong>
+
+                    </div>
+
+
+                    <div class="status-row">
+
+                        <div class="status-label">
+                            <span class="status-dot pending"></span>
+                            Pending
+                        </div>
+
+                        <strong id="reportPendingBookings">
+                            —
+                        </strong>
+
+                    </div>
+
+
+                    <div class="status-row">
+
+                        <div class="status-label">
+                            <span class="status-dot completed"></span>
+                            Completed
+                        </div>
+
+                        <strong id="reportCompletedBookings">
+                            —
+                        </strong>
+
+                    </div>
+
+
+                    <div class="status-row">
+
+                        <div class="status-label">
+                            <span class="status-dot rescheduled"></span>
+                            Rescheduled
+                        </div>
+
+                        <strong id="reportRescheduledBookings">
+                            —
+                        </strong>
+
+                    </div>
+
+
+                    <div class="status-row">
+
+                        <div class="status-label">
+                            <span class="status-dot cancelled"></span>
+                            Cancelled
+                        </div>
+
+                        <strong id="reportCancelledBookings">
+                            —
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </article>
+
+
+            <!-- PACKAGE PERFORMANCE -->
+            <article class="report-panel package-panel">
+
+                <div class="panel-header">
+
+                    <div>
+
+                        <span class="panel-eyebrow">
+                            PRODUCTS
+                        </span>
+
+                        <h2>
+                            Package Performance
+                        </h2>
+
+                        <p>
+                            Compare package bookings and revenue.
+                        </p>
+
+                    </div>
+
+                    <div class="panel-icon orange">
+                        <i class="fa-solid fa-suitcase"></i>
+                    </div>
+
+                </div>
+
+
+                <div class="performance-table-wrapper">
+
+                    <table class="performance-table">
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Package
+                                </th>
+
+                                <th>
+                                    Bookings
+                                </th>
+
+                                <th>
+                                    Pax
+                                </th>
+
+                                <th>
+                                    Revenue
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody id="packagePerformanceBody">
+
+                            <!-- Actual package report data goes here -->
+
+                        </tbody>
+
+                    </table>
+
+
+                    <div
+                        class="mini-empty-state"
+                        id="packagePerformanceEmpty"
+                    >
+
+                        <i class="fa-solid fa-box-open"></i>
+
+                        <span>
+                            No package data available.
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </article>
+
+
+            <!-- CUSTOMER REPORT -->
+            <article class="report-panel customer-panel">
+
+                <div class="panel-header">
+
+                    <div>
+
+                        <span class="panel-eyebrow">
+                            CUSTOMERS
+                        </span>
+
+                        <h2>
+                            Customer Report
+                        </h2>
+
+                        <p>
+                            Customer activity and growth.
+                        </p>
+
+                    </div>
+
+                    <div class="panel-icon purple">
+                        <i class="fa-solid fa-user-group"></i>
+                    </div>
+
+                </div>
+
+
+                <div class="customer-report-grid">
+
+                    <div class="customer-stat">
+
+                        <span>
+                            New Customers
+                        </span>
+
+                        <strong id="reportNewCustomers">
+                            —
+                        </strong>
+
+                    </div>
+
+
+                    <div class="customer-stat">
+
+                        <span>
+                            Returning Customers
+                        </span>
+
+                        <strong id="reportReturningCustomers">
+                            —
+                        </strong>
+
+                    </div>
+
+
+                    <div class="customer-stat">
+
+                        <span>
+                            Active Customers
+                        </span>
+
+                        <strong id="reportActiveCustomers">
+                            —
+                        </strong>
+
+                    </div>
+
+
+                    <div class="customer-stat">
+
+                        <span>
+                            Repeat Rate
+                        </span>
+
+                        <strong id="reportRepeatRate">
+                            —
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <div class="top-customer-section">
+
+                    <div class="subsection-header">
+
+                        <strong>
+                            Top Customers
+                        </strong>
+
+                        <span>
+                            By booking value
+                        </span>
+
+                    </div>
+
+
+                    <div
+                        class="top-customer-list"
+                        id="topCustomerList"
+                    >
+
+                        <div class="mini-empty-state">
+                            <i class="fa-solid fa-user"></i>
+
+                            <span>
+                                No customer data available.
+                            </span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </article>
+
+
+            <!-- RESORT BOOKING REPORT -->
+            <article class="report-panel resort-panel">
+
+                <div class="panel-header">
+
+                    <div>
+
+                        <span class="panel-eyebrow">
+                            ACCOMMODATION
+                        </span>
+
+                        <h2>
+                            Resort Booking Report
+                        </h2>
+
+                        <p>
+                            Resort reservation activity.
+                        </p>
+
+                    </div>
+
+                    <div class="panel-icon blue">
+                        <i class="fa-solid fa-building"></i>
+                    </div>
+
+                </div>
+
+
+                <div class="resort-report-stats">
+
+                    <div class="resort-stat">
+                        <span>Total</span>
+                        <strong id="reportTotalResortBookings">—</strong>
+                    </div>
+
+                    <div class="resort-stat">
+                        <span>Confirmed</span>
+                        <strong id="reportConfirmedResorts">—</strong>
+                    </div>
+
+                    <div class="resort-stat">
+                        <span>Pending</span>
+                        <strong id="reportPendingResorts">—</strong>
+                    </div>
+
+                    <div class="resort-stat">
+                        <span>Checked In</span>
+                        <strong id="reportCheckedInResorts">—</strong>
+                    </div>
+
+                    <div class="resort-stat">
+                        <span>Checked Out</span>
+                        <strong id="reportCheckedOutResorts">—</strong>
+                    </div>
+
+                </div>
+
+
+                <div
+                    class="resort-utilization"
+                    id="resortUtilization"
+                >
+
+                    <div class="mini-empty-state">
+
+                        <i class="fa-solid fa-bed"></i>
+
+                        <span>
+                            Resort utilization data will appear here.
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </article>
+
+        </section>
+
+
+        <!-- =================================================
+             REPORT FOOTER ACTIONS
+        ================================================== -->
+        <section class="report-actions">
+
+            <div class="report-note">
+
+                <i class="fa-solid fa-circle-info"></i>
+
+                <span>
+                    Reports use the records available in the system
+                    for the selected date range.
+                </span>
+
+            </div>
+
+
+            <div class="report-action-buttons">
+
+                <button
+                    type="button"
+                    class="secondary-button"
+                    onclick="printReport()"
+                >
+                    <i class="fa-solid fa-print"></i>
+                    <span>Print Report</span>
+                </button>
+
+
+                <button
+                    type="button"
+                    class="secondary-button"
+                    onclick="exportReport()"
+                >
+                    <i class="fa-solid fa-file-export"></i>
+                    <span>Export Report</span>
+                </button>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<!-- =============================================================
+     PAGE ACCESS MODAL
+============================================================== -->
+<div
+    class="modal-overlay"
+    id="pageAccessModal"
+    aria-hidden="true"
+>
+
+    <div class="access-modal">
+
+        <div class="modal-header">
+
+            <div>
+
+                <h2>
+                    Page Access
+                </h2>
+
+                <p>
+                    Manage administrator access.
+                </p>
+
+            </div>
+
+            <button
+                type="button"
+                class="modal-close"
+                onclick="closePageAccess()"
+                aria-label="Close"
+            >
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+        </div>
+
+
+        <div class="access-content">
+
+            <div class="access-account">
+
+                <div class="admin-avatar large">
+                    <i class="fa-solid fa-user"></i>
+                </div>
+
+                <div>
+
+                    <strong>
+                        Admin Trips Wonder
+                    </strong>
+
+                    <span>
+                        Administrator
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="access-list">
+
+                <div class="access-row">
+                    <span>Dashboard</span>
+                    <span class="access-status granted">Granted</span>
+                </div>
+
+                <div class="access-row">
+                    <span>Packages</span>
+                    <span class="access-status granted">Granted</span>
+                </div>
+
+                <div class="access-row">
+                    <span>Bookings</span>
+                    <span class="access-status granted">Granted</span>
+                </div>
+
+                <div class="access-row">
+                    <span>Customers</span>
+                    <span class="access-status granted">Granted</span>
+                </div>
+
+                <div class="access-row">
+                    <span>Payments</span>
+                    <span class="access-status granted">Granted</span>
+                </div>
+
+                <div class="access-row">
+                    <span>Invoices</span>
+                    <span class="access-status granted">Granted</span>
+                </div>
+
+                <div class="access-row">
+                    <span>Resort Bookings</span>
+                    <span class="access-status granted">Granted</span>
+                </div>
+
+                <div class="access-row">
+                    <span>Reports</span>
+                    <span class="access-status granted">Granted</span>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =============================================================
+     BASIC REPORT FUNCTIONS
+============================================================== -->
+<script>
+
+    /* =========================================================
+       ADMIN PROFILE
+    ========================================================== */
+    
+
+
+    /* =========================================================
+       PAGE ACCESS
+    ========================================================== */
+
+    function openPageAccess(event) {
+
+        if (event) {
+            event.stopPropagation();
+        }
+
+        const modal =
+            document.getElementById("pageAccessModal");
+
+        if (!modal) return;
+
+        modal.classList.add("show");
+
+        modal.setAttribute(
+            "aria-hidden",
+            "false"
+        );
+
+    }
+
+
+    function closePageAccess() {
+
+        const modal =
+            document.getElementById("pageAccessModal");
+
+        if (!modal) return;
+
+        modal.classList.remove("show");
+
+        modal.setAttribute(
+            "aria-hidden",
+            "true"
+        );
+
+    }
+
+
+    /* =========================================================
+       GENERATE REPORT
+    ========================================================== */
+
+    function generateReport() {
+
+        /*
+         * Actual report generation will be handled
+         * by reports.js.
+         *
+         * This HTML does not create fake report values.
+         */
+
+        if (
+            typeof window.loadReports ===
+            "function"
+        ) {
+
+            window.loadReports();
+
+        }
+
+    }
+
+
+    /* =========================================================
+       PRINT REPORT
+    ========================================================== */
+
+    function printReport() {
+
+        window.print();
+
+    }
+
+
+    /* =========================================================
+       EXPORT REPORT
+    ========================================================== */
+
+    function exportReport() {
+
+        /*
+         * Export logic will be connected to reports.js.
+         */
+
+        if (
+            typeof window.exportReports ===
+            "function"
+        ) {
+
+            window.exportReports();
+
+        }
+
+    }
+
+
+    /* =========================================================
+       LOGOUT
+    ========================================================== */
+
+    function handleLogout() {
+
+        const confirmed =
+            window.confirm(
+                "Are you sure you want to logout?"
+            );
+
+        if (!confirmed) return;
+
+        console.log(
+            "Logout requested."
+        );
+
+    }
+
+
+    /* =========================================================
+       PAGE ACCESS BACKDROP
+    ========================================================== */
+
+    document.addEventListener(
+        "click",
+        function(event) {
+
+            const accessModal =
+                document.getElementById(
+                    "pageAccessModal"
+                );
+
+            if (
+                event.target === accessModal
+            ) {
+
+                closePageAccess();
+
+            }
+
+        }
+    );
+
+
+    /* =========================================================
+       ESC KEY
+    ========================================================== */
+
+    document.addEventListener(
+        "keydown",
+        function(event) {
+
+            if (
+                event.key === "Escape"
+            ) {
+
+                closePageAccess();
+
+            }
+
+        }
+    );
+
+
+    /* =========================================================
+       DEFAULT DATE RANGE
+    ========================================================== */
+
+    const reportStartDate =
+        document.getElementById(
+            "reportStartDate"
+        );
+
+    const reportEndDate =
+        document.getElementById(
+            "reportEndDate"
+        );
+
+
+    /*
+     * The date fields intentionally remain empty.
+     * reports.js can set the application's preferred
+     * reporting period when the actual data layer is connected.
+     */
+
+</script>
+
+
+<!-- =============================================================
+     REPORT JAVASCRIPT
+============================================================== -->
+<script
+    type="module"
+    src="../../assets/js/admin/reports.js">
+</script>
+
+</body>
+</html>

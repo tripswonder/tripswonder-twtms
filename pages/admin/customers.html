@@ -1,1 +1,1443 @@
+<!DOCTYPE html>
+<html lang="en">
 
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Customers | Trips Wonder Admin
+    </title>
+
+
+    <!-- Main Admin CSS -->
+    <link
+        rel="stylesheet"
+        href="../../assets/css/admin/customers.css"
+    >
+
+    <!-- GLOBAL LOADING SCREEN -->
+    <link
+    rel="stylesheet"
+    href="../../../assets/css/shared/loading-screen.css">
+
+
+    <!-- Font Awesome -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+
+</head>
+
+
+<body class="twtms-page-loading"></body>
+
+
+<div class="admin-layout">
+
+
+    <!-- =====================================================
+         SIDEBAR
+    ====================================================== -->
+
+    <aside class="sidebar">
+
+
+        <!-- BRAND -->
+
+        <div class="sidebar-brand">
+
+            <div class="brand-logo">
+
+                <img
+                    src="../../assets/images/logo.png"
+                    alt="Trips Wonder Logo"
+                >
+
+            </div>
+
+
+            <div class="brand-text">
+
+                <h2>
+                    Trips Wonder
+                </h2>
+
+                <span>
+                    Travel Management System
+                </span>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =================================================
+             MAIN MENU
+        ================================================== -->
+
+        <div class="sidebar-menu">
+
+            <div class="menu-label">
+                MAIN MENU
+            </div>
+
+
+            <nav class="main-navigation">
+
+
+                <!-- DASHBOARD -->
+
+                <a
+                    href="dashboard.html"
+                    class="nav-item"
+                >
+
+                    <i class="fa-solid fa-chart-pie"></i>
+
+                    <span>
+                        Dashboard
+                    </span>
+
+                </a>
+
+
+
+                <!-- PACKAGES -->
+
+                <a
+                    href="packages.html"
+                    class="nav-item"
+                >
+
+                    <i class="fa-solid fa-suitcase"></i>
+
+                    <span>
+                        Packages
+                    </span>
+
+                </a>
+
+
+
+                <!-- BOOKINGS -->
+
+                <a
+                    href="bookings.html"
+                    class="nav-item"
+                >
+
+                    <i class="fa-solid fa-calendar-check"></i>
+
+                    <span>
+                        Bookings
+                    </span>
+
+                </a>
+
+
+
+                <!-- CUSTOMERS ACTIVE -->
+
+                <a
+                    href="customers.html"
+                    class="nav-item active"
+                >
+
+                    <i class="fa-solid fa-users"></i>
+
+                    <span>
+                        Customers
+                    </span>
+
+                </a>
+
+
+
+                <!-- PAYMENTS -->
+
+                <a
+                    href="payments.html"
+                    class="nav-item"
+                >
+
+                    <i class="fa-solid fa-credit-card"></i>
+
+                    <span>
+                        Payments
+                    </span>
+
+                </a>
+
+
+
+                <!-- INVOICES -->
+
+                <a
+                    href="invoices.html"
+                    class="nav-item"
+                >
+
+                    <i class="fa-solid fa-file-invoice"></i>
+
+                    <span>
+                        Invoices
+                    </span>
+
+                </a>
+
+
+
+                <!-- RESORT BOOKINGS -->
+
+                <a
+                    href="resort-bookings.html"
+                    class="nav-item"
+                >
+
+                    <i class="fa-solid fa-building"></i>
+
+                    <span>
+                        Resort Bookings
+                    </span>
+
+                </a>
+
+
+
+                <!-- REPORTS -->
+
+                <a
+                    href="reports.html"
+                    class="nav-item"
+                >
+
+                    <i class="fa-solid fa-chart-line"></i>
+
+                    <span>
+                        Reports
+                    </span>
+
+                </a>
+
+
+            </nav>
+
+        </div>
+
+
+
+        <!-- =====================================================
+             BOTTOM ACCOUNT AREA
+        ====================================================== -->
+
+        <div class="sidebar-bottom">
+
+
+            <!-- =================================================
+                 ADMIN PROFILE
+                 ONE CLICK ONLY
+            ================================================== -->
+
+            <a
+                href="admin-profile.html"
+                class="admin-profile"
+                id="adminProfile"
+            >
+
+                <div class="admin-avatar">
+
+                    <i class="fa-solid fa-user"></i>
+
+                </div>
+
+
+                <div class="admin-info">
+
+                    <strong>
+                        Admin Trips Wonder
+                    </strong>
+
+                    <span>
+                        Administrator
+                    </span>
+
+                </div>
+
+            </a>
+
+
+
+            <!-- =================================================
+                 LOGOUT
+            ================================================== -->
+
+            <button
+                type="button"
+                class="logout-button"
+                onclick="handleLogout()"
+            >
+
+                <i class="fa-solid fa-right-from-bracket"></i>
+
+                <span>
+                    Logout
+                </span>
+
+            </button>
+
+
+        </div>
+
+
+    </aside>
+
+
+
+    <!-- =========================================================
+         MAIN CONTENT
+    ========================================================== -->
+
+    <main class="main-content">
+
+
+        <!-- PAGE HEADER -->
+
+        <section class="page-header">
+
+
+            <div class="page-heading">
+
+                <h1>
+                    Customers
+                </h1>
+
+                <p>
+                    Manage customer profiles, booking history
+                    and travel records.
+                </p>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="primary-button"
+                id="addCustomerButton"
+                onclick="openCustomerModal()"
+            >
+
+                <i class="fa-solid fa-plus"></i>
+
+                <span>
+                    Add Customer
+                </span>
+
+            </button>
+
+
+        </section>
+
+
+
+        <!-- =====================================================
+             CUSTOMER SUMMARY
+        ====================================================== -->
+
+        <section class="customer-summary">
+
+
+            <!-- TOTAL -->
+
+            <div class="summary-card">
+
+                <div class="summary-icon blue">
+
+                    <i class="fa-solid fa-users"></i>
+
+                </div>
+
+
+                <div class="summary-content">
+
+                    <span class="summary-label">
+                        Total Customers
+                    </span>
+
+                    <strong
+                        class="summary-value"
+                        id="totalCustomers"
+                    >
+                        —
+                    </strong>
+
+                    <small>
+                        All customer profiles
+                    </small>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- ACTIVE -->
+
+            <div class="summary-card">
+
+                <div class="summary-icon green">
+
+                    <i class="fa-solid fa-user-check"></i>
+
+                </div>
+
+
+                <div class="summary-content">
+
+                    <span class="summary-label">
+                        Active Customers
+                    </span>
+
+                    <strong
+                        class="summary-value"
+                        id="activeCustomers"
+                    >
+                        —
+                    </strong>
+
+                    <small>
+                        Current customers
+                    </small>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- NEW -->
+
+            <div class="summary-card">
+
+                <div class="summary-icon orange">
+
+                    <i class="fa-solid fa-user-plus"></i>
+
+                </div>
+
+
+                <div class="summary-content">
+
+                    <span class="summary-label">
+                        New Customers
+                    </span>
+
+                    <strong
+                        class="summary-value"
+                        id="newCustomers"
+                    >
+                        —
+                    </strong>
+
+                    <small>
+                        Recently added
+                    </small>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- REPEAT -->
+
+            <div class="summary-card">
+
+                <div class="summary-icon purple">
+
+                    <i class="fa-solid fa-repeat"></i>
+
+                </div>
+
+
+                <div class="summary-content">
+
+                    <span class="summary-label">
+                        Repeat Customers
+                    </span>
+
+                    <strong
+                        class="summary-value"
+                        id="repeatCustomers"
+                    >
+                        —
+                    </strong>
+
+                    <small>
+                        More than one booking
+                    </small>
+
+                </div>
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- =====================================================
+             FILTER / SEARCH
+        ====================================================== -->
+
+        <section class="customer-toolbar">
+
+
+            <!-- SEARCH -->
+
+            <div class="search-box">
+
+                <i class="fa-solid fa-magnifying-glass"></i>
+
+                <input
+                    type="search"
+                    id="customerSearch"
+                    placeholder="Search name, contact, email or Facebook..."
+                    autocomplete="off"
+                >
+
+            </div>
+
+
+
+            <!-- STATUS -->
+
+            <div class="filter-select">
+
+                <select id="statusFilter">
+
+                    <option value="all">
+                        All Status
+                    </option>
+
+                    <option value="active">
+                        Active
+                    </option>
+
+                    <option value="inactive">
+                        Inactive
+                    </option>
+
+                </select>
+
+            </div>
+
+
+
+            <!-- CUSTOMER TYPE -->
+
+            <div class="filter-select">
+
+                <select id="customerTypeFilter">
+
+                    <option value="all">
+                        All Customers
+                    </option>
+
+                    <option value="new">
+                        New Customers
+                    </option>
+
+                    <option value="repeat">
+                        Repeat Customers
+                    </option>
+
+                </select>
+
+            </div>
+
+
+
+            <!-- SORT -->
+
+            <div class="filter-select">
+
+                <select id="sortCustomers">
+
+                    <option value="newest">
+                        Newest First
+                    </option>
+
+                    <option value="oldest">
+                        Oldest First
+                    </option>
+
+                    <option value="name-asc">
+                        Name A-Z
+                    </option>
+
+                    <option value="name-desc">
+                        Name Z-A
+                    </option>
+
+                    <option value="spent-high">
+                        Highest Spent
+                    </option>
+
+                    <option value="spent-low">
+                        Lowest Spent
+                    </option>
+
+                </select>
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- =====================================================
+             CUSTOMER LIST
+        ====================================================== -->
+
+        <section class="customers-section">
+
+
+            <!-- SECTION HEADER -->
+
+            <div class="section-header">
+
+
+                <div>
+
+                    <h2>
+                        All Customers
+                    </h2>
+
+                    <p>
+                        Showing live customer records
+                    </p>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="refresh-button"
+                    id="refreshCustomers"
+                    onclick="refreshCustomers()"
+                >
+
+                    <i class="fa-solid fa-rotate"></i>
+
+                    <span>
+                        Refresh
+                    </span>
+
+                </button>
+
+
+            </div>
+
+
+
+            <!-- CUSTOMER TABLE -->
+
+            <div class="customer-table-wrapper">
+
+
+                <table class="customer-table">
+
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Customer
+                            </th>
+
+                            <th>
+                                Contact
+                            </th>
+
+                            <th>
+                                Email
+                            </th>
+
+                            <th>
+                                Facebook
+                            </th>
+
+                            <th>
+                                Bookings
+                            </th>
+
+                            <th>
+                                Total Spent
+                            </th>
+
+                            <th>
+                                Last Trip
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                            <th>
+                                Actions
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="customersTableBody">
+
+                        <!--
+                            ACTUAL CUSTOMER DATA WILL BE INSERTED
+                            BY customers.js
+                        -->
+
+                    </tbody>
+
+
+                </table>
+
+
+
+                <!-- EMPTY STATE -->
+
+                <div
+                    class="empty-customers"
+                    id="emptyCustomers"
+                >
+
+                    <div class="empty-icon">
+
+                        <i class="fa-regular fa-address-book"></i>
+
+                    </div>
+
+
+                    <h3>
+                        No customers to display
+                    </h3>
+
+
+                    <p>
+                        Live customer records will appear here automatically.
+                    </p>
+
+                </div>
+
+
+            </div>
+
+        </section>
+
+
+    </main>
+
+
+</div>
+
+
+
+<!-- =============================================================
+     ADD / EDIT CUSTOMER MODAL
+============================================================== -->
+
+<div
+    class="modal-overlay"
+    id="customerModal"
+    aria-hidden="true"
+>
+
+
+    <div class="customer-modal">
+
+
+        <div class="modal-header">
+
+
+            <div>
+
+                <h2 id="customerModalTitle">
+                    Add Customer
+                </h2>
+
+                <p>
+                    Create a customer profile.
+                </p>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="modal-close"
+                onclick="closeCustomerModal()"
+                aria-label="Close"
+            >
+
+                <i class="fa-solid fa-xmark"></i>
+
+            </button>
+
+
+        </div>
+
+
+
+        <form
+            id="customerForm"
+            class="customer-form"
+        >
+
+
+            <input
+                type="hidden"
+                id="customerId"
+            >
+
+
+
+            <!-- NAME -->
+
+            <div class="form-group">
+
+                <label for="customerName">
+                    Full Name
+                </label>
+
+                <input
+                    type="text"
+                    id="customerName"
+                    name="customerName"
+                    placeholder="Enter customer name"
+                >
+
+            </div>
+
+
+
+            <!-- CONTACT -->
+
+            <div class="form-group">
+
+                <label for="customerContact">
+                    Contact Number
+                </label>
+
+                <input
+                    type="tel"
+                    id="customerContact"
+                    name="customerContact"
+                    placeholder="09XXXXXXXXX"
+                >
+
+            </div>
+
+
+
+            <!-- EMAIL -->
+
+            <div class="form-group">
+
+                <label for="customerEmail">
+                    Email
+                </label>
+
+                <input
+                    type="email"
+                    id="customerEmail"
+                    name="customerEmail"
+                    placeholder="customer@email.com"
+                >
+
+            </div>
+
+
+
+            <!-- FACEBOOK -->
+
+            <div class="form-group">
+
+                <label for="customerFacebook">
+                    Facebook Name
+                </label>
+
+                <input
+                    type="text"
+                    id="customerFacebook"
+                    name="customerFacebook"
+                    placeholder="Facebook name"
+                >
+
+            </div>
+
+
+
+            <!-- STATUS -->
+
+            <div class="form-group">
+
+                <label for="customerStatus">
+                    Status
+                </label>
+
+                <select
+                    id="customerStatus"
+                    name="customerStatus"
+                >
+
+                    <option value="active">
+                        Active
+                    </option>
+
+                    <option value="inactive">
+                        Inactive
+                    </option>
+
+                </select>
+
+            </div>
+
+
+
+            <!-- ACTIONS -->
+
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    class="secondary-button"
+                    onclick="closeCustomerModal()"
+                >
+                    Cancel
+                </button>
+
+
+                <button
+                    type="submit"
+                    class="primary-button"
+                >
+                    Save Customer
+                </button>
+
+            </div>
+
+
+        </form>
+
+
+    </div>
+
+</div>
+
+
+
+<!-- =============================================================
+     PAGE ACCESS MODAL
+     
+     KEPT TEMPORARILY FOR EXISTING CUSTOMERS.JS / FUNCTIONS.
+     THE NEW ADMIN PROFILE WILL EVENTUALLY OWN THIS FUNCTION.
+============================================================== -->
+
+<div
+    class="modal-overlay"
+    id="pageAccessModal"
+    aria-hidden="true"
+>
+
+
+    <div class="access-modal">
+
+
+        <div class="modal-header">
+
+
+            <div>
+
+                <h2>
+                    Page Access
+                </h2>
+
+                <p>
+                    Manage administrator access.
+                </p>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="modal-close"
+                onclick="closePageAccess()"
+                aria-label="Close"
+            >
+
+                <i class="fa-solid fa-xmark"></i>
+
+            </button>
+
+
+        </div>
+
+
+
+        <div class="access-content">
+
+
+            <div class="access-account">
+
+
+                <div class="admin-avatar large">
+
+                    <i class="fa-solid fa-user"></i>
+
+                </div>
+
+
+                <div>
+
+                    <strong>
+                        Admin Trips Wonder
+                    </strong>
+
+                    <span>
+                        Administrator
+                    </span>
+
+                </div>
+
+
+            </div>
+
+
+
+            <div class="access-list">
+
+
+                <div class="access-row">
+
+                    <span>
+                        Dashboard
+                    </span>
+
+                    <span class="access-status granted">
+                        Granted
+                    </span>
+
+                </div>
+
+
+                <div class="access-row">
+
+                    <span>
+                        Packages
+                    </span>
+
+                    <span class="access-status granted">
+                        Granted
+                    </span>
+
+                </div>
+
+
+                <div class="access-row">
+
+                    <span>
+                        Bookings
+                    </span>
+
+                    <span class="access-status granted">
+                        Granted
+                    </span>
+
+                </div>
+
+
+                <div class="access-row">
+
+                    <span>
+                        Customers
+                    </span>
+
+                    <span class="access-status granted">
+                        Granted
+                    </span>
+
+                </div>
+
+
+                <div class="access-row">
+
+                    <span>
+                        Payments
+                    </span>
+
+                    <span class="access-status granted">
+                        Granted
+                    </span>
+
+                </div>
+
+
+                <div class="access-row">
+
+                    <span>
+                        Invoices
+                    </span>
+
+                    <span class="access-status granted">
+                        Granted
+                    </span>
+
+                </div>
+
+
+                <div class="access-row">
+
+                    <span>
+                        Resort Bookings
+                    </span>
+
+                    <span class="access-status granted">
+                        Granted
+                    </span>
+
+                </div>
+
+
+                <div class="access-row">
+
+                    <span>
+                        Reports
+                    </span>
+
+                    <span class="access-status granted">
+                        Granted
+                    </span>
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- =============================================================
+     BASIC PAGE FUNCTIONS
+============================================================== -->
+
+<script>
+
+
+    /* =========================================================
+       PAGE ACCESS
+       
+       Kept temporarily because the existing modal
+       is still present in this HTML.
+    ========================================================== */
+
+    function openPageAccess(event) {
+
+        if (event) {
+            event.stopPropagation();
+        }
+
+
+        const modal =
+            document.getElementById(
+                "pageAccessModal"
+            );
+
+
+        if (!modal) return;
+
+
+        modal.classList.add("show");
+
+
+        modal.setAttribute(
+            "aria-hidden",
+            "false"
+        );
+
+    }
+
+
+
+    function closePageAccess() {
+
+        const modal =
+            document.getElementById(
+                "pageAccessModal"
+            );
+
+
+        if (!modal) return;
+
+
+        modal.classList.remove("show");
+
+
+        modal.setAttribute(
+            "aria-hidden",
+            "true"
+        );
+
+    }
+
+
+
+    /* =========================================================
+       CUSTOMER MODAL
+    ========================================================== */
+
+    function openCustomerModal() {
+
+        const modal =
+            document.getElementById(
+                "customerModal"
+            );
+
+
+        const title =
+            document.getElementById(
+                "customerModalTitle"
+            );
+
+
+        if (!modal) return;
+
+
+        if (title) {
+
+            title.textContent =
+                "Add Customer";
+
+        }
+
+
+        modal.classList.add("show");
+
+
+        modal.setAttribute(
+            "aria-hidden",
+            "false"
+        );
+
+    }
+
+
+
+    function closeCustomerModal() {
+
+        const modal =
+            document.getElementById(
+                "customerModal"
+            );
+
+
+        if (!modal) return;
+
+
+        modal.classList.remove("show");
+
+
+        modal.setAttribute(
+            "aria-hidden",
+            "true"
+        );
+
+    }
+
+
+
+    /* =========================================================
+       REFRESH
+    ========================================================== */
+
+    function refreshCustomers() {
+
+        if (
+            typeof window.loadCustomers ===
+            "function"
+        ) {
+
+            window.loadCustomers();
+
+        }
+
+    }
+
+
+
+    /* =========================================================
+       LOGOUT
+    ========================================================== */
+
+    function handleLogout() {
+
+        const confirmed =
+            window.confirm(
+                "Are you sure you want to logout?"
+            );
+
+
+        if (!confirmed) return;
+
+
+        console.log(
+            "Logout requested."
+        );
+
+    }
+
+
+
+    /* =========================================================
+       CLOSE MODALS OUTSIDE
+    ========================================================== */
+
+    document.addEventListener(
+        "click",
+        function(event) {
+
+
+            const customerModal =
+                document.getElementById(
+                    "customerModal"
+                );
+
+
+            const pageAccessModal =
+                document.getElementById(
+                    "pageAccessModal"
+                );
+
+
+            if (
+                event.target ===
+                customerModal
+            ) {
+
+                closeCustomerModal();
+
+            }
+
+
+            if (
+                event.target ===
+                pageAccessModal
+            ) {
+
+                closePageAccess();
+
+            }
+
+        }
+    );
+
+
+
+    /* =========================================================
+       ESC KEY
+    ========================================================== */
+
+    document.addEventListener(
+        "keydown",
+        function(event) {
+
+            if (
+                event.key !==
+                "Escape"
+            ) {
+
+                return;
+
+            }
+
+
+            closeCustomerModal();
+
+            closePageAccess();
+
+        }
+    );
+
+
+
+    /* =========================================================
+       CUSTOMER FORM
+    ========================================================== */
+
+    const customerForm =
+        document.getElementById(
+            "customerForm"
+        );
+
+
+    if (customerForm) {
+
+        customerForm.addEventListener(
+            "submit",
+            function(event) {
+
+                event.preventDefault();
+
+
+                /*
+                 * customers.js handles the
+                 * actual customer data.
+                 */
+
+                console.log(
+                    "Customer form submitted."
+                );
+
+
+                closeCustomerModal();
+
+            }
+        );
+
+    }
+
+
+</script>
+
+
+
+<!-- =============================================================
+     CUSTOMER JAVASCRIPT
+============================================================== -->
+
+<script
+    type="module"
+    src="../../assets/js/admin/customer.js">
+</script>
+
+
+</body>
+</html>

@@ -1,0 +1,1653 @@
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoices | Trips Wonder Admin</title>
+
+    <link rel="stylesheet" href="../../assets/css/admin/invoices.css">
+
+    <!-- GLOBAL LOADING SCREEN -->
+    <link
+    rel="stylesheet"
+    href="../../../assets/css/shared/loading-screen.css">
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+</head>
+
+<body class="twtms-page-loading"></body>
+
+<div class="admin-layout">
+
+    <!-- =====================================================
+         SIDEBAR
+    ====================================================== -->
+    <aside class="sidebar">
+
+        <div class="sidebar-brand">
+
+            <div class="brand-logo">
+                <img
+                    src="../../assets/images/logo.png"
+                    alt="Trips Wonder Logo"
+                >
+            </div>
+
+            <div class="brand-text">
+                <h2>Trips Wonder</h2>
+                <span>Travel Management System</span>
+            </div>
+
+        </div>
+
+
+        <div class="sidebar-menu">
+
+            <div class="menu-label">
+                MAIN MENU
+            </div>
+
+            <nav class="main-navigation">
+
+                <a href="dashboard.html" class="nav-item">
+                    <i class="fa-solid fa-chart-pie"></i>
+                    <span>Dashboard</span>
+                </a>
+
+                <a href="packages.html" class="nav-item">
+                    <i class="fa-solid fa-suitcase"></i>
+                    <span>Packages</span>
+                </a>
+
+                <a href="bookings.html" class="nav-item">
+                    <i class="fa-solid fa-calendar-check"></i>
+                    <span>Bookings</span>
+                </a>
+
+                <a href="customers.html" class="nav-item">
+                    <i class="fa-solid fa-users"></i>
+                    <span>Customers</span>
+                </a>
+
+                <a href="payments.html" class="nav-item">
+                    <i class="fa-solid fa-credit-card"></i>
+                    <span>Payments</span>
+                </a>
+
+                <a href="invoices.html" class="nav-item active">
+                    <i class="fa-solid fa-file-invoice"></i>
+                    <span>Invoices</span>
+                </a>
+
+                <a href="resort-bookings.html" class="nav-item">
+                    <i class="fa-solid fa-building"></i>
+                    <span>Resort Bookings</span>
+                </a>
+
+                <a href="reports.html" class="nav-item">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>Reports</span>
+                </a>
+
+            </nav>
+
+        </div>
+
+
+        <!-- =================================================
+             ADMIN PROFILE
+             ONE CLICK
+        ================================================== -->
+        <div class="sidebar-bottom">
+
+            <a
+                href="admin-profile.html"
+                class="admin-profile"
+                id="adminProfile"
+            >
+
+                <div class="admin-avatar">
+                    <i class="fa-solid fa-user"></i>
+                </div>
+
+                <div class="admin-info">
+                    <strong>Admin Trips Wonder</strong>
+                    <span>Administrator</span>
+                </div>
+
+            </a>
+
+
+            <!-- LOGOUT ALWAYS VISIBLE -->
+            <button
+                type="button"
+                class="logout-button"
+                onclick="handleLogout()"
+            >
+
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <span>Logout</span>
+
+            </button>
+
+        </div>
+
+    </aside>
+
+
+    <!-- =====================================================
+         MAIN CONTENT
+    ====================================================== -->
+    <main class="main-content">
+
+        <!-- PAGE HEADER -->
+        <section class="page-header">
+
+            <div class="page-heading">
+
+                <h1>Invoices</h1>
+
+                <p>
+                    Manage billing records, invoice balances and payment status.
+                </p>
+
+            </div>
+
+            <button
+                type="button"
+                class="primary-button"
+                id="createInvoiceButton"
+                onclick="openInvoiceModal()"
+            >
+                <i class="fa-solid fa-plus"></i>
+                <span>Create Invoice</span>
+            </button>
+
+        </section>
+
+
+        <!-- =================================================
+             INVOICE SUMMARY
+        ================================================== -->
+        <section class="invoice-summary">
+
+            <div class="summary-card">
+
+                <div class="summary-icon blue">
+                    <i class="fa-solid fa-file-invoice"></i>
+                </div>
+
+                <div class="summary-content">
+
+                    <span class="summary-label">
+                        Total Invoices
+                    </span>
+
+                    <strong
+                        class="summary-value"
+                        id="totalInvoices"
+                    >
+                        —
+                    </strong>
+
+                    <small>
+                        All invoice records
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <div class="summary-icon green">
+                    <i class="fa-solid fa-circle-check"></i>
+                </div>
+
+                <div class="summary-content">
+
+                    <span class="summary-label">
+                        Paid
+                    </span>
+
+                    <strong
+                        class="summary-value"
+                        id="paidInvoices"
+                    >
+                        —
+                    </strong>
+
+                    <small>
+                        Fully paid invoices
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <div class="summary-icon orange">
+                    <i class="fa-regular fa-clock"></i>
+                </div>
+
+                <div class="summary-content">
+
+                    <span class="summary-label">
+                        Pending
+                    </span>
+
+                    <strong
+                        class="summary-value"
+                        id="pendingInvoices"
+                    >
+                        —
+                    </strong>
+
+                    <small>
+                        Awaiting payment
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <div class="summary-icon red">
+                    <i class="fa-solid fa-wallet"></i>
+                </div>
+
+                <div class="summary-content">
+
+                    <span class="summary-label">
+                        Outstanding
+                    </span>
+
+                    <strong
+                        class="summary-value amount"
+                        id="outstandingInvoices"
+                    >
+                        —
+                    </strong>
+
+                    <small>
+                        Remaining balances
+                    </small>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             SEARCH / FILTER
+        ================================================== -->
+        <section class="invoice-toolbar">
+
+            <div class="search-box">
+
+                <i class="fa-solid fa-magnifying-glass"></i>
+
+                <input
+                    type="search"
+                    id="invoiceSearch"
+                    placeholder="Search invoice number, customer or booking..."
+                    autocomplete="off"
+                >
+
+            </div>
+
+
+            <div class="filter-select">
+
+                <select id="invoiceStatusFilter">
+
+                    <option value="all">
+                        All Status
+                    </option>
+
+                    <option value="paid">
+                        Paid
+                    </option>
+
+                    <option value="partial">
+                        Partial
+                    </option>
+
+                    <option value="pending">
+                        Pending
+                    </option>
+
+                    <option value="overdue">
+                        Overdue
+                    </option>
+
+                    <option value="cancelled">
+                        Cancelled
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="filter-select">
+
+                <select id="invoiceDateFilter">
+
+                    <option value="all">
+                        All Dates
+                    </option>
+
+                    <option value="today">
+                        Today
+                    </option>
+
+                    <option value="this-week">
+                        This Week
+                    </option>
+
+                    <option value="this-month">
+                        This Month
+                    </option>
+
+                    <option value="past">
+                        Past
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="filter-select">
+
+                <select id="invoiceSort">
+
+                    <option value="newest">
+                        Newest First
+                    </option>
+
+                    <option value="oldest">
+                        Oldest First
+                    </option>
+
+                    <option value="due-nearest">
+                        Nearest Due Date
+                    </option>
+
+                    <option value="amount-high">
+                        Highest Amount
+                    </option>
+
+                    <option value="amount-low">
+                        Lowest Amount
+                    </option>
+
+                </select>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             INVOICES SECTION
+        ================================================== -->
+        <section class="invoices-section">
+
+            <div class="section-header">
+
+                <div>
+
+                    <h2>
+                        All Invoices
+                    </h2>
+
+                    <p id="invoiceResultText">
+                        Showing live invoice records
+                    </p>
+
+                </div>
+
+                <button
+                    type="button"
+                    class="refresh-button"
+                    id="refreshInvoices"
+                    onclick="refreshInvoices()"
+                >
+                    <i class="fa-solid fa-rotate"></i>
+                    <span>Refresh</span>
+                </button>
+
+            </div>
+
+
+            <!-- INVOICE TABLE -->
+            <div class="invoice-table-wrapper">
+
+                <table class="invoice-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Invoice
+                            </th>
+
+                            <th>
+                                Customer
+                            </th>
+
+                            <th>
+                                Booking
+                            </th>
+
+                            <th>
+                                Issue Date
+                            </th>
+
+                            <th>
+                                Due Date
+                            </th>
+
+                            <th>
+                                Total
+                            </th>
+
+                            <th>
+                                Balance
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                            <th>
+                                Actions
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="invoicesTableBody">
+
+                        <!--
+                            ACTUAL INVOICE DATA WILL BE INSERTED
+                            BY invoices.js
+                        -->
+
+                    </tbody>
+
+                </table>
+
+
+                <!-- EMPTY STATE -->
+                <div
+                    class="empty-invoices"
+                    id="emptyInvoices"
+                >
+
+                    <div class="empty-icon">
+                        <i class="fa-regular fa-file-lines"></i>
+                    </div>
+
+                    <h3>
+                        No invoices to display
+                    </h3>
+
+                    <p>
+                        Live invoice records will appear here automatically.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<!-- =============================================================
+     CREATE / EDIT INVOICE MODAL
+============================================================== -->
+<div
+    class="modal-overlay"
+    id="invoiceModal"
+    aria-hidden="true"
+>
+
+    <div class="invoice-modal">
+
+        <div class="modal-header">
+
+            <div>
+
+                <span class="modal-eyebrow">
+                    INVOICE MANAGEMENT
+                </span>
+
+                <h2 id="invoiceModalTitle">
+                    Create Invoice
+                </h2>
+
+                <p>
+                    Create a billing record for a customer booking.
+                </p>
+
+            </div>
+
+            <button
+                type="button"
+                class="modal-close"
+                onclick="closeInvoiceModal()"
+                aria-label="Close"
+            >
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+        </div>
+
+
+        <form
+            id="invoiceForm"
+            class="invoice-form"
+        >
+
+            <input
+                type="hidden"
+                id="invoiceId"
+            >
+
+
+            <!-- =================================================
+                 CUSTOMER / BOOKING
+            ================================================== -->
+
+            <div class="form-section-title">
+
+                <span>01</span>
+
+                <div>
+                    <strong>Customer & Booking</strong>
+
+                    <small>
+                        Select the booking connected to this invoice.
+                    </small>
+                </div>
+
+            </div>
+
+
+            <div class="form-row">
+
+                <div class="form-group">
+
+                    <label for="invoiceCustomer">
+                        Customer
+                    </label>
+
+                    <select
+                        id="invoiceCustomer"
+                        name="invoiceCustomer"
+                        required
+                    >
+
+                        <option value="">
+                            Select customer
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="invoiceBooking">
+                        Booking
+                    </label>
+
+                    <select
+                        id="invoiceBooking"
+                        name="invoiceBooking"
+                        required
+                    >
+
+                        <option value="">
+                            Select booking
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 INVOICE DATES
+            ================================================== -->
+
+            <div class="form-section-title">
+
+                <span>02</span>
+
+                <div>
+                    <strong>Invoice Information</strong>
+
+                    <small>
+                        Set the invoice number and billing dates.
+                    </small>
+                </div>
+
+            </div>
+
+
+            <div class="form-row">
+
+                <div class="form-group">
+
+                    <label for="invoiceNumber">
+                        Invoice Number
+                    </label>
+
+                    <input
+                        type="text"
+                        id="invoiceNumber"
+                        name="invoiceNumber"
+                        placeholder="Auto-generated"
+                        readonly
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="invoiceDate">
+                        Invoice Date
+                    </label>
+
+                    <input
+                        type="date"
+                        id="invoiceDate"
+                        name="invoiceDate"
+                        required
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div class="form-row">
+
+                <div class="form-group">
+
+                    <label for="invoiceDueDate">
+                        Due Date
+                    </label>
+
+                    <input
+                        type="date"
+                        id="invoiceDueDate"
+                        name="invoiceDueDate"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="invoiceStatus">
+                        Payment Status
+                    </label>
+
+                    <select
+                        id="invoiceStatus"
+                        name="invoiceStatus"
+                    >
+
+                        <option value="pending">
+                            Pending
+                        </option>
+
+                        <option value="partial">
+                            Partial
+                        </option>
+
+                        <option value="paid">
+                            Paid
+                        </option>
+
+                        <option value="overdue">
+                            Overdue
+                        </option>
+
+                        <option value="cancelled">
+                            Cancelled
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 BILLING DETAILS
+            ================================================== -->
+
+            <div class="form-section-title">
+
+                <span>03</span>
+
+                <div>
+                    <strong>Billing Details</strong>
+
+                    <small>
+                        Add the package, quantity and invoice amount.
+                    </small>
+                </div>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="invoiceDescription">
+                    Package / Description
+                </label>
+
+                <input
+                    type="text"
+                    id="invoiceDescription"
+                    name="invoiceDescription"
+                    placeholder="Package or service description"
+                >
+
+            </div>
+
+
+            <div class="form-row three-columns">
+
+                <div class="form-group">
+
+                    <label for="invoiceQuantity">
+                        Quantity / Pax
+                    </label>
+
+                    <input
+                        type="number"
+                        id="invoiceQuantity"
+                        name="invoiceQuantity"
+                        min="1"
+                        step="1"
+                        placeholder="1"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="invoiceRate">
+                        Rate
+                    </label>
+
+                    <input
+                        type="number"
+                        id="invoiceRate"
+                        name="invoiceRate"
+                        min="0"
+                        step="0.01"
+                        placeholder="0.00"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="invoiceSubtotal">
+                        Subtotal
+                    </label>
+
+                    <input
+                        type="number"
+                        id="invoiceSubtotal"
+                        name="invoiceSubtotal"
+                        min="0"
+                        step="0.01"
+                        placeholder="0.00"
+                        readonly
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div class="form-row">
+
+                <div class="form-group">
+
+                    <label for="invoiceDiscount">
+                        Discount
+                    </label>
+
+                    <input
+                        type="number"
+                        id="invoiceDiscount"
+                        name="invoiceDiscount"
+                        min="0"
+                        step="0.01"
+                        placeholder="0.00"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="invoiceTotal">
+                        Total Amount
+                    </label>
+
+                    <input
+                        type="number"
+                        id="invoiceTotal"
+                        name="invoiceTotal"
+                        min="0"
+                        step="0.01"
+                        placeholder="0.00"
+                        readonly
+                    >
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 PAYMENT
+            ================================================== -->
+
+            <div class="form-section-title">
+
+                <span>04</span>
+
+                <div>
+                    <strong>Payment</strong>
+
+                    <small>
+                        Record the amount already paid and remaining balance.
+                    </small>
+                </div>
+
+            </div>
+
+
+            <div class="form-row">
+
+                <div class="form-group">
+
+                    <label for="invoiceAmountPaid">
+                        Amount Paid
+                    </label>
+
+                    <input
+                        type="number"
+                        id="invoiceAmountPaid"
+                        name="invoiceAmountPaid"
+                        min="0"
+                        step="0.01"
+                        placeholder="0.00"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="invoiceBalance">
+                        Balance
+                    </label>
+
+                    <input
+                        type="number"
+                        id="invoiceBalance"
+                        name="invoiceBalance"
+                        min="0"
+                        step="0.01"
+                        placeholder="0.00"
+                        readonly
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="invoiceNotes">
+                    Notes
+                </label>
+
+                <textarea
+                    id="invoiceNotes"
+                    name="invoiceNotes"
+                    rows="3"
+                    placeholder="Invoice notes..."
+                ></textarea>
+
+            </div>
+
+
+            <!-- ACTIONS -->
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    class="secondary-button"
+                    onclick="closeInvoiceModal()"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    class="primary-button"
+                >
+                    <i class="fa-solid fa-floppy-disk"></i>
+                    Save Invoice
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- =============================================================
+     INVOICE DETAILS MODAL
+============================================================== -->
+<div
+    class="modal-overlay"
+    id="invoiceDetailsModal"
+    aria-hidden="true"
+>
+
+    <div class="invoice-details-modal">
+
+        <div class="modal-header">
+
+            <div>
+
+                <span class="modal-eyebrow">
+                    INVOICE RECORD
+                </span>
+
+                <h2>
+                    Invoice Details
+                </h2>
+
+                <p>
+                    Complete billing information.
+                </p>
+
+            </div>
+
+            <button
+                type="button"
+                class="modal-close"
+                onclick="closeInvoiceDetails()"
+                aria-label="Close"
+            >
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+        </div>
+
+
+        <div class="invoice-details-content">
+
+            <div class="invoice-reference">
+
+                <div class="invoice-reference-icon">
+                    <i class="fa-solid fa-file-invoice"></i>
+                </div>
+
+                <div>
+
+                    <span>
+                        Invoice Number
+                    </span>
+
+                    <strong id="detailsInvoiceNumber">
+                        —
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="details-grid">
+
+                <div class="detail-item">
+
+                    <span>
+                        Customer
+                    </span>
+
+                    <strong id="detailsInvoiceCustomer">
+                        —
+                    </strong>
+
+                </div>
+
+
+                <div class="detail-item">
+
+                    <span>
+                        Booking
+                    </span>
+
+                    <strong id="detailsInvoiceBooking">
+                        —
+                    </strong>
+
+                </div>
+
+
+                <div class="detail-item">
+
+                    <span>
+                        Issue Date
+                    </span>
+
+                    <strong id="detailsInvoiceDate">
+                        —
+                    </strong>
+
+                </div>
+
+
+                <div class="detail-item">
+
+                    <span>
+                        Due Date
+                    </span>
+
+                    <strong id="detailsInvoiceDueDate">
+                        —
+                    </strong>
+
+                </div>
+
+
+                <div class="detail-item">
+
+                    <span>
+                        Total Amount
+                    </span>
+
+                    <strong id="detailsInvoiceTotal">
+                        —
+                    </strong>
+
+                </div>
+
+
+                <div class="detail-item">
+
+                    <span>
+                        Amount Paid
+                    </span>
+
+                    <strong id="detailsInvoicePaid">
+                        —
+                    </strong>
+
+                </div>
+
+
+                <div class="detail-item">
+
+                    <span>
+                        Balance
+                    </span>
+
+                    <strong id="detailsInvoiceBalance">
+                        —
+                    </strong>
+
+                </div>
+
+
+                <div class="detail-item">
+
+                    <span>
+                        Status
+                    </span>
+
+                    <strong id="detailsInvoiceStatus">
+                        —
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="details-notes">
+
+                <span>
+                    Description
+                </span>
+
+                <p id="detailsInvoiceDescription">
+                    No description available.
+                </p>
+
+            </div>
+
+
+            <div class="details-notes">
+
+                <span>
+                    Notes
+                </span>
+
+                <p id="detailsInvoiceNotes">
+                    No notes available.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =============================================================
+     PAGE ACCESS MODAL
+============================================================== -->
+<div
+    class="modal-overlay"
+    id="pageAccessModal"
+    aria-hidden="true"
+>
+
+    <div class="access-modal">
+
+        <div class="modal-header">
+
+            <div>
+
+                <h2>
+                    Page Access
+                </h2>
+
+                <p>
+                    Manage administrator access.
+                </p>
+
+            </div>
+
+            <button
+                type="button"
+                class="modal-close"
+                onclick="closePageAccess()"
+                aria-label="Close"
+            >
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+        </div>
+
+
+        <div class="access-content">
+
+            <div class="access-account">
+
+                <div class="admin-avatar large">
+                    <i class="fa-solid fa-user"></i>
+                </div>
+
+                <div>
+
+                    <strong>
+                        Admin Trips Wonder
+                    </strong>
+
+                    <span>
+                        Administrator
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="access-list">
+
+                <div class="access-row">
+                    <span>Dashboard</span>
+                    <span class="access-status granted">Granted</span>
+                </div>
+
+                <div class="access-row">
+                    <span>Packages</span>
+                    <span class="access-status granted">Granted</span>
+                </div>
+
+                <div class="access-row">
+                    <span>Bookings</span>
+                    <span class="access-status granted">Granted</span>
+                </div>
+
+                <div class="access-row">
+                    <span>Customers</span>
+                    <span class="access-status granted">Granted</span>
+                </div>
+
+                <div class="access-row">
+                    <span>Payments</span>
+                    <span class="access-status granted">Granted</span>
+                </div>
+
+                <div class="access-row">
+                    <span>Invoices</span>
+                    <span class="access-status granted">Granted</span>
+                </div>
+
+                <div class="access-row">
+                    <span>Resort Bookings</span>
+                    <span class="access-status granted">Granted</span>
+                </div>
+
+                <div class="access-row">
+                    <span>Reports</span>
+                    <span class="access-status granted">Granted</span>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =============================================================
+     BASIC PAGE FUNCTIONS
+============================================================== -->
+<script>
+
+    /* =========================================================
+       ADMIN PROFILE
+    ========================================================== */
+    
+
+
+    /* =========================================================
+       PAGE ACCESS
+    ========================================================== */
+
+    function openPageAccess(event) {
+
+        if (event) {
+            event.stopPropagation();
+        }
+
+        const modal =
+            document.getElementById("pageAccessModal");
+
+        if (!modal) return;
+
+        modal.classList.add("show");
+
+        modal.setAttribute(
+            "aria-hidden",
+            "false"
+        );
+
+    }
+
+
+    function closePageAccess() {
+
+        const modal =
+            document.getElementById("pageAccessModal");
+
+        if (!modal) return;
+
+        modal.classList.remove("show");
+
+        modal.setAttribute(
+            "aria-hidden",
+            "true"
+        );
+
+    }
+
+
+    /* =========================================================
+       INVOICE MODAL
+    ========================================================== */
+
+    function openInvoiceModal() {
+
+        const modal =
+            document.getElementById("invoiceModal");
+
+        const title =
+            document.getElementById("invoiceModalTitle");
+
+        if (!modal) return;
+
+        if (title) {
+            title.textContent = "Create Invoice";
+        }
+
+        modal.classList.add("show");
+
+        modal.setAttribute(
+            "aria-hidden",
+            "false"
+        );
+
+    }
+
+
+    function closeInvoiceModal() {
+
+        const modal =
+            document.getElementById("invoiceModal");
+
+        if (!modal) return;
+
+        modal.classList.remove("show");
+
+        modal.setAttribute(
+            "aria-hidden",
+            "true"
+        );
+
+    }
+
+
+    function closeInvoiceDetails() {
+
+        const modal =
+            document.getElementById("invoiceDetailsModal");
+
+        if (!modal) return;
+
+        modal.classList.remove("show");
+
+        modal.setAttribute(
+            "aria-hidden",
+            "true"
+        );
+
+    }
+
+
+    /* =========================================================
+       REFRESH
+    ========================================================== */
+
+    function refreshInvoices() {
+
+        if (
+            typeof window.loadInvoices === "function"
+        ) {
+
+            window.loadInvoices();
+
+        }
+
+    }
+
+
+    /* =========================================================
+       LOGOUT
+    ========================================================== */
+
+    function handleLogout() {
+
+        const confirmed =
+            window.confirm(
+                "Are you sure you want to logout?"
+            );
+
+        if (!confirmed) return;
+
+        console.log("Logout requested.");
+
+    }
+
+
+    /* =========================================================
+       INVOICE CALCULATIONS
+    ========================================================== */
+
+    const invoiceQuantity =
+        document.getElementById("invoiceQuantity");
+
+    const invoiceRate =
+        document.getElementById("invoiceRate");
+
+    const invoiceSubtotal =
+        document.getElementById("invoiceSubtotal");
+
+    const invoiceDiscount =
+        document.getElementById("invoiceDiscount");
+
+    const invoiceTotal =
+        document.getElementById("invoiceTotal");
+
+    const invoiceAmountPaid =
+        document.getElementById("invoiceAmountPaid");
+
+    const invoiceBalance =
+        document.getElementById("invoiceBalance");
+
+
+    function calculateInvoice() {
+
+        if (!invoiceSubtotal || !invoiceTotal) {
+            return;
+        }
+
+        const quantity =
+            parseFloat(invoiceQuantity?.value) || 0;
+
+        const rate =
+            parseFloat(invoiceRate?.value) || 0;
+
+        const discount =
+            parseFloat(invoiceDiscount?.value) || 0;
+
+        const amountPaid =
+            parseFloat(invoiceAmountPaid?.value) || 0;
+
+
+        const subtotal =
+            quantity * rate;
+
+        const total =
+            Math.max(subtotal - discount, 0);
+
+        const balance =
+            Math.max(total - amountPaid, 0);
+
+
+        invoiceSubtotal.value =
+            subtotal.toFixed(2);
+
+        invoiceTotal.value =
+            total.toFixed(2);
+
+        if (invoiceBalance) {
+            invoiceBalance.value =
+                balance.toFixed(2);
+        }
+
+    }
+
+
+    [
+        invoiceQuantity,
+        invoiceRate,
+        invoiceDiscount,
+        invoiceAmountPaid
+    ].forEach(function(field) {
+
+        if (field) {
+
+            field.addEventListener(
+                "input",
+                calculateInvoice
+            );
+
+        }
+
+    });
+
+
+    /* =========================================================
+       CLOSE MODALS BY BACKDROP
+    ========================================================== */
+
+    document.addEventListener(
+        "click",
+        function(event) {
+
+            const invoiceModal =
+                document.getElementById("invoiceModal");
+
+            const invoiceDetailsModal =
+                document.getElementById("invoiceDetailsModal");
+
+            const pageAccessModal =
+                document.getElementById("pageAccessModal");
+
+
+            if (
+                event.target === invoiceModal
+            ) {
+                closeInvoiceModal();
+            }
+
+
+            if (
+                event.target === invoiceDetailsModal
+            ) {
+                closeInvoiceDetails();
+            }
+
+
+            if (
+                event.target === pageAccessModal
+            ) {
+                closePageAccess();
+            }
+
+        }
+    );
+
+
+    /* =========================================================
+       ESC KEY
+    ========================================================== */
+
+    document.addEventListener(
+        "keydown",
+        function(event) {
+
+            if (event.key !== "Escape") return;
+
+            closeInvoiceModal();
+            closeInvoiceDetails();
+            closePageAccess();
+
+        }
+    );
+
+
+    /* =========================================================
+       INVOICE FORM
+    ========================================================== */
+
+    const invoiceForm =
+        document.getElementById("invoiceForm");
+
+    if (invoiceForm) {
+
+        invoiceForm.addEventListener(
+            "submit",
+            function(event) {
+
+                event.preventDefault();
+
+                /*
+                 * Actual invoice creation will be handled
+                 * by invoices.js.
+                 *
+                 * No fake invoice is created here.
+                 */
+
+                console.log(
+                    "Invoice form submitted."
+                );
+
+                closeInvoiceModal();
+
+            }
+        );
+
+    }
+
+</script>
+
+
+<!-- =============================================================
+     INVOICE JAVASCRIPT
+============================================================== -->
+<script src="../../assets/js/admin/invoices.js"></script>
+
+</body>
+</html>

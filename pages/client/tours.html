@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>Tour Packages | Trips Wonder</title>
+
+    <link
+    rel="icon"
+    type="image/jpeg"
+    href="../../favicon.jpeg">
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com">
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+    <link
+    rel="stylesheet"
+    href="../../assets/css/client/tours.css">
+
+</head>
+
+<body>
+
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <header class="client-header">
+
+        <div class="header-inner">
+
+            <a
+                href="../index.html"
+                class="client-brand">
+
+                <img
+                    src="../..assets/images/clogo.jpeg"
+                    alt="Trips Wonder">
+
+                <div>
+
+                    <strong>
+                        Trips Wonder
+                    </strong>
+
+                    <span>
+                        Travel and Tours
+                    </span>
+
+                </div>
+
+            </a>
+
+
+            <a
+                href="#tourPackages"
+                class="header-link">
+
+                <i class="fa-solid fa-compass"></i>
+
+                Tours
+
+            </a>
+
+        </div>
+
+    </header>
+
+
+    <!-- =====================================================
+         HERO
+    ====================================================== -->
+
+    <section class="tour-hero">
+
+        <div class="tour-hero-inner">
+
+    
+
+            <h1>
+                Where do you want to go next?
+            </h1>
+
+
+            <div class="tour-search">
+
+                <i class="fa-solid fa-magnifying-glass"></i>
+
+                <input
+                    type="search"
+                    id="tourSearch"
+                    placeholder="Search destination..."
+                    autocomplete="off">
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         MAIN
+    ====================================================== -->
+
+    <main class="tour-main">
+
+        <div class="tour-container">
+
+
+            <!-- =================================================
+                 SECTION HEADER
+            ================================================== -->
+
+            <section class="tour-toolbar">
+
+                <div>
+
+                    <span class="section-label">
+                        AVAILABLE TOURS
+                    </span>
+
+                    <h2>
+                        Tour Packages
+                    </h2>
+
+                    <p id="tourResultText">
+                        Loading packages...
+                    </p>
+
+                </div>
+
+                <div class="tour-toolbar-controls">
+
+    <select id="tourCategoryFilter">
+        <option value="all">All Packages</option>
+    </select>
+
+    <select id="tourSort">
+        <option value="newest">Newest First</option>
+        <option value="price-low">Price: Low to High</option>
+        <option value="price-high">Price: High to Low</option>
+        <option value="name-az">Name: A-Z</option>
+        <option value="name-za">Name: Z-A</option>
+    </select>
+
+</div>
+
+
+               
+
+            </section>
+
+
+            <!-- =================================================
+                 PACKAGE GRID
+            ================================================== -->
+
+            <section
+                class="tour-packages"
+                id="tourPackages">
+
+
+                <div
+                    class="tour-grid"
+                    id="tourGrid">
+                </div>
+
+
+                <!-- LOADING -->
+
+                <div
+                    class="tour-state"
+                    id="tourLoading">
+
+                    <i class="fa-solid fa-spinner fa-spin"></i>
+
+                    <strong>
+                        Loading tour packages
+                    </strong>
+
+                    <span>
+                        Please wait...
+                    </span>
+
+                </div>
+
+
+                <!-- EMPTY -->
+
+                <div
+                    class="tour-state hidden"
+                    id="tourEmpty">
+
+                    <i class="fa-regular fa-compass"></i>
+
+                    <strong>
+                        No tour packages found
+                    </strong>
+
+                    <span>
+                        Try another search or category.
+                    </span>
+
+                </div>
+
+
+                <!-- ERROR -->
+
+                <div
+                    class="tour-state hidden"
+                    id="tourError">
+
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+
+                    <strong>
+                        Unable to load packages
+                    </strong>
+
+                    <span>
+                        Please try again.
+                    </span>
+
+                    <button
+                        type="button"
+                        id="retryTours">
+
+                        <i class="fa-solid fa-rotate-right"></i>
+
+                        Retry
+
+                    </button>
+
+                </div>
+
+
+            </section>
+
+        </div>
+
+    </main>
+
+
+    <!-- =====================================================
+         TOUR DETAILS MODAL
+    ====================================================== -->
+
+    <div
+        class="tour-modal"
+        id="tourModal"
+        aria-hidden="true">
+
+
+        <div
+            class="tour-modal-backdrop"
+            id="tourModalBackdrop">
+        </div>
+
+
+        <div
+            class="tour-modal-panel"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="tourModalTitle">
+
+
+            <div class="tour-modal-header">
+
+                <div>
+
+                    <span>
+                        TOUR PACKAGE
+                    </span>
+
+                    <h2 id="tourModalTitle">
+                        Package Details
+                    </h2>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="modal-close"
+                    id="closeTourModal"
+                    aria-label="Close">
+
+                    <i class="fa-solid fa-xmark"></i>
+
+                </button>
+
+            </div>
+
+
+            <div
+                class="tour-modal-content"
+                id="tourModalContent">
+            </div>
+
+
+            <div class="tour-modal-footer">
+
+                <button
+                    type="button"
+                    class="secondary-btn"
+                    id="closeTourDetails">
+
+                    Close
+
+                </button>
+
+
+                <button
+                    type="button"
+                    class="primary-btn"
+                    id="tourBookNow">
+
+                    <i class="fa-solid fa-calendar-check"></i>
+
+                    Book Now
+
+                </button>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         FOOTER
+    ====================================================== -->
+
+    <footer class="client-footer">
+
+        <div class="footer-inner">
+
+            <strong>
+                Trips Wonder Travel and Tours
+            </strong>
+
+            <span>
+                Your next adventure starts here.
+            </span>
+
+        </div>
+
+    </footer>
+
+
+    <!-- =====================================================
+         SCRIPT
+    ====================================================== -->
+
+    <script
+    type="module"
+    src="../../assets/js/client/tours.js">
+</script>
+
+
+</body>
+
+</html>

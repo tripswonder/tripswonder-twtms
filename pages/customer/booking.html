@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>Book Your Tour | Trips Wonder</title>
+
+
+    <!-- GLOBAL -->
+
+    <link
+        rel="stylesheet"
+        href="../../assets/css/shared/variables.css">
+
+    <link
+        rel="stylesheet"
+        href="../../assets/css/shared/global.css">
+
+
+    <!-- BOOKING -->
+
+    <link
+        rel="stylesheet"
+        href="../../assets/css/customer/booking.css">
+
+
+</head>
+
+
+<body class="booking-body">
+
+
+<main class="booking-page">
+
+
+    <!-- ==================================================
+         HEADER
+    =================================================== -->
+
+    <header class="booking-header">
+
+        <button
+            type="button"
+            class="booking-back"
+            id="bookingBack"
+            aria-label="Go back">
+
+            ←
+
+        </button>
+
+
+        <h1>
+            Book Your Tour
+        </h1>
+
+
+        <div class="booking-header-space"></div>
+
+    </header>
+
+
+
+    <!-- ==================================================
+         CONTENT
+    =================================================== -->
+
+    <div class="booking-content">
+
+
+        <!-- =================================================
+             SELECTED PACKAGE
+        ================================================== -->
+
+        <section class="booking-package-card">
+
+
+            <div class="booking-package-image">
+
+                <img
+                    id="bookingPackageImage"
+                    src="../../assets/images/logo.png"
+                    alt="Selected Tour">
+
+            </div>
+
+
+            <div class="booking-package-info">
+
+
+                <span
+                    id="bookingPackageCategory"
+                    class="booking-package-category">
+
+                    Tour
+
+                </span>
+
+
+                <h2 id="bookingPackageName">
+
+                    Loading package...
+
+                </h2>
+
+
+                <p id="bookingPackageLocation">
+
+                    Please wait...
+
+                </p>
+
+
+                <div class="booking-package-price">
+
+                    <span>
+                        From
+                    </span>
+
+                    <strong
+                        id="bookingPackagePrice">
+
+                        ₱0
+
+                    </strong>
+
+                </div>
+
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             BOOKING FORM
+        ================================================== -->
+
+        <form
+            id="bookingForm"
+            class="booking-form">
+
+
+            <!-- =================================================
+                 1. TRAVEL DETAILS
+            ================================================== -->
+
+            <section class="booking-section">
+
+
+                <div class="booking-section-heading">
+
+                    <span class="booking-step">
+                        1
+                    </span>
+
+
+                    <div>
+
+                        <h2>
+                            Travel Details
+                        </h2>
+
+                        <p>
+                            Tell us about your planned trip.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- DATE -->
+
+                <div class="form-group">
+
+                    <label for="travelDate">
+
+                        Travel Date
+                        <span>*</span>
+
+                    </label>
+
+
+                    <input
+                        type="date"
+                        id="travelDate"
+                        required>
+
+                </div>
+
+
+
+                <!-- PAX + PICKUP -->
+
+                <div class="form-row">
+
+
+                    <div class="form-group">
+
+                        <label for="numberOfGuests">
+
+                            Number of Guests
+                            <span>*</span>
+
+                        </label>
+
+
+                        <input
+                            type="number"
+                            id="numberOfGuests"
+                            min="1"
+                            value="1"
+                            required>
+
+                    </div>
+
+
+
+                    <div class="form-group">
+
+                        <label for="pickupPoint">
+
+                            Pick-up Point
+                            <span>*</span>
+
+                        </label>
+
+
+                        <select
+                            id="pickupPoint"
+                            required>
+
+                            <option value="">
+                                Select pick-up
+                            </option>
+
+                            <option value="MOA">
+                                MOA
+                            </option>
+
+                            <option value="Greenfield">
+                                Greenfield
+                            </option>
+
+                            <option value="Quezon Avenue">
+                                Quezon Avenue
+                            </option>
+
+                            <option value="Antipolo">
+                                Antipolo
+                            </option>
+
+                            <option value="Other">
+                                Other / Special Arrangement
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                </div>
+
+
+            </section>
+
+
+
+            <!-- =================================================
+                 2. CUSTOMER INFORMATION
+            ================================================== -->
+
+            <section class="booking-section">
+
+
+                <div class="booking-section-heading">
+
+                    <span class="booking-step">
+                        2
+                    </span>
+
+
+                    <div>
+
+                        <h2>
+                            Customer Information
+                        </h2>
+
+                        <p>
+                            Your contact details.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="form-group">
+
+                    <label for="customerNameInput">
+
+                        Full Name
+                        <span>*</span>
+
+                    </label>
+
+
+                    <input
+                        type="text"
+                        id="customerNameInput"
+                        placeholder="Enter your full name"
+                        required>
+
+                </div>
+
+
+
+                <div class="form-group">
+
+                    <label for="contactNumber">
+
+                        Contact Number
+                        <span>*</span>
+
+                    </label>
+
+
+                    <input
+                        type="tel"
+                        id="contactNumber"
+                        placeholder="09XXXXXXXXX"
+                        required>
+
+                </div>
+
+
+
+                <div class="form-group">
+
+                    <label for="emailAddress">
+
+                        Email Address
+
+                    </label>
+
+
+                    <input
+                        type="email"
+                        id="emailAddress"
+                        placeholder="you@example.com">
+
+                </div>
+
+
+
+                <div class="form-group">
+
+                    <label for="facebookName">
+
+                        Facebook Name
+
+                    </label>
+
+
+                    <input
+                        type="text"
+                        id="facebookName"
+                        placeholder="Facebook name">
+
+                </div>
+
+
+            </section>
+
+
+
+            <!-- =================================================
+                 3. ACCOMMODATION
+            ================================================== -->
+
+            <section class="booking-section">
+
+
+                <div class="booking-section-heading">
+
+                    <span class="booking-step">
+                        3
+                    </span>
+
+
+                    <div>
+
+                        <h2>
+                            Accommodation
+                        </h2>
+
+                        <p>
+                            Select your preferred option.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+
+                <div
+                    id="accommodationOptions"
+                    class="accommodation-options">
+
+                </div>
+
+
+            </section>
+
+
+
+            <!-- =================================================
+                 4. SPECIAL REQUEST
+            ================================================== -->
+
+            <section class="booking-section">
+
+
+                <div class="booking-section-heading">
+
+                    <span class="booking-step">
+                        4
+                    </span>
+
+
+                    <div>
+
+                        <h2>
+                            Special Request
+                        </h2>
+
+                        <p>
+                            Optional request for your trip.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="form-group">
+
+                    <label for="specialRequest">
+
+                        Special Request
+
+                    </label>
+
+
+                    <textarea
+                        id="specialRequest"
+                        rows="4"
+                        placeholder="Room request, accessibility request, celebration, etc."></textarea>
+
+                </div>
+
+
+            </section>
+
+
+
+            <!-- =================================================
+                 TERMS
+            ================================================== -->
+
+            <section class="booking-section booking-terms-section">
+
+
+                <label class="terms-check">
+
+
+                    <input
+                        type="checkbox"
+                        id="agreeTerms">
+
+
+                    <span>
+
+                        I understand that this is a booking
+                        request and is subject to confirmation
+                        by Trips Wonder Travel and Tours.
+
+                    </span>
+
+
+                </label>
+
+
+            </section>
+
+
+
+            <!-- =================================================
+                 SUBMIT
+            ================================================== -->
+
+            <button
+                type="submit"
+                id="continueBooking"
+                class="continue-booking">
+
+                Continue to Booking Summary
+
+                <span>
+                    →
+                </span>
+
+            </button>
+
+
+
+            <p
+                id="bookingError"
+                class="booking-error">
+            </p>
+
+
+        </form>
+
+
+    </div>
+
+
+</main>
+
+
+
+<!-- ==========================================================
+     FIREBASE / PACKAGE DATA
+=========================================================== -->
+
+<script
+    src="../../assets/data/package.js">
+</script>
+
+
+<script
+    type="module"
+    src="../../assets/js/customer/booking.js">
+</script>
+
+
+</body>
+
+</html>

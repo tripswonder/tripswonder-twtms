@@ -1,0 +1,2049 @@
+/* =========================================================
+   TRIPS WONDER
+   ADMIN PROFILE — PAGE ACCESS
+   FINAL CSS
+========================================================= */
+
+
+/* =========================================================
+   PAGE ACCESS VARIABLES
+========================================================= */
+
+:root {
+
+    --pa-primary: #1769ff;
+    --pa-primary-hover: #0f5be0;
+    --pa-primary-soft: #eef5ff;
+
+    --pa-text-primary: #111827;
+    --pa-text-secondary: #52627d;
+    --pa-text-muted: #71809b;
+
+    --pa-background: #f7f9fc;
+    --pa-card: #ffffff;
+
+    --pa-border: #e1e7ef;
+    --pa-border-dark: #d2dbe7;
+
+    --pa-success: #16a34a;
+    --pa-success-soft: #e8f8ee;
+
+    --pa-danger: #dc2626;
+    --pa-danger-soft: #fef2f2;
+
+    --pa-warning: #d97706;
+    --pa-warning-soft: #fff7ed;
+
+    --pa-lock: #64748b;
+    --pa-lock-soft: #f1f5f9;
+
+    --pa-radius-sm: 8px;
+    --pa-radius-md: 12px;
+    --pa-radius-lg: 16px;
+
+    --pa-shadow:
+        0 3px 12px rgba(15, 23, 42, 0.04);
+}
+
+
+/* =========================================================
+   PAGE ACCESS SECTION
+========================================================= */
+
+#pageAccessSection {
+
+    width: 100%;
+
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   SECTION HEADING
+========================================================= */
+
+#pageAccessSection .section-heading {
+
+    margin-bottom: 24px;
+}
+
+
+#pageAccessSection .section-heading h2 {
+
+    margin: 0;
+
+    color:
+        var(--pa-text-primary);
+
+    font-size: 30px;
+
+    font-weight: 700;
+
+    line-height: 1.2;
+}
+
+
+#pageAccessSection .section-heading p {
+
+    margin:
+        8px 0 0;
+
+    color:
+        var(--pa-text-secondary);
+
+    font-size:
+        15px;
+
+    line-height:
+        1.5;
+}
+
+
+/* =========================================================
+   CARD
+========================================================= */
+
+.page-access-card {
+
+    width: 100%;
+
+    margin-bottom: 22px;
+
+    background:
+        var(--pa-card);
+
+    border:
+        1px solid var(--pa-border);
+
+    border-radius:
+        var(--pa-radius-lg);
+
+    box-shadow:
+        var(--pa-shadow);
+
+    overflow:
+        hidden;
+
+    box-sizing:
+        border-box;
+}
+
+
+/* =========================================================
+   MAIN HEADER
+========================================================= */
+
+.page-access-header {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        space-between;
+
+    gap:
+        20px;
+
+    padding:
+        28px 32px;
+
+    border-bottom:
+        1px solid var(--pa-border);
+}
+
+
+.page-access-header h3 {
+
+    margin:
+        0;
+
+    color:
+        var(--pa-text-primary);
+
+    font-size:
+        19px;
+
+    font-weight:
+        700;
+
+    line-height:
+        1.3;
+}
+
+
+.page-access-header p {
+
+    margin:
+        6px 0 0;
+
+    color:
+        var(--pa-text-secondary);
+
+    font-size:
+        14px;
+
+    line-height:
+        1.5;
+}
+
+
+/* =========================================================
+   CARD HEADER
+========================================================= */
+
+.page-access-card-header {
+
+    display:
+        flex;
+
+    align-items:
+        flex-start;
+
+    justify-content:
+        space-between;
+
+    gap:
+        20px;
+
+    padding:
+        28px 32px;
+
+    border-bottom:
+        1px solid var(--pa-border);
+}
+
+
+.page-access-card-header h3 {
+
+    margin:
+        0;
+
+    color:
+        var(--pa-text-primary);
+
+    font-size:
+        19px;
+
+    font-weight:
+        700;
+}
+
+
+.page-access-card-header p {
+
+    margin:
+        6px 0 0;
+
+    color:
+        var(--pa-text-secondary);
+
+    font-size:
+        14px;
+
+    line-height:
+        1.5;
+}
+
+
+/* =========================================================
+   PRIMARY BUTTON
+========================================================= */
+
+.page-access-primary-button {
+
+    min-height:
+        44px;
+
+    display:
+        inline-flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    gap:
+        8px;
+
+    padding:
+        0 18px;
+
+    border:
+        1px solid var(--pa-primary);
+
+    border-radius:
+        9px;
+
+    background:
+        var(--pa-primary);
+
+    color:
+        #ffffff;
+
+    font-family:
+        inherit;
+
+    font-size:
+        14px;
+
+    font-weight:
+        600;
+
+    line-height:
+        1;
+
+    cursor:
+        pointer;
+
+    white-space:
+        nowrap;
+
+    box-shadow:
+        0 4px 10px
+        rgba(23, 105, 255, 0.18);
+
+    transition:
+        background 0.18s ease,
+        border-color 0.18s ease,
+        box-shadow 0.18s ease,
+        transform 0.18s ease;
+}
+
+
+.page-access-primary-button:hover {
+
+    background:
+        var(--pa-primary-hover);
+
+    border-color:
+        var(--pa-primary-hover);
+
+    box-shadow:
+        0 6px 15px
+        rgba(23, 105, 255, 0.24);
+
+    transform:
+        translateY(-1px);
+}
+
+
+.page-access-primary-button:active {
+
+    transform:
+        translateY(0);
+}
+
+
+.page-access-primary-button:disabled {
+
+    opacity:
+        0.65;
+
+    cursor:
+        not-allowed;
+
+    transform:
+        none;
+
+    box-shadow:
+        none;
+}
+
+
+/* =========================================================
+   CLOSE BUTTON
+========================================================= */
+
+.page-access-close-button {
+
+    width:
+        38px;
+
+    height:
+        38px;
+
+    min-width:
+        38px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    border:
+        1px solid var(--pa-border);
+
+    border-radius:
+        9px;
+
+    background:
+        #ffffff;
+
+    color:
+        var(--pa-text-muted);
+
+    font-size:
+        16px;
+
+    cursor:
+        pointer;
+
+    transition:
+        background 0.18s ease,
+        color 0.18s ease,
+        border-color 0.18s ease;
+}
+
+
+.page-access-close-button:hover {
+
+    background:
+        var(--pa-danger-soft);
+
+    border-color:
+        #f3b8b8;
+
+    color:
+        var(--pa-danger);
+}
+
+
+/* =========================================================
+   ADMIN ACCOUNTS LIST
+========================================================= */
+
+.admin-accounts-list {
+
+    width:
+        100%;
+
+    box-sizing:
+        border-box;
+}
+
+
+/* =========================================================
+   EMPTY STATE
+========================================================= */
+
+.admin-accounts-empty {
+
+    min-height:
+        230px;
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    padding:
+        35px;
+
+    text-align:
+        center;
+
+    box-sizing:
+        border-box;
+}
+
+
+.admin-accounts-empty-icon {
+
+    width:
+        58px;
+
+    height:
+        58px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    margin-bottom:
+        15px;
+
+    border-radius:
+        14px;
+
+    background:
+        var(--pa-primary-soft);
+
+    color:
+        var(--pa-primary);
+
+    font-size:
+        23px;
+}
+
+
+.admin-accounts-empty strong {
+
+    color:
+        var(--pa-text-primary);
+
+    font-size:
+        15px;
+
+    font-weight:
+        700;
+}
+
+
+.admin-accounts-empty span {
+
+    max-width:
+        430px;
+
+    margin-top:
+        6px;
+
+    color:
+        var(--pa-text-muted);
+
+    font-size:
+        13px;
+
+    line-height:
+        1.5;
+}
+
+
+/* =========================================================
+   ADMIN ACCOUNT ITEM
+   Future JS generated item
+========================================================= */
+
+.admin-account-item {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        space-between;
+
+    gap:
+        20px;
+
+    padding:
+        20px 32px;
+
+    border-bottom:
+        1px solid var(--pa-border);
+
+    transition:
+        background 0.18s ease;
+}
+
+
+.admin-account-item:last-child {
+
+    border-bottom:
+        0;
+}
+
+
+.admin-account-item:hover {
+
+    background:
+        #fbfcff;
+}
+
+
+/* =========================================================
+   ADMIN ACCOUNT INFO
+========================================================= */
+
+.admin-account-info {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        14px;
+
+    min-width:
+        0;
+}
+
+
+.admin-account-avatar {
+
+    width:
+        46px;
+
+    height:
+        46px;
+
+    min-width:
+        46px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    border-radius:
+        50%;
+
+    background:
+        var(--pa-primary-soft);
+
+    color:
+        var(--pa-primary);
+
+    font-size:
+        15px;
+
+    font-weight:
+        700;
+}
+
+
+.admin-account-details {
+
+    min-width:
+        0;
+}
+
+
+.admin-account-details strong {
+
+    display:
+        block;
+
+    color:
+        var(--pa-text-primary);
+
+    font-size:
+        14px;
+
+    font-weight:
+        700;
+}
+
+
+.admin-account-details span {
+
+    display:
+        block;
+
+    margin-top:
+        3px;
+
+    overflow:
+        hidden;
+
+    color:
+        var(--pa-text-secondary);
+
+    font-size:
+        13px;
+
+    text-overflow:
+        ellipsis;
+
+    white-space:
+        nowrap;
+}
+
+
+/* =========================================================
+   ADMIN ACCOUNT META
+========================================================= */
+
+.admin-account-meta {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        10px;
+
+    flex-wrap:
+        wrap;
+
+    justify-content:
+        flex-end;
+}
+
+
+.admin-role-badge {
+
+    display:
+        inline-flex;
+
+    align-items:
+        center;
+
+    min-height:
+        28px;
+
+    padding:
+        0 10px;
+
+    border-radius:
+        999px;
+
+    background:
+        var(--pa-primary-soft);
+
+    color:
+        var(--pa-primary);
+
+    font-size:
+        12px;
+
+    font-weight:
+        700;
+}
+
+
+.admin-status-badge {
+
+    display:
+        inline-flex;
+
+    align-items:
+        center;
+
+    min-height:
+        28px;
+
+    padding:
+        0 10px;
+
+    border-radius:
+        999px;
+
+    background:
+        var(--pa-success-soft);
+
+    color:
+        var(--pa-success);
+
+    font-size:
+        12px;
+
+    font-weight:
+        700;
+}
+
+
+.admin-status-badge.inactive {
+
+    background:
+        var(--pa-danger-soft);
+
+    color:
+        var(--pa-danger);
+}
+
+
+/* =========================================================
+   MANAGE BUTTON
+========================================================= */
+
+.admin-manage-button {
+
+    min-height:
+        38px;
+
+    display:
+        inline-flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    gap:
+        7px;
+
+    padding:
+        0 13px;
+
+    border:
+        1px solid var(--pa-border-dark);
+
+    border-radius:
+        8px;
+
+    background:
+        #ffffff;
+
+    color:
+        var(--pa-text-secondary);
+
+    font-family:
+        inherit;
+
+    font-size:
+        13px;
+
+    font-weight:
+        600;
+
+    cursor:
+        pointer;
+}
+
+
+.admin-manage-button:hover {
+
+    border-color:
+        var(--pa-primary);
+
+    color:
+        var(--pa-primary);
+
+    background:
+        var(--pa-primary-soft);
+}
+
+
+/* =========================================================
+   FORM
+========================================================= */
+
+.admin-account-form {
+
+    width:
+        100%;
+
+    box-sizing:
+        border-box;
+}
+
+
+/* =========================================================
+   FORM SECTION
+========================================================= */
+
+.page-access-form-section {
+
+    padding:
+        30px 32px;
+
+    border-bottom:
+        1px solid var(--pa-border);
+
+    box-sizing:
+        border-box;
+}
+
+
+.page-access-form-section:last-of-type {
+
+    border-bottom:
+        0;
+}
+
+
+/* =========================================================
+   FORM TITLE
+========================================================= */
+
+.page-access-form-title {
+
+    display:
+        flex;
+
+    align-items:
+        flex-start;
+
+    gap:
+        12px;
+
+    margin-bottom:
+        22px;
+}
+
+
+.page-access-form-title > i {
+
+    width:
+        38px;
+
+    height:
+        38px;
+
+    min-width:
+        38px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    border-radius:
+        9px;
+
+    background:
+        var(--pa-primary-soft);
+
+    color:
+        var(--pa-primary);
+
+    font-size:
+        15px;
+}
+
+
+.page-access-form-title strong {
+
+    display:
+        block;
+
+    color:
+        var(--pa-text-primary);
+
+    font-size:
+        16px;
+
+    font-weight:
+        700;
+}
+
+
+.page-access-form-title span {
+
+    display:
+        block;
+
+    margin-top:
+        4px;
+
+    color:
+        var(--pa-text-secondary);
+
+    font-size:
+        13px;
+
+    line-height:
+        1.5;
+}
+
+
+/* =========================================================
+   FORM GRID
+========================================================= */
+
+.page-access-form-grid {
+
+    display:
+        grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap:
+        20px;
+}
+
+
+/* =========================================================
+   FORM FIELD
+========================================================= */
+
+.page-access-field {
+
+    width:
+        100%;
+
+    min-width:
+        0;
+}
+
+
+.page-access-field-full {
+
+    grid-column:
+        1 / -1;
+}
+
+
+/* =========================================================
+   LABEL
+========================================================= */
+
+.page-access-field label {
+
+    display:
+        block;
+
+    margin-bottom:
+        8px;
+
+    color:
+        var(--pa-text-secondary);
+
+    font-size:
+        14px;
+
+    font-weight:
+        600;
+}
+
+
+/* =========================================================
+   INPUT / SELECT
+========================================================= */
+
+.page-access-field input,
+.page-access-field select {
+
+    width:
+        100%;
+
+    height:
+        48px;
+
+    padding:
+        0 14px;
+
+    border:
+        1px solid var(--pa-border-dark);
+
+    border-radius:
+        9px;
+
+    outline:
+        none;
+
+    background:
+        #ffffff;
+
+    color:
+        var(--pa-text-primary);
+
+    font-family:
+        inherit;
+
+    font-size:
+        14px;
+
+    box-sizing:
+        border-box;
+
+    transition:
+        border-color 0.18s ease,
+        box-shadow 0.18s ease;
+}
+
+
+.page-access-field input:hover,
+.page-access-field select:hover {
+
+    border-color:
+        #b8c4d4;
+}
+
+
+.page-access-field input:focus,
+.page-access-field select:focus {
+
+    border-color:
+        var(--pa-primary);
+
+    box-shadow:
+        0 0 0 3px
+        rgba(23, 105, 255, 0.10);
+}
+
+
+/* =========================================================
+   DISABLED SELECT
+========================================================= */
+
+.page-access-field select:disabled {
+
+    background:
+        #f3f5f8;
+
+    color:
+        var(--pa-text-muted);
+
+    cursor:
+        not-allowed;
+}
+
+
+/* =========================================================
+   FIELD SMALL TEXT
+========================================================= */
+
+.page-access-field small {
+
+    display:
+        block;
+
+    margin-top:
+        7px;
+
+    color:
+        var(--pa-text-muted);
+
+    font-size:
+        12px;
+
+    line-height:
+        1.5;
+}
+
+
+/* =========================================================
+   PASSWORD WRAPPER
+========================================================= */
+
+.page-access-password {
+
+    position:
+        relative;
+
+    width:
+        100%;
+}
+
+
+.page-access-password input {
+
+    padding-right:
+        50px;
+}
+
+
+/* =========================================================
+   PASSWORD TOGGLE
+========================================================= */
+
+.page-access-password-toggle {
+
+    position:
+        absolute;
+
+    top:
+        50%;
+
+    right:
+        8px;
+
+    width:
+        34px;
+
+    height:
+        34px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    transform:
+        translateY(-50%);
+
+    border:
+        0;
+
+    border-radius:
+        7px;
+
+    background:
+        transparent;
+
+    color:
+        var(--pa-text-muted);
+
+    cursor:
+        pointer;
+}
+
+
+.page-access-password-toggle:hover {
+
+    background:
+        var(--pa-primary-soft);
+
+    color:
+        var(--pa-primary);
+}
+
+
+/* =========================================================
+   MODULE ACCESS LIST
+========================================================= */
+
+.module-access-list {
+
+    display:
+        grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap:
+        10px;
+}
+
+
+/* =========================================================
+   MODULE ACCESS ITEM
+========================================================= */
+
+.module-access-item {
+
+    position:
+        relative;
+
+    min-height:
+        70px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        space-between;
+
+    gap:
+        15px;
+
+    padding:
+        12px 14px;
+
+    border:
+        1px solid var(--pa-border);
+
+    border-radius:
+        10px;
+
+    background:
+        #ffffff;
+
+    cursor:
+        pointer;
+
+    box-sizing:
+        border-box;
+
+    transition:
+        border-color 0.18s ease,
+        background 0.18s ease,
+        box-shadow 0.18s ease;
+}
+
+
+.module-access-item:hover {
+
+    border-color:
+        #c6d4e6;
+
+    background:
+        #fbfcff;
+}
+
+
+/* =========================================================
+   MODULE INFO
+========================================================= */
+
+.module-access-info {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        11px;
+
+    min-width:
+        0;
+}
+
+
+.module-access-icon {
+
+    width:
+        38px;
+
+    height:
+        38px;
+
+    min-width:
+        38px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    border-radius:
+        9px;
+
+    background:
+        var(--pa-primary-soft);
+
+    color:
+        var(--pa-primary);
+
+    font-size:
+        14px;
+}
+
+
+.module-access-text {
+
+    min-width:
+        0;
+}
+
+
+.module-access-text strong {
+
+    display:
+        block;
+
+    color:
+        var(--pa-text-primary);
+
+    font-size:
+        13px;
+
+    font-weight:
+        700;
+}
+
+
+.module-access-text small {
+
+    display:
+        block;
+
+    margin-top:
+        2px;
+
+    color:
+        var(--pa-text-muted);
+
+    font-size:
+        11px;
+
+    line-height:
+        1.4;
+}
+
+
+/* =========================================================
+   HIDE REAL CHECKBOX
+========================================================= */
+
+.module-access-item input[type="checkbox"] {
+
+    position:
+        absolute;
+
+    opacity:
+        0;
+
+    pointer-events:
+        none;
+}
+
+
+/* =========================================================
+   CUSTOM CHECK
+========================================================= */
+
+.module-access-check {
+
+    width:
+        24px;
+
+    height:
+        24px;
+
+    min-width:
+        24px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    border:
+        1px solid var(--pa-border-dark);
+
+    border-radius:
+        6px;
+
+    background:
+        #ffffff;
+
+    color:
+        #ffffff;
+
+    font-size:
+        12px;
+
+    transition:
+        background 0.18s ease,
+        border-color 0.18s ease;
+}
+
+
+/* =========================================================
+   CHECKED
+========================================================= */
+
+.module-access-item
+input[type="checkbox"]:checked
+~ .module-access-check {
+
+    background:
+        var(--pa-primary);
+
+    border-color:
+        var(--pa-primary);
+
+}
+
+
+/* =========================================================
+   CHECKED CARD
+========================================================= */
+
+.module-access-item:has(
+    input[type="checkbox"]:checked
+) {
+
+    border-color:
+        rgba(23, 105, 255, 0.35);
+
+    background:
+        #f8fbff;
+}
+
+
+/* =========================================================
+   OWNER ONLY LIST
+========================================================= */
+
+.owner-only-list {
+
+    display:
+        grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap:
+        10px;
+}
+
+
+/* =========================================================
+   OWNER ONLY ITEM
+========================================================= */
+
+.owner-only-item {
+
+    min-height:
+        70px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        space-between;
+
+    gap:
+        14px;
+
+    padding:
+        12px 14px;
+
+    border:
+        1px solid var(--pa-border);
+
+    border-radius:
+        10px;
+
+    background:
+        var(--pa-lock-soft);
+
+    box-sizing:
+        border-box;
+}
+
+
+/* =========================================================
+   OWNER ONLY INFO
+========================================================= */
+
+.owner-only-info {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        11px;
+
+    min-width:
+        0;
+}
+
+
+.owner-only-icon {
+
+    width:
+        38px;
+
+    height:
+        38px;
+
+    min-width:
+        38px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    border-radius:
+        9px;
+
+    background:
+        #e2e8f0;
+
+    color:
+        var(--pa-lock);
+
+    font-size:
+        14px;
+}
+
+
+.owner-only-info strong {
+
+    display:
+        block;
+
+    color:
+        var(--pa-text-primary);
+
+    font-size:
+        13px;
+
+    font-weight:
+        700;
+}
+
+
+.owner-only-info small {
+
+    display:
+        block;
+
+    margin-top:
+        2px;
+
+    color:
+        var(--pa-text-muted);
+
+    font-size:
+        11px;
+
+    line-height:
+        1.4;
+}
+
+
+/* =========================================================
+   OWNER ONLY BADGE
+========================================================= */
+
+.owner-only-badge {
+
+    display:
+        inline-flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    min-height:
+        27px;
+
+    padding:
+        0 9px;
+
+    border-radius:
+        999px;
+
+    background:
+        #e2e8f0;
+
+    color:
+        #475569;
+
+    font-size:
+        10px;
+
+    font-weight:
+        700;
+
+    white-space:
+        nowrap;
+}
+
+
+/* =========================================================
+   MESSAGE
+========================================================= */
+
+.page-access-message {
+
+    margin:
+        20px 32px 0;
+
+    padding:
+        12px 15px;
+
+    border:
+        1px solid var(--pa-border);
+
+    border-radius:
+        9px;
+
+    font-size:
+        13px;
+
+    line-height:
+        1.5;
+
+    box-sizing:
+        border-box;
+}
+
+
+.page-access-message-success {
+
+    background:
+        var(--pa-success-soft);
+
+    border-color:
+        rgba(22, 163, 74, 0.20);
+
+    color:
+        var(--pa-success);
+}
+
+
+.page-access-message-error {
+
+    background:
+        var(--pa-danger-soft);
+
+    border-color:
+        rgba(220, 38, 38, 0.20);
+
+    color:
+        var(--pa-danger);
+}
+
+
+.page-access-message-warning {
+
+    background:
+        var(--pa-warning-soft);
+
+    border-color:
+        rgba(217, 119, 6, 0.20);
+
+    color:
+        var(--pa-warning);
+}
+
+
+/* =========================================================
+   FORM ACTIONS
+========================================================= */
+
+.page-access-form-actions {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        flex-end;
+
+    gap:
+        10px;
+
+    padding:
+        20px 32px;
+
+    background:
+        #fbfcfe;
+
+    border-top:
+        1px solid var(--pa-border);
+
+    box-sizing:
+        border-box;
+}
+
+
+/* =========================================================
+   SECONDARY BUTTON
+========================================================= */
+
+.page-access-secondary-button {
+
+    min-height:
+        44px;
+
+    min-width:
+        100px;
+
+    display:
+        inline-flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    gap:
+        8px;
+
+    padding:
+        0 18px;
+
+    border:
+        1px solid var(--pa-border-dark);
+
+    border-radius:
+        9px;
+
+    background:
+        #ffffff;
+
+    color:
+        var(--pa-text-secondary);
+
+    font-family:
+        inherit;
+
+    font-size:
+        14px;
+
+    font-weight:
+        600;
+
+    cursor:
+        pointer;
+
+    transition:
+        border-color 0.18s ease,
+        background 0.18s ease,
+        color 0.18s ease;
+}
+
+
+.page-access-secondary-button:hover {
+
+    border-color:
+        #b8c4d4;
+
+    background:
+        #f8fafc;
+
+    color:
+        var(--pa-text-primary);
+}
+
+
+/* =========================================================
+   FOCUS ACCESSIBILITY
+========================================================= */
+
+.page-access-card input:focus-visible,
+.page-access-card select:focus-visible,
+.page-access-card button:focus-visible {
+
+    outline:
+        3px solid
+        rgba(23, 105, 255, 0.15);
+
+    outline-offset:
+        2px;
+}
+
+
+/* =========================================================
+   RESPONSIVE — TABLET
+========================================================= */
+
+@media (max-width: 1000px) {
+
+    .page-access-form-grid {
+
+        grid-template-columns:
+            1fr;
+    }
+
+
+    .page-access-field-full {
+
+        grid-column:
+            auto;
+    }
+
+
+    .module-access-list,
+    .owner-only-list {
+
+        grid-template-columns:
+            1fr;
+    }
+
+}
+
+
+/* =========================================================
+   RESPONSIVE — MOBILE
+========================================================= */
+
+@media (max-width: 700px) {
+
+    #pageAccessSection .section-heading h2 {
+
+        font-size:
+            25px;
+    }
+
+
+    .page-access-header {
+
+        flex-direction:
+            column;
+
+        align-items:
+            stretch;
+
+        padding:
+            22px 20px;
+    }
+
+
+    .page-access-header
+    .page-access-primary-button {
+
+        width:
+            100%;
+    }
+
+
+    .page-access-card-header {
+
+        padding:
+            22px 20px;
+    }
+
+
+    .page-access-form-section {
+
+        padding:
+            24px 20px;
+    }
+
+
+    .admin-account-item {
+
+        align-items:
+            flex-start;
+
+        flex-direction:
+            column;
+
+        padding:
+            18px 20px;
+    }
+
+
+    .admin-account-meta {
+
+        width:
+            100%;
+
+        justify-content:
+            flex-start;
+    }
+
+
+    .admin-manage-button {
+
+        width:
+            100%;
+    }
+
+
+    .page-access-form-actions {
+
+        flex-direction:
+            column-reverse;
+
+        align-items:
+            stretch;
+
+        padding:
+            18px 20px;
+    }
+
+
+    .page-access-form-actions
+    button {
+
+        width:
+            100%;
+    }
+
+
+    .page-access-message {
+
+        margin-left:
+            20px;
+
+        margin-right:
+            20px;
+    }
+
+}
+
+
+/* =========================================================
+   RESPONSIVE — SMALL MOBILE
+========================================================= */
+
+@media (max-width: 420px) {
+
+    .page-access-block-icon {
+
+        width:
+            38px;
+    }
+
+
+    .module-access-item {
+
+        padding:
+            11px;
+    }
+
+
+    .module-access-icon,
+    .owner-only-icon {
+
+        width:
+            34px;
+
+        height:
+            34px;
+
+        min-width:
+            34px;
+    }
+
+
+    .module-access-text small,
+    .owner-only-info small {
+
+        display:
+            none;
+    }
+
+
+    .owner-only-item {
+
+        padding:
+            11px;
+    }
+
+
+    .owner-only-badge {
+
+        font-size:
+            9px;
+    }
+
+}

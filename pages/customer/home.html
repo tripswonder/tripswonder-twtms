@@ -1,279 +1,661 @@
 <!DOCTYPE html>
-
 <html lang="en">
 
 <head>
 
-<meta charset="UTF-8">
+    <meta charset="UTF-8">
 
-<meta name="viewport"
-content="width=device-width, initial-scale=1.0">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
 
-<title>TWTMS Customer Home</title>
+    <title>TWTMS Customer Home</title>
 
-<link rel="stylesheet" href="../../assets/css/variables.css">
-<link rel="stylesheet" href="../../assets/css/global.css">
-<link rel="stylesheet" href="../../assets/css/customer/home.css">
 
-<link rel="preconnect"
-href="https://fonts.googleapis.com">
+    <!-- ======================================================
+         GLOBAL CSS
+    ======================================================= -->
 
-<link rel="preconnect"
-href="https://fonts.gstatic.com"
-crossorigin>
+    <link
+        rel="stylesheet"
+        href="../../assets/css/shared/variables.css">
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-rel="stylesheet">
+    <link
+        rel="stylesheet"
+        href="../../assets/css/shared/global.css">
+
+
+    <!-- ======================================================
+         HOME CSS
+    ======================================================= -->
+
+    <link
+        rel="stylesheet"
+        href="../../assets/css/customer/home.css">
+
+
+    <!-- ======================================================
+         GOOGLE FONT
+    ======================================================= -->
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com">
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+
+    <!-- ======================================================
+         FONT AWESOME
+    ======================================================= -->
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
 </head>
 
+
 <body>
 
-<!-- ==========================================================
-    HEADER
-========================================================== -->
-<header class="home-header">
-
-    <button class="menu-btn">
-
-        ☰
-
-    </button>
-
-    <img
-        src="../../assets/images/logo.png"
-        alt="Trips Wonder"
-        class="header-logo"
-    >
-
-    <button class="notification-btn">
-
-        🔔
-
-        <span class="notification-badge">
-
-            2
-
-        </span>
-
-    </button>
-
-</header>
 
 <!-- ==========================================================
-     GREETING
+     APP CONTAINER
 ========================================================== -->
 
-<section class="greeting">
+<main class="app-container">
 
-   <h1>
 
-    Hi, <span id="customerName">Eric</span>! 👋
+    <!-- ======================================================
+         HEADER
+    ======================================================= -->
 
-   </h1>
+    <header class="home-header">
 
-    <p>
 
-        Where will your next adventure take you?
+        <!-- LEFT : MENU + LOGO -->
 
-    </p>
+        <div class="header-left">
 
-</section>
+            <button
+                type="button"
+                class="menu-btn"
+                aria-label="Open menu">
 
-<section class="search-section">
+                <i class="fa-solid fa-bars"></i>
 
-    <div class="search-box">
+            </button>
 
-        <i class="fa-solid fa-magnifying-glass"></i>
-
-           <input
-            id="searchInput"
-            type="text"
-            placeholder="Search destination, tour code or keyword..."
-        >
-
-        <button class="filter-btn">
-
-            <i class="fa-solid fa-sliders"></i>
-
-        </button>
-
-    </div>
-
-</section>
-    
-<body>
-
-<div class="home">
-
-</div>
-
-<!-- ==========================================================
-     UPCOMING TRIP
-========================================================== -->
-
-<section class="upcoming-trip">
-
-    <article class="trip-card">
-
-        <div class="trip-image">
 
             <img
-                src="../../assets/images/jomalig.jpeg"
-                alt="Jomalig Island">
+                src="../../assets/images/logo.png"
+                alt="Trips Wonder"
+                class="header-logo">
 
         </div>
 
-        <div class="trip-content">
 
-            <span class="trip-status">
+        <!-- RIGHT : SEARCH + NOTIFICATION -->
 
-                Confirmed
+        <div class="header-actions">
 
-            </span>
 
-            <h2 class="trip-title">
+            <!-- SEARCH BUTTON -->
 
-                Jomalig Island
+            <button
+                type="button"
+                class="header-icon-btn search-header-btn"
+                id="headerSearchButton"
+                aria-label="Search">
 
-            </h2>
+                <i class="fa-solid fa-magnifying-glass"></i>
 
-            <p class="trip-date">
+            </button>
 
-                September 5 – 7, 2026
 
-            </p>
+            <!-- NOTIFICATION -->
 
-            <div class="trip-stats">
+            <button
+                type="button"
+                class="header-icon-btn notification-btn"
+                aria-label="Notifications">
 
-                <div class="stat-box">
+                <i class="fa-solid fa-bell"></i>
 
-                    <strong>45</strong>
-
-                    <small>Days</small>
-
-                </div>
-
-                <div class="stat-box">
-
-                    <strong>2</strong>
-
-                    <small>Pax</small>
-
-                </div>
-
-                <div class="stat-box">
-
-                    <strong>75%</strong>
-
-                    <small>Paid</small>
-
-                </div>
-
-            </div>
-
-            <button class="trip-button">
-
-                My Trip
+                <span class="notification-badge">
+                    2
+                </span>
 
             </button>
 
         </div>
 
-    </article>
+    </header>
 
-</section>
-    
-<!-- ==========================================================
-     FEATURE TOUR
-========================================================== -->
-   <section class="featured-tours">
 
-    <div class="section-header">
 
-        <h2>Featured Tours</h2>
+    <!-- ======================================================
+         GREETING
+    ======================================================= -->
 
-        <a href="#">View All</a>
+    <section class="greeting">
 
-    </div>
+        <h1>
 
-    <div class="featured-slider">
+            Hi,
+            <span id="customerName">
+                Eric
+            </span>!
+            👋
 
-        <article class="tour-card">
+        </h1>
 
-            <img
-                src="../../assets/images/jomalig.jpeg"
-                alt="Jomalig Island">
 
-            <div class="tour-info">
+        <p>
 
-                <h3>Jomalig Island</h3>
+            Where will your next adventure take you?
 
-                <p>3 Days • 2 Nights</p>
+        </p>
 
-                <strong>₱4,699</strong>
+    </section>
+
+
+
+    <!-- ======================================================
+         SEARCH
+    ======================================================= -->
+
+    <section
+        class="search-section"
+        id="searchSection"
+        hidden>
+
+        <div class="search-box">
+
+
+            <!-- SEARCH ICON -->
+
+            <i class="fa-solid fa-magnifying-glass"></i>
+
+
+            <!-- SEARCH INPUT -->
+
+            <input
+                id="searchInput"
+                type="text"
+                placeholder="Search destination, tour code or keyword..."
+                autocomplete="off">
+
+
+            <!-- CLOSE SEARCH -->
+
+            <button
+                type="button"
+                class="search-close-btn"
+                id="searchCloseButton"
+                aria-label="Close search">
+
+                <i class="fa-solid fa-xmark"></i>
+
+            </button>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ======================================================
+         UPCOMING TRIP
+    ======================================================= -->
+
+    <section
+        class="upcoming-trip"
+        id="upcomingTripSection">
+
+
+        <!-- ==================================================
+             DYNAMIC BOOKING CARD
+        =================================================== -->
+
+        <article
+            class="trip-card"
+            id="upcomingTripCard">
+
+
+            <!-- BACKGROUND -->
+
+            <div class="trip-card-background"></div>
+
+
+            <!-- CONTENT -->
+
+            <div class="trip-card-content">
+
+
+                <!-- IMAGE -->
+
+                <div class="trip-card-image">
+
+                    <img
+                        id="upcomingTripImage"
+                        src="../../assets/images/logo.png"
+                        alt="Upcoming Trip">
+
+                </div>
+
+
+                <!-- INFORMATION -->
+
+                <div class="trip-card-info">
+
+
+                    <!-- CATEGORY -->
+
+                    <span
+                        id="upcomingTripCategory"
+                        class="trip-category">
+
+                        Tour
+
+                    </span>
+
+
+                    <!-- TOUR NAME -->
+
+                    <h2 id="upcomingTripName">
+
+                        Upcoming Trip
+
+                    </h2>
+
+
+                    <!-- LOCATION -->
+
+                    <p id="upcomingTripLocation">
+
+                        No upcoming booking yet.
+
+                    </p>
+
+
+                    <!-- SCHEDULE -->
+
+                    <p
+                        id="upcomingTripSchedule"
+                        class="trip-schedule">
+
+                        Explore our tours and book your next adventure.
+
+                    </p>
+
+
+                    <!-- PRICE -->
+
+                    <div class="trip-card-price">
+
+                        <span>
+                            From
+                        </span>
+
+                        <strong id="upcomingTripPrice">
+
+                            —
+
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <!-- MY TRIP BUTTON -->
+
+                <button
+                    type="button"
+                    id="upcomingTripButton"
+                    class="trip-button">
+
+                    My Trip →
+
+                </button>
 
             </div>
 
         </article>
 
-        <article class="tour-card">
 
-            <img
-                src="../../assets/images/calaguas.jpeg"
-                alt="Calaguas">
 
-            <div class="tour-info">
+        <!-- ==================================================
+             NO BOOKING STATE
+        =================================================== -->
 
-                <h3>Calaguas Island</h3>
+        <div
+            class="no-upcoming-trip"
+            id="noUpcomingTrip"
+            hidden>
 
-                <p>3 Days • 2 Nights</p>
 
-                <strong>₱4,999</strong>
+            <div class="no-trip-icon">
 
-             </div>
-
-        </article>
-
-        <article class="tour-card">
-
-            <img
-                src="../../assets/images/baguio.jpeg"
-                alt="Baguio">
-
-            <div class="tour-info">
-
-                <h3>Baguio Tour</h3>
-
-                <p>2 Days • 1 Night</p>
-
-                <strong>₱2,799</strong>
+                🧳
 
             </div>
 
-        </article>
 
-    </div>
+            <div>
 
-</section>
-    
-<!-- ==========================================================
-     PROMO BANNER
-========================================================== -->
-    <section class="promo-banner"></section>
-<!-- ==========================================================
-     POPULAR DESTINATION
-========================================================== -->
-    <section class="popular-destination"></section>
-<!-- ==========================================================
-     BOOK AGAIN
-========================================================== -->
-    <section class="book-again"></section>
+                <h3>
+
+                    Ready for your next adventure?
+
+                </h3>
+
+
+                <p>
+
+                    You don't have an upcoming trip yet.
+
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ======================================================
+         READY FOR NEXT ADVENTURE
+    ======================================================= -->
+
+    <section class="ready-adventure">
+
+        <div class="ready-adventure-icon">
+
+            <i class="fa-solid fa-suitcase-rolling"></i>
+
+        </div>
+
+
+        <div class="ready-adventure-content">
+
+            <h3>
+
+                Ready for your next adventure?
+
+            </h3>
+
+
+            <p>
+
+                You don't have an upcoming trip yet.
+
+            </p>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ======================================================
+         TOUR CATEGORIES
+    ======================================================= -->
+
+    <section class="tour-category-section">
+
+
+        <div class="tour-category-header">
+
+            <h2>
+
+                Explore by Category
+
+            </h2>
+
+        </div>
+
+
+        <div class="tour-category-list">
+
+
+            <!-- ALL -->
+
+            <button
+                type="button"
+                class="tour-category-btn active"
+                data-category="all">
+
+                All
+
+            </button>
+
+
+            <!-- BEACH -->
+
+            <button
+                type="button"
+                class="tour-category-btn"
+                data-category="beach">
+
+                Beach & Island
+
+            </button>
+
+
+            <!-- CITY -->
+
+            <button
+                type="button"
+                class="tour-category-btn"
+                data-category="city">
+
+                City Tour
+
+            </button>
+
+
+            <!-- CAMPING -->
+
+            <button
+                type="button"
+                class="tour-category-btn"
+                data-category="camping">
+
+                Camping
+
+            </button>
+
+
+            <!-- HIKING -->
+
+            <button
+                type="button"
+                class="tour-category-btn"
+                data-category="hiking">
+
+                Hiking
+
+            </button>
+
+
+            <!-- ADVENTURE -->
+
+            <button
+                type="button"
+                class="tour-category-btn"
+                data-category="adventure">
+
+                Adventure
+
+            </button>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ======================================================
+         TOUR PACKAGES
+         
+         IMPORTANT:
+         Keep #exploreTours because home.js uses this
+         element to load packages dynamically.
+    ======================================================= -->
+
+    <section class="explore-tours">
+
+        <div
+            class="explore-wrapper"
+            id="exploreTours">
+
+            <!--
+                Tour packages will be loaded automatically
+                from package.js / home.js
+            -->
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ======================================================
+         BOTTOM NAVIGATION
+    ======================================================= -->
+
+    <nav
+        class="bottom-nav"
+        aria-label="Main navigation">
+
+
+        <!-- ==================================================
+             HOME
+        =================================================== -->
+
+        <a
+            href="home.html"
+            class="bottom-nav-item active"
+            aria-label="Home">
+
+            <span class="bottom-icon">
+
+                <i class="fa-solid fa-house"></i>
+
+            </span>
+
+        </a>
+
+
+
+        <!-- ==================================================
+             MY TRIP
+        =================================================== -->
+
+        <a
+            href="my-trip.html"
+            class="bottom-nav-item"
+            aria-label="My Trip">
+
+            <span class="bottom-icon">
+
+                <i class="fa-solid fa-suitcase"></i>
+
+            </span>
+
+        </a>
+
+
+
+        <!-- ==================================================
+             MESSAGE
+        =================================================== -->
+
+        <a
+            href="message.html"
+            class="bottom-nav-item"
+            aria-label="Message">
+
+            <span class="bottom-icon">
+
+                <i class="fa-regular fa-comment"></i>
+
+            </span>
+
+        </a>
+
+
+
+        <!-- ==================================================
+             PROMO
+        =================================================== -->
+
+        <a
+            href="promo.html"
+            class="bottom-nav-item"
+            aria-label="Promo">
+
+            <span class="bottom-icon">
+
+                <i class="fa-solid fa-tags"></i>
+
+            </span>
+
+        </a>
+
+
+
+        <!-- ==================================================
+             PROFILE
+        =================================================== -->
+
+        <a
+            href="profile.html"
+            class="bottom-nav-item"
+            aria-label="Profile">
+
+            <span class="bottom-icon">
+
+                <i class="fa-regular fa-user"></i>
+
+            </span>
+
+        </a>
+
+    </nav>
+
 
 </main>
 
-<nav class="bottom-nav"></nav>
-<script type="module" src="../../assets/js/customer/home.js"></script>
+
+
+<!-- ==========================================================
+     DATA
+========================================================== -->
+
+<script src="../../assets/data/package.js"></script>
+
+
+
+<!-- ==========================================================
+     HOME JAVASCRIPT
+========================================================== -->
+
+<script
+    type="module"
+    src="../../assets/js/customer/home.js">
+</script>
+
 
 </body>
 

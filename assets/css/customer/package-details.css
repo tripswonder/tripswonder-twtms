@@ -1,0 +1,1087 @@
+/* ==========================================================
+   TRIPS WONDER
+   CUSTOMER PACKAGE DETAILS
+   FINAL CLEAN / PREMIUM MOBILE UI
+========================================================== */
+
+
+/* ==========================================================
+   PAGE
+========================================================== */
+
+.package-page {
+    position: relative;
+
+    width: 100%;
+    max-width: 600px;
+
+    min-height: 100vh;
+
+    margin: 0 auto;
+
+    background: #ffffff;
+    color: #17213b;
+
+    overflow-x: hidden;
+}
+
+
+/* ==========================================================
+   NATURAL PAGE SCROLL
+========================================================== */
+
+html,
+body {
+    overflow-x: hidden;
+}
+
+
+/* ==========================================================
+   HERO / GALLERY
+========================================================== */
+
+.package-page .package-gallery {
+    position: relative;
+
+    width: 100%;
+
+    background: #ffffff;
+}
+
+
+/* ==========================================================
+   MAIN PHOTO
+========================================================== */
+
+.package-page .package-main-photo {
+    position: relative;
+
+    width: 100%;
+    height: 300px;
+
+    overflow: hidden;
+
+    background: #e9edf3;
+}
+
+
+/* ==========================================================
+   MAIN IMAGE
+========================================================== */
+
+.package-page .package-main-photo img {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+    object-position: center;
+}
+
+
+/* ==========================================================
+   HERO GRADIENT
+========================================================== */
+
+.package-page .package-main-photo::after {
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    pointer-events: none;
+
+    background:
+        linear-gradient(
+            to bottom,
+            rgba(0, 0, 0, 0.42) 0%,
+            rgba(0, 0, 0, 0.08) 32%,
+            rgba(0, 0, 0, 0) 58%,
+            rgba(0, 0, 0, 0.18) 100%
+        );
+}
+
+
+/* ==========================================================
+   HEADER
+   FLOATING ON HERO
+========================================================== */
+
+.package-page .package-header {
+    position: absolute;
+
+    top: 0;
+    left: 0;
+
+    z-index: 20;
+
+    width: 100%;
+    height: 64px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    box-sizing: border-box;
+
+    padding: 0 58px;
+
+    background: transparent;
+
+    border: none;
+
+    pointer-events: none;
+}
+
+
+/* ==========================================================
+   HEADER TITLE
+========================================================== */
+
+.package-page .package-header h1 {
+    margin: 0;
+
+    color: #ffffff;
+
+    font-size: 15px;
+    font-weight: 700;
+
+    line-height: 1;
+
+    text-align: center;
+
+    white-space: nowrap;
+
+    text-shadow:
+        0 2px 7px rgba(0, 0, 0, 0.35);
+}
+
+
+/* ==========================================================
+   PREMIUM BACK BUTTON
+========================================================== */
+
+.package-page .back-button {
+    position: absolute;
+
+    left: 14px;
+    top: 13px;
+
+    width: 40px;
+    height: 40px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    border: 1px solid rgba(255, 255, 255, 0.55);
+
+    border-radius: 50%;
+
+    background:
+        rgba(255, 255, 255, 0.86);
+
+    color: #17213b;
+
+    font-family: inherit;
+
+    font-size: 21px;
+    font-weight: 500;
+
+    line-height: 1;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 5px 16px rgba(0, 0, 0, 0.18);
+
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+
+    pointer-events: auto;
+
+    transition:
+        background 0.2s ease,
+        transform 0.15s ease,
+        box-shadow 0.2s ease;
+}
+
+
+.package-page .back-button:hover {
+    background: #ffffff;
+
+    box-shadow:
+        0 7px 20px rgba(0, 0, 0, 0.22);
+}
+
+
+.package-page .back-button:active {
+    transform: scale(0.92);
+}
+
+
+/* ==========================================================
+   RIGHT HEADER SPACE
+========================================================== */
+
+.package-page .header-space {
+    position: absolute;
+
+    right: 14px;
+
+    width: 40px;
+    height: 40px;
+}
+
+
+/* ==========================================================
+   CATEGORY BADGE
+   FLOATING ON IMAGE
+========================================================== */
+
+.package-page .package-category {
+    position: absolute;
+
+    right: 16px;
+    bottom: 14px;
+
+    z-index: 10;
+
+    display: inline-flex;
+    align-items: center;
+
+    min-height: 30px;
+
+    padding: 0 12px;
+
+    border-radius: 999px;
+
+    background: rgba(255, 255, 255, 0.94);
+
+    color: #1769e0;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    line-height: 1;
+
+    box-shadow:
+        0 4px 14px rgba(0, 0, 0, 0.18);
+
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+
+/* ==========================================================
+   THUMBNAILS
+========================================================== */
+
+.package-page .package-thumbnails {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+
+    gap: 8px;
+
+    padding: 10px 16px 12px;
+
+    box-sizing: border-box;
+
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    background: #ffffff;
+
+    scrollbar-width: none;
+}
+
+
+.package-page .package-thumbnails::-webkit-scrollbar {
+    display: none;
+}
+
+
+/* ==========================================================
+   THUMBNAIL
+========================================================== */
+
+.package-page
+.package-thumbnails
+.package-thumbnail {
+    flex: 0 0 62px;
+
+    width: 62px;
+    min-width: 62px;
+
+    height: 52px;
+    min-height: 52px;
+
+    padding: 0;
+    margin: 0;
+
+    overflow: hidden;
+
+    border: 2px solid transparent;
+
+    border-radius: 9px;
+
+    background: #f2f4f7;
+
+    box-sizing: border-box;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.15s ease,
+        border-color 0.2s ease;
+}
+
+
+.package-page
+.package-thumbnails
+.package-thumbnail:active {
+    transform: scale(0.96);
+}
+
+
+/* ==========================================================
+   THUMBNAIL IMAGE
+========================================================== */
+
+.package-page
+.package-thumbnails
+.package-thumbnail img {
+    width: 100% !important;
+    height: 100% !important;
+
+    min-width: 0 !important;
+    min-height: 0 !important;
+
+    max-width: none !important;
+    max-height: none !important;
+
+    display: block;
+
+    object-fit: cover !important;
+}
+
+
+/* ==========================================================
+   ACTIVE THUMBNAIL
+========================================================== */
+
+.package-page
+.package-thumbnails
+.package-thumbnail.active {
+    border-color: #1769e0;
+
+    box-shadow:
+        0 0 0 1px #1769e0;
+}
+
+
+/* ==========================================================
+   PACKAGE CONTENT
+========================================================== */
+
+.package-page .package-content {
+    width: 100%;
+
+    padding:
+        5px
+        18px
+        35px;
+
+    box-sizing: border-box;
+
+    background: #ffffff;
+}
+
+
+/* ==========================================================
+   PACKAGE NAME
+========================================================== */
+
+.package-page .package-content h2 {
+    margin: 6px 0 3px;
+
+    color: #17213b;
+
+    font-size: 25px;
+    font-weight: 700;
+
+    line-height: 1.18;
+
+    letter-spacing: -0.35px;
+}
+
+
+/* ==========================================================
+   LOCATION
+========================================================== */
+
+.package-page .package-location {
+    margin: 0;
+
+    color: #7d8899;
+
+    font-size: 13px;
+
+    line-height: 1.4;
+}
+
+
+/* ==========================================================
+   PRICE
+========================================================== */
+
+.package-page .package-price {
+    display: flex;
+
+    align-items: baseline;
+
+    gap: 6px;
+
+    margin-top: 17px;
+}
+
+
+.package-page .package-price span {
+    color: #7d8899;
+
+    font-size: 12px;
+}
+
+
+.package-page .package-price strong {
+    color: #1769e0;
+
+    font-size: 23px;
+    font-weight: 700;
+
+    line-height: 1;
+}
+
+
+/* ==========================================================
+   DURATION / ACCOMMODATION
+========================================================== */
+
+.package-page .package-meta {
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 10px;
+
+    margin-top: 17px;
+}
+
+
+.package-page .package-meta div {
+    min-height: 62px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+
+    padding: 10px 12px;
+
+    box-sizing: border-box;
+
+    border-radius: 12px;
+
+    background: #f5f7fb;
+}
+
+
+.package-page .package-meta strong {
+    display: block;
+
+    margin: 0;
+
+    color: #17213b;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    line-height: 1.2;
+}
+
+
+.package-page .package-meta span {
+    display: block;
+
+    margin-top: 4px;
+
+    color: #8993a4;
+
+    font-size: 10px;
+
+    line-height: 1.2;
+}
+
+
+/* ==========================================================
+   SECTIONS
+========================================================== */
+
+.package-page .package-section {
+    margin-top: 25px;
+}
+
+
+.package-page .package-section h3 {
+    margin: 0 0 10px;
+
+    color: #17213b;
+
+    font-size: 15px;
+    font-weight: 700;
+
+    line-height: 1.3;
+}
+
+
+.package-page .package-section p {
+    margin: 0;
+
+    color: #687386;
+
+    font-size: 12.5px;
+
+    line-height: 1.65;
+}
+
+
+/* ==========================================================
+   LISTS
+========================================================== */
+
+.package-page .package-section ul {
+    margin: 0;
+
+    padding: 0;
+
+    list-style: none;
+}
+
+
+.package-page .package-section li {
+    position: relative;
+
+    padding:
+        6px
+        0
+        6px
+        24px;
+
+    color: #687386;
+
+    font-size: 12.5px;
+
+    line-height: 1.5;
+}
+
+
+.package-page .package-section li::before {
+    content: "✓";
+
+    position: absolute;
+
+    left: 0;
+    top: 6px;
+
+    color: #18a558;
+
+    font-size: 13px;
+    font-weight: 700;
+}
+
+
+/* ==========================================================
+   EXCLUSIONS
+========================================================== */
+
+.package-page
+.package-section
+ul.package-exclusions
+li::before {
+    content: "×";
+
+    color: #e05252;
+}
+
+
+/* ==========================================================
+   ACCOMMODATION
+========================================================== */
+
+.package-page .accommodation-card {
+    width: 100%;
+
+    min-height: 84px;
+
+    display: flex;
+
+    overflow: hidden;
+
+    border: 1px solid #e4e9f0;
+
+    border-radius: 13px;
+
+    background: #ffffff;
+
+    box-sizing: border-box;
+}
+
+
+.package-page .accommodation-card img {
+    width: 84px;
+    min-width: 84px;
+
+    height: 84px;
+
+    display: block;
+
+    object-fit: cover;
+}
+
+
+.package-page .accommodation-content {
+    flex: 1;
+
+    min-width: 0;
+
+    padding: 11px 12px;
+
+    box-sizing: border-box;
+}
+
+
+.package-page .accommodation-content h4 {
+    margin: 0;
+
+    color: #17213b;
+
+    font-size: 12.5px;
+    font-weight: 700;
+
+    line-height: 1.3;
+}
+
+
+.package-page .accommodation-content p {
+    margin: 3px 0 6px;
+
+    color: #8490a3;
+
+    font-size: 10px;
+
+    line-height: 1.3;
+}
+
+
+.package-page .accommodation-status {
+    display: inline-flex;
+
+    padding: 4px 7px;
+
+    border-radius: 6px;
+
+    background: #eaf8f1;
+
+    color: #15965a;
+
+    font-size: 9px;
+    font-weight: 700;
+
+    line-height: 1;
+}
+
+
+/* ==========================================================
+   TOUR INFORMATION
+========================================================== */
+
+.package-page .tour-info {
+    width: 100%;
+
+    padding: 15px;
+
+    border-radius: 13px;
+
+    background: #f6f8fb;
+
+    color: #687386;
+
+    box-sizing: border-box;
+}
+
+
+/* ==========================================================
+   ITINERARY
+========================================================== */
+
+.package-page .itinerary-content {
+    width: 100%;
+
+    box-sizing: border-box;
+}
+
+
+.package-page .itinerary-title {
+    margin: 0 0 18px;
+
+    color: #17213b;
+
+    font-size: 14px;
+    font-weight: 700;
+
+    line-height: 1.4;
+}
+
+
+.package-page .itinerary-day {
+    margin-bottom: 21px;
+}
+
+
+.package-page .itinerary-day:last-child {
+    margin-bottom: 0;
+}
+
+
+.package-page .itinerary-day-title {
+    margin: 0 0 11px;
+
+    color: #17213b;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    line-height: 1.4;
+}
+
+
+/* ==========================================================
+   TIMELINE
+========================================================== */
+
+.package-page .itinerary-timeline {
+    position: relative;
+
+    margin-left: 4px;
+
+    padding-left: 22px;
+}
+
+
+.package-page .itinerary-timeline::before {
+    content: "";
+
+    position: absolute;
+
+    left: 4px;
+
+    top: 6px;
+    bottom: 6px;
+
+    width: 1px;
+
+    background: #d7e1ef;
+}
+
+
+.package-page .itinerary-item {
+    position: relative;
+
+    display: flex;
+
+    min-width: 0;
+
+    margin-bottom: 10px;
+}
+
+
+.package-page .itinerary-item:last-child {
+    margin-bottom: 0;
+}
+
+
+/* ==========================================================
+   TIMELINE DOT
+========================================================== */
+
+.package-page .itinerary-dot {
+    position: absolute;
+
+    left: -22px;
+
+    top: 5px;
+
+    width: 7px;
+    height: 7px;
+
+    border-radius: 50%;
+
+    background: #1769e0;
+
+    box-shadow:
+        0 0 0 2px #f6f8fb;
+}
+
+
+/* ==========================================================
+   ITINERARY CONTENT
+========================================================== */
+
+.package-page .itinerary-item-content {
+    width: 100%;
+
+    min-width: 0;
+
+    line-height: 1.5;
+}
+
+
+.package-page .itinerary-time {
+    display: inline-block;
+
+    min-width: 62px;
+
+    margin-right: 5px;
+
+    color: #1769e0;
+
+    font-size: 10.5px;
+    font-weight: 700;
+
+    vertical-align: top;
+}
+
+
+.package-page .itinerary-activity {
+    color: #687386;
+
+    font-size: 11px;
+
+    line-height: 1.55;
+}
+
+
+/* ==========================================================
+   BOOK NOW
+   NORMAL FLOW — NOT STICKY
+========================================================== */
+
+.package-page .book-now-button {
+    position: relative;
+
+    width: 100%;
+
+    height: 51px;
+
+    margin-top: 28px;
+
+    margin-bottom: 6px;
+
+    border: none;
+
+    border-radius: 13px;
+
+    background: #1769e0;
+
+    color: #ffffff;
+
+    font-family: inherit;
+
+    font-size: 14px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 8px 20px
+        rgba(23, 105, 224, 0.22);
+
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.2s ease;
+}
+
+
+.package-page .book-now-button:hover {
+    box-shadow:
+        0 10px 24px
+        rgba(23, 105, 224, 0.27);
+}
+
+
+.package-page .book-now-button:active {
+    transform: scale(0.98);
+}
+
+
+/* ==========================================================
+   MOBILE
+========================================================== */
+
+@media (max-width: 430px) {
+
+    .package-page {
+        min-height: 100vh;
+    }
+
+
+    .package-page .package-main-photo {
+        height: 270px;
+    }
+
+
+    .package-page .package-header {
+        height: 62px;
+    }
+
+
+    .package-page .back-button {
+        left: 13px;
+        top: 12px;
+
+        width: 39px;
+        height: 39px;
+
+        font-size: 20px;
+    }
+
+
+    .package-page .package-header h1 {
+        font-size: 15px;
+    }
+
+
+    .package-page .package-category {
+
+        right: 14px;
+        bottom: 13px;
+
+        min-height: 28px;
+
+        padding: 0 11px;
+
+        font-size: 10.5px;
+
+    }
+
+
+    .package-page .package-thumbnails {
+        padding:
+            9px
+            14px
+            11px;
+    }
+
+
+    .package-page .package-content {
+        padding:
+            5px
+            16px
+            32px;
+    }
+
+
+    .package-page .package-content h2 {
+        font-size: 23px;
+    }
+
+
+    .package-page .package-price strong {
+        font-size: 22px;
+    }
+
+
+    .package-page .package-section {
+        margin-top: 23px;
+    }
+
+
+    .package-page .tour-info {
+        padding: 14px;
+    }
+
+
+    .package-page .itinerary-title {
+        font-size: 13px;
+    }
+
+
+    .package-page .itinerary-day-title {
+        font-size: 11.5px;
+    }
+
+
+    .package-page .itinerary-time {
+        min-width: 60px;
+
+        font-size: 10px;
+    }
+
+
+    .package-page .itinerary-activity {
+        font-size: 10.5px;
+    }
+
+
+    .package-page .book-now-button {
+        height: 49px;
+
+        margin-top: 25px;
+        margin-bottom: 5px;
+    }
+
+}
+
+
+/* ==========================================================
+   SMALL PHONES
+========================================================== */
+
+@media (max-width: 360px) {
+
+    .package-page .package-main-photo {
+        height: 235px;
+    }
+
+
+    .package-page .package-content {
+        padding-left: 14px;
+        padding-right: 14px;
+    }
+
+
+    .package-page .package-content h2 {
+        font-size: 21px;
+    }
+
+
+    .package-page .itinerary-time {
+        min-width: 57px;
+
+        font-size: 9.5px;
+    }
+
+
+    .package-page .itinerary-activity {
+        font-size: 10px;
+    }
+
+}

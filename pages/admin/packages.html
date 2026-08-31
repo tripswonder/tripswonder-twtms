@@ -1,1 +1,1198 @@
+<!DOCTYPE html>
+<html lang="en">
 
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="description"
+        content="Trips Wonder Travel Management System - Packages">
+
+    <title>Packages | Trips Wonder Admin</title>
+
+    <!-- FAVICON -->
+    <link
+        rel="icon"
+        type="image/jpeg"
+        href="../../favicon.jpg">
+
+    <!-- GOOGLE FONT -->
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com">
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- FONT AWESOME -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+    <!-- PACKAGES CSS -->
+    <link
+        rel="stylesheet"
+        href="../../assets/css/admin/packages.css">
+
+    <!-- GLOBAL LOADING SCREEN -->
+    <link
+        rel="stylesheet"
+        href="../../assets/css/shared/loading-screen.css">
+</head>
+
+<body class="twtms-page-loading">
+
+<div class="admin-wrapper">
+
+    <!-- =====================================================
+         SIDEBAR
+    ====================================================== -->
+
+    <aside class="sidebar">
+
+        <div class="brand">
+
+            <div class="brand-logo">
+                <img
+                    src="../../assets/images/logo.png"
+                    alt="Trips Wonder Logo">
+            </div>
+
+            <div class="brand-text">
+                <strong>Trips Wonder</strong>
+                <span>Travel Management System</span>
+            </div>
+
+        </div>
+
+
+        <div class="menu-title">
+            MAIN MENU
+        </div>
+
+
+        <nav
+            class="nav-menu"
+            aria-label="Main Navigation">
+
+            <a
+                href="dashboard.html"
+                class="nav-link">
+
+                <i class="fa-solid fa-chart-pie"></i>
+                <span>Dashboard</span>
+
+            </a>
+
+
+            <a
+                href="packages.html"
+                class="nav-link active"
+                aria-current="page">
+
+                <i class="fa-solid fa-suitcase"></i>
+                <span>Packages</span>
+
+            </a>
+
+
+            <a
+                href="bookings.html"
+                class="nav-link">
+
+                <i class="fa-regular fa-calendar-check"></i>
+                <span>Bookings</span>
+
+            </a>
+
+
+            <a
+                href="customers.html"
+                class="nav-link">
+
+                <i class="fa-solid fa-user-group"></i>
+                <span>Customers</span>
+
+            </a>
+
+
+            <a
+                href="payments.html"
+                class="nav-link">
+
+                <i class="fa-regular fa-credit-card"></i>
+                <span>Payments</span>
+
+            </a>
+
+
+            <a
+                href="invoices.html"
+                class="nav-link">
+
+                <i class="fa-solid fa-file-invoice"></i>
+                <span>Invoices</span>
+
+            </a>
+
+
+            <a
+                href="resort-bookings.html"
+                class="nav-link">
+
+                <i class="fa-solid fa-building"></i>
+                <span>Resort Bookings</span>
+
+            </a>
+
+
+            <a
+                href="reports.html"
+                class="nav-link">
+
+                <i class="fa-solid fa-chart-line"></i>
+                <span>Reports</span>
+
+            </a>
+
+        </nav>
+
+
+        <div class="sidebar-bottom">
+
+            <a
+                href="admin-profile.html"
+                class="sidebar-admin-profile"
+                id="adminProfileLink">
+
+                <div class="sidebar-admin-avatar">
+                    <i class="fa-solid fa-user"></i>
+                </div>
+
+                <div class="sidebar-admin-info">
+                    <strong id="adminName">
+                        Admin Trips Wonder
+                    </strong>
+
+                    <span>
+                        Administrator
+                    </span>
+                </div>
+
+            </a>
+
+
+            <button
+                type="button"
+                id="logoutBtn"
+                class="sidebar-admin-action logout-btn">
+
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <span>Logout</span>
+
+            </button>
+
+        </div>
+
+    </aside>
+
+
+    <!-- =====================================================
+         MAIN
+    ====================================================== -->
+
+    <main class="main">
+
+        <section
+            class="content"
+            id="packagesContent">
+
+
+            <!-- PAGE HEADER -->
+
+            <header class="packages-header">
+
+                <div class="packages-title">
+
+                    <h1>Packages</h1>
+
+                    <p>
+                        Manage your travel packages and tour offerings.
+                    </p>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="btn-primary"
+                    id="addPackageButton">
+
+                    <i class="fa-solid fa-plus"></i>
+                    <span>Add Package</span>
+
+                </button>
+
+            </header>
+
+
+            <!-- SEARCH / FILTER -->
+
+            <section
+                class="package-toolbar"
+                aria-label="Package filters">
+
+                <div class="package-search-wrap">
+
+                    <i class="fa-solid fa-magnifying-glass"></i>
+
+                    <input
+                        type="search"
+                        id="packageSearch"
+                        class="package-search"
+                        placeholder="Search packages..."
+                        autocomplete="off">
+
+                </div>
+
+
+                <select
+                    id="packageFilter"
+                    class="package-filter"
+                    aria-label="Filter by category">
+
+                    <option value="all">All Categories</option>
+                    <option value="Beach Tour">Beach Tour</option>
+                    <option value="Island Tour">Island Tour</option>
+                    <option value="City Tour">City Tour</option>
+                    <option value="Land Tour">Land Tour</option>
+                    <option value="Hiking">Hiking</option>
+                    <option value="Chill Camp">Chill Camp</option>
+                    <option value="Home Stay">Home Stay</option>
+                    <option value="Domestic">Domestic</option>
+                    <option value="Other">Other</option>
+
+                </select>
+
+
+                <select
+                    id="packageStatusFilter"
+                    class="package-filter"
+                    aria-label="Filter by status">
+
+                    <option value="all">All Status</option>
+                    <option value="active">Active</option>
+                    <option value="hidden">Hidden</option>
+
+                </select>
+
+            </section>
+
+
+            <!-- PACKAGE SUMMARY -->
+
+            <section
+                class="package-summary"
+                aria-label="Package summary">
+
+                <article class="package-summary-card">
+
+                    <div class="package-summary-icon">
+                        <i class="fa-solid fa-suitcase"></i>
+                    </div>
+
+                    <div>
+                        <span>Total Packages</span>
+                        <strong id="totalPackages">—</strong>
+                        <small>All tour packages</small>
+                    </div>
+
+                </article>
+
+
+                <article class="package-summary-card">
+
+                    <div class="package-summary-icon active">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </div>
+
+                    <div>
+                        <span>Active Packages</span>
+                        <strong id="activePackages">—</strong>
+                        <small>Currently active</small>
+                    </div>
+
+                </article>
+
+
+                <article class="package-summary-card">
+
+                    <div class="package-summary-icon inactive">
+                        <i class="fa-solid fa-circle-pause"></i>
+                    </div>
+
+                    <div>
+                        <span>Hidden Packages</span>
+                        <strong id="hiddenPackages">—</strong>
+                        <small>Currently hidden</small>
+                    </div>
+
+                </article>
+
+
+                <article class="package-summary-card">
+
+                    <div class="package-summary-icon category">
+                        <i class="fa-solid fa-tags"></i>
+                    </div>
+
+                    <div>
+                        <span>Categories</span>
+                        <strong id="packageCategories">—</strong>
+                        <small>Package categories</small>
+                    </div>
+
+                </article>
+
+            </section>
+
+
+            <!-- PACKAGE LIST HEADER -->
+
+            <div class="package-list-header">
+
+                <div>
+
+                    <h2>All Packages</h2>
+
+                    <span id="packageResultText">
+                        Showing live packages
+                    </span>
+
+                </div>
+
+
+                <div class="package-sort">
+
+                    <label for="packageSort">
+                        Sort by:
+                    </label>
+
+                    <select
+                        id="packageSort"
+                        class="package-sort-select">
+
+                        <option value="newest">Newest First</option>
+                        <option value="oldest">Oldest First</option>
+                        <option value="name-asc">Name A–Z</option>
+                        <option value="name-desc">Name Z–A</option>
+                        <option value="price-low">Price Low–High</option>
+                        <option value="price-high">Price High–Low</option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <!-- PACKAGE GRID -->
+
+            <section
+                class="package-grid"
+                id="packageGrid"
+                aria-live="polite"
+                aria-label="Tour packages">
+
+                <div
+                    class="package-empty-state"
+                    id="packageEmptyState">
+
+                    <div class="package-empty-icon">
+                        <i class="fa-solid fa-suitcase"></i>
+                    </div>
+
+                    <strong>
+                        No packages to display
+                    </strong>
+
+                    <span>
+                        Live tour packages will appear here automatically.
+                    </span>
+
+                </div>
+
+            </section>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<!-- =========================================================
+     ADD / EDIT PACKAGE MODAL
+========================================================= -->
+
+<div
+    class="package-modal"
+    id="packageModal"
+    aria-hidden="true">
+
+    <div
+        class="package-modal-overlay"
+        id="packageModalOverlay">
+    </div>
+
+
+    <div
+        class="package-modal-box package-builder"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="packageModalTitle">
+
+
+        <!-- BUILDER HEADER -->
+
+        <header class="package-modal-header package-builder-header">
+
+            <div>
+
+                <span class="package-modal-eyebrow">
+                    PACKAGE MANAGEMENT
+                </span>
+
+                <h2 id="packageModalTitle">
+                    Add New Package
+                </h2>
+
+                <p id="packageModalDescription">
+                    Build and configure a complete travel package.
+                </p>
+
+            </div>
+
+
+            <div class="package-builder-header-actions">
+
+                <span
+                    class="package-builder-status"
+                    id="packageBuilderStatus">
+                    Draft
+                </span>
+
+                <button
+                    type="button"
+                    class="modal-close"
+                    id="closePackageModal"
+                    aria-label="Close package form">
+
+                    <i class="fa-solid fa-xmark"></i>
+
+                </button>
+
+            </div>
+
+        </header>
+
+
+        <!-- SECTION NAVIGATION -->
+
+        <nav
+            class="package-builder-nav"
+            aria-label="Package form sections">
+
+            <a href="#packageSectionBasic" class="package-builder-nav-item active">
+                <span>01</span>
+                Basic
+            </a>
+
+            <a href="#packageSectionGallery" class="package-builder-nav-item">
+                <span>02</span>
+                Gallery
+            </a>
+
+            <a href="#packageSectionDetails" class="package-builder-nav-item">
+                <span>03</span>
+                Details
+            </a>
+
+            <a href="#packageSectionInclusions" class="package-builder-nav-item">
+                <span>04</span>
+                Inclusions
+            </a>
+
+            <a href="#packageSectionExclusions" class="package-builder-nav-item">
+                <span>05</span>
+                Exclusions
+            </a>
+
+            <a href="#packageSectionAccommodation" class="package-builder-nav-item">
+                <span>06</span>
+                Stay
+            </a>
+
+            <a href="#packageSectionPickup" class="package-builder-nav-item">
+    <span>07</span>
+    Pick Up
+</a>
+
+<a href="#packageSectionItinerary" class="package-builder-nav-item">
+    <span>08</span>
+    Itinerary
+</a>
+
+        </nav>
+
+
+        <!-- PACKAGE FORM -->
+
+        <form
+            id="packageForm"
+            class="package-builder-form"
+            autocomplete="off">
+
+
+            <!-- =================================================
+                 01 BASIC INFORMATION
+            ================================================== -->
+
+            <section
+                class="form-section package-builder-section"
+                id="packageSectionBasic">
+
+                <div class="form-section-title">
+
+                    <span>01</span>
+
+                    <div>
+                        <h3>Basic Information</h3>
+                        <p>
+                            Main details customers will see first.
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <div class="form-grid">
+
+                    <div class="form-group full">
+
+                        <label for="formPackageName">
+                            Package Name
+                            <span class="field-required">*</span>
+                        </label>
+
+                        <input
+                            type="text"
+                            id="formPackageName"
+                            placeholder="e.g. Jomalig Island 3D2N"
+                            required>
+
+                        <small class="field-help">
+                            Use a clear package name that is easy to recognize.
+                        </small>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="formCategory">
+                            Category
+                            <span class="field-required">*</span>
+                        </label>
+
+                        <select
+                            id="formCategory"
+                            required>
+
+                            <option value="">Select category</option>
+                            <option value="Beach Tour">Beach Tour</option>
+                            <option value="Island Tour">Island Tour</option>
+                            <option value="City Tour">City Tour</option>
+                            <option value="Land Tour">Land Tour</option>
+                            <option value="Hiking">Hiking</option>
+                            <option value="Chill Camp">Chill Camp</option>
+                            <option value="Home Stay">Home Stay</option>
+                            <option value="Domestic">Domestic</option>
+                            <option value="Other">Other</option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="formLocation">
+                            Destination / Location
+                            <span class="field-required">*</span>
+                        </label>
+
+                        <input
+                            type="text"
+                            id="formLocation"
+                            placeholder="e.g. Jomalig, Quezon"
+                            required>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="formPrice">
+                            Starting Price
+                        </label>
+
+                        <div class="input-prefix-wrap">
+
+                            <span class="input-prefix">
+                                ₱
+                            </span>
+
+                            <input
+                                type="number"
+                                id="formPrice"
+                                min="0"
+                                step="0.01"
+                                placeholder="4799">
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="formDuration">
+                            Duration
+                        </label>
+
+                        <input
+                            type="text"
+                            id="formDuration"
+                            placeholder="e.g. 3D2N">
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="formStatus">
+                            Package Status
+                        </label>
+
+                        <select id="formStatus">
+
+                            <option value="active">
+                                Active
+                            </option>
+
+                            <option value="hidden">
+                                Hidden
+                            </option>
+
+                        </select>
+
+                        <small class="field-help">
+                            Hidden packages remain saved but are not publicly available.
+                        </small>
+
+                    </div>
+
+
+                    <div class="form-group full">
+
+                        <label for="formDescription">
+                            Short Description
+                        </label>
+
+                        <textarea
+                            id="formDescription"
+                            rows="4"
+                            placeholder="Write a short and attractive summary of this package..."></textarea>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 02 PACKAGE GALLERY
+            ================================================== -->
+
+            <section
+                class="form-section package-builder-section"
+                id="packageSectionGallery">
+
+                <div class="form-section-title">
+
+                    <span>02</span>
+
+                    <div>
+                        <h3>Package Gallery</h3>
+                        <p>
+                            Add high-quality photos for the package.
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <div class="package-gallery-note">
+
+                    <i class="fa-regular fa-image"></i>
+
+                    <div>
+                        <strong>
+                            The first photo will be used as the cover photo.
+                        </strong>
+
+                        <span>
+                            You can upload up to 10 package images.
+                        </span>
+                    </div>
+
+                </div>
+
+
+                <div class="upload-box">
+
+                    <input
+                        type="file"
+                        id="packagePhotos"
+                        accept="image/*"
+                        multiple
+                        hidden>
+
+
+                    <button
+                        type="button"
+                        class="upload-button"
+                        id="uploadPhotosButton">
+
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+
+                        <strong>
+                            Upload Package Photos
+                        </strong>
+
+                        <small>
+                            JPG, PNG or WEBP • Select multiple photos
+                        </small>
+
+                    </button>
+
+                </div>
+
+
+                <div
+                    class="photo-preview-grid"
+                    id="photoPreviewGrid">
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 03 TOUR DETAILS
+            ================================================== -->
+
+            <section
+                class="form-section package-builder-section"
+                id="packageSectionDetails">
+
+                <div class="form-section-title">
+
+                    <span>03</span>
+
+                    <div>
+                        <h3>About the Tour</h3>
+                        <p>
+                            Add a longer overview and important highlights.
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="formAbout">
+                        Tour Overview
+                    </label>
+
+                    <textarea
+                        id="formAbout"
+                        rows="6"
+                        placeholder="Describe the destination, experience, tour highlights and what guests can expect..."></textarea>
+
+                    <small class="field-help">
+                        This section is ready for the customer-facing package details page.
+                    </small>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 04 INCLUSIONS
+            ================================================== -->
+
+            <section
+                class="form-section package-builder-section"
+                id="packageSectionInclusions">
+
+                <div class="form-section-title">
+
+                    <span>04</span>
+
+                    <div>
+                        <h3>Package Inclusions</h3>
+                        <p>
+                            List everything included in the package price.
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <div
+                    class="dynamic-list"
+                    id="inclusionsList">
+
+                    <div class="dynamic-row">
+
+                        <input
+                            type="text"
+                            placeholder="e.g. Roundtrip transportation">
+
+                        <button
+                            type="button"
+                            class="remove-row"
+                            aria-label="Remove inclusion">
+
+                            <i class="fa-solid fa-xmark"></i>
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="add-row-button"
+                    id="addInclusion">
+
+                    <i class="fa-solid fa-plus"></i>
+                    Add Inclusion
+
+                </button>
+
+            </section>
+
+
+            <!-- =================================================
+                 05 EXCLUSIONS
+            ================================================== -->
+
+            <section
+                class="form-section package-builder-section"
+                id="packageSectionExclusions">
+
+                <div class="form-section-title">
+
+                    <span>05</span>
+
+                    <div>
+                        <h3>Package Exclusions</h3>
+                        <p>
+                            Clearly list expenses or services not included.
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <div
+                    class="dynamic-list"
+                    id="exclusionsList">
+
+                    <div class="dynamic-row">
+
+                        <div class="exclusion-number">
+                            <span>1</span>
+                        </div>
+
+                        <input
+                            type="text"
+                            class="exclusion-input"
+                            placeholder="e.g. Personal expenses">
+
+                        <button
+                            type="button"
+                            class="remove-exclusion"
+                            aria-label="Remove exclusion">
+                            ×
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="add-row-button"
+                    id="addExclusion">
+
+                    <i class="fa-solid fa-plus"></i>
+                    Add Exclusion
+
+                </button>
+
+            </section>
+
+
+            <!-- =================================================
+                 06 ACCOMMODATION
+            ================================================== -->
+
+            <section
+                class="form-section package-builder-section"
+                id="packageSectionAccommodation">
+
+                <div class="form-section-title">
+
+                    <span>06</span>
+
+                    <div>
+                        <h3>Accommodation</h3>
+                        <p>
+                            Add included stays and optional room upgrades.
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <div class="package-builder-tip">
+
+                    <i class="fa-solid fa-circle-info"></i>
+
+                    <span>
+                        Add each accommodation option separately so guests can easily compare what is included and what requires an additional charge.
+                    </span>
+
+                </div>
+
+
+                <div
+                    class="accommodation-list"
+                    id="accommodationList">
+                </div>
+
+
+                <button
+                    type="button"
+                    class="add-accommodation-button"
+                    id="addAccommodation">
+
+                    <i class="fa-solid fa-plus"></i>
+                    Add Accommodation
+
+                </button>
+
+            </section>
+
+            <!-- =================================================
+     07 PICK UP LOCATIONS
+================================================== -->
+
+<section
+    class="form-section package-builder-section"
+    id="packageSectionPickup">
+
+    <div class="form-section-title">
+
+        <span>07</span>
+
+        <div>
+            <h3>Pick Up Locations</h3>
+            <p>
+                Add the available meet up and pick up locations
+                for this package.
+            </p>
+        </div>
+
+    </div>
+
+
+    <div class="package-builder-tip">
+
+        <i class="fa-solid fa-location-dot"></i>
+
+        <span>
+            Add each available pick up point separately.
+            These locations will be shown to clients during booking.
+        </span>
+
+    </div>
+
+
+    <div
+        class="dynamic-list pickup-location-list"
+        id="pickupLocationList">
+    </div>
+
+
+    <button
+        type="button"
+        class="add-row-button"
+        id="addPickupLocation">
+
+        <i class="fa-solid fa-plus"></i>
+        Add Pick Up Location
+
+    </button>
+
+</section>
+
+
+            <!-- =================================================
+                 08 ITINERARY
+            ================================================== -->
+
+            <section
+                class="form-section package-builder-section"
+                id="packageSectionItinerary">
+
+                <div class="form-section-title">
+
+                    <span>08</span>
+
+                    <div>
+                        <h3>Schedule / Itinerary</h3>
+                        <p>
+                            Add the complete tour schedule in a clear day-by-day format.
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="formSchedule">
+                        Tour Itinerary
+                    </label>
+
+                    <textarea
+                        id="formSchedule"
+                        rows="12"
+                        placeholder="Example:
+
+DAY 1
+04:00 AM — ETA Real Port
+06:00 AM — Boat Departure
+10:00 AM — Arrival
+12:00 PM — Lunch
+
+DAY 2
+06:00 AM — Sunrise
+07:00 AM — Breakfast
+08:00 AM — Island Tour
+
+DAY 3
+07:00 AM — Breakfast
+09:00 AM — Check-out
+10:00 AM — Return trip"></textarea>
+
+                    <small class="field-help">
+                        We can upgrade this to a full Day + Time itinerary builder in the next JS update.
+                    </small>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 STICKY FORM FOOTER
+            ================================================== -->
+
+            <div class="package-form-footer package-builder-footer">
+
+                <div class="package-builder-footer-note">
+
+                    <i class="fa-regular fa-circle-check"></i>
+
+                    <span>
+                        Review all package information before saving.
+                    </span>
+
+                </div>
+
+
+                <div class="package-builder-footer-actions">
+
+                    <button
+                        type="button"
+                        class="btn-secondary"
+                        id="cancelPackage">
+
+                        Cancel
+
+                    </button>
+
+
+                    <button
+                        type="submit"
+                        class="btn-primary"
+                        id="savePackageButton">
+
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        Save Package
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     JAVASCRIPT
+========================================================= -->
+
+<script
+    type="module"
+    src="../../assets/js/admin/packages.js">
+</script>
+
+</body>
+</html>

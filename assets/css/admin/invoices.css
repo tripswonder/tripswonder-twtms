@@ -1,0 +1,2171 @@
+/* =========================================================
+   TRIPS WONDER ADMIN
+   INVOICES MODULE
+   ========================================================= */
+
+/* =========================================================
+   RESET
+   ========================================================= */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    min-height: 100vh;
+    font-family: "Poppins", "Segoe UI", Arial, sans-serif;
+    background: #f4f7fc;
+    color: #15345f;
+    overflow-x: hidden;
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+
+/* =========================================================
+   MAIN ADMIN LAYOUT
+   ========================================================= */
+
+.admin-layout {
+    display: flex;
+    width: 100%;
+    min-height: 100vh;
+    background: #f4f7fc;
+}
+
+
+/* =========================================================
+   SIDEBAR
+   ========================================================= */
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+
+    width: 270px;
+    height: 100vh;
+
+    display: flex;
+    flex-direction: column;
+
+    background: linear-gradient(
+        180deg,
+        #123b78 0%,
+        #174681 100%
+    );
+
+    color: #ffffff;
+    z-index: 1000;
+
+    overflow: hidden;
+}
+
+
+/* =========================================================
+   SIDEBAR BRAND
+   ========================================================= */
+
+.sidebar-brand {
+    min-height: 103px;
+
+    display: flex;
+    align-items: center;
+
+    padding: 22px 28px;
+
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.brand-logo {
+    width: 48px;
+    height: 48px;
+
+    flex: 0 0 48px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #ffffff;
+    overflow: hidden;
+}
+
+.brand-logo img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.brand-text {
+    min-width: 0;
+    margin-left: 12px;
+}
+
+.brand-text h2 {
+    color: #ffffff;
+
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.2;
+
+    white-space: nowrap;
+}
+
+.brand-text span {
+    display: block;
+
+    margin-top: 4px;
+
+    color: rgba(255, 255, 255, 0.72);
+
+    font-size: 10px;
+    font-weight: 500;
+
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   SIDEBAR MENU
+   ========================================================= */
+
+.sidebar-menu {
+    flex: 1;
+
+    padding: 27px 16px 20px;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.menu-label {
+    padding: 0 18px 14px;
+
+    color: rgba(255, 255, 255, 0.62);
+
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+}
+
+.main-navigation {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+
+/* =========================================================
+   NAVIGATION ITEM
+   ========================================================= */
+
+.nav-item {
+    position: relative;
+
+    width: 100%;
+    min-height: 47px;
+
+    display: flex;
+    align-items: center;
+
+    padding: 0 18px;
+
+    border-radius: 11px;
+
+    color: rgba(255, 255, 255, 0.88);
+
+    font-size: 14px;
+    font-weight: 600;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease;
+}
+
+.nav-item i {
+    width: 22px;
+    margin-right: 12px;
+
+    text-align: center;
+    font-size: 15px;
+}
+
+.nav-item span {
+    white-space: nowrap;
+}
+
+.nav-item:hover {
+    background: rgba(255, 255, 255, 0.10);
+    color: #ffffff;
+}
+
+.nav-item.active {
+    background: rgba(255, 255, 255, 0.17);
+    color: #ffffff;
+
+    box-shadow: inset 4px 0 0 #ffffff;
+}
+
+
+/* =========================================================
+   SIDEBAR BOTTOM
+   ========================================================= */
+
+.sidebar-bottom {
+    margin-top: auto;
+
+    padding: 14px 16px 25px;
+}
+
+
+/* =========================================================
+   ADMIN PROFILE
+   ========================================================= */
+
+.admin-profile {
+    min-height: 68px;
+
+    display: flex;
+    align-items: center;
+
+    padding: 10px 13px;
+
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 11px;
+
+    background: rgba(255, 255, 255, 0.07);
+    color: #ffffff;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.admin-profile:hover {
+    background: rgba(255, 255, 255, 0.11);
+    border-color: rgba(255, 255, 255, 0.25);
+}
+
+.admin-avatar {
+    width: 40px;
+    height: 40px;
+
+    flex: 0 0 40px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: rgba(255, 255, 255, 0.17);
+    color: #ffffff;
+
+    font-size: 16px;
+}
+
+.admin-avatar.large {
+    width: 48px;
+    height: 48px;
+    flex-basis: 48px;
+}
+
+.admin-info {
+    min-width: 0;
+    margin-left: 11px;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.admin-info strong {
+    color: #ffffff;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    white-space: nowrap;
+}
+
+.admin-info span {
+    margin-top: 2px;
+
+    color: rgba(255, 255, 255, 0.66);
+
+    font-size: 9px;
+    font-weight: 500;
+}
+
+.profile-arrow {
+    width: 24px;
+    height: 24px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin-left: auto;
+
+    color: rgba(255, 255, 255, 0.72);
+
+    font-size: 11px;
+}
+
+.profile-arrow i {
+    transition: transform 0.2s ease;
+}
+
+.profile-arrow i.rotate {
+    transform: rotate(180deg);
+}
+
+
+/* =========================================================
+   PROFILE MENU
+   ========================================================= */
+
+.profile-menu {
+    max-height: 0;
+
+    overflow: hidden;
+    opacity: 0;
+
+    transform: translateY(-5px);
+
+    transition:
+        max-height 0.25s ease,
+        opacity 0.2s ease,
+        transform 0.2s ease;
+}
+
+.profile-menu.show {
+    max-height: 80px;
+
+    padding-top: 6px;
+
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.profile-menu-item {
+    width: 100%;
+    min-height: 38px;
+
+    display: flex;
+    align-items: center;
+
+    padding: 0 13px;
+
+    border: 0;
+    border-radius: 8px;
+
+    background: transparent;
+    color: #ffffff;
+
+    text-align: left;
+
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.profile-menu-item:hover {
+    background: rgba(255, 255, 255, 0.10);
+}
+
+.profile-menu-item i {
+    width: 22px;
+    margin-right: 7px;
+
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   LOGOUT
+   ========================================================= */
+
+.logout-button {
+    width: 100%;
+    min-height: 43px;
+
+    display: flex;
+    align-items: center;
+
+    margin-top: 7px;
+    padding: 0 15px;
+
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 10px;
+
+    background: rgba(255, 255, 255, 0.07);
+    color: #ffffff;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.logout-button:hover {
+    background: rgba(255, 255, 255, 0.13);
+    border-color: rgba(255, 255, 255, 0.22);
+}
+
+.logout-button i {
+    width: 22px;
+    margin-right: 8px;
+
+    text-align: center;
+}
+
+
+/* =========================================================
+   MAIN CONTENT
+   ========================================================= */
+
+.main-content {
+    width: calc(100% - 270px);
+    min-height: 100vh;
+
+    margin-left: 270px;
+
+    padding: 38px 42px 55px;
+
+    background: #f4f7fc;
+}
+
+
+/* =========================================================
+   PAGE HEADER
+   ========================================================= */
+
+.page-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+
+    gap: 25px;
+
+    margin-bottom: 28px;
+}
+
+.page-heading h1 {
+    color: #153b6d;
+
+    font-size: 32px;
+    font-weight: 750;
+
+    line-height: 1.15;
+}
+
+.page-heading p {
+    margin-top: 7px;
+
+    color: #7890ad;
+
+    font-size: 13px;
+    font-weight: 500;
+}
+
+
+/* =========================================================
+   PRIMARY BUTTON
+   ========================================================= */
+
+.primary-button {
+    min-height: 45px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 9px;
+
+    padding: 0 20px;
+
+    border: 0;
+    border-radius: 11px;
+
+    background: #1760ae;
+    color: #ffffff;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    box-shadow:
+        0 7px 18px rgba(23, 96, 174, 0.18);
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.primary-button:hover {
+    background: #12549c;
+
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 9px 20px rgba(23, 96, 174, 0.24);
+}
+
+.primary-button i {
+    font-size: 12px;
+}
+
+
+/* =========================================================
+   INVOICE SUMMARY
+   ========================================================= */
+
+.invoice-summary {
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+    gap: 14px;
+
+    margin-bottom: 26px;
+}
+
+.summary-card {
+    min-height: 102px;
+
+    display: flex;
+    align-items: center;
+
+    padding: 18px;
+
+    border: 1px solid #e2eaf4;
+    border-radius: 14px;
+
+    background: #ffffff;
+
+    box-shadow:
+        0 7px 20px rgba(24, 55, 91, 0.045);
+}
+
+.summary-icon {
+    width: 43px;
+    height: 43px;
+
+    flex: 0 0 43px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 12px;
+
+    font-size: 15px;
+}
+
+.summary-icon.blue {
+    background: #eaf3ff;
+    color: #1767bb;
+}
+
+.summary-icon.green {
+    background: #e8f8f0;
+    color: #159765;
+}
+
+.summary-icon.orange {
+    background: #fff4df;
+    color: #d58a13;
+}
+
+.summary-icon.red {
+    background: #fff0f0;
+    color: #d14e4e;
+}
+
+.summary-content {
+    min-width: 0;
+
+    margin-left: 14px;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.summary-label {
+    color: #7890ad;
+
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.summary-value {
+    margin-top: 4px;
+
+    color: #163b6c;
+
+    font-size: 25px;
+    font-weight: 750;
+
+    line-height: 1;
+}
+
+.summary-value.amount {
+    font-size: 20px;
+}
+
+.summary-content small {
+    margin-top: 6px;
+
+    color: #9aabc0;
+
+    font-size: 9px;
+    font-weight: 500;
+}
+
+
+/* =========================================================
+   INVOICE TOOLBAR
+   ========================================================= */
+
+.invoice-toolbar {
+    display: grid;
+
+    grid-template-columns:
+        minmax(280px, 1fr)
+        145px
+        145px
+        155px;
+
+    gap: 10px;
+
+    margin-bottom: 27px;
+}
+
+
+/* =========================================================
+   SEARCH
+   ========================================================= */
+
+.search-box {
+    min-height: 43px;
+
+    display: flex;
+    align-items: center;
+
+    padding: 0 14px;
+
+    border: 1px solid #dce6f1;
+    border-radius: 10px;
+
+    background: #ffffff;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.search-box:focus-within {
+    border-color: #8cb9e8;
+
+    box-shadow:
+        0 0 0 3px rgba(45, 125, 207, 0.08);
+}
+
+.search-box i {
+    margin-right: 10px;
+
+    color: #8ca1ba;
+
+    font-size: 13px;
+}
+
+.search-box input {
+    width: 100%;
+
+    border: 0;
+    outline: 0;
+
+    background: transparent;
+    color: #173c6b;
+
+    font-size: 12px;
+}
+
+.search-box input::placeholder {
+    color: #9aabc0;
+}
+
+
+/* =========================================================
+   FILTER SELECT
+   ========================================================= */
+
+.filter-select {
+    position: relative;
+
+    min-height: 43px;
+}
+
+.filter-select::after {
+    content: "\f078";
+
+    position: absolute;
+
+    top: 50%;
+    right: 14px;
+
+    transform: translateY(-50%);
+
+    color: #496684;
+
+    font-family: "Font Awesome 6 Free";
+
+    font-size: 9px;
+    font-weight: 900;
+
+    pointer-events: none;
+}
+
+.filter-select select {
+    width: 100%;
+    height: 43px;
+
+    appearance: none;
+    -webkit-appearance: none;
+
+    padding: 0 34px 0 14px;
+
+    border: 1px solid #dce6f1;
+    border-radius: 10px;
+
+    outline: 0;
+
+    background: #ffffff;
+    color: #365677;
+
+    font-size: 11px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.filter-select select:focus {
+    border-color: #8cb9e8;
+
+    box-shadow:
+        0 0 0 3px rgba(45, 125, 207, 0.08);
+}
+
+
+/* =========================================================
+   INVOICES SECTION
+   ========================================================= */
+
+.invoices-section {
+    width: 100%;
+
+    border: 1px solid #e1e9f3;
+    border-radius: 14px;
+
+    background: #ffffff;
+
+    box-shadow:
+        0 7px 22px rgba(24, 55, 91, 0.045);
+
+    overflow: hidden;
+}
+
+
+/* =========================================================
+   SECTION HEADER
+   ========================================================= */
+
+.section-header {
+    min-height: 78px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 18px 21px;
+
+    border-bottom: 1px solid #edf1f6;
+}
+
+.section-header h2 {
+    color: #153b6d;
+
+    font-size: 17px;
+    font-weight: 750;
+}
+
+.section-header p {
+    margin-top: 4px;
+
+    color: #91a3b8;
+
+    font-size: 10px;
+    font-weight: 500;
+}
+
+.refresh-button {
+    display: inline-flex;
+    align-items: center;
+
+    gap: 7px;
+
+    padding: 7px 10px;
+
+    border: 0;
+    border-radius: 7px;
+
+    background: transparent;
+    color: #1767b7;
+
+    font-size: 10px;
+    font-weight: 650;
+}
+
+.refresh-button:hover {
+    background: #f0f6fd;
+}
+
+.refresh-button i {
+    font-size: 10px;
+}
+
+
+/* =========================================================
+   INVOICE TABLE
+   ========================================================= */
+
+.invoice-table-wrapper {
+    width: 100%;
+
+    overflow-x: auto;
+}
+
+.invoice-table {
+    width: 100%;
+    min-width: 1100px;
+
+    border-collapse: collapse;
+}
+
+.invoice-table thead {
+    background: #f7f9fc;
+}
+
+.invoice-table th {
+    height: 46px;
+
+    padding: 0 13px;
+
+    border-bottom: 1px solid #e8eef5;
+
+    color: #7c91aa;
+
+    text-align: left;
+
+    font-size: 9px;
+    font-weight: 700;
+
+    white-space: nowrap;
+}
+
+.invoice-table td {
+    min-height: 65px;
+
+    padding: 12px 13px;
+
+    border-bottom: 1px solid #edf1f5;
+
+    color: #315172;
+
+    font-size: 10px;
+    font-weight: 500;
+
+    vertical-align: middle;
+}
+
+.invoice-table tbody tr {
+    transition: background 0.15s ease;
+}
+
+.invoice-table tbody tr:hover {
+    background: #fafcff;
+}
+
+.invoice-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+
+/* =========================================================
+   INVOICE CELL
+   ========================================================= */
+
+.invoice-cell {
+    display: flex;
+    align-items: center;
+
+    min-width: 155px;
+}
+
+.invoice-icon {
+    width: 36px;
+    height: 36px;
+
+    flex: 0 0 36px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 9px;
+
+    background: #eaf3ff;
+    color: #1767b7;
+
+    font-size: 12px;
+}
+
+.invoice-info {
+    min-width: 0;
+
+    margin-left: 9px;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.invoice-info strong {
+    color: #173d6d;
+
+    font-size: 10px;
+    font-weight: 700;
+
+    white-space: nowrap;
+}
+
+.invoice-info span {
+    margin-top: 2px;
+
+    color: #95a6ba;
+
+    font-size: 8px;
+
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   CUSTOMER CELL
+   ========================================================= */
+
+.invoice-customer {
+    display: flex;
+    align-items: center;
+
+    min-width: 145px;
+}
+
+.customer-avatar {
+    width: 34px;
+    height: 34px;
+
+    flex: 0 0 34px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #eef5fc;
+    color: #1767b7;
+
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.customer-info {
+    min-width: 0;
+
+    margin-left: 9px;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.customer-info strong {
+    color: #315172;
+
+    font-size: 10px;
+    font-weight: 650;
+
+    white-space: nowrap;
+}
+
+.customer-info span {
+    margin-top: 2px;
+
+    color: #9aaabd;
+
+    font-size: 8px;
+
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   BOOKING CELL
+   ========================================================= */
+
+.invoice-booking {
+    min-width: 125px;
+}
+
+.invoice-booking strong {
+    display: block;
+
+    color: #315172;
+
+    font-size: 10px;
+    font-weight: 650;
+
+    white-space: nowrap;
+}
+
+.invoice-booking span {
+    display: block;
+
+    margin-top: 2px;
+
+    color: #9aaabd;
+
+    font-size: 8px;
+
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   DATES
+   ========================================================= */
+
+.invoice-date {
+    min-width: 95px;
+}
+
+.invoice-date strong {
+    display: block;
+
+    color: #315172;
+
+    font-size: 9px;
+    font-weight: 650;
+
+    white-space: nowrap;
+}
+
+.invoice-date span {
+    display: block;
+
+    margin-top: 2px;
+
+    color: #9aaabd;
+
+    font-size: 8px;
+
+    white-space: nowrap;
+}
+
+.invoice-date.overdue strong {
+    color: #d14e4e;
+}
+
+
+/* =========================================================
+   AMOUNTS
+   ========================================================= */
+
+.invoice-amount {
+    color: #173c6b;
+
+    font-size: 10px;
+    font-weight: 750;
+
+    white-space: nowrap;
+}
+
+.invoice-balance {
+    color: #c27b16;
+
+    font-size: 10px;
+    font-weight: 700;
+
+    white-space: nowrap;
+}
+
+.invoice-balance.paid {
+    color: #159765;
+}
+
+
+/* =========================================================
+   INVOICE STATUS
+   ========================================================= */
+
+.invoice-status {
+    display: inline-flex;
+    align-items: center;
+
+    gap: 5px;
+
+    min-height: 23px;
+
+    padding: 0 8px;
+
+    border-radius: 20px;
+
+    font-size: 8px;
+    font-weight: 700;
+
+    white-space: nowrap;
+}
+
+.invoice-status::before {
+    content: "";
+
+    width: 5px;
+    height: 5px;
+
+    border-radius: 50%;
+
+    background: currentColor;
+}
+
+.invoice-status.paid {
+    background: #e9f8f0;
+    color: #159866;
+}
+
+.invoice-status.partial {
+    background: #fff7e9;
+    color: #b97813;
+}
+
+.invoice-status.pending {
+    background: #fff4df;
+    color: #d08a14;
+}
+
+.invoice-status.overdue {
+    background: #fff0f0;
+    color: #d14e4e;
+}
+
+.invoice-status.cancelled {
+    background: #f1f3f6;
+    color: #8795a6;
+}
+
+
+/* =========================================================
+   ACTIONS
+   ========================================================= */
+
+.invoice-actions {
+    display: flex;
+    align-items: center;
+
+    gap: 5px;
+
+    white-space: nowrap;
+}
+
+.action-button {
+    width: 31px;
+    height: 31px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    border: 1px solid #dce6f0;
+    border-radius: 7px;
+
+    background: #ffffff;
+    color: #356286;
+
+    font-size: 11px;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        color 0.2s ease;
+}
+
+.action-button:hover {
+    background: #edf5fd;
+
+    border-color: #b9d2ec;
+
+    color: #1767b7;
+}
+
+.action-button.print:hover {
+    background: #eaf8f1;
+    color: #159765;
+}
+
+.action-button.edit:hover {
+    background: #f1efff;
+    color: #7351c5;
+}
+
+.action-button.more:hover {
+    background: #f4f5f7;
+    color: #263f5e;
+}
+
+
+/* =========================================================
+   EMPTY STATE
+   ========================================================= */
+
+.empty-invoices {
+    min-height: 290px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    padding: 45px 20px;
+
+    text-align: center;
+}
+
+.empty-icon {
+    width: 48px;
+    height: 48px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin-bottom: 13px;
+
+    border-radius: 12px;
+
+    background: #f1f6fc;
+    color: #7f9ab8;
+
+    font-size: 18px;
+}
+
+.empty-invoices h3 {
+    color: #173c6b;
+
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.empty-invoices p {
+    max-width: 350px;
+
+    margin-top: 6px;
+
+    color: #95a7bb;
+
+    font-size: 10px;
+    font-weight: 500;
+
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   MODAL OVERLAY
+   ========================================================= */
+
+.modal-overlay {
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 2000;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+
+    background: rgba(13, 34, 59, 0.45);
+
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+
+    opacity: 0;
+    visibility: hidden;
+
+    transition:
+        opacity 0.2s ease,
+        visibility 0.2s ease;
+}
+
+.modal-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+
+/* =========================================================
+   MODALS
+   ========================================================= */
+
+.invoice-modal,
+.invoice-details-modal,
+.access-modal {
+    width: 100%;
+
+    max-width: 590px;
+
+    max-height: calc(100vh - 40px);
+
+    overflow-y: auto;
+
+    border-radius: 16px;
+
+    background: #ffffff;
+
+    box-shadow:
+        0 20px 60px rgba(17, 46, 80, 0.22);
+
+    transform:
+        translateY(12px)
+        scale(0.98);
+
+    transition:
+        transform 0.2s ease;
+}
+
+.invoice-details-modal {
+    max-width: 650px;
+}
+
+.access-modal {
+    max-width: 470px;
+}
+
+.modal-overlay.show
+.invoice-modal,
+.modal-overlay.show
+.invoice-details-modal,
+.modal-overlay.show
+.access-modal {
+    transform:
+        translateY(0)
+        scale(1);
+}
+
+
+/* =========================================================
+   MODAL HEADER
+   ========================================================= */
+
+.modal-header {
+    min-height: 78px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 15px;
+
+    padding: 18px 21px;
+
+    border-bottom: 1px solid #edf1f5;
+
+    background: #ffffff;
+}
+
+.modal-eyebrow {
+    display: block;
+
+    margin-bottom: 4px;
+
+    color: #1767b7;
+
+    font-size: 8px;
+    font-weight: 800;
+
+    letter-spacing: 1px;
+}
+
+.modal-header h2 {
+    color: #173c6b;
+
+    font-size: 18px;
+    font-weight: 750;
+}
+
+.modal-header p {
+    margin-top: 3px;
+
+    color: #8da0b6;
+
+    font-size: 10px;
+}
+
+.modal-close {
+    width: 34px;
+    height: 34px;
+
+    flex: 0 0 34px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 0;
+    border-radius: 8px;
+
+    background: #f4f7fa;
+    color: #627b96;
+
+    font-size: 13px;
+}
+
+.modal-close:hover {
+    background: #eaf0f6;
+    color: #173c6b;
+}
+
+
+/* =========================================================
+   INVOICE FORM
+   ========================================================= */
+
+.invoice-form {
+    padding: 21px;
+}
+
+.form-section-title {
+    display: flex;
+    align-items: flex-start;
+
+    gap: 10px;
+
+    margin-bottom: 14px;
+}
+
+.form-section-title > span {
+    width: 28px;
+    height: 28px;
+
+    flex: 0 0 28px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 8px;
+
+    background: #eaf3ff;
+    color: #1767b7;
+
+    font-size: 9px;
+    font-weight: 800;
+}
+
+.form-section-title > div {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-section-title strong {
+    color: #173c6b;
+
+    font-size: 12px;
+    font-weight: 750;
+}
+
+.form-section-title small {
+    margin-top: 3px;
+
+    color: #91a3b8;
+
+    font-size: 8px;
+
+    line-height: 1.4;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+
+    margin-bottom: 6px;
+
+    color: #3d5b79;
+
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+
+    border: 1px solid #dce6f0;
+    border-radius: 9px;
+
+    outline: 0;
+
+    background: #ffffff;
+    color: #173c6b;
+
+    font-size: 11px;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.form-group input,
+.form-group select {
+    height: 42px;
+
+    padding: 0 12px;
+}
+
+.form-group textarea {
+    min-height: 82px;
+
+    padding: 10px 12px;
+
+    resize: vertical;
+
+    line-height: 1.5;
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+    color: #a0afbf;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    border-color: #8db9e6;
+
+    box-shadow:
+        0 0 0 3px rgba(44, 120, 195, 0.08);
+}
+
+.form-group input[readonly] {
+    background: #f7f9fc;
+    color: #7e91a7;
+}
+
+
+/* =========================================================
+   FORM ROW
+   ========================================================= */
+
+.form-row {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 12px;
+}
+
+.form-row.three-columns {
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+}
+
+
+/* =========================================================
+   MODAL ACTIONS
+   ========================================================= */
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+
+    gap: 9px;
+
+    margin-top: 21px;
+
+    padding-top: 16px;
+
+    border-top: 1px solid #edf1f5;
+}
+
+.secondary-button {
+    min-height: 40px;
+
+    padding: 0 17px;
+
+    border: 1px solid #dce5ee;
+    border-radius: 9px;
+
+    background: #ffffff;
+    color: #4c6682;
+
+    font-size: 11px;
+    font-weight: 650;
+}
+
+.secondary-button:hover {
+    background: #f5f8fb;
+}
+
+
+/* =========================================================
+   INVOICE DETAILS
+   ========================================================= */
+
+.invoice-details-content {
+    padding: 21px;
+}
+
+.invoice-reference {
+    display: flex;
+    align-items: center;
+
+    padding: 14px;
+
+    margin-bottom: 16px;
+
+    border: 1px solid #e1e9f3;
+    border-radius: 11px;
+
+    background: #f8fafc;
+}
+
+.invoice-reference-icon {
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
+
+    background: #eaf3ff;
+    color: #1767b7;
+
+    font-size: 14px;
+}
+
+.invoice-reference > div:last-child {
+    margin-left: 11px;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.invoice-reference span {
+    color: #91a3b8;
+
+    font-size: 8px;
+}
+
+.invoice-reference strong {
+    margin-top: 3px;
+
+    color: #173c6b;
+
+    font-size: 13px;
+    font-weight: 750;
+}
+
+
+/* =========================================================
+   DETAILS GRID
+   ========================================================= */
+
+.details-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 10px;
+}
+
+.detail-item {
+    min-height: 65px;
+
+    padding: 11px 12px;
+
+    border: 1px solid #e4ebf3;
+    border-radius: 9px;
+
+    background: #ffffff;
+}
+
+.detail-item span {
+    display: block;
+
+    color: #91a3b8;
+
+    font-size: 8px;
+}
+
+.detail-item strong {
+    display: block;
+
+    margin-top: 5px;
+
+    color: #173c6b;
+
+    font-size: 10px;
+    font-weight: 700;
+
+    word-break: break-word;
+}
+
+
+/* =========================================================
+   DETAILS NOTES
+   ========================================================= */
+
+.details-notes {
+    margin-top: 12px;
+
+    padding: 13px;
+
+    border: 1px solid #e4ebf3;
+    border-radius: 9px;
+
+    background: #fafcff;
+}
+
+.details-notes > span {
+    display: block;
+
+    color: #7189a3;
+
+    font-size: 8px;
+    font-weight: 700;
+}
+
+.details-notes p {
+    margin-top: 6px;
+
+    color: #526d89;
+
+    font-size: 9px;
+
+    line-height: 1.55;
+}
+
+
+/* =========================================================
+   PAGE ACCESS
+   ========================================================= */
+
+.access-content {
+    padding: 20px;
+}
+
+.access-account {
+    display: flex;
+    align-items: center;
+
+    padding: 13px;
+
+    margin-bottom: 17px;
+
+    border: 1px solid #e4ebf3;
+    border-radius: 11px;
+
+    background: #f8fafc;
+}
+
+.access-account > div:last-child {
+    margin-left: 12px;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.access-account strong {
+    color: #173c6b;
+
+    font-size: 12px;
+}
+
+.access-account span {
+    margin-top: 3px;
+
+    color: #8b9db2;
+
+    font-size: 9px;
+}
+
+.access-list {
+    display: flex;
+    flex-direction: column;
+
+    border: 1px solid #e5ebf2;
+    border-radius: 10px;
+
+    overflow: hidden;
+}
+
+.access-row {
+    min-height: 43px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 13px;
+
+    border-bottom: 1px solid #edf1f5;
+
+    color: #365473;
+
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.access-row:last-child {
+    border-bottom: 0;
+}
+
+.access-status {
+    min-height: 22px;
+
+    display: inline-flex;
+    align-items: center;
+
+    padding: 0 8px;
+
+    border-radius: 20px;
+
+    font-size: 8px;
+    font-weight: 700;
+}
+
+.access-status.granted {
+    background: #e9f8f0;
+    color: #159765;
+}
+
+
+/* =========================================================
+   SCROLLBARS
+   ========================================================= */
+
+.sidebar-menu::-webkit-scrollbar,
+.invoice-table-wrapper::-webkit-scrollbar,
+.invoice-modal::-webkit-scrollbar,
+.invoice-details-modal::-webkit-scrollbar,
+.access-modal::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+.sidebar-menu::-webkit-scrollbar-track,
+.invoice-table-wrapper::-webkit-scrollbar-track,
+.invoice-modal::-webkit-scrollbar-track,
+.invoice-details-modal::-webkit-scrollbar-track,
+.access-modal::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.sidebar-menu::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.18);
+    border-radius: 10px;
+}
+
+.invoice-table-wrapper::-webkit-scrollbar-thumb,
+.invoice-modal::-webkit-scrollbar-thumb,
+.invoice-details-modal::-webkit-scrollbar-thumb,
+.access-modal::-webkit-scrollbar-thumb {
+    background: #d2deea;
+    border-radius: 10px;
+}
+
+
+/* =========================================================
+   RESPONSIVE — 1250
+   ========================================================= */
+
+@media (max-width: 1250px) {
+
+    .sidebar {
+        width: 250px;
+    }
+
+    .main-content {
+        width: calc(100% - 250px);
+        margin-left: 250px;
+
+        padding-left: 30px;
+        padding-right: 30px;
+    }
+
+    .invoice-summary {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+    .invoice-toolbar {
+        grid-template-columns:
+            minmax(250px, 1fr)
+            repeat(3, 140px);
+    }
+}
+
+
+/* =========================================================
+   RESPONSIVE — 1050
+   ========================================================= */
+
+@media (max-width: 1050px) {
+
+    .invoice-toolbar {
+        grid-template-columns:
+            1fr
+            repeat(3, minmax(130px, 1fr));
+    }
+}
+
+
+/* =========================================================
+   RESPONSIVE — 850
+   ========================================================= */
+
+@media (max-width: 850px) {
+
+    .sidebar {
+        width: 220px;
+    }
+
+    .main-content {
+        width: calc(100% - 220px);
+        margin-left: 220px;
+
+        padding: 25px 20px 40px;
+    }
+
+    .sidebar-brand {
+        padding-left: 18px;
+        padding-right: 18px;
+    }
+
+    .sidebar-menu {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .sidebar-bottom {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .page-header {
+        flex-direction: column;
+    }
+
+    .page-header .primary-button {
+        align-self: flex-start;
+    }
+}
+
+
+/* =========================================================
+   RESPONSIVE — 680
+   ========================================================= */
+
+@media (max-width: 680px) {
+
+    .admin-layout {
+        display: block;
+    }
+
+    .sidebar {
+        position: relative;
+
+        width: 100%;
+        height: auto;
+
+        min-height: auto;
+    }
+
+    .sidebar-brand {
+        min-height: 80px;
+    }
+
+    .sidebar-menu {
+        padding: 15px;
+    }
+
+    .main-navigation {
+        display: grid;
+
+        grid-template-columns:
+            repeat(2, 1fr);
+
+        gap: 5px;
+    }
+
+    .menu-label {
+        padding-left: 8px;
+    }
+
+    .sidebar-bottom {
+        padding: 10px 15px 15px;
+    }
+
+    .main-content {
+        width: 100%;
+        margin-left: 0;
+
+        padding: 25px 15px 35px;
+    }
+
+    .invoice-summary {
+        grid-template-columns: 1fr;
+    }
+
+    .invoice-toolbar {
+        grid-template-columns: 1fr;
+    }
+
+    .page-heading h1 {
+        font-size: 27px;
+    }
+
+    .page-header .primary-button {
+        width: 100%;
+    }
+
+    .form-row,
+    .form-row.three-columns {
+        grid-template-columns: 1fr;
+    }
+
+    .details-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+/* =========================================================
+   RESPONSIVE — 430
+   ========================================================= */
+
+@media (max-width: 430px) {
+
+    .main-navigation {
+        grid-template-columns: 1fr;
+    }
+
+    .page-header {
+        margin-bottom: 20px;
+    }
+
+    .summary-card {
+        min-height: 92px;
+        padding: 15px;
+    }
+
+    .section-header {
+        padding: 15px;
+    }
+
+    .refresh-button span {
+        display: none;
+    }
+
+    .modal-overlay {
+        padding: 10px;
+    }
+
+    .invoice-modal,
+    .invoice-details-modal,
+    .access-modal {
+        max-height: calc(100vh - 20px);
+    }
+
+    .invoice-form,
+    .invoice-details-content,
+    .access-content {
+        padding: 16px;
+    }
+}
+
+
+/* =========================================================
+   ACCESSIBILITY
+   ========================================================= */
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    outline: 2px solid #7da9d5;
+    outline-offset: 2px;
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+
+        transition-duration: 0.01ms !important;
+    }
+}

@@ -1,1 +1,2007 @@
+<!DOCTYPE html>
+<html lang="en">
 
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="description"
+        content="Trips Wonder Travel Management System - Bookings">
+
+    <title>
+        Bookings | Trips Wonder Admin
+    </title>
+
+
+    <!-- =====================================================
+         FAVICON
+    ====================================================== -->
+
+    <link
+        rel="icon"
+        type="image/jpeg"
+        href="../../favicon.jpg">
+
+
+    <!-- =====================================================
+         GOOGLE FONT
+    ====================================================== -->
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com">
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+
+    <!-- =====================================================
+         FONT AWESOME
+    ====================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+
+    <!-- =====================================================
+         BOOKINGS CSS
+    ====================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="../../assets/css/admin/bookings.css">
+
+
+    <!-- =====================================================
+         GLOBAL LOADING SCREEN
+    ====================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="../../assets/css/shared/loading-screen.css">
+
+</head>
+
+
+<body class="twtms-page-loading">
+
+
+<!-- =========================================================
+     ADMIN WRAPPER
+========================================================= -->
+
+<div class="admin-wrapper">
+
+
+    <!-- =====================================================
+         SIDEBAR
+    ====================================================== -->
+
+    <aside class="sidebar">
+
+
+        <!-- BRAND -->
+
+        <div class="brand">
+
+
+            <div class="brand-logo">
+
+                <img
+                    src="../../assets/images/logo.png"
+                    alt="Trips Wonder Logo">
+
+            </div>
+
+
+            <div class="brand-text">
+
+                <strong>
+                    Trips Wonder
+                </strong>
+
+                <span>
+                    Travel Management System
+                </span>
+
+            </div>
+
+
+        </div>
+
+
+        <!-- MENU TITLE -->
+
+        <div class="menu-title">
+
+            MAIN MENU
+
+        </div>
+
+
+        <!-- =================================================
+             NAVIGATION
+        ================================================== -->
+
+        <nav
+            class="nav-menu"
+            aria-label="Main Navigation">
+
+
+            <!-- DASHBOARD -->
+
+            <a
+                href="dashboard.html"
+                class="nav-link">
+
+                <i class="fa-solid fa-chart-pie"></i>
+
+                <span>
+                    Dashboard
+                </span>
+
+            </a>
+
+
+            <!-- PACKAGES -->
+
+            <a
+                href="packages.html"
+                class="nav-link">
+
+                <i class="fa-solid fa-suitcase"></i>
+
+                <span>
+                    Packages
+                </span>
+
+            </a>
+
+
+            <!-- BOOKINGS -->
+
+            <a
+                href="bookings.html"
+                class="nav-link active"
+                aria-current="page">
+
+                <i class="fa-regular fa-calendar-check"></i>
+
+                <span>
+                    Bookings
+                </span>
+
+            </a>
+
+
+            <!-- CUSTOMERS -->
+
+            <a
+                href="customers.html"
+                class="nav-link">
+
+                <i class="fa-solid fa-user-group"></i>
+
+                <span>
+                    Customers
+                </span>
+
+            </a>
+
+
+            <!-- PAYMENTS -->
+
+            <a
+                href="payments.html"
+                class="nav-link">
+
+                <i class="fa-regular fa-credit-card"></i>
+
+                <span>
+                    Payments
+                </span>
+
+            </a>
+
+
+            <!-- INVOICES -->
+
+            <a
+                href="invoices.html"
+                class="nav-link">
+
+                <i class="fa-solid fa-file-invoice"></i>
+
+                <span>
+                    Invoices
+                </span>
+
+            </a>
+
+
+            <!-- RESORT BOOKINGS -->
+
+            <a
+                href="resort-bookings.html"
+                class="nav-link">
+
+                <i class="fa-solid fa-building"></i>
+
+                <span>
+                    Resort Bookings
+                </span>
+
+            </a>
+
+
+            <!-- REPORTS -->
+
+            <a
+                href="reports.html"
+                class="nav-link">
+
+                <i class="fa-solid fa-chart-line"></i>
+
+                <span>
+                    Reports
+                </span>
+
+            </a>
+
+
+        </nav>
+
+
+        <!-- =================================================
+             SIDEBAR BOTTOM
+        ================================================== -->
+
+        <div class="sidebar-bottom">
+
+
+            <!-- ADMIN PROFILE -->
+
+            <a
+                href="admin-profile.html"
+                class="sidebar-admin-profile"
+                id="adminProfileLink">
+
+
+                <div class="sidebar-admin-avatar">
+
+                    <i class="fa-solid fa-user"></i>
+
+                </div>
+
+
+                <div class="sidebar-admin-info">
+
+                    <strong id="adminName">
+
+                        Admin Trips Wonder
+
+                    </strong>
+
+                    <span>
+
+                        Administrator
+
+                    </span>
+
+                </div>
+
+
+            </a>
+
+
+            <!-- LOGOUT -->
+
+            <button
+                type="button"
+                id="logoutBtn"
+                class="sidebar-admin-action logout-btn">
+
+                <i class="fa-solid fa-right-from-bracket"></i>
+
+                <span>
+                    Logout
+                </span>
+
+            </button>
+
+
+        </div>
+
+
+    </aside>
+
+
+    <!-- =====================================================
+         MAIN
+    ====================================================== -->
+
+    <main class="main">
+
+
+        <section
+            class="content"
+            id="bookingsContent">
+
+
+            <!-- =================================================
+                 PAGE HEADER
+            ================================================== -->
+
+            <header class="bookings-header">
+
+
+                <div class="bookings-title">
+
+                    <h1>
+
+                        Bookings
+
+                    </h1>
+
+
+                    <p>
+
+                        Manage customer reservations,
+                        tour schedules and booking status.
+
+                    </p>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="primary-btn"
+                    id="newBookingBtn">
+
+                    <i class="fa-solid fa-plus"></i>
+
+                    <span>
+
+                        New Booking
+
+                    </span>
+
+                </button>
+
+
+            </header>
+
+
+            <!-- =================================================
+                 SEARCH / FILTER TOOLBAR
+            ================================================== -->
+
+            <section
+                class="booking-toolbar"
+                aria-label="Booking filters">
+
+
+                <!-- SEARCH -->
+
+                <div class="booking-search-wrap">
+
+                    <i class="fa-solid fa-magnifying-glass"></i>
+
+
+                    <input
+                        type="search"
+                        id="bookingSearch"
+                        class="booking-search"
+                        placeholder="Search booking, customer or package..."
+                        autocomplete="off">
+
+                </div>
+
+
+                <!-- PACKAGE FILTER -->
+
+                <select
+                    id="bookingPackageFilter"
+                    class="filter-select"
+                    aria-label="Filter by package">
+
+                    <option value="all">
+
+                        All Packages
+
+                    </option>
+
+                    <!--
+                        Package options will be loaded
+                        dynamically from Firestore.
+                    -->
+
+                </select>
+
+
+                <!-- BOOKING STATUS -->
+
+                <select
+                    id="bookingStatusFilter"
+                    class="filter-select"
+                    aria-label="Filter by booking status">
+
+                    <option value="all">
+
+                        All Status
+
+                    </option>
+
+                    <option value="pending">
+
+                        Pending
+
+                    </option>
+
+                    <option value="confirmed">
+
+                        Confirmed
+
+                    </option>
+
+                    <option value="completed">
+
+                        Completed
+
+                    </option>
+
+                    <option value="cancelled">
+
+                        Cancelled
+
+                    </option>
+
+                </select>
+
+
+                <!-- PAYMENT STATUS -->
+
+                <select
+                    id="paymentStatusFilter"
+                    class="filter-select"
+                    aria-label="Filter by payment status">
+
+                    <option value="all">
+
+                        All Payments
+
+                    </option>
+
+                    <option value="unpaid">
+
+                        Unpaid
+
+                    </option>
+
+                    <option value="partial">
+
+                        Partial
+
+                    </option>
+
+                    <option value="paid">
+
+                        Paid
+
+                    </option>
+
+                </select>
+
+
+            </section>
+
+
+            <!-- =================================================
+                 SUMMARY CARDS
+            ================================================== -->
+
+            <section
+                class="booking-summary"
+                aria-label="Booking summary">
+
+
+                <!-- TOTAL BOOKINGS -->
+
+                <article class="summary-card">
+
+
+                    <div class="summary-icon total">
+
+                        <i class="fa-regular fa-calendar-check"></i>
+
+                    </div>
+
+
+                    <div class="summary-info">
+
+                        <span>
+
+                            Total Bookings
+
+                        </span>
+
+
+                        <strong id="totalBookings">
+
+                            —
+
+                        </strong>
+
+
+                        <small>
+
+                            All reservations
+
+                        </small>
+
+                    </div>
+
+
+                </article>
+
+
+                <!-- CONFIRMED -->
+
+                <article class="summary-card">
+
+
+                    <div class="summary-icon confirmed">
+
+                        <i class="fa-solid fa-circle-check"></i>
+
+                    </div>
+
+
+                    <div class="summary-info">
+
+                        <span>
+
+                            Confirmed
+
+                        </span>
+
+
+                        <strong id="confirmedBookings">
+
+                            —
+
+                        </strong>
+
+
+                        <small>
+
+                            Ready for travel
+
+                        </small>
+
+                    </div>
+
+
+                </article>
+
+
+                <!-- PENDING -->
+
+                <article class="summary-card">
+
+
+                    <div class="summary-icon pending">
+
+                        <i class="fa-regular fa-clock"></i>
+
+                    </div>
+
+
+                    <div class="summary-info">
+
+                        <span>
+
+                            Pending
+
+                        </span>
+
+
+                        <strong id="pendingBookings">
+
+                            —
+
+                        </strong>
+
+
+                        <small>
+
+                            Needs attention
+
+                        </small>
+
+                    </div>
+
+
+                </article>
+
+
+                <!-- TOTAL GUESTS -->
+
+                <article class="summary-card">
+
+
+                    <div class="summary-icon guests">
+
+                        <i class="fa-solid fa-user-group"></i>
+
+                    </div>
+
+
+                    <div class="summary-info">
+
+                        <span>
+
+                            Total Guests
+
+                        </span>
+
+
+                        <strong id="totalGuests">
+
+                            —
+
+                        </strong>
+
+
+                        <small>
+
+                            Across all bookings
+
+                        </small>
+
+                    </div>
+
+
+                </article>
+
+
+            </section>
+
+
+            <!-- =================================================
+                 BOOKING LIST HEADER
+            ================================================== -->
+
+            <div class="booking-list-header">
+
+
+                <div>
+
+                    <h2>
+
+                        All Bookings
+
+                    </h2>
+
+
+                    <span id="bookingResultText">
+
+                        Showing live bookings
+
+                    </span>
+
+                </div>
+
+
+                <div class="booking-list-actions">
+
+
+                    <label for="bookingSort">
+
+                        Sort by:
+
+                    </label>
+
+
+                    <select
+                        id="bookingSort"
+                        class="booking-sort-select">
+
+                        <option value="newest">
+
+                            Newest First
+
+                        </option>
+
+                        <option value="oldest">
+
+                            Oldest First
+
+                        </option>
+
+                        <option value="travel-nearest">
+
+                            Travel Date: Nearest
+
+                        </option>
+
+                        <option value="travel-farthest">
+
+                            Travel Date: Farthest
+
+                        </option>
+
+                        <option value="customer-asc">
+
+                            Customer A–Z
+
+                        </option>
+
+                        <option value="customer-desc">
+
+                            Customer Z–A
+
+                        </option>
+
+                    </select>
+
+
+                    <button
+                        type="button"
+                        class="refresh-btn"
+                        id="refreshBookingsBtn"
+                        title="Refresh bookings"
+                        aria-label="Refresh bookings">
+
+                        <i class="fa-solid fa-rotate"></i>
+
+                    </button>
+
+
+                </div>
+
+
+            </div>
+
+
+            <!-- =================================================
+                 BOOKINGS TABLE
+            ================================================== -->
+
+            <section class="booking-table-card">
+
+
+                <div class="table-scroll">
+
+
+                    <table class="booking-table">
+
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Booking
+                                </th>
+
+                                <th>
+                                    Customer
+                                </th>
+
+                                <th>
+                                    Package
+                                </th>
+
+                                <th>
+                                    Travel Date
+                                </th>
+
+                                <th>
+                                    Pax
+                                </th>
+
+                                <th>
+                                    Total
+                                </th>
+
+                                <th>
+                                    Payment
+                                </th>
+
+                                <th>
+                                    Status
+                                </th>
+
+                                <th class="booking-actions-heading">
+                                    Actions
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody id="bookingTableBody">
+
+                            <!--
+                                Actual Firestore booking rows
+                                will be rendered by bookings.js.
+                            -->
+
+                        </tbody>
+
+
+                    </table>
+
+
+                    <!-- EMPTY STATE -->
+
+                    <div
+                        class="booking-empty-state"
+                        id="bookingEmptyState">
+
+
+                        <div class="empty-icon">
+
+                            <i class="fa-regular fa-calendar-xmark"></i>
+
+                        </div>
+
+
+                        <strong>
+
+                            No bookings to display
+
+                        </strong>
+
+
+                        <span>
+
+                            Customer bookings will appear here automatically.
+
+                        </span>
+
+
+                    </div>
+
+
+                </div>
+
+
+            </section>
+
+
+        </section>
+
+
+    </main>
+
+
+</div>
+
+
+<!-- =========================================================
+     NEW / EDIT BOOKING MODAL
+========================================================= -->
+
+<div
+    class="booking-modal"
+    id="bookingModal"
+    aria-hidden="true">
+
+
+    <!-- BACKDROP -->
+
+    <div
+        class="booking-modal-backdrop"
+        id="bookingModalBackdrop">
+    </div>
+
+
+    <!-- =====================================================
+         MODAL PANEL
+    ====================================================== -->
+
+    <div
+        class="booking-modal-panel"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="bookingModalTitle">
+
+
+        <!-- =================================================
+             MODAL HEADER
+        ================================================== -->
+
+        <header class="booking-modal-header">
+
+
+            <div>
+
+
+                <span class="modal-eyebrow">
+
+                    BOOKING MANAGEMENT
+
+                </span>
+
+
+                <h2 id="bookingModalTitle">
+
+                    New Booking
+
+                </h2>
+
+
+                <p id="bookingModalDescription">
+
+                    Create a new customer reservation.
+
+                </p>
+
+
+            </div>
+
+
+            <button
+                type="button"
+                class="modal-close"
+                id="closeBookingModal"
+                aria-label="Close booking form">
+
+                <i class="fa-solid fa-xmark"></i>
+
+            </button>
+
+
+        </header>
+
+
+        <!-- =================================================
+             BOOKING FORM
+        ================================================== -->
+
+        <form
+            id="bookingForm"
+            autocomplete="off">
+
+
+            <!-- =================================================
+                 01 CUSTOMER INFORMATION
+            ================================================== -->
+
+            <section class="form-section">
+
+
+                <div class="section-heading">
+
+
+                    <span>
+
+                        01
+
+                    </span>
+
+
+                    <div>
+
+                        <h3>
+
+                            Customer Information
+
+                        </h3>
+
+
+                        <p>
+
+                            Main guest and contact details.
+
+                        </p>
+
+                    </div>
+
+
+                </div>
+
+
+                <div class="form-grid">
+
+
+                    <!-- CUSTOMER NAME -->
+
+                    <div class="form-field">
+
+
+                        <label for="customerName">
+
+                            Customer Name
+                            <span class="required">*</span>
+
+                        </label>
+
+
+                        <input
+                            id="customerName"
+                            type="text"
+                            placeholder="Full name"
+                            required>
+
+
+                    </div>
+
+
+                    <!-- CONTACT -->
+
+                    <div class="form-field">
+
+
+                        <label for="customerContact">
+
+                            Contact Number
+                            <span class="required">*</span>
+
+                        </label>
+
+
+                        <input
+                            id="customerContact"
+                            type="tel"
+                            placeholder="09XXXXXXXXX"
+                            required>
+
+
+                    </div>
+
+
+                    <!-- EMAIL -->
+
+                    <div class="form-field">
+
+
+                        <label for="customerEmail">
+
+                            Email Address
+
+                        </label>
+
+
+                        <input
+                            id="customerEmail"
+                            type="email"
+                            placeholder="customer@email.com">
+
+
+                    </div>
+
+
+                    <!-- FACEBOOK -->
+
+                    <div class="form-field">
+
+
+                        <label for="customerFb">
+
+                            Facebook Name
+
+                        </label>
+
+
+                        <input
+                            id="customerFb"
+                            type="text"
+                            placeholder="Facebook profile name">
+
+
+                    </div>
+
+
+                </div>
+
+
+            </section>
+
+
+            <!-- =================================================
+                 02 TOUR DETAILS
+            ================================================== -->
+
+            <section class="form-section">
+
+
+                <div class="section-heading">
+
+
+                    <span>
+
+                        02
+
+                    </span>
+
+
+                    <div>
+
+                        <h3>
+
+                            Tour Details
+
+                        </h3>
+
+
+                        <p>
+
+                            Select package, travel date and guest details.
+
+                        </p>
+
+                    </div>
+
+
+                </div>
+
+
+                <div class="form-grid">
+
+
+                    <!-- PACKAGE -->
+
+                    <div class="form-field full">
+
+
+                        <label for="bookingPackage">
+
+                            Tour Package
+                            <span class="required">*</span>
+
+                        </label>
+
+
+                        <select
+                            id="bookingPackage"
+                            required>
+
+                            <option value="">
+
+                                Select package
+
+                            </option>
+
+                            <!--
+                                Actual active packages
+                                will be loaded from Firestore.
+                            -->
+
+                        </select>
+
+
+                        <small class="field-help">
+
+                            Package information will be linked to the Packages module.
+
+                        </small>
+
+
+                    </div>
+
+
+                    <!-- TRAVEL DATE -->
+
+                    <div class="form-field">
+
+
+                        <label for="travelDate">
+
+                            Travel Date
+                            <span class="required">*</span>
+
+                        </label>
+
+
+                        <input
+                            id="travelDate"
+                            type="date"
+                            required>
+
+
+                    </div>
+
+
+                    <!-- NUMBER OF GUESTS -->
+
+                    <div class="form-field">
+
+
+                        <label for="numberOfGuests">
+
+                            Number of Guests
+                            <span class="required">*</span>
+
+                        </label>
+
+
+                        <input
+                            id="numberOfGuests"
+                            type="number"
+                            min="1"
+                            value="1"
+                            required>
+
+
+                    </div>
+
+
+                    <!-- PICKUP -->
+
+                    <div class="form-field">
+
+
+                        <label for="pickupPoint">
+
+                            Meet Up / Pick Up
+
+                        </label>
+
+
+                        <select id="pickupPoint">
+
+
+                            <option value="">
+
+                                Select pick-up point
+
+                            </option>
+
+
+                            <option value="Pasay">
+
+                                Pasay — Uniqlo / Golden Dragon Hotel
+
+                            </option>
+
+
+                            <option value="Greenfield Shaw">
+
+                                Greenfield Shaw
+
+                            </option>
+
+
+                            <option value="Quezon Ave / Centris">
+
+                                Quezon Ave / Centris
+
+                            </option>
+
+
+                            <option value="Along the Way">
+
+                                Along the Way / By Request
+
+                            </option>
+
+
+                            <option value="Other">
+
+                                Other
+
+                            </option>
+
+
+                        </select>
+
+
+                    </div>
+
+
+                    <!-- ACCOMMODATION -->
+
+                    <div class="form-field">
+
+
+                        <label for="accommodation">
+
+                            Accommodation
+
+                        </label>
+
+
+                        <select id="accommodation">
+
+                            <option value="">
+
+                                Select accommodation
+
+                            </option>
+
+                        </select>
+
+
+                        <small class="field-help">
+
+                            Options will update based on the selected package.
+
+                        </small>
+
+
+                    </div>
+
+
+                    <!-- SPECIAL REQUEST -->
+
+                    <div class="form-field full">
+
+
+                        <label for="specialRequest">
+
+                            Guest Request / Notes
+
+                        </label>
+
+
+                        <textarea
+                            id="specialRequest"
+                            rows="3"
+                            placeholder="Optional requests from the guest..."></textarea>
+
+
+                    </div>
+
+
+                </div>
+
+
+            </section>
+
+
+            <!-- =================================================
+                 03 PAYMENT INFORMATION
+            ================================================== -->
+
+            <section class="form-section">
+
+
+                <div class="section-heading">
+
+
+                    <span>
+
+                        03
+
+                    </span>
+
+
+                    <div>
+
+                        <h3>
+
+                            Payment Information
+
+                        </h3>
+
+
+                        <p>
+
+                            Track booking amount, payments and remaining balance.
+
+                        </p>
+
+                    </div>
+
+
+                </div>
+
+
+                <div class="booking-payment-grid">
+
+
+                    <!-- TOTAL -->
+
+                    <div class="form-field">
+
+
+                        <label for="totalAmount">
+
+                            Total Amount
+
+                        </label>
+
+
+                        <div class="amount-input-wrap">
+
+                            <span>
+                                ₱
+                            </span>
+
+
+                            <input
+                                id="totalAmount"
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                placeholder="0.00">
+
+                        </div>
+
+
+                    </div>
+
+
+                    <!-- AMOUNT PAID -->
+
+                    <div class="form-field">
+
+
+                        <label for="amountPaid">
+
+                            Amount Paid
+
+                        </label>
+
+
+                        <div class="amount-input-wrap">
+
+                            <span>
+                                ₱
+                            </span>
+
+
+                            <input
+                            id="amountPaid"
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            value="0"
+                            readonly
+                            title="Amount Paid is updated automatically from the Payments module">
+
+                        </div>
+
+
+                    </div>
+
+
+                    <!-- REMAINING -->
+
+                    <div class="form-field">
+
+
+                        <label for="remainingBalance">
+
+                            Remaining Balance
+
+                        </label>
+
+
+                        <div class="amount-input-wrap readonly">
+
+
+                            <span>
+                                ₱
+                            </span>
+
+
+                            <input
+                                id="remainingBalance"
+                                type="number"
+                                value="0"
+                                readonly>
+
+
+                        </div>
+
+
+                    </div>
+
+
+                    <!-- PAYMENT STATUS -->
+
+                    <div class="form-field">
+
+
+                        <label for="paymentStatus">
+
+                            Payment Status
+
+                        </label>
+
+
+                        <select
+                            id="paymentStatus"
+                            disabled>
+
+
+                            <option value="unpaid">
+
+                                Unpaid
+
+                            </option>
+
+
+                            <option value="partial">
+
+                                Partial
+
+                            </option>
+
+
+                            <option value="paid">
+
+                                Paid
+
+                            </option>
+
+
+                        </select>
+
+
+                    </div>
+
+
+
+                </div>
+
+
+            </section>
+
+
+            <!-- =================================================
+                 04 BOOKING STATUS
+            ================================================== -->
+
+            <section class="form-section">
+
+
+                <div class="section-heading">
+
+
+                    <span>
+
+                        04
+
+                    </span>
+
+
+                    <div>
+
+                        <h3>
+
+                            Booking Status
+
+                        </h3>
+
+
+                        <p>
+
+                            Manage the reservation status and internal notes.
+
+                        </p>
+
+                    </div>
+
+
+                </div>
+
+
+                <div class="form-grid">
+
+
+                    <div class="form-field">
+
+
+                        <label for="bookingStatus">
+
+                            Booking Status
+
+                        </label>
+
+
+                        <select id="bookingStatus">
+
+
+                            <option value="pending">
+
+                                Pending
+
+                            </option>
+
+
+                            <option value="confirmed">
+
+                                Confirmed
+
+                            </option>
+
+
+                            <option value="completed">
+
+                                Completed
+
+                            </option>
+
+
+                            <option value="cancelled">
+
+                                Cancelled
+
+                            </option>
+
+
+                        </select>
+
+
+                    </div>
+
+
+                    <div class="form-field">
+
+
+                        <label for="bookingSource">
+
+                            Booking Source
+
+                        </label>
+
+
+                        <select id="bookingSource">
+
+
+                            <option value="facebook">
+
+                                Facebook
+
+                            </option>
+
+
+                            <option value="website">
+
+                                Website
+
+                            </option>
+
+
+                            <option value="tiktok">
+
+                                TikTok
+
+                            </option>
+
+
+                            <option value="referral">
+
+                                Referral
+
+                            </option>
+
+
+                            <option value="walkin">
+
+                                Direct / Walk-in
+
+                            </option>
+
+
+                            <option value="other">
+
+                                Other
+
+                            </option>
+
+
+                        </select>
+
+
+                    </div>
+
+
+                    <div class="form-field full">
+
+
+                        <label for="internalNotes">
+
+                            Internal Notes
+
+                        </label>
+
+
+                        <textarea
+                            id="internalNotes"
+                            rows="4"
+                            placeholder="Notes visible only to administrators..."></textarea>
+
+
+                    </div>
+
+
+                </div>
+
+
+            </section>
+
+
+            <!-- =================================================
+                 STICKY FORM FOOTER
+            ================================================== -->
+
+            <div class="booking-form-footer">
+
+
+                <div class="booking-form-footer-note">
+
+                    <i class="fa-regular fa-circle-check"></i>
+
+                    <span>
+
+                        Review customer, tour and payment information before saving.
+
+                    </span>
+
+                </div>
+
+
+                <div class="booking-form-footer-actions">
+
+
+                    <button
+                        type="button"
+                        class="secondary-btn"
+                        id="cancelBookingBtn">
+
+                        Cancel
+
+                    </button>
+
+
+                    <button
+                        type="submit"
+                        class="primary-btn"
+                        id="saveBookingBtn">
+
+                        <i class="fa-solid fa-floppy-disk"></i>
+
+                        Save Booking
+
+                    </button>
+
+
+                </div>
+
+
+            </div>
+
+
+        </form>
+
+
+    </div>
+
+
+</div>
+
+
+<!-- =========================================================
+     JAVASCRIPT
+========================================================= -->
+
+<script
+    type="module"
+    src="../../assets/js/admin/bookings.js">
+</script>
+
+<!-- =====================================================
+     VIEW BOOKING MODAL
+===================================================== -->
+
+<div class="booking-view-modal" id="bookingViewModal" aria-hidden="true">
+
+    <div class="booking-view-dialog">
+
+        <div class="booking-view-header">
+
+            <div>
+                <span class="booking-view-eyebrow">BOOKING DETAILS</span>
+                <h2 id="viewBookingReference">Booking</h2>
+                <p>Complete reservation information.</p>
+            </div>
+
+            <button
+                type="button"
+                class="booking-view-close"
+                id="closeBookingView"
+                aria-label="Close"
+            >
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+        </div>
+
+        <div class="booking-view-body" id="bookingViewBody">
+
+            <!-- Generated by bookings.js -->
+
+        </div>
+
+        <div class="booking-view-footer">
+
+            <button
+                type="button"
+                class="booking-view-secondary"
+                id="closeBookingViewFooter"
+            >
+                Close
+            </button>
+
+            <button
+                type="button"
+                class="booking-view-primary"
+                id="editFromBookingView"
+            >
+                <i class="fa-regular fa-pen-to-square"></i>
+                Edit Booking
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+<!-- =====================================================
+     CHANGE BOOKING STATUS MODAL
+===================================================== -->
+
+<div
+    class="booking-status-modal"
+    id="bookingStatusModal"
+    aria-hidden="true"
+>
+
+    <div class="booking-status-dialog">
+
+        <div class="booking-status-header">
+
+            <div>
+                <span class="booking-status-eyebrow">
+                    BOOKING STATUS
+                </span>
+
+                <h2>
+                    Change Booking Status
+                </h2>
+
+                <p id="bookingStatusReference">
+                    Update reservation status.
+                </p>
+            </div>
+
+            <button
+                type="button"
+                class="booking-status-close"
+                id="closeBookingStatusModal"
+                aria-label="Close"
+            >
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+        </div>
+
+        <div class="booking-status-body">
+
+            <div class="booking-current-status">
+
+                <span>
+                    Current Status
+                </span>
+
+                <strong id="currentBookingStatus">
+                    Pending
+                </strong>
+
+            </div>
+
+            <div class="booking-status-options">
+
+                <button
+                    type="button"
+                    class="booking-status-option"
+                    data-status="pending"
+                >
+                    <span class="status-option-icon pending">
+                        <i class="fa-regular fa-clock"></i>
+                    </span>
+
+                    <span>
+                        <strong>Pending</strong>
+                        <small>Waiting for confirmation</small>
+                    </span>
+                </button>
+
+                <button
+                    type="button"
+                    class="booking-status-option"
+                    data-status="confirmed"
+                >
+                    <span class="status-option-icon confirmed">
+                        <i class="fa-regular fa-circle-check"></i>
+                    </span>
+
+                    <span>
+                        <strong>Confirmed</strong>
+                        <small>Booking is confirmed</small>
+                    </span>
+                </button>
+
+                <button
+                    type="button"
+                    class="booking-status-option"
+                    data-status="completed"
+                >
+                    <span class="status-option-icon completed">
+                        <i class="fa-solid fa-flag-checkered"></i>
+                    </span>
+
+                    <span>
+                        <strong>Completed</strong>
+                        <small>Tour has been completed</small>
+                    </span>
+                </button>
+
+                <button
+                    type="button"
+                    class="booking-status-option"
+                    data-status="cancelled"
+                >
+                    <span class="status-option-icon cancelled">
+                        <i class="fa-solid fa-ban"></i>
+                    </span>
+
+                    <span>
+                        <strong>Cancelled</strong>
+                        <small>Booking is cancelled</small>
+                    </span>
+                </button>
+
+            </div>
+
+        </div>
+
+        <div class="booking-status-footer">
+
+            <button
+                type="button"
+                class="booking-view-secondary"
+                id="cancelBookingStatusChange"
+            >
+                Cancel
+            </button>
+
+            <button
+                type="button"
+                class="booking-view-primary"
+                id="saveBookingStatusChange"
+                disabled
+            >
+                <i class="fa-solid fa-floppy-disk"></i>
+                Update Status
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>
