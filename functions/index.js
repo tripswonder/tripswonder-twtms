@@ -1833,6 +1833,12 @@ exports.sendPaymentReceipt = onCall(
 // Deterministic IDs make each event idempotent.
 // ======================================================
 
+/**
+ * Normalizes a booking or payment status value.
+ *
+ * @param {*} value Status value to normalize.
+ * @return {string} Normalized status value.
+ */
 function normalizeBookingUpdateStatus(value) {
   return String(value || "")
       .trim()
@@ -1840,6 +1846,13 @@ function normalizeBookingUpdateStatus(value) {
       .replace(/[\\s-]+/g, "_");
 }
 
+/**
+ * Gets the booking reference used in customer updates.
+ *
+ * @param {object} booking Booking document data.
+ * @param {string} bookingId Firestore booking document ID.
+ * @return {string} Booking reference.
+ */
 function getBookingUpdateReference(booking, bookingId) {
   return String(
       booking.bookingReference ||
@@ -1850,6 +1863,12 @@ function getBookingUpdateReference(booking, bookingId) {
   ).trim();
 }
 
+/**
+ * Gets the destination or package label for a booking.
+ *
+ * @param {object} booking Booking document data.
+ * @return {string} Destination or package label.
+ */
 function getBookingUpdateDestination(booking) {
   return String(
       booking.packageName ||
@@ -1859,6 +1878,12 @@ function getBookingUpdateDestination(booking) {
   ).trim();
 }
 
+/**
+ * Gets the primary travel date stored on a booking.
+ *
+ * @param {object} booking Booking document data.
+ * @return {*} Stored travel date value.
+ */
 function getBookingUpdateTravelDate(booking) {
   return (
     booking.travelStartDate ||
@@ -1869,6 +1894,12 @@ function getBookingUpdateTravelDate(booking) {
   );
 }
 
+/**
+ * Delivers one booking update to the customer notification and inbox.
+ *
+ * @param {object} options Delivery options.
+ * @return {Promise<void>} Resolves after delivery is complete.
+ */
 async function deliverCustomerBookingUpdate(options) {
   const bookingId = options.bookingId;
   const booking = options.booking;

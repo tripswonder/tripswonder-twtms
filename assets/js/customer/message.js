@@ -69,6 +69,10 @@ const notificationDetailDate = document.getElementById("notificationDetailDate")
 const notificationDetailMessage = document.getElementById("notificationDetailMessage");
 const notificationDetailMeta = document.getElementById("notificationDetailMeta");
 const notificationDetailAction = document.getElementById("notificationDetailAction");
+const notificationsWorkspace = document.querySelector(".notifications-workspace");
+const notificationsListPane = document.querySelector(".notifications-list-pane");
+const notificationDetailPane = document.querySelector(".notification-detail-pane");
+
 
 const MESSAGE_INPUT_MIN_HEIGHT = 42;
 const MESSAGE_INPUT_MAX_HEIGHT = 110;
@@ -123,6 +127,7 @@ function activateTab(tabName) {
             if (stream) stream.scrollTop = stream.scrollHeight;
         });
     } else {
+        closeMobileNotificationDetail();
         renderNotifications();
     }
 }
@@ -532,6 +537,7 @@ async function openNotification(notificationId) {
     state.selectedNotificationId = item.id;
     renderNotifications();
     renderNotificationDetail(item);
+    openMobileNotificationDetail();
 
     if (item.isRead !== true) {
         try {
@@ -547,6 +553,80 @@ async function openNotification(notificationId) {
         }
     }
 }
+
+function isMobileNotificationLayout() {
+    return window.matchMedia("(max-width: 899px)").matches;
+}
+
+function ensureMobileNotificationBackButton() {
+    if (!notificationDetailPane) return null;
+
+    let button = notificationDetailPane.querySelector(
+        ".notification-mobile-back"
+    );
+
+    if (button) return button;
+
+    button = document.createElement("button");
+    button.type = "button";
+    button.className = "notification-mobile-back";
+    button.setAttribute("aria-label", "Back to notifications");
+    button.innerHTML = `
+        <i class="fa-solid fa-arrow-left"></i>
+        <span>Notifications</span>
+    `;
+
+    button.addEventListener("click", closeMobileNotificationDetail);
+    notificationDetailPane.prepend(button);
+
+    return button;
+}
+
+function openMobileNotificationDetail() {
+    if (!isMobileNotificationLayout()) return;
+    if (!notificationsWorkspace || !notificationDetailPane) return;
+
+    ensureMobileNotificationBackButton();
+    notificationsWorkspace.classList.add("mobile-detail-open");
+
+    if (notificationsListPane) {
+        notificationsListPane.setAttribute("aria-hidden", "true");
+    }
+
+    notificationDetailPane.removeAttribute("aria-hidden");
+    notificationDetailPane.scrollTop = 0;
+}
+
+function closeMobileNotificationDetail() {
+    if (!notificationsWorkspace) return;
+
+    notificationsWorkspace.classList.remove("mobile-detail-open");
+
+    if (notificationsListPane) {
+        notificationsListPane.removeAttribute("aria-hidden");
+    }
+
+    if (notificationDetailPane && isMobileNotificationLayout()) {
+        notificationDetailPane.setAttribute("aria-hidden", "true");
+    }
+}
+
+window.addEventListener("resize", () => {
+    if (!notificationsWorkspace || !notificationDetailPane) return;
+
+    if (!isMobileNotificationLayout()) {
+        notificationsWorkspace.classList.remove("mobile-detail-open");
+        notificationsListPane?.removeAttribute("aria-hidden");
+        notificationDetailPane.removeAttribute("aria-hidden");
+        return;
+    }
+
+    if (!notificationsWorkspace.classList.contains("mobile-detail-open")) {
+        notificationDetailPane.setAttribute("aria-hidden", "true");
+    }
+});
+
+ensureMobileNotificationBackButton();
 
 function renderNotificationDetail(item) {
     if (!notificationDetailEmpty || !notificationDetailCard) return;
@@ -666,13 +746,26 @@ function setBadge(element, count) {
     if (!element) return;
 
     const safeCount = Math.max(0, Number(count || 0));
+    const hasUnread = safeCount > 0;
+
+    /*
+     * FINAL BADGE RULE:
+     * Zero unread = completely hide the badge.
+     * One or more unread = show the unread count.
+     */
+    element.hidden = !hasUnread;
+    element.style.display = hasUnread ? "" : "none";
+    element.setAttribute("aria-hidden", String(!hasUnread));
+
+    if (!hasUnread) {
+        element.textContent = "";
+        return;
+    }
 
     element.textContent =
         safeCount > 99
             ? "99+"
             : String(safeCount);
-
-    element.hidden = safeCount === 0;
 }
 
 function renderMessage(message, previousMessage = null) {

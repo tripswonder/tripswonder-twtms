@@ -386,6 +386,289 @@ function applyRoleBasedSettingsAccess(
 
 
 /* =========================================================
+   FINAL SETTINGS SECTION VISIBILITY GUARD
+   Keeps exactly one settings content section visible.
+   This also prevents Page Setup / Page Access modules from
+   appearing underneath My Profile during initialization.
+   ========================================================= */
+
+let settingsVisibilitySyncing = false;
+let settingsVisibilityObserver = null;
+
+function getActiveSettingsSectionName() {
+
+    const activeNav =
+        document.querySelector(
+            ".settings-nav-item.active[data-settings-section]"
+        );
+
+    const activeFromNav =
+        normalizeSettingsSectionName(
+            activeNav?.dataset?.settingsSection
+        );
+
+    if (activeFromNav) {
+        return activeFromNav;
+    }
+
+
+    const hash =
+        normalizeSettingsSectionName(
+            window.location.hash
+                .replace("#", "")
+        );
+
+    if (hash) {
+        return hash;
+    }
+
+
+    return "profile";
+}
+
+
+function enforceSingleSettingsSection() {
+
+    if (settingsVisibilitySyncing) {
+        return;
+    }
+
+    settingsVisibilitySyncing =
+        true;
+
+    try {
+
+        let activeSection =
+            getActiveSettingsSectionName();
+
+
+        /*
+         * If an Admin somehow has an Owner-only hash/active item,
+         * force the page back to My Profile.
+         */
+        if (
+            currentProfile &&
+            !isOwnerProfile(
+                currentProfile
+            ) &&
+            isOwnerOnlySettingsSection(
+                activeSection
+            )
+        ) {
+
+            activeSection =
+                "profile";
+
+            replaceSettingsHash(
+                "profile"
+            );
+        }
+
+
+        const navItems =
+            document.querySelectorAll(
+                ".settings-nav-item[data-settings-section]"
+            );
+
+        navItems.forEach(
+            (item) => {
+
+                const sectionName =
+                    normalizeSettingsSectionName(
+                        item.dataset.settingsSection
+                    );
+
+                const isActive =
+                    sectionName ===
+                    activeSection;
+
+                item.classList.toggle(
+                    "active",
+                    isActive
+                );
+
+                item.setAttribute(
+                    "aria-current",
+                    isActive
+                        ? "page"
+                        : "false"
+                );
+            }
+        );
+
+
+        const sections =
+            document.querySelectorAll(
+                ".settings-section[data-settings-section]"
+            );
+
+        sections.forEach(
+            (section) => {
+
+                const sectionName =
+                    normalizeSettingsSectionName(
+                        section.dataset.settingsSection
+                    );
+
+                const isOwnerOnly =
+                    isOwnerOnlySettingsSection(
+                        sectionName
+                    );
+
+                const blockedForAdmin =
+                    currentProfile &&
+                    !isOwnerProfile(
+                        currentProfile
+                    ) &&
+                    isOwnerOnly;
+
+                const shouldShow =
+                    !blockedForAdmin &&
+                    sectionName ===
+                        activeSection;
+
+                section.hidden =
+                    !shouldShow;
+
+                section.classList.toggle(
+                    "active",
+                    shouldShow
+                );
+
+                section.setAttribute(
+                    "aria-hidden",
+                    String(
+                        !shouldShow
+                    )
+                );
+            }
+        );
+
+    } finally {
+
+        settingsVisibilitySyncing =
+            false;
+    }
+}
+
+
+function initializeSettingsVisibilityGuard() {
+
+    enforceSingleSettingsSection();
+
+
+    window.addEventListener(
+        "twtms:settings-section-change",
+        () => {
+
+            window.requestAnimationFrame(
+                enforceSingleSettingsSection
+            );
+        }
+    );
+
+
+    window.addEventListener(
+        "hashchange",
+        () => {
+
+            window.requestAnimationFrame(
+                enforceSingleSettingsSection
+            );
+        }
+    );
+
+
+    const settingsMain =
+        document.querySelector(
+            ".settings-main"
+        );
+
+    if (
+        settingsMain &&
+        typeof MutationObserver !==
+            "undefined"
+    ) {
+
+        settingsVisibilityObserver =
+            new MutationObserver(
+                (mutations) => {
+
+                    if (settingsVisibilitySyncing) {
+                        return;
+                    }
+
+                    const sectionChanged =
+                        mutations.some(
+                            (mutation) => {
+
+                                const target =
+                                    mutation.target;
+
+                                return (
+                                    target instanceof
+                                        HTMLElement &&
+                                    target.matches(
+                                        ".settings-section[data-settings-section]"
+                                    )
+                                );
+                            }
+                        );
+
+                    if (!sectionChanged) {
+                        return;
+                    }
+
+                    window.requestAnimationFrame(
+                        enforceSingleSettingsSection
+                    );
+                }
+            );
+
+        settingsVisibilityObserver.observe(
+            settingsMain,
+            {
+                subtree: true,
+                attributes: true,
+                attributeFilter: [
+                    "hidden",
+                    "class"
+                ]
+            }
+        );
+    }
+
+
+    /*
+     * Other profile modules are ES modules and initialize
+     * independently. Re-check after the first render cycle.
+     */
+    window.addEventListener(
+        "load",
+        () => {
+
+            window.requestAnimationFrame(
+                enforceSingleSettingsSection
+            );
+
+            window.setTimeout(
+                enforceSingleSettingsSection,
+                150
+            );
+
+            window.setTimeout(
+                enforceSingleSettingsSection,
+                500
+            );
+        },
+        {
+            once: true
+        }
+    );
+}
+
+
+/* =========================================================
    FIREBASE SDK FUNCTIONS
    ========================================================= */
 
@@ -684,6 +967,13 @@ async function loadFirebaseProfile() {
         renderProfile(
             currentProfile
         );
+
+
+        /*
+         * Re-apply the single-section rule after the
+         * Firestore role/profile has finished loading.
+         */
+        enforceSingleSettingsSection();
 
 
     } catch (error) {
@@ -2600,6 +2890,9 @@ function initializeAdminProfile() {
      */
 
     initializeSettingsNavigation();
+
+
+    initializeSettingsVisibilityGuard();
 
 
     initializeHashNavigation();

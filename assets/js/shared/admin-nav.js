@@ -230,6 +230,307 @@ function showAdminNavToast(message) {
 
 
 // =========================================================
+// SHARED ADMIN LOGOUT MODAL
+// =========================================================
+
+let adminLogoutInProgress = false;
+
+function ensureAdminLogoutModal() {
+    let modal =
+        document.getElementById(
+            "sharedAdminLogoutModal"
+        );
+
+    if (modal) {
+        return modal;
+    }
+
+    modal =
+        document.createElement(
+            "div"
+        );
+
+    modal.id =
+        "sharedAdminLogoutModal";
+
+    modal.className =
+        "admin-logout-modal";
+
+    modal.hidden =
+        true;
+
+    modal.setAttribute(
+        "aria-hidden",
+        "true"
+    );
+
+    modal.innerHTML = `
+        <div
+            class="admin-logout-modal-backdrop"
+            data-admin-logout-close
+        ></div>
+
+        <section
+            class="admin-logout-modal-card"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="sharedAdminLogoutTitle"
+            aria-describedby="sharedAdminLogoutDescription"
+        >
+            <div class="admin-logout-modal-icon">
+                <i class="fa-solid fa-right-from-bracket"></i>
+            </div>
+
+            <span class="admin-logout-modal-eyebrow">
+                ADMIN ACCOUNT
+            </span>
+
+            <h2 id="sharedAdminLogoutTitle">
+                Sign out of TWTMS?
+            </h2>
+
+            <p id="sharedAdminLogoutDescription">
+                You’ll need to sign in again to access the
+                Trips Wonder admin workspace.
+            </p>
+
+            <div class="admin-logout-modal-actions">
+                <button
+                    type="button"
+                    class="admin-logout-modal-cancel"
+                    id="sharedAdminLogoutCancel"
+                    data-admin-logout-close
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="button"
+                    class="admin-logout-modal-confirm"
+                    id="sharedAdminLogoutConfirm"
+                >
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <span>Sign Out</span>
+                </button>
+            </div>
+        </section>
+    `;
+
+    document.body.appendChild(
+        modal
+    );
+
+    modal
+        .querySelectorAll(
+            "[data-admin-logout-close]"
+        )
+        .forEach(
+            element => {
+                element.addEventListener(
+                    "click",
+                    closeAdminLogoutModal
+                );
+            }
+        );
+
+    document.addEventListener(
+        "keydown",
+        event => {
+            if (
+                event.key ===
+                    "Escape" &&
+                modal.classList.contains(
+                    "show"
+                ) &&
+                !adminLogoutInProgress
+            ) {
+                closeAdminLogoutModal();
+            }
+        }
+    );
+
+    return modal;
+}
+
+function openAdminLogoutModal() {
+    if (adminLogoutInProgress) {
+        return;
+    }
+
+    const modal =
+        ensureAdminLogoutModal();
+
+    modal.hidden =
+        false;
+
+    modal.setAttribute(
+        "aria-hidden",
+        "false"
+    );
+
+    document.body.classList.add(
+        "admin-logout-modal-open"
+    );
+
+    requestAnimationFrame(
+        () => {
+            modal.classList.add(
+                "show"
+            );
+
+            document
+                .getElementById(
+                    "sharedAdminLogoutCancel"
+                )
+                ?.focus();
+        }
+    );
+}
+
+function closeAdminLogoutModal() {
+    if (adminLogoutInProgress) {
+        return;
+    }
+
+    const modal =
+        document.getElementById(
+            "sharedAdminLogoutModal"
+        );
+
+    if (!modal) {
+        return;
+    }
+
+    modal.classList.remove(
+        "show"
+    );
+
+    modal.setAttribute(
+        "aria-hidden",
+        "true"
+    );
+
+    document.body.classList.remove(
+        "admin-logout-modal-open"
+    );
+
+    window.setTimeout(
+        () => {
+            if (
+                !modal.classList.contains(
+                    "show"
+                )
+            ) {
+                modal.hidden =
+                    true;
+            }
+        },
+        180
+    );
+
+    document
+        .getElementById(
+            "sharedAdminLogoutBtn"
+        )
+        ?.focus();
+}
+
+async function performAdminLogout(
+    logoutButton
+) {
+    if (adminLogoutInProgress) {
+        return;
+    }
+
+    const modal =
+        ensureAdminLogoutModal();
+
+    const confirmButton =
+        document.getElementById(
+            "sharedAdminLogoutConfirm"
+        );
+
+    const cancelButton =
+        document.getElementById(
+            "sharedAdminLogoutCancel"
+        );
+
+    if (!confirmButton) {
+        return;
+    }
+
+    adminLogoutInProgress =
+        true;
+
+    const originalConfirmHTML =
+        confirmButton.innerHTML;
+
+    confirmButton.disabled =
+        true;
+
+    if (cancelButton) {
+        cancelButton.disabled =
+            true;
+    }
+
+    if (logoutButton) {
+        logoutButton.disabled =
+            true;
+    }
+
+    confirmButton.innerHTML = `
+        <i class="fa-solid fa-spinner fa-spin"></i>
+        <span>Signing Out...</span>
+    `;
+
+    try {
+        stopAdminNotificationBadgeListeners();
+
+        if (unsubscribeBusinessBranding) {
+            unsubscribeBusinessBranding();
+            unsubscribeBusinessBranding =
+                null;
+        }
+
+        await logout();
+
+    } catch (error) {
+        console.error(
+            "SHARED ADMIN NAV LOGOUT ERROR:",
+            error
+        );
+
+        adminLogoutInProgress =
+            false;
+
+        confirmButton.disabled =
+            false;
+
+        if (cancelButton) {
+            cancelButton.disabled =
+                false;
+        }
+
+        if (logoutButton) {
+            logoutButton.disabled =
+                false;
+        }
+
+        confirmButton.innerHTML =
+            originalConfirmHTML;
+
+        modal.classList.add(
+            "show"
+        );
+
+        showAdminNavToast(
+            "Unable to sign out. Please try again."
+        );
+    }
+}
+
+
+// =========================================================
 // RENDER
 // =========================================================
 
@@ -315,7 +616,7 @@ function renderAdminNavigation(
                         <span>${item.label}</span>
                         ${
                             item.id === "notifications"
-                                ? '<b class="admin-sidebar-notification-badge" id="sharedAdminNotificationBadge" hidden>0</b>'
+                                ? '<b class="admin-sidebar-notification-badge" id="sharedAdminNotificationBadge" hidden aria-hidden="true"></b>'
                                 : ""
                         }
                     </a>
@@ -384,47 +685,44 @@ function renderAdminNavigation(
             "sharedAdminLogoutBtn"
         );
 
+    const logoutModal =
+        ensureAdminLogoutModal();
+
+    const logoutConfirmButton =
+        document.getElementById(
+            "sharedAdminLogoutConfirm"
+        );
+
     logoutButton?.addEventListener(
         "click",
-        async () => {
-            const confirmed =
-                window.confirm(
-                    "Are you sure you want to logout from TWTMS?"
-                );
-
-            if (!confirmed) return;
-
-            const original =
-                logoutButton.innerHTML;
-
-            logoutButton.disabled =
-                true;
-
-            logoutButton.innerHTML = `
-                <i class="fa-solid fa-spinner fa-spin"></i>
-                <span>Signing out...</span>
-            `;
-
-            try {
-                await logout();
-            } catch (error) {
-                console.error(
-                    "SHARED ADMIN NAV LOGOUT ERROR:",
-                    error
-                );
-
-                logoutButton.disabled =
-                    false;
-
-                logoutButton.innerHTML =
-                    original;
-
-                alert(
-                    "Unable to logout. Please try again."
-                );
-            }
-        }
+        openAdminLogoutModal
     );
+
+    if (
+        logoutConfirmButton &&
+        logoutConfirmButton.dataset.bound !==
+            "true"
+    ) {
+        logoutConfirmButton.dataset.bound =
+            "true";
+
+        logoutConfirmButton.addEventListener(
+            "click",
+            () =>
+                performAdminLogout(
+                    document.getElementById(
+                        "sharedAdminLogoutBtn"
+                    )
+                )
+        );
+    }
+
+    if (logoutModal) {
+        logoutModal.setAttribute(
+            "data-ready",
+            "true"
+        );
+    }
 
     console.log(
         "SHARED ADMIN NAV READY:",
@@ -447,7 +745,56 @@ function renderAdminNavigation(
 
 let unsubscribeBusinessBranding = null;
 
+
+function applySharedAdminFavicon(
+    settings = {}
+) {
+    const faviconURL =
+        String(
+            settings.businessFavicon ||
+            ""
+        ).trim();
+
+    const fallback =
+        "../../favicon.jpg";
+
+    let favicon =
+        document.querySelector(
+            'link[data-twtms-dynamic-favicon]'
+        ) ||
+        document.querySelector(
+            'link[rel~="icon"]'
+        );
+
+    if (!favicon) {
+        favicon =
+            document.createElement(
+                "link"
+            );
+
+        favicon.rel =
+            "icon";
+
+        document.head.appendChild(
+            favicon
+        );
+    }
+
+    favicon.setAttribute(
+        "data-twtms-dynamic-favicon",
+        "true"
+    );
+
+    favicon.href =
+        faviconURL ||
+        fallback;
+}
+
 function applyBusinessBranding(settings = {}) {
+    applySharedAdminFavicon(
+        settings
+    );
+
     const logo =
         document.getElementById("sharedAdminBusinessLogo");
 
@@ -597,13 +944,27 @@ function updateAdminNotificationBadge() {
         }
     );
 
+    const hasUnread =
+        unreadCount > 0;
+
+    badge.hidden =
+        !hasUnread;
+
+    badge.setAttribute(
+        "aria-hidden",
+        String(!hasUnread)
+    );
+
+    if (!hasUnread) {
+        badge.textContent =
+            "";
+        return;
+    }
+
     badge.textContent =
         unreadCount > 99
             ? "99+"
             : String(unreadCount);
-
-    badge.hidden =
-        unreadCount === 0;
 }
 
 

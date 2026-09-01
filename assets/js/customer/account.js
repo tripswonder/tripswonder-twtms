@@ -24,8 +24,23 @@ const accountEmail =
 const logoutButton =
     document.querySelector(".account-logout");
 
+const logoutModal =
+    document.getElementById("logoutModal");
+
+const logoutModalCancel =
+    document.getElementById("logoutModalCancel");
+
+const logoutModalConfirm =
+    document.getElementById("logoutModalConfirm");
+
+const logoutModalBackdrop =
+    logoutModal?.querySelector(".logout-modal-backdrop");
+
 let unsubscribeProfile =
     null;
+
+let logoutInProgress =
+    false;
 
 onAuthStateChanged(
     auth,
@@ -150,56 +165,179 @@ document.addEventListener(
     }
 );
 
-logoutButton?.addEventListener(
-    "click",
-    async () => {
+function openLogoutModal() {
 
-        const confirmed =
-            window.confirm(
-                "Are you sure you want to log out?"
+    if (!logoutModal || logoutInProgress) {
+        return;
+    }
+
+    logoutModal.hidden =
+        false;
+
+    logoutModal.setAttribute(
+        "aria-hidden",
+        "false"
+    );
+
+    document.body.classList.add(
+        "logout-modal-open"
+    );
+
+    requestAnimationFrame(
+        () => {
+            logoutModal.classList.add(
+                "show"
             );
 
-        if (!confirmed) {
-            return;
+            logoutModalCancel?.focus();
         }
+    );
+}
 
-        const originalHTML =
-            logoutButton.innerHTML;
+function closeLogoutModal() {
 
+    if (!logoutModal || logoutInProgress) {
+        return;
+    }
+
+    logoutModal.classList.remove(
+        "show"
+    );
+
+    logoutModal.setAttribute(
+        "aria-hidden",
+        "true"
+    );
+
+    document.body.classList.remove(
+        "logout-modal-open"
+    );
+
+    window.setTimeout(
+        () => {
+            if (
+                !logoutModal.classList.contains(
+                    "show"
+                )
+            ) {
+                logoutModal.hidden =
+                    true;
+            }
+        },
+        180
+    );
+
+    logoutButton?.focus();
+}
+
+async function performLogout() {
+
+    if (
+        logoutInProgress ||
+        !logoutModalConfirm
+    ) {
+        return;
+    }
+
+    logoutInProgress =
+        true;
+
+    const originalConfirmHTML =
+        logoutModalConfirm.innerHTML;
+
+    logoutModalConfirm.disabled =
+        true;
+
+    if (logoutModalCancel) {
+        logoutModalCancel.disabled =
+            true;
+    }
+
+    if (logoutButton) {
         logoutButton.disabled =
             true;
+    }
 
-        logoutButton.innerHTML =
-            `
-                <i class="fa-solid fa-spinner fa-spin"></i>
-                <span>Logging Out...</span>
-            `;
+    logoutModalConfirm.innerHTML =
+        `
+            <i class="fa-solid fa-spinner fa-spin"></i>
+            <span>Logging Out...</span>
+        `;
 
-        try {
+    try {
 
-            unsubscribeProfile?.();
+        unsubscribeProfile?.();
 
-            await signOut(auth);
+        await signOut(auth);
 
-            window.location.href =
-                "../../index.html";
+        window.location.href =
+            "../../index.html";
 
-        } catch (error) {
+    } catch (error) {
 
-            console.error(
-                "CUSTOMER LOGOUT ERROR:",
-                error
-            );
+        console.error(
+            "CUSTOMER LOGOUT ERROR:",
+            error
+        );
 
-            window.alert(
-                "Unable to log out. Please try again."
-            );
+        logoutInProgress =
+            false;
 
+        logoutModalConfirm.disabled =
+            false;
+
+        if (logoutModalCancel) {
+            logoutModalCancel.disabled =
+                false;
+        }
+
+        if (logoutButton) {
             logoutButton.disabled =
                 false;
+        }
 
-            logoutButton.innerHTML =
-                originalHTML;
+        logoutModalConfirm.innerHTML =
+            originalConfirmHTML;
+
+        alert(
+            "Unable to log out. Please try again."
+        );
+    }
+}
+
+logoutButton?.addEventListener(
+    "click",
+    openLogoutModal
+);
+
+logoutModalCancel?.addEventListener(
+    "click",
+    closeLogoutModal
+);
+
+logoutModalConfirm?.addEventListener(
+    "click",
+    performLogout
+);
+
+logoutModalBackdrop?.addEventListener(
+    "click",
+    closeLogoutModal
+);
+
+document.addEventListener(
+    "keydown",
+    event => {
+
+        if (
+            event.key ===
+                "Escape" &&
+            logoutModal?.classList.contains(
+                "show"
+            ) &&
+            !logoutInProgress
+        ) {
+            closeLogoutModal();
         }
     }
 );

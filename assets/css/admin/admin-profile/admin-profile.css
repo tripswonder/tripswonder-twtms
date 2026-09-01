@@ -2352,3 +2352,15 @@ input:focus-visible {
         width: 100%;
     }
 }
+
+/* =========================================================
+   FINAL OWNER-ONLY SETTINGS VISIBILITY
+   Owner-only navigation is hidden before Firebase resolves
+   the signed-in user's role. admin-profile.js will reveal
+   these items only after the account is verified as Owner.
+========================================================= */
+
+.settings-nav-item[hidden] {
+    display: none !important;
+}
+

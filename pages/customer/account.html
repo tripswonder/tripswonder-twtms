@@ -12,11 +12,6 @@
 
     <title>My Account | Trips Wonder</title>
 
-
-    <!-- ==========================================================
-         GLOBAL CSS
-    =========================================================== -->
-
     <link
         rel="stylesheet"
         href="../../assets/css/shared/variables.css"
@@ -27,20 +22,10 @@
         href="../../assets/css/shared/global.css"
     >
 
-
-    <!-- ==========================================================
-         ACCOUNT CSS
-    =========================================================== -->
-
     <link
         rel="stylesheet"
         href="../../assets/css/customer/account.css"
     >
-
-
-    <!-- ==========================================================
-         GOOGLE FONT
-    =========================================================== -->
 
     <link
         rel="preconnect"
@@ -58,20 +43,10 @@
         rel="stylesheet"
     >
 
-
-    <!-- ==========================================================
-         FONT AWESOME
-    =========================================================== -->
-
     <link
         rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
     >
-
-
-    <!-- ==========================================================
-         SHARED CUSTOMER NAV
-    =========================================================== -->
 
     <link
         rel="stylesheet"
@@ -80,20 +55,9 @@
 
 </head>
 
-
 <body>
 
-
-<!-- ==========================================================
-     ACCOUNT PAGE
-========================================================== -->
-
 <main class="account-page">
-
-
-    <!-- ======================================================
-         HEADER
-    ======================================================= -->
 
     <header class="account-header">
 
@@ -111,12 +75,7 @@
 
     </header>
 
-    <!-- ======================================================
-         ACCOUNT SUMMARY
-    ======================================================= -->
-
     <section class="account-summary">
-
 
         <div class="account-avatar">
 
@@ -124,17 +83,15 @@
 
         </div>
 
-
         <div class="account-summary-info">
 
             <h2 id="accountName">
-                Eric Ramirez
+                Trips Wonder Member
             </h2>
 
             <p id="accountEmail">
-                tripswondertour@gmail.com
+                —
             </p>
-
 
             <span class="account-member">
 
@@ -147,12 +104,6 @@
         </div>
 
     </section>
-
-
-
-    <!-- ======================================================
-         MANAGE ACCOUNT
-    ======================================================= -->
 
     <section class="account-manage-card">
 
@@ -173,7 +124,6 @@
 
         </div>
 
-
         <a
             href="account-security.html"
             class="account-manage-button"
@@ -186,12 +136,6 @@
         </a>
 
     </section>
-
-
-
-    <!-- ======================================================
-         PREFERENCES
-    ======================================================= -->
 
     <section class="account-section">
 
@@ -207,11 +151,7 @@
 
         </div>
 
-
         <div class="account-menu">
-
-
-            <!-- NOTIFICATIONS -->
 
             <button
                 type="button"
@@ -225,7 +165,6 @@
 
                 </span>
 
-
                 <span class="account-menu-content">
 
                     <strong>
@@ -238,16 +177,11 @@
 
                 </span>
 
-
                 <i
                     class="fa-solid fa-chevron-right account-menu-arrow">
                 </i>
 
             </button>
-
-
-
-            <!-- TRAVEL PREFERENCES -->
 
             <button
                 type="button"
@@ -261,7 +195,6 @@
 
                 </span>
 
-
                 <span class="account-menu-content">
 
                     <strong>
@@ -274,7 +207,6 @@
 
                 </span>
 
-
                 <i
                     class="fa-solid fa-chevron-right account-menu-arrow">
                 </i>
@@ -284,12 +216,6 @@
         </div>
 
     </section>
-
-
-
-    <!-- ======================================================
-         HELP & INFORMATION
-    ======================================================= -->
 
     <section class="account-section">
 
@@ -305,11 +231,7 @@
 
         </div>
 
-
         <div class="account-menu">
-
-
-            <!-- TERMS -->
 
             <button
                 type="button"
@@ -323,7 +245,6 @@
 
                 </span>
 
-
                 <span class="account-menu-content">
 
                     <strong>
@@ -336,16 +257,11 @@
 
                 </span>
 
-
                 <i
                     class="fa-solid fa-chevron-right account-menu-arrow">
                 </i>
 
             </button>
-
-
-
-            <!-- PRIVACY -->
 
             <button
                 type="button"
@@ -359,7 +275,6 @@
 
                 </span>
 
-
                 <span class="account-menu-content">
 
                     <strong>
@@ -372,7 +287,6 @@
 
                 </span>
 
-
                 <i
                     class="fa-solid fa-chevron-right account-menu-arrow">
                 </i>
@@ -382,12 +296,6 @@
         </div>
 
     </section>
-
-
-
-    <!-- ======================================================
-         ACCOUNT ACTION
-    ======================================================= -->
 
     <section class="account-section account-action-section">
 
@@ -402,7 +310,6 @@
             </h2>
 
         </div>
-
 
         <button
             type="button"
@@ -419,14 +326,70 @@
 
     </section>
 
-
 </main>
 
+<div
+    class="logout-modal"
+    id="logoutModal"
+    aria-hidden="true"
+    hidden
+>
+    <div class="logout-modal-backdrop"></div>
 
+    <section
+        class="logout-modal-card"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="logoutModalTitle"
+        aria-describedby="logoutModalDescription"
+    >
 
-<!-- ==========================================================
-     SHARED BOTTOM NAVIGATION
-========================================================== -->
+        <div class="logout-modal-icon">
+
+            <i class="fa-solid fa-right-from-bracket"></i>
+
+        </div>
+
+        <div class="logout-modal-copy">
+
+            <span class="logout-modal-eyebrow">
+                ACCOUNT ACCESS
+            </span>
+
+            <h2 id="logoutModalTitle">
+                Log out of Trips Wonder?
+            </h2>
+
+            <p id="logoutModalDescription">
+                You’ll need to sign in again to access your bookings,
+                messages, and account.
+            </p>
+
+        </div>
+
+        <div class="logout-modal-actions">
+
+            <button
+                type="button"
+                class="logout-modal-cancel"
+                id="logoutModalCancel"
+            >
+                Cancel
+            </button>
+
+            <button
+                type="button"
+                class="logout-modal-confirm"
+                id="logoutModalConfirm"
+            >
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <span>Log Out</span>
+            </button>
+
+        </div>
+
+    </section>
+</div>
 
 <div id="customerBottomNav"></div>
 

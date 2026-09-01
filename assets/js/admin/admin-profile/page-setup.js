@@ -111,6 +111,9 @@ const defaultPageSetupSettings = {
     businessLogo:
         "../../assets/images/logo.png",
 
+    businessFavicon:
+        "../../favicon.jpg",
+
     supportName:
         "Trips Wonder Support",
 
@@ -120,6 +123,295 @@ const defaultPageSetupSettings = {
     supportPhoto:
         "../../assets/images/logo.png"
 };
+
+
+/* =========================================================
+   IMAGE STORAGE HELPERS
+   Store image files in Firebase Storage.
+   Firestore/localStorage keep URL strings only.
+========================================================= */
+
+function isTemporaryImageSource(value) {
+
+    const source =
+        String(value || "")
+            .trim()
+            .toLowerCase();
+
+    return (
+        source.startsWith("data:") ||
+        source.startsWith("blob:")
+    );
+}
+
+
+function sanitizeImageSource(
+    value,
+    fallback
+) {
+
+    const source =
+        String(value || "")
+            .trim();
+
+    if (
+        !source ||
+        isTemporaryImageSource(source)
+    ) {
+        return fallback;
+    }
+
+    return source;
+}
+
+
+function applyDynamicFavicon(
+    faviconURL
+) {
+
+    const source =
+        sanitizeImageSource(
+            faviconURL,
+            "../../favicon.jpg"
+        );
+
+    let favicon =
+        document.querySelector(
+            'link[data-twtms-dynamic-favicon]'
+        );
+
+    if (!favicon) {
+
+        favicon =
+            document.querySelector(
+                'link[rel~="icon"]'
+            );
+    }
+
+    if (!favicon) {
+
+        favicon =
+            document.createElement(
+                "link"
+            );
+
+        favicon.rel =
+            "icon";
+
+        document.head.appendChild(
+            favicon
+        );
+    }
+
+    favicon.setAttribute(
+        "data-twtms-dynamic-favicon",
+        "true"
+    );
+
+    favicon.href =
+        source;
+}
+
+
+function withCacheVersion(url) {
+
+    const source =
+        String(url || "")
+            .trim();
+
+    if (!source) {
+        return source;
+    }
+
+    const separator =
+        source.includes("?")
+            ? "&"
+            : "?";
+
+    return (
+        source +
+        separator +
+        "v=" +
+        Date.now()
+    );
+}
+
+
+async function uploadPageSetupImageIfNeeded({
+    input,
+    storagePath,
+    label
+}) {
+
+    const file =
+        input?.files?.[0];
+
+    if (!file) {
+        return null;
+    }
+
+
+    const allowedTypes = [
+        "image/jpeg",
+        "image/png",
+        "image/webp"
+    ];
+
+    if (
+        !allowedTypes.includes(
+            file.type
+        )
+    ) {
+        throw new Error(
+            `${label} must be JPG, PNG, or WEBP.`
+        );
+    }
+
+
+    const maxSize =
+        2 * 1024 * 1024;
+
+    if (
+        file.size >
+        maxSize
+    ) {
+        throw new Error(
+            `${label} must be 2MB or smaller.`
+        );
+    }
+
+
+    if (
+        !pageSetupStorage ||
+        !storageRef ||
+        !storageUploadBytes ||
+        !storageGetDownloadURL
+    ) {
+        throw new Error(
+            "Firebase Storage is not available."
+        );
+    }
+
+
+    const imageReference =
+        storageRef(
+            pageSetupStorage,
+            storagePath
+        );
+
+
+    await storageUploadBytes(
+        imageReference,
+        file,
+        {
+            contentType:
+                file.type,
+            customMetadata: {
+                uploadedBy:
+                    pageSetupUser?.uid ||
+                    "unknown"
+            }
+        }
+    );
+
+
+    const downloadURL =
+        await storageGetDownloadURL(
+            imageReference
+        );
+
+
+    input.value =
+        "";
+
+
+    return withCacheVersion(
+        downloadURL
+    );
+}
+
+
+async function uploadSelectedPageSetupImages(
+    settings
+) {
+
+    const finalSettings = {
+        ...settings
+    };
+
+
+    const businessLogoURL =
+        await uploadPageSetupImageIfNeeded({
+            input:
+                pageSetupElements.businessLogoInput,
+            storagePath:
+                "systemSettings/general/business-logo",
+            label:
+                "Business logo"
+        });
+
+
+    if (businessLogoURL) {
+        finalSettings.businessLogo =
+            businessLogoURL;
+    } else {
+        finalSettings.businessLogo =
+            sanitizeImageSource(
+                finalSettings.businessLogo,
+                defaultPageSetupSettings.businessLogo
+            );
+    }
+
+
+    const businessFaviconURL =
+        await uploadPageSetupImageIfNeeded({
+            input:
+                pageSetupElements.businessFaviconInput,
+            storagePath:
+                "systemSettings/general/favicon",
+            label:
+                "Favicon"
+        });
+
+
+    if (businessFaviconURL) {
+        finalSettings.businessFavicon =
+            businessFaviconURL;
+    } else {
+        finalSettings.businessFavicon =
+            sanitizeImageSource(
+                finalSettings.businessFavicon,
+                defaultPageSetupSettings.businessFavicon
+            );
+    }
+
+
+    const supportPhotoURL =
+        await uploadPageSetupImageIfNeeded({
+            input:
+                pageSetupElements.supportPhotoInput,
+            storagePath:
+                "systemSettings/general/support-photo",
+            label:
+                "Support photo"
+        });
+
+
+    if (supportPhotoURL) {
+        finalSettings.supportPhoto =
+            supportPhotoURL;
+    } else {
+        finalSettings.supportPhoto =
+            sanitizeImageSource(
+                finalSettings.supportPhoto,
+                defaultPageSetupSettings.supportPhoto
+            );
+    }
+
+
+    return finalSettings;
+}
+
 
 
 /* =========================================================
@@ -556,6 +848,82 @@ function ensurePageSetupMarkup() {
 
 
                 <!-- =====================================
+                     WEBSITE FAVICON
+                ====================================== -->
+
+                <div class="page-setup-block">
+
+                    <div class="page-setup-block-header">
+
+                        <div class="page-setup-block-icon">
+                            <i class="fa-solid fa-window-maximize"></i>
+                        </div>
+
+                        <div>
+
+                            <h3>
+                                Website Favicon
+                            </h3>
+
+                            <p>
+                                Browser tab icon used across the
+                                Trips Wonder website.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="page-setup-logo-area">
+
+                        <div class="page-setup-logo-preview">
+
+                            <img
+                                id="businessFaviconPreview"
+                                src="../../favicon.jpg"
+                                alt="Website Favicon"
+                            >
+
+                        </div>
+
+
+                        <div class="page-setup-logo-actions">
+
+                            <input
+                                type="file"
+                                id="businessFaviconInput"
+                                accept="image/png,image/webp,image/jpeg"
+                                hidden
+                            >
+
+
+                            <button
+                                type="button"
+                                id="changeBusinessFaviconButton"
+                                class="page-setup-secondary-button"
+                            >
+
+                                <i class="fa-solid fa-window-maximize"></i>
+
+                                Change Favicon
+
+                            </button>
+
+
+                            <p>
+                                Square PNG or WEBP recommended.
+                                Maximum 2MB.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =====================================
                      CUSTOMER SUPPORT PROFILE
                 ====================================== -->
 
@@ -774,6 +1142,21 @@ function collectPageSetupElements() {
         changeBusinessLogoButton:
             document.getElementById(
                 "changeBusinessLogoButton"
+            ),
+
+        businessFaviconPreview:
+            document.getElementById(
+                "businessFaviconPreview"
+            ),
+
+        businessFaviconInput:
+            document.getElementById(
+                "businessFaviconInput"
+            ),
+
+        changeBusinessFaviconButton:
+            document.getElementById(
+                "changeBusinessFaviconButton"
             ),
 
         supportName:
@@ -1161,7 +1544,25 @@ function getLocalSettings() {
 
             ...defaultPageSetupSettings,
 
-            ...parsed
+            ...parsed,
+
+            businessLogo:
+                sanitizeImageSource(
+                    parsed.businessLogo,
+                    defaultPageSetupSettings.businessLogo
+                ),
+
+            businessFavicon:
+                sanitizeImageSource(
+                    parsed.businessFavicon,
+                    defaultPageSetupSettings.businessFavicon
+                ),
+
+            supportPhoto:
+                sanitizeImageSource(
+                    parsed.supportPhoto,
+                    defaultPageSetupSettings.supportPhoto
+                )
 
         };
 
@@ -1190,10 +1591,34 @@ function saveLocalSettings(
     settings
 ) {
 
+    const safeSettings = {
+
+        ...settings,
+
+        businessLogo:
+            sanitizeImageSource(
+                settings?.businessLogo,
+                defaultPageSetupSettings.businessLogo
+            ),
+
+        businessFavicon:
+            sanitizeImageSource(
+                settings?.businessFavicon,
+                defaultPageSetupSettings.businessFavicon
+            ),
+
+        supportPhoto:
+            sanitizeImageSource(
+                settings?.supportPhoto,
+                defaultPageSetupSettings.supportPhoto
+            )
+    };
+
+
     localStorage.setItem(
         PAGE_SETUP_LOCAL_KEY,
         JSON.stringify(
-            settings
+            safeSettings
         )
     );
 
@@ -1306,6 +1731,19 @@ function populatePageSetupForm(
     }
 
 
+    if (
+        pageSetupElements.businessFaviconPreview &&
+        settings.businessFavicon
+    ) {
+        pageSetupElements.businessFaviconPreview.src =
+            settings.businessFavicon;
+
+        applyDynamicFavicon(
+            settings.businessFavicon
+        );
+    }
+
+
     if (pageSetupElements.supportName) {
         pageSetupElements.supportName.value =
             settings.supportName || "";
@@ -1376,6 +1814,11 @@ function collectPageSetupSettings() {
             pageSetupElements.businessLogoPreview
                 ?.src ||
             defaultPageSetupSettings.businessLogo,
+
+        businessFavicon:
+            pageSetupElements.businessFaviconPreview
+                ?.src ||
+            defaultPageSetupSettings.businessFavicon,
 
         supportName:
             pageSetupElements.supportName
@@ -1480,22 +1923,21 @@ async function savePageSetup() {
     }
 
 
-    const settings =
+    const collectedSettings =
         collectPageSetupSettings();
 
 
     if (
         !validatePageSetup(
-            settings
+            collectedSettings
         )
     ) {
-
         return;
-
     }
 
 
-    pageSetupSaving = true;
+    pageSetupSaving =
+        true;
 
 
     setPageSetupSavingState(
@@ -1506,11 +1948,28 @@ async function savePageSetup() {
     try {
 
         /*
-         * Always save locally first.
-         * This prevents data loss if Firebase
-         * is temporarily unavailable.
+         * Upload selected images first.
+         * Only Firebase Storage download URLs are allowed
+         * to continue into Firestore/localStorage.
          */
+        const settings =
+            await uploadSelectedPageSetupImages(
+                collectedSettings
+            );
 
+
+        /*
+         * Update the previews immediately with
+         * their final persistent URLs.
+         */
+        populatePageSetupForm(
+            settings
+        );
+
+
+        /*
+         * Save the clean URL-based settings locally.
+         */
         saveLocalSettings(
             settings
         );
@@ -1519,7 +1978,6 @@ async function savePageSetup() {
         /*
          * Save to Firestore when available.
          */
-
         if (
             pageSetupFirebaseReady &&
             firestoreSetDoc
@@ -1535,23 +1993,26 @@ async function savePageSetup() {
                     reference,
                     {
                         ...settings,
+
                         updatedAt:
-                            new Date()
+                            new Date(),
+
+                        updatedBy:
+                            pageSetupUser?.uid ||
+                            ""
                     },
                     {
-                        merge: true
+                        merge:
+                            true
                     }
                 );
-
             }
-
         }
 
 
         /*
-         * Notify other modules.
+         * Notify shared navigation/customer modules.
          */
-
         window.dispatchEvent(
             new CustomEvent(
                 "pageSettingsUpdated",
@@ -1583,28 +2044,57 @@ async function savePageSetup() {
         );
 
 
-        /*
-         * LocalStorage is already saved,
-         * so tell the user that local save
-         * succeeded but Firebase failed.
-         */
+        const code =
+            String(
+                error?.code ||
+                ""
+            );
+
+
+        let message =
+            error?.message ||
+            "Unable to save Page Setup. Please try again.";
+
+
+        if (
+            code ===
+                "storage/unauthorized"
+        ) {
+            message =
+                "Firebase Storage blocked the image upload. Please check Storage Rules.";
+        } else if (
+            code ===
+                "storage/quota-exceeded"
+        ) {
+            message =
+                "Firebase Storage quota has been exceeded.";
+        } else if (
+            code ===
+                "permission-denied" ||
+            code ===
+                "firestore/permission-denied"
+        ) {
+            message =
+                "You do not have permission to update Page Setup.";
+        }
+
 
         showPageSetupMessage(
-            "Saved locally, but Firebase could not be updated.",
-            "warning"
+            message,
+            "error"
         );
+
 
     } finally {
 
-        pageSetupSaving = false;
+        pageSetupSaving =
+            false;
 
 
         setPageSetupSavingState(
             false
         );
-
     }
-
 }
 
 
@@ -1885,6 +2375,105 @@ function handleBusinessLogoChange(
 
 
 /* =========================================================
+   FAVICON PICKER
+========================================================= */
+
+function openBusinessFaviconPicker() {
+
+    pageSetupElements.businessFaviconInput
+        ?.click();
+}
+
+
+function handleBusinessFaviconChange(event) {
+
+    const file =
+        event.target.files?.[0];
+
+    if (!file) {
+        return;
+    }
+
+
+    const allowedTypes = [
+        "image/jpeg",
+        "image/png",
+        "image/webp"
+    ];
+
+    if (
+        !allowedTypes.includes(
+            file.type
+        )
+    ) {
+        showPageSetupMessage(
+            "Please select a JPG, PNG, or WEBP favicon.",
+            "error"
+        );
+
+        event.target.value =
+            "";
+
+        return;
+    }
+
+
+    const maxSize =
+        2 * 1024 * 1024;
+
+    if (
+        file.size >
+        maxSize
+    ) {
+        showPageSetupMessage(
+            "Favicon must be 2MB or smaller.",
+            "error"
+        );
+
+        event.target.value =
+            "";
+
+        return;
+    }
+
+
+    const reader =
+        new FileReader();
+
+    reader.onload =
+        readerEvent => {
+
+            const previewURL =
+                readerEvent.target.result;
+
+            if (
+                pageSetupElements.businessFaviconPreview
+            ) {
+                pageSetupElements.businessFaviconPreview.src =
+                    previewURL;
+            }
+
+            applyDynamicFavicon(
+                previewURL
+            );
+        };
+
+    reader.onerror =
+        () => {
+
+            showPageSetupMessage(
+                "Unable to read the selected favicon.",
+                "error"
+            );
+        };
+
+    reader.readAsDataURL(
+        file
+    );
+}
+
+
+/* =========================================================
    SUPPORT PHOTO PICKER
 ========================================================= */
 
@@ -2047,6 +2636,23 @@ function initializePageSetupEvents() {
 
 
     /*
+     * Favicon
+     */
+
+    pageSetupElements.changeBusinessFaviconButton
+        ?.addEventListener(
+            "click",
+            openBusinessFaviconPicker
+        );
+
+    pageSetupElements.businessFaviconInput
+        ?.addEventListener(
+            "change",
+            handleBusinessFaviconChange
+        );
+
+
+    /*
      * Support photo
      */
 
@@ -2188,7 +2794,28 @@ window.TripsWonderPageSettings = {
 
                 ...current,
 
-                ...settings
+                ...settings,
+
+                businessLogo:
+                    sanitizeImageSource(
+                        settings?.businessLogo ||
+                        current.businessLogo,
+                        defaultPageSetupSettings.businessLogo
+                    ),
+
+                businessFavicon:
+                    sanitizeImageSource(
+                        settings?.businessFavicon ||
+                        current.businessFavicon,
+                        defaultPageSetupSettings.businessFavicon
+                    ),
+
+                supportPhoto:
+                    sanitizeImageSource(
+                        settings?.supportPhoto ||
+                        current.supportPhoto,
+                        defaultPageSetupSettings.supportPhoto
+                    )
 
             };
 

@@ -1672,11 +1672,18 @@ function getUpcomingBooking() {
                     );
 
 
+                /*
+                 * HOME RULE:
+                 * Only an actually confirmed booking can be shown
+                 * as an Upcoming Trip.
+                 *
+                 * Pending / pending verification / draft / rejected /
+                 * cancelled bookings remain accessible in My Trip,
+                 * but must not be presented as an upcoming trip here.
+                 */
                 if (
-                    status ===
-                        "cancelled" ||
-                    status ===
-                        "canceled"
+                    status !==
+                    "confirmed"
                 ) {
 
                     return false;
