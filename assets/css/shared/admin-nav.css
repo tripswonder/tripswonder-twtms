@@ -515,3 +515,48 @@ body.admin-shared-nav-page .content {
     }
 
 }
+
+
+/* =========================================================
+   SHARED ADMIN NOTIFICATION BADGE
+========================================================= */
+
+.admin-sidebar-notification-badge {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+
+    min-width: 17px !important;
+    width: auto !important;
+    height: 17px;
+
+    padding: 0 5px;
+
+    display: grid;
+    place-items: center;
+
+    border: 2px solid #ffffff;
+    border-radius: 999px;
+
+    background: #e5484d;
+    color: #ffffff;
+
+    font-size: 8px;
+    font-weight: 800;
+    line-height: 1;
+
+    opacity: 1 !important;
+    transform: none !important;
+
+    pointer-events: none;
+}
+
+.admin-sidebar-notification-badge[hidden] {
+    display: none !important;
+}
+
+.admin-sidebar:hover
+.admin-sidebar-notification-badge {
+    top: 11px;
+    right: 11px;
+}

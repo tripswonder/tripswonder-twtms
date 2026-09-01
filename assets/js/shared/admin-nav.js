@@ -18,8 +18,11 @@ import {
 } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
 
 import {
+    collection,
     doc,
-    onSnapshot
+    onSnapshot,
+    query,
+    where
 } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
 import {
@@ -78,6 +81,14 @@ const ADMIN_NAV_ITEMS = [
         href: "messages.html",
         icon: "fa-regular fa-message",
         permission: "messages",
+        available: true
+    },
+    {
+        id: "notifications",
+        label: "Notifications",
+        href: "notifications.html",
+        icon: "fa-regular fa-bell",
+        permission: "bookings",
         available: true
     },
     {
@@ -302,6 +313,11 @@ function renderAdminNavigation(
                     >
                         <i class="${item.icon}"></i>
                         <span>${item.label}</span>
+                        ${
+                            item.id === "notifications"
+                                ? '<b class="admin-sidebar-notification-badge" id="sharedAdminNotificationBadge" hidden>0</b>'
+                                : ""
+                        }
                     </a>
                 `;
             }).join("")}
@@ -518,6 +534,188 @@ function initializeBusinessBranding() {
 }
 
 
+
+
+// =========================================================
+// ADMIN BOOKING NOTIFICATION BADGE
+// =========================================================
+//
+// The booking itself is the source of truth.
+// Only client website bookings are counted.
+//
+// Read state is stored per admin in:
+// adminNotificationReads/{adminUid}__booking__{bookingId}
+// =========================================================
+
+let unsubscribeAdminBookingNotifications = null;
+let unsubscribeAdminNotificationReads = null;
+
+let adminBookingNotificationIds = new Set();
+let adminReadNotificationKeys = new Set();
+
+
+function stopAdminNotificationBadgeListeners() {
+    if (unsubscribeAdminBookingNotifications) {
+        unsubscribeAdminBookingNotifications();
+        unsubscribeAdminBookingNotifications = null;
+    }
+
+    if (unsubscribeAdminNotificationReads) {
+        unsubscribeAdminNotificationReads();
+        unsubscribeAdminNotificationReads = null;
+    }
+
+    adminBookingNotificationIds = new Set();
+    adminReadNotificationKeys = new Set();
+}
+
+
+function updateAdminNotificationBadge() {
+    const badge =
+        document.getElementById(
+            "sharedAdminNotificationBadge"
+        );
+
+    if (!badge) {
+        return;
+    }
+
+    let unreadCount = 0;
+
+    adminBookingNotificationIds.forEach(
+        bookingId => {
+            const key =
+                `booking:${bookingId}`;
+
+            if (
+                !adminReadNotificationKeys.has(
+                    key
+                )
+            ) {
+                unreadCount += 1;
+            }
+        }
+    );
+
+    badge.textContent =
+        unreadCount > 99
+            ? "99+"
+            : String(unreadCount);
+
+    badge.hidden =
+        unreadCount === 0;
+}
+
+
+function initializeAdminNotificationBadge(
+    user,
+    profile
+) {
+    stopAdminNotificationBadgeListeners();
+
+    const role =
+        normalizeRole(
+            profile?.role
+        );
+
+    const canSeeBookingNotifications =
+        role === "owner" ||
+        (
+            role === "admin" &&
+            hasModulePermission(
+                profile,
+                "bookings"
+            )
+        );
+
+    if (
+        !user ||
+        !canSeeBookingNotifications
+    ) {
+        return;
+    }
+
+    const websiteBookingsQuery =
+        query(
+            collection(
+                db,
+                "bookings"
+            ),
+            where(
+                "bookingSource",
+                "==",
+                "website"
+            )
+        );
+
+    unsubscribeAdminBookingNotifications =
+        onSnapshot(
+            websiteBookingsQuery,
+            snapshot => {
+                adminBookingNotificationIds =
+                    new Set(
+                        snapshot.docs.map(
+                            bookingDocument =>
+                                bookingDocument.id
+                        )
+                    );
+
+                updateAdminNotificationBadge();
+            },
+            error => {
+                console.error(
+                    "SHARED ADMIN NAV BOOKING NOTIFICATION ERROR:",
+                    error
+                );
+            }
+        );
+
+    const readStateQuery =
+        query(
+            collection(
+                db,
+                "adminNotificationReads"
+            ),
+            where(
+                "adminUid",
+                "==",
+                user.uid
+            )
+        );
+
+    unsubscribeAdminNotificationReads =
+        onSnapshot(
+            readStateQuery,
+            snapshot => {
+                adminReadNotificationKeys =
+                    new Set(
+                        snapshot.docs
+                            .map(
+                                readDocument =>
+                                    readDocument.data()
+                                        ?.notificationKey
+                            )
+                            .filter(Boolean)
+                    );
+
+                updateAdminNotificationBadge();
+            },
+            error => {
+                console.error(
+                    "SHARED ADMIN NAV NOTIFICATION READ ERROR:",
+                    error
+                );
+            }
+        );
+}
+
+
+window.addEventListener(
+    "beforeunload",
+    stopAdminNotificationBadgeListeners
+);
+
+
 // =========================================================
 // AUTH PROFILE
 // =========================================================
@@ -546,6 +744,11 @@ onAuthStateChanged(
             );
 
             initializeBusinessBranding();
+
+            initializeAdminNotificationBadge(
+                user,
+                profile
+            );
         } catch (error) {
             console.error(
                 "SHARED ADMIN NAV PROFILE ERROR:",

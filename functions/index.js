@@ -1,4 +1,5 @@
 const {onCall, HttpsError} = require("firebase-functions/v2/https");
+const {onDocumentUpdated} = require("firebase-functions/v2/firestore");
 const {defineSecret} = require("firebase-functions/params");
 const {initializeApp} = require("firebase-admin/app");
 const {getAuth} = require("firebase-admin/auth");
@@ -1816,6 +1817,331 @@ exports.sendPaymentReceipt = onCall(
             "internal",
             "Unable to send the payment receipt.",
         );
+      }
+    },
+);
+
+// ======================================================
+// CUSTOMER BOOKING UPDATE DELIVERY
+// ======================================================
+//
+// Server-side Firestore trigger.
+// Delivers booking/payment updates to both:
+// 1) notifications/{notificationId}
+// 2) conversations/{customerUid}/messages/{messageId}
+//
+// Deterministic IDs make each event idempotent.
+// ======================================================
+
+function normalizeBookingUpdateStatus(value) {
+  return String(value || "")
+      .trim()
+      .toLowerCase()
+      .replace(/[\\s-]+/g, "_");
+}
+
+function getBookingUpdateReference(booking, bookingId) {
+  return String(
+      booking.bookingReference ||
+      booking.referenceNumber ||
+      booking.displayReference ||
+      bookingId ||
+      "",
+  ).trim();
+}
+
+function getBookingUpdateDestination(booking) {
+  return String(
+      booking.packageName ||
+      booking.destination ||
+      booking.packageLocation ||
+      "your trip",
+  ).trim();
+}
+
+function getBookingUpdateTravelDate(booking) {
+  return (
+    booking.travelStartDate ||
+    booking.travelDate ||
+    booking.tourDate ||
+    booking.departureDate ||
+    ""
+  );
+}
+
+async function deliverCustomerBookingUpdate(options) {
+  const bookingId = options.bookingId;
+  const booking = options.booking;
+  const type = options.type;
+  const title = options.title;
+  const message = options.message;
+
+  const customerUid = String(
+      booking.customerUid || "",
+  ).trim();
+
+  if (!customerUid) {
+    console.log(
+        "CUSTOMER UPDATE SKIPPED - NO customerUid:",
+        bookingId,
+        type,
+    );
+    return;
+  }
+
+  const bookingReference =
+    getBookingUpdateReference(booking, bookingId);
+
+  const destination =
+    getBookingUpdateDestination(booking);
+
+  const travelDate =
+    getBookingUpdateTravelDate(booking);
+
+  const notificationId =
+    type + "__" + bookingId;
+
+  const messageId =
+    "system__" + type + "__" + bookingId;
+
+  const notificationRef = db
+      .collection("notifications")
+      .doc(notificationId);
+
+  const conversationRef = db
+      .collection("conversations")
+      .doc(customerUid);
+
+  const messageRef = conversationRef
+      .collection("messages")
+      .doc(messageId);
+
+  await db.runTransaction(async (transaction) => {
+    const notificationSnapshot =
+      await transaction.get(notificationRef);
+
+    const messageSnapshot =
+      await transaction.get(messageRef);
+
+    const conversationSnapshot =
+      await transaction.get(conversationRef);
+
+    const notificationExists =
+      notificationSnapshot.exists;
+
+    const messageExists =
+      messageSnapshot.exists;
+
+    if (notificationExists && messageExists) {
+      return;
+    }
+
+    const now = new Date();
+
+    if (!notificationExists) {
+      transaction.set(notificationRef, {
+        customerUid: customerUid,
+        type: type,
+        title: title,
+        message: message,
+        isRead: false,
+        createdAt: now,
+        bookingId: bookingId,
+        destination: destination,
+        travelDate: travelDate,
+        referenceNumber: bookingReference,
+        actionUrl:
+          "my-trip.html?booking=" +
+          encodeURIComponent(bookingId),
+        actionLabel: "View My Trip",
+        source: "booking_update_trigger",
+      });
+    }
+
+    if (!messageExists) {
+      transaction.set(messageRef, {
+        senderUid: "system",
+        senderRole: "admin",
+        senderName: "Trips Wonder Support",
+        text: message,
+        createdAt: now,
+        isSystem: true,
+        systemType: type,
+        bookingId: bookingId,
+        bookingReference: bookingReference,
+      });
+    }
+
+    const currentConversation =
+      conversationSnapshot.exists ?
+        conversationSnapshot.data() :
+        {};
+
+    const unreadCustomer =
+      Number(currentConversation.unreadCustomer || 0) +
+      (messageExists ? 0 : 1);
+
+    const conversationUpdate = {
+      customerUid: customerUid,
+      customerName:
+        booking.customerName ||
+        currentConversation.customerName ||
+        "Customer",
+      customerEmail:
+        booking.customerEmail ||
+        currentConversation.customerEmail ||
+        "",
+      customerContact:
+        booking.customerContact ||
+        booking.contactNumber ||
+        currentConversation.customerContact ||
+        "",
+      type: currentConversation.type || "booking",
+      status: currentConversation.status || "open",
+      bookingId: bookingId,
+      bookingReference: bookingReference,
+      travelDateText: travelDate,
+      lastMessage: message,
+      lastMessageAt: now,
+      lastSenderRole: "admin",
+      unreadCustomer: unreadCustomer,
+      updatedAt: now,
+    };
+
+    if (!conversationSnapshot.exists) {
+      conversationUpdate.unreadAdmin = 0;
+      conversationUpdate.createdAt = now;
+    }
+
+    transaction.set(
+        conversationRef,
+        conversationUpdate,
+        {merge: true},
+    );
+  });
+
+  console.log(
+      "CUSTOMER BOOKING UPDATE DELIVERED:",
+      type,
+      bookingId,
+      customerUid,
+  );
+}
+
+exports.notifyCustomerOnBookingUpdate = onDocumentUpdated(
+    "bookings/{bookingId}",
+    async (event) => {
+      const eventData = event.data;
+
+      if (!eventData) {
+        return;
+      }
+
+      const beforeSnapshot = eventData.before;
+      const afterSnapshot = eventData.after;
+
+      if (!beforeSnapshot || !afterSnapshot) {
+        return;
+      }
+
+      const before = beforeSnapshot.data() || {};
+      const after = afterSnapshot.data() || {};
+      const bookingId = event.params.bookingId;
+
+      const beforeBookingStatus =
+        normalizeBookingUpdateStatus(
+            before.bookingStatus,
+        );
+
+      const afterBookingStatus =
+        normalizeBookingUpdateStatus(
+            after.bookingStatus,
+        );
+
+      const beforePaymentStatus =
+        normalizeBookingUpdateStatus(
+            before.paymentStatus,
+        );
+
+      const afterPaymentStatus =
+        normalizeBookingUpdateStatus(
+            after.paymentStatus,
+        );
+
+      const bookingReference =
+        getBookingUpdateReference(after, bookingId);
+
+      const destination =
+        getBookingUpdateDestination(after);
+
+      const referenceSuffix = bookingReference ?
+        " (" + bookingReference + ")" :
+        "";
+
+      const paymentBecamePartial =
+        afterPaymentStatus === "partial" &&
+        beforePaymentStatus !== "partial" &&
+        beforePaymentStatus !== "paid";
+
+      const paymentBecamePaid =
+        afterPaymentStatus === "paid" &&
+        beforePaymentStatus !== "paid";
+
+      const bookingBecameConfirmed =
+        beforeBookingStatus !== "confirmed" &&
+        afterBookingStatus === "confirmed";
+
+      if (paymentBecamePaid) {
+        await deliverCustomerBookingUpdate({
+          bookingId: bookingId,
+          booking: after,
+          type: "payment_completed",
+          title: "Payment Completed",
+          message:
+            "Your payment for " +
+            destination +
+            referenceSuffix +
+            " has been fully paid and verified. " +
+            "Thank you for booking with Trips Wonder!",
+        });
+        return;
+      }
+
+      if (paymentBecamePartial) {
+        const confirmationText =
+          bookingBecameConfirmed ?
+            " Your booking is now confirmed." :
+            "";
+
+        await deliverCustomerBookingUpdate({
+          bookingId: bookingId,
+          booking: after,
+          type: "payment_confirmed",
+          title: "Payment Confirmed",
+          message:
+            "Your payment for " +
+            destination +
+            referenceSuffix +
+            " has been verified successfully." +
+            confirmationText +
+            " Thank you for booking with Trips Wonder!",
+        });
+        return;
+      }
+
+      if (bookingBecameConfirmed) {
+        await deliverCustomerBookingUpdate({
+          bookingId: bookingId,
+          booking: after,
+          type: "booking_confirmed",
+          title: "Booking Confirmed",
+          message:
+            "Great news! Your booking for " +
+            destination +
+            referenceSuffix +
+            " is now confirmed. You can view your " +
+            "trip details in My Trip.",
+        });
       }
     },
 );

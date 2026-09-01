@@ -1,61 +1,107 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-    <meta name="theme-color" content="#f5f8fc">
-    <title>Message | Trips Wonder</title>
-
-    <link rel="stylesheet" href="../../assets/css/shared/variables.css">
-    <link rel="stylesheet" href="../../assets/css/shared/global.css">
-    <link rel="stylesheet" href="../../assets/css/customer/message.css">
-    <link rel="stylesheet" href="../../assets/css/customer/customer-nav.css">
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#f5f8fc">
+<title>Message Center | Trips Wonder</title>
+<link rel="stylesheet" href="../../assets/css/shared/variables.css">
+<link rel="stylesheet" href="../../assets/css/shared/global.css">
+<link rel="stylesheet" href="../../assets/css/customer/message.css">
+<link rel="stylesheet" href="../../assets/css/customer/customer-nav.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 </head>
-
 <body>
-
 <div id="customerBottomNav"></div>
-
 <div class="message-shell">
-    <main class="customer-message-page">
-        <header class="customer-message-header">
-            <div class="support-avatar">
-                <img src="../../assets/images/logo.png" alt="Trips Wonder">
-            </div>
+<main class="message-center-page">
+<header class="message-center-topbar">
+<div>
+<h1>Message Center</h1>
+<p>Stay connected with Trips Wonder.</p>
+</div>
+<button type="button" class="message-center-bell" id="messageCenterBell" aria-label="Open notifications">
+<i class="fa-regular fa-bell"></i>
+<span class="message-center-bell-badge" id="messageCenterBellBadge" hidden>0</span>
+</button>
+</header>
 
-            <div class="support-copy">
-                <h1>Trips Wonder Support</h1>
-                <p><span class="online-dot"></span> We’re here to help</p>
-            </div>
-        </header>
+<nav class="message-center-tabs" aria-label="Message Center sections">
+<button type="button" class="message-center-tab active" id="messagesTab" data-center-tab="messages" aria-selected="true">
+<i class="fa-regular fa-comment-dots"></i><span>Messages</span><span class="tab-badge" id="messagesTabBadge" hidden>0</span>
+</button>
+<button type="button" class="message-center-tab" id="notificationsTab" data-center-tab="notifications" aria-selected="false">
+<i class="fa-regular fa-bell"></i><span>Notifications</span><span class="tab-badge" id="notificationsTabBadge" hidden>0</span>
+</button>
+</nav>
 
-        <div class="customer-message-stream" id="customerMessageStream">
-            <div class="message-loading">
-                <i class="fa-regular fa-comments"></i>
-                <span>Loading messages...</span>
-            </div>
-        </div>
+<section class="message-center-panel active" id="messagesPanel" data-center-panel="messages">
+<div class="chat-workspace">
+<header class="customer-message-header">
+<div class="support-avatar"><img src="../../assets/images/logo.png" alt="Trips Wonder"></div>
+<div class="support-copy">
+<h2>Trips Wonder Support</h2>
+<p><span class="online-dot"></span> We’re here to help</p>
+</div>
+</header>
 
-        <form class="customer-message-composer" id="customerMessageForm">
-            <textarea
-                id="customerMessageInput"
-                rows="1"
-                maxlength="2000"
-                placeholder="Type your message..."
-                required></textarea>
-
-            <button type="submit" id="customerSendButton" aria-label="Send message">
-                <i class="fa-solid fa-paper-plane"></i>
-            </button>
-        </form>
-    </main>
+<div class="customer-message-stream" id="customerMessageStream">
+<div class="message-loading"><i class="fa-regular fa-comments"></i><span>Loading messages...</span></div>
 </div>
 
+<form class="customer-message-composer" id="customerMessageForm">
+<textarea id="customerMessageInput" rows="1" maxlength="2000" placeholder="Type your message..." required></textarea>
+<button type="submit" id="customerSendButton" aria-label="Send message"><i class="fa-solid fa-paper-plane"></i></button>
+</form>
+</div>
+</section>
+
+<section class="message-center-panel" id="notificationsPanel" data-center-panel="notifications" hidden>
+<div class="notifications-workspace">
+<section class="notifications-list-pane">
+<div class="notifications-toolbar">
+<label class="notification-search">
+<i class="fa-solid fa-magnifying-glass"></i>
+<input type="search" id="notificationSearch" placeholder="Search notifications..." autocomplete="off">
+</label>
+<button type="button" class="notification-filter-btn" id="notificationUnreadFilter" aria-pressed="false" title="Show unread only">
+<i class="fa-solid fa-sliders"></i>
+</button>
+</div>
+<div class="notifications-list" id="notificationsList">
+<div class="notification-empty-state"><i class="fa-regular fa-bell"></i><span>Loading notifications...</span></div>
+</div>
+<button type="button" class="mark-all-read-btn" id="markAllNotificationsRead" hidden>
+<i class="fa-regular fa-envelope-open"></i><span>Mark all as read</span>
+</button>
+</section>
+
+<aside class="notification-detail-pane" id="notificationDetailPane">
+<div class="notification-detail-empty" id="notificationDetailEmpty">
+<div class="detail-empty-icon"><i class="fa-regular fa-bell"></i></div>
+<h2>Your updates, all in one place</h2>
+<p>Select a notification to view its complete details.</p>
+</div>
+
+<article class="notification-detail-card" id="notificationDetailCard" hidden>
+<div class="notification-detail-icon" id="notificationDetailIcon"><i class="fa-solid fa-circle-info"></i></div>
+<p class="notification-detail-type" id="notificationDetailType">Update</p>
+<h2 id="notificationDetailTitle">Notification</h2>
+<p class="notification-detail-date" id="notificationDetailDate"></p>
+<div class="notification-detail-message" id="notificationDetailMessage"></div>
+<div class="notification-detail-meta" id="notificationDetailMeta" hidden></div>
+<a href="#" class="notification-detail-action" id="notificationDetailAction" hidden>
+<span>View details</span><i class="fa-solid fa-arrow-right"></i>
+</a>
+</article>
+</aside>
+</div>
+</section>
+</main>
+</div>
 <script type="module" src="../../assets/js/customer/message.js"></script>
 <script type="module" src="../../assets/js/customer/customer-nav.js"></script>
 </body>

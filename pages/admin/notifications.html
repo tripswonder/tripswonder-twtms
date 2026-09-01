@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Trips Wonder Travel Management System - Admin Notifications">
+
+    <title>Notifications | Trips Wonder Admin</title>
+
+    <link rel="icon" type="image/jpeg" href="../../favicon.jpg">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+    <link rel="stylesheet" href="../../assets/css/admin/notification.css">
+
+    <!-- SHARED ADMIN NAVIGATION -->
+    <link rel="stylesheet" href="/assets/css/shared/admin-nav.css">
+</head>
+
+<body class="admin-shared-nav-page">
+
+<div class="admin-wrapper">
+
+    <!-- SHARED ADMIN SIDEBAR -->
+    <aside id="adminSidebar" class="admin-sidebar"></aside>
+
+    <main class="main">
+
+        <section class="content notifications-page" id="adminNotificationsContent">
+
+            <header class="notifications-header">
+                <div class="notifications-heading">
+                    <span class="page-eyebrow">ADMIN CENTER</span>
+                    <h1>Notifications</h1>
+                    <p>New customer booking requests appear here automatically.</p>
+                </div>
+
+                <div class="notifications-header-actions">
+                    <button
+                        type="button"
+                        class="mark-read-button"
+                        id="markAllReadBtn"
+                        hidden>
+                        <i class="fa-regular fa-envelope-open"></i>
+                        <span>Mark all as read</span>
+                    </button>
+                </div>
+            </header>
+
+            <section class="notification-stats">
+
+                <article class="notification-stat-card">
+                    <div class="stat-icon blue">
+                        <i class="fa-regular fa-bell"></i>
+                    </div>
+
+                    <div>
+                        <span>Total Notifications</span>
+                        <strong id="totalNotifications">0</strong>
+                    </div>
+                </article>
+
+                <article class="notification-stat-card">
+                    <div class="stat-icon red">
+                        <i class="fa-solid fa-circle-exclamation"></i>
+                    </div>
+
+                    <div>
+                        <span>Unread</span>
+                        <strong id="unreadNotifications">0</strong>
+                    </div>
+                </article>
+
+                <article class="notification-stat-card">
+                    <div class="stat-icon green">
+                        <i class="fa-regular fa-calendar-plus"></i>
+                    </div>
+
+                    <div>
+                        <span>Today</span>
+                        <strong id="todayNotifications">0</strong>
+                    </div>
+                </article>
+
+                <article class="notification-stat-card">
+                    <div class="stat-icon orange">
+                        <i class="fa-regular fa-clock"></i>
+                    </div>
+
+                    <div>
+                        <span>Pending Bookings</span>
+                        <strong id="pendingBookings">0</strong>
+                    </div>
+                </article>
+
+            </section>
+
+            <section class="notification-workspace">
+
+                <section class="notification-list-panel">
+
+                    <div class="notification-toolbar">
+
+                        <label class="notification-search">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+
+                            <input
+                                type="search"
+                                id="notificationSearch"
+                                placeholder="Search customer, package or reference..."
+                                autocomplete="off">
+                        </label>
+
+                        <select
+                            id="notificationFilter"
+                            class="notification-filter"
+                            aria-label="Notification filter">
+                            <option value="all">All notifications</option>
+                            <option value="unread">Unread only</option>
+                            <option value="pending">Pending bookings</option>
+                            <option value="confirmed">Confirmed bookings</option>
+                        </select>
+
+                    </div>
+
+                    <div
+                        class="notification-list"
+                        id="notificationList">
+
+                        <div class="notification-loading">
+                            <i class="fa-solid fa-spinner fa-spin"></i>
+                            <span>Loading notifications...</span>
+                        </div>
+
+                    </div>
+
+                </section>
+
+                <aside
+                    class="notification-detail-panel"
+                    id="notificationDetailPanel">
+
+                    <div
+                        class="detail-empty"
+                        id="detailEmpty">
+
+                        <div class="detail-empty-icon">
+                            <i class="fa-regular fa-bell"></i>
+                        </div>
+
+                        <h2>Select a notification</h2>
+
+                        <p>
+                            Choose an item from the list to view
+                            the complete booking request details.
+                        </p>
+
+                    </div>
+
+                    <article
+                        class="detail-card"
+                        id="detailCard"
+                        hidden>
+
+                        <div class="detail-icon">
+                            <i class="fa-regular fa-calendar-plus"></i>
+                        </div>
+
+                        <span class="detail-type">
+                            NEW BOOKING REQUEST
+                        </span>
+
+                        <h2 id="detailTitle">
+                            Booking request
+                        </h2>
+
+                        <p
+                            class="detail-time"
+                            id="detailTime">
+                        </p>
+
+                        <div
+                            class="detail-message"
+                            id="detailMessage">
+                        </div>
+
+                        <div
+                            class="detail-grid"
+                            id="detailGrid">
+                        </div>
+
+                        <section
+                            class="notification-payment-review"
+                            id="notificationPaymentReview">
+
+                            <div class="notification-payment-review-head">
+                                <div>
+                                    <span class="notification-payment-label">
+                                        PAYMENT REVIEW
+                                    </span>
+                                    <h3>Review submitted payment</h3>
+                                </div>
+
+                                <span
+                                    class="notification-payment-state"
+                                    id="notificationPaymentState">
+                                    Pending Verification
+                                </span>
+                            </div>
+
+                            <label
+                                class="notification-admin-note"
+                                id="notificationAdminNoteWrap">
+                                <span>Verification Note</span>
+                                <textarea
+                                    id="notificationAdminNote"
+                                    rows="2"
+                                    maxlength="500"
+                                    placeholder="Optional admin note..."></textarea>
+                            </label>
+
+                            <div
+                                class="notification-payment-actions"
+                                id="notificationPaymentActions">
+
+                                <button
+                                    type="button"
+                                    class="notification-payment-btn decline"
+                                    id="declineNotificationPaymentBtn">
+                                    <i class="fa-regular fa-circle-xmark"></i>
+                                    <span>Decline Payment</span>
+                                </button>
+
+                                <button
+                                    type="button"
+                                    class="notification-payment-btn confirm"
+                                    id="confirmNotificationPaymentBtn">
+                                    <i class="fa-solid fa-circle-check"></i>
+                                    <span>Confirm Payment</span>
+                                </button>
+
+                            </div>
+
+                            <div
+                                class="notification-payment-result"
+                                id="notificationPaymentResult"
+                                hidden>
+                            </div>
+
+                        </section>
+
+                    </article>
+
+                </aside>
+
+            </section>
+
+        </section>
+
+    </main>
+
+</div>
+
+<script type="module" src="/assets/js/shared/admin-nav.js"></script>
+
+<script
+    type="module"
+    src="../../assets/js/admin/notification.js">
+</script>
+
+</body>
+</html>
