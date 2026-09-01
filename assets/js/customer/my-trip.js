@@ -1827,10 +1827,23 @@ function chooseCustomerTrip(bookings) {
             window.location.search
         ).get("booking");
 
+    const confirmedBookings =
+        bookings.filter(booking => {
+
+            const status =
+                normalizeLower(
+                    booking.bookingStatus ||
+                    booking.status ||
+                    booking.booking_status
+                );
+
+            return status === "confirmed";
+        });
+
     if (requestedBooking) {
 
         const requested =
-            bookings.find(booking =>
+            confirmedBookings.find(booking =>
                 booking.id === requestedBooking ||
                 getBookingReferenceValue(booking) === requestedBooking
             );
@@ -1843,19 +1856,13 @@ function chooseCustomerTrip(bookings) {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
+    /*
+     * My Trip must only expose bookings that have already been
+     * approved by Admin. Pending / payment-verification bookings
+     * stay hidden until bookingStatus becomes confirmed.
+     */
     const active =
-        bookings.filter(booking => {
-
-            const status =
-                String(
-                    getBookingStatus(booking)
-                ).toLowerCase();
-
-            return !(
-                status === "cancelled" ||
-                status === "canceled"
-            );
-        });
+        confirmedBookings;
 
     const upcoming =
         active
