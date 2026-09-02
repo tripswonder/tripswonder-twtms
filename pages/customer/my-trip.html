@@ -201,7 +201,7 @@
 
 
     <!-- =====================================================
-         NO TRIP
+         NO TRIP — PREMIUM EMPTY STATE
     ====================================================== -->
 
     <section
@@ -209,27 +209,69 @@
         id="noTripState"
         hidden
     >
+        <div class="no-trip-empty-card">
+            <div class="no-trip-illustration" aria-hidden="true">
+                <span class="travel-sun"></span>
+                <i class="fa-solid fa-umbrella-beach travel-palm travel-palm-left"></i>
+                <i class="fa-solid fa-suitcase-rolling travel-suitcase"></i>
+                <i class="fa-solid fa-umbrella-beach travel-palm travel-palm-right"></i>
+            </div>
 
-        <div class="no-trip-icon">
-            <i class="fa-solid fa-suitcase-rolling"></i>
+            <h2>No Upcoming Trip</h2>
+
+            <p>
+                Your next adventure starts here. Explore our tours<br class="desktop-only-break">
+                and book your next getaway with Trips Wonder.
+            </p>
+
+            <button
+                type="button"
+                id="exploreBtn"
+                class="primary-btn no-trip-explore-btn"
+            >
+                <i class="fa-regular fa-compass"></i>
+                <span>Explore Tours</span>
+            </button>
         </div>
 
-        <h2>
-            No Upcoming Trip
-        </h2>
+        <div class="why-book-section" aria-label="Why Book With Us">
+            <div class="why-book-heading">
+                <h3>Why Book With Us?</h3>
+                <span></span>
+            </div>
 
-        <p>
-            You don't have an upcoming booking yet.
-        </p>
+            <div class="why-book-grid">
+                <article class="why-book-card">
+                    <div class="why-book-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                    <strong>Legit &amp; Trusted</strong>
+                    <span>Registered travel &amp; tour operator</span>
+                    <i class="why-book-accent" aria-hidden="true"></i>
+                </article>
 
-        <button
-            type="button"
-            id="exploreBtn"
-            class="primary-btn"
-        >
-            Explore Tours
-        </button>
+                <article class="why-book-card">
+                    <div class="why-book-icon"><i class="fa-solid fa-calendar-check"></i></div>
+                    <strong>Easy Booking</strong>
+                    <span>Simple and convenient booking process</span>
+                    <i class="why-book-accent" aria-hidden="true"></i>
+                </article>
 
+                
+
+                <article class="why-book-card">
+                    <div class="why-book-icon"><i class="fa-solid fa-users"></i></div>
+                    <strong>Joiners &amp; Exclusive</strong>
+                    <span>Flexible options for solo travelers and groups</span>
+                    <i class="why-book-accent" aria-hidden="true"></i>
+                </article>
+
+                <article class="why-book-card">
+                    <div class="why-book-icon"><i class="fa-solid fa-list-check"></i></div>
+                    <strong>Organized Trip Details</strong>
+                    <span>Booking, itinerary, pickup, and trip information in one place</span>
+                    <i class="why-book-accent" aria-hidden="true"></i>
+                </article>
+            </div>
+        </div>
     </section>
 
 

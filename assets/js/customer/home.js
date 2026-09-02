@@ -11,7 +11,8 @@
 import {
 
     auth,
-    db
+    db,
+    storage
 
 } from "../firebase/firebase-config.js";
 
@@ -29,10 +30,25 @@ import {
     getDocs,
     doc,
     getDoc,
+    setDoc,
+    updateDoc,
+    deleteDoc,
+    onSnapshot,
     query,
-    where
+    where,
+    serverTimestamp
 
 } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+
+
+import {
+
+    ref as storageRef,
+    uploadBytes,
+    getDownloadURL,
+    deleteObject
+
+} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-storage.js";
 
 
 /* ==========================================================
@@ -202,6 +218,42 @@ let activeCategory =
 
 let currentSearch =
     "";
+
+
+let customerPosts =
+    [];
+
+
+let customerPostsUnsubscribe =
+    null;
+
+
+let selectedPostFiles =
+    [];
+
+
+/* ==========================================================
+   FACEBOOK-STYLE TRAVEL HOME — MOCKUP ELEMENTS
+   ========================================================== */
+
+const homeStories = document.getElementById("homeStories");
+const tripsWonderFeed = document.getElementById("tripsWonderFeed");
+const popularTours = document.getElementById("popularTours");
+const upcomingDepartures = document.getElementById("upcomingDepartures");
+const homeShortcutTours = document.getElementById("homeShortcutTours");
+const twSearchClear = document.getElementById("searchCloseButton");
+
+const openPostComposerButton = document.getElementById("openPostComposer");
+const openPostPhotoButton = document.getElementById("openPostPhoto");
+const customerPostModal = document.getElementById("customerPostModal");
+const customerPostCaption = document.getElementById("customerPostCaption");
+const customerPostFiles = document.getElementById("customerPostFiles");
+const customerPostPreview = document.getElementById("customerPostPreview");
+const choosePostPhotos = document.getElementById("choosePostPhotos");
+const publishCustomerPostButton = document.getElementById("publishCustomerPost");
+const customerPostMessage = document.getElementById("customerPostMessage");
+const postAuthorName = document.getElementById("postAuthorName");
+
 
 
 /* ==========================================================
@@ -625,6 +677,12 @@ searchInput
 
             renderCustomerPackages();
 
+            renderApprovedHomeMockup();
+
+            if (twSearchClear) {
+                twSearchClear.hidden = !currentSearch;
+            }
+
         }
     );
 
@@ -726,6 +784,8 @@ async function loadCustomerPackages() {
     populateCategories();
 
     renderCustomerPackages();
+
+    renderApprovedHomeMockup();
 
 }
 
@@ -906,6 +966,1992 @@ function getVisiblePackages() {
 }
 
 
+
+
+
+
+/* ==========================================================
+   CENTRALIZED BRANDING — ADMIN PAGE SETUP
+   Source: systemSettings/general.businessLogo
+   ========================================================== */
+
+const DEFAULT_BUSINESS_LOGO =
+    "../../assets/images/logo.png";
+
+let currentBusinessLogo =
+    DEFAULT_BUSINESS_LOGO;
+
+
+function applyBusinessLogo(
+    logoUrl = DEFAULT_BUSINESS_LOGO
+) {
+
+    currentBusinessLogo =
+        String(
+            logoUrl ||
+            DEFAULT_BUSINESS_LOGO
+        ).trim() ||
+        DEFAULT_BUSINESS_LOGO;
+
+
+    document
+        .querySelectorAll(
+            "[data-business-logo]"
+        )
+        .forEach(
+            image => {
+
+                if (
+                    image.tagName !==
+                    "IMG"
+                ) {
+                    return;
+                }
+
+
+                image.src =
+                    currentBusinessLogo;
+
+
+                image.onerror =
+                    () => {
+
+                        image.onerror =
+                            null;
+
+                        image.src =
+                            DEFAULT_BUSINESS_LOGO;
+
+                    };
+
+            }
+        );
+
+}
+
+
+function startBusinessBrandingListener() {
+
+    const settingsRef =
+        doc(
+            db,
+            "systemSettings",
+            "general"
+        );
+
+
+    return onSnapshot(
+        settingsRef,
+        snapshot => {
+
+            const settings =
+                snapshot.exists()
+                    ? snapshot.data()
+                    : {};
+
+
+            applyBusinessLogo(
+                settings.businessLogo ||
+                DEFAULT_BUSINESS_LOGO
+            );
+
+        },
+        error => {
+
+            console.error(
+                "HOME BRANDING ERROR:",
+                error
+            );
+
+
+            applyBusinessLogo(
+                DEFAULT_BUSINESS_LOGO
+            );
+
+        }
+    );
+
+}
+
+
+applyBusinessLogo();
+startBusinessBrandingListener();
+
+
+/* ==========================================================
+   APPROVED HOME MOCKUP RENDERERS
+   ========================================================== */
+
+function getPackageScheduleText(packageItem) {
+
+    const direct =
+        packageItem?.travelDate ||
+        packageItem?.departureDate ||
+        packageItem?.schedule ||
+        packageItem?.tourDate ||
+        packageItem?.date ||
+        "";
+
+    if (direct) {
+
+        const formatted =
+            formatDate(direct);
+
+        return formatted || String(direct).trim();
+
+    }
+
+    return getPackageDuration(packageItem) || "Schedule available";
+
+}
+
+
+function getPackageShortLocation(packageItem) {
+
+    return String(
+        packageItem?.location ||
+        packageItem?.category ||
+        "Philippines"
+    ).trim();
+
+}
+
+
+function renderMockupStories() {
+
+    if (!homeStories) {
+        return;
+    }
+
+    const createStory =
+        homeStories.querySelector(".tw-create-story")?.outerHTML ||
+        `
+            <button type="button" class="tw-create-story">
+                <span><i class="fa-solid fa-plus"></i></span>
+                <strong>Create<br>story</strong>
+            </button>
+        `;
+
+    const packages =
+        getVisiblePackages().slice(0, 5);
+
+    homeStories.innerHTML = createStory;
+
+    packages.forEach(
+        packageItem => {
+
+            const image =
+                getPackageImage(packageItem);
+
+            const card =
+                document.createElement("button");
+
+            card.type = "button";
+            card.className = "tw-story-card";
+
+            card.innerHTML = `
+                ${
+                    image
+                        ? `
+                            <img
+                                src="${escapeHtml(image)}"
+                                alt="${escapeHtml(packageItem.name || "Tour")}"
+                                loading="lazy">
+                          `
+                        : `
+                            <span class="tw-story-placeholder">
+                                <i class="fa-solid fa-image"></i>
+                            </span>
+                          `
+                }
+
+                <span class="tw-story-logo">
+                    <img src="${escapeHtml(currentBusinessLogo)}" alt="" data-business-logo>
+                </span>
+
+                <span class="tw-story-gradient"></span>
+
+                <span class="tw-story-copy">
+                    <strong>${escapeHtml(packageItem.name || "Tour Package")}</strong>
+                    <small>${escapeHtml(getPackageScheduleText(packageItem))}</small>
+                </span>
+            `;
+
+            card.addEventListener(
+                "click",
+                () => openPackageDetails(packageItem)
+            );
+
+            homeStories.appendChild(card);
+
+        }
+    );
+
+}
+
+
+
+/* ==========================================================
+   CUSTOMER COMMUNITY POSTS
+   ========================================================== */
+
+function getCustomerAuthorName() {
+
+    const first =
+        String(
+            currentProfile?.firstName ||
+            currentProfile?.firstname ||
+            currentProfile?.givenName ||
+            ""
+        ).trim();
+
+    const last =
+        String(
+            currentProfile?.lastName ||
+            currentProfile?.lastname ||
+            currentProfile?.surname ||
+            ""
+        ).trim();
+
+    const full =
+        [first, last]
+            .filter(Boolean)
+            .join(" ")
+            .trim();
+
+    return (
+        full ||
+        String(
+            currentProfile?.displayName ||
+            currentProfile?.fullName ||
+            currentProfile?.name ||
+            currentUser?.displayName ||
+            getDisplayName(currentUser, currentProfile)
+        ).trim() ||
+        "Traveler"
+    );
+
+}
+
+
+function setPostMessage(message = "", type = "") {
+
+    if (!customerPostMessage) {
+        return;
+    }
+
+    customerPostMessage.textContent =
+        String(message || "");
+
+    customerPostMessage.dataset.type =
+        type || "";
+
+}
+
+
+function resetPostComposer() {
+
+    selectedPostFiles = [];
+
+    if (customerPostCaption) {
+        customerPostCaption.value = "";
+    }
+
+    if (customerPostFiles) {
+        customerPostFiles.value = "";
+    }
+
+    if (customerPostPreview) {
+        customerPostPreview.innerHTML = "";
+        customerPostPreview.hidden = true;
+    }
+
+    setPostMessage("");
+
+}
+
+
+function openCustomerPostModal(openFiles = false) {
+
+    if (!customerPostModal) {
+        return;
+    }
+
+    if (postAuthorName) {
+        postAuthorName.textContent =
+            getCustomerAuthorName();
+    }
+
+    customerPostModal.hidden = false;
+    document.body.classList.add("tw-modal-open");
+
+    requestAnimationFrame(
+        () => {
+
+            if (openFiles) {
+                customerPostFiles?.click();
+            } else {
+                customerPostCaption?.focus();
+            }
+
+        }
+    );
+
+}
+
+
+function closeCustomerPostModal() {
+
+    if (!customerPostModal) {
+        return;
+    }
+
+    customerPostModal.hidden = true;
+    document.body.classList.remove("tw-modal-open");
+    resetPostComposer();
+
+}
+
+
+function removeSelectedPostFile(index) {
+
+    selectedPostFiles.splice(index, 1);
+    renderSelectedPostFiles();
+
+}
+
+
+function renderSelectedPostFiles() {
+
+    if (!customerPostPreview) {
+        return;
+    }
+
+    customerPostPreview.innerHTML = "";
+
+    if (!selectedPostFiles.length) {
+        customerPostPreview.hidden = true;
+        return;
+    }
+
+    customerPostPreview.hidden = false;
+    customerPostPreview.className =
+        `tw-post-preview tw-post-preview-${Math.min(selectedPostFiles.length, 5)}`;
+
+    selectedPostFiles.forEach(
+        (file, index) => {
+
+            const item =
+                document.createElement("div");
+
+            item.className =
+                "tw-post-preview-item";
+
+            const image =
+                document.createElement("img");
+
+            const objectUrl =
+                URL.createObjectURL(file);
+
+            image.src =
+                objectUrl;
+
+            image.alt =
+                `Selected photo ${index + 1}`;
+
+            image.onload =
+                () => URL.revokeObjectURL(objectUrl);
+
+            const remove =
+                document.createElement("button");
+
+            remove.type =
+                "button";
+
+            remove.className =
+                "tw-post-preview-remove";
+
+            remove.setAttribute(
+                "aria-label",
+                `Remove photo ${index + 1}`
+            );
+
+            remove.innerHTML =
+                '<i class="fa-solid fa-xmark"></i>';
+
+            remove.addEventListener(
+                "click",
+                () => removeSelectedPostFile(index)
+            );
+
+            item.append(
+                image,
+                remove
+            );
+
+            customerPostPreview.appendChild(item);
+
+        }
+    );
+
+}
+
+
+function validatePostFiles(fileList) {
+
+    const incoming =
+        Array.from(fileList || []);
+
+    const allowedTypes =
+        new Set([
+            "image/jpeg",
+            "image/png",
+            "image/webp"
+        ]);
+
+    const valid = [];
+
+    for (const file of incoming) {
+
+        if (!allowedTypes.has(file.type)) {
+
+            setPostMessage(
+                "JPG, PNG or WEBP photos only.",
+                "error"
+            );
+
+            continue;
+
+        }
+
+        if (file.size > 5 * 1024 * 1024) {
+
+            setPostMessage(
+                `${file.name} is larger than 5 MB.`,
+                "error"
+            );
+
+            continue;
+
+        }
+
+        valid.push(file);
+
+    }
+
+    const merged =
+        [...selectedPostFiles, ...valid]
+            .slice(0, 5);
+
+    if (
+        selectedPostFiles.length +
+        valid.length >
+        5
+    ) {
+
+        setPostMessage(
+            "Maximum of 5 photos per post.",
+            "error"
+        );
+
+    } else if (valid.length) {
+
+        setPostMessage("");
+
+    }
+
+    selectedPostFiles =
+        merged;
+
+    renderSelectedPostFiles();
+
+}
+
+
+function getPostFileExtension(file) {
+
+    const type =
+        String(file?.type || "");
+
+    if (type === "image/png") {
+        return "png";
+    }
+
+    if (type === "image/webp") {
+        return "webp";
+    }
+
+    return "jpg";
+
+}
+
+
+async function uploadCustomerPostPhotos(postId) {
+
+    const imageUrls = [];
+    const imageStoragePaths = [];
+
+    for (
+        let index = 0;
+        index < selectedPostFiles.length;
+        index += 1
+    ) {
+
+        const file =
+            selectedPostFiles[index];
+
+        const extension =
+            getPostFileExtension(file);
+
+        const path =
+            `customerPosts/${currentUser.uid}/${postId}/${Date.now()}-${index + 1}.${extension}`;
+
+        const fileRef =
+            storageRef(
+                storage,
+                path
+            );
+
+        await uploadBytes(
+            fileRef,
+            file,
+            {
+                contentType:
+                    file.type
+            }
+        );
+
+        imageUrls.push(
+            await getDownloadURL(fileRef)
+        );
+
+        imageStoragePaths.push(path);
+
+    }
+
+    return {
+        imageUrls,
+        imageStoragePaths
+    };
+
+}
+
+
+async function publishCustomerPost() {
+
+    if (
+        !currentUser ||
+        !currentProfile ||
+        !publishCustomerPostButton
+    ) {
+        return;
+    }
+
+    const caption =
+        String(
+            customerPostCaption?.value ||
+            ""
+        ).trim();
+
+    if (
+        !caption &&
+        !selectedPostFiles.length
+    ) {
+
+        setPostMessage(
+            "Write something or add at least one photo.",
+            "error"
+        );
+
+        return;
+
+    }
+
+    if (caption.length > 1500) {
+
+        setPostMessage(
+            "Caption is too long.",
+            "error"
+        );
+
+        return;
+
+    }
+
+    publishCustomerPostButton.disabled =
+        true;
+
+    publishCustomerPostButton.innerHTML =
+        '<i class="fa-solid fa-spinner fa-spin"></i> Posting...';
+
+    setPostMessage(
+        selectedPostFiles.length
+            ? "Uploading photos..."
+            : "Publishing post..."
+    );
+
+    const postRef =
+        doc(
+            collection(
+                db,
+                "customerPosts"
+            )
+        );
+
+    let uploadedPaths = [];
+
+    try {
+
+        const uploads =
+            await uploadCustomerPostPhotos(
+                postRef.id
+            );
+
+        uploadedPaths =
+            uploads.imageStoragePaths;
+
+        await setDoc(
+            postRef,
+            {
+                authorUid:
+                    currentUser.uid,
+
+                authorName:
+                    getCustomerAuthorName(),
+
+                authorFirstName:
+                    getDisplayName(
+                        currentUser,
+                        currentProfile
+                    ),
+
+                caption,
+
+                imageUrls:
+                    uploads.imageUrls,
+
+                imageStoragePaths:
+                    uploads.imageStoragePaths,
+
+                status:
+                    "active",
+
+                createdAt:
+                    serverTimestamp(),
+
+                createdAtMs:
+                    Date.now(),
+
+                updatedAt:
+                    serverTimestamp(),
+
+                reportCount:
+                    0,
+
+                warningCount:
+                    0
+            }
+        );
+
+        closeCustomerPostModal();
+
+    } catch (error) {
+
+        console.error(
+            "CUSTOMER POST ERROR:",
+            error
+        );
+
+        for (const path of uploadedPaths) {
+
+            try {
+                await deleteObject(
+                    storageRef(storage, path)
+                );
+            } catch (cleanupError) {
+                console.warn(
+                    "POST PHOTO CLEANUP ERROR:",
+                    cleanupError
+                );
+            }
+
+        }
+
+        setPostMessage(
+            "Unable to publish your post. Please try again.",
+            "error"
+        );
+
+    } finally {
+
+        publishCustomerPostButton.disabled =
+            false;
+
+        publishCustomerPostButton.textContent =
+            "Post";
+
+    }
+
+}
+
+
+function startCustomerPostsListener() {
+
+    if (customerPostsUnsubscribe) {
+        customerPostsUnsubscribe();
+    }
+
+    const activeCustomerPostsQuery =
+        query(
+            collection(
+                db,
+                "customerPosts"
+            ),
+            where(
+                "status",
+                "==",
+                "active"
+            )
+        );
+
+    customerPostsUnsubscribe =
+        onSnapshot(
+            activeCustomerPostsQuery,
+            snapshot => {
+
+                customerPosts =
+                    snapshot.docs
+                        .map(
+                            postDoc => ({
+                                id:
+                                    postDoc.id,
+                                ...postDoc.data()
+                            })
+                        )
+                        .filter(
+                            post =>
+                                normalizeText(
+                                    post.status ||
+                                    "active"
+                                ) === "active"
+                        )
+                        .sort(
+                            (a, b) => {
+
+                                const aTime =
+                                    Number(
+                                        a.createdAtMs ||
+                                        a.createdAt?.toMillis?.() ||
+                                        0
+                                    );
+
+                                const bTime =
+                                    Number(
+                                        b.createdAtMs ||
+                                        b.createdAt?.toMillis?.() ||
+                                        0
+                                    );
+
+                                return bTime - aTime;
+
+                            }
+                        );
+
+                renderMockupFeed();
+
+            },
+            error => {
+
+                console.error(
+                    "CUSTOMER POSTS LISTENER ERROR:",
+                    error
+                );
+
+            }
+        );
+
+}
+
+
+function getVisibleCustomerPosts() {
+
+    if (!currentSearch) {
+        return customerPosts;
+    }
+
+    return customerPosts.filter(
+        post => {
+
+            const haystack =
+                normalizeText(
+                    [
+                        post.authorName,
+                        post.authorFirstName,
+                        post.caption
+                    ].join(" ")
+                );
+
+            return haystack.includes(
+                currentSearch
+            );
+
+        }
+    );
+
+}
+
+
+function formatCustomerPostTime(post) {
+
+    const millis =
+        Number(
+            post?.createdAtMs ||
+            post?.createdAt?.toMillis?.() ||
+            0
+        );
+
+    if (!millis) {
+        return "Just now";
+    }
+
+    const diff =
+        Math.max(
+            0,
+            Date.now() - millis
+        );
+
+    const minute =
+        60 * 1000;
+
+    const hour =
+        60 * minute;
+
+    const day =
+        24 * hour;
+
+    if (diff < minute) {
+        return "Just now";
+    }
+
+    if (diff < hour) {
+        return `${Math.floor(diff / minute)}m`;
+    }
+
+    if (diff < day) {
+        return `${Math.floor(diff / hour)}h`;
+    }
+
+    if (diff < 7 * day) {
+        return `${Math.floor(diff / day)}d`;
+    }
+
+    return new Date(millis)
+        .toLocaleDateString(
+            "en-PH",
+            {
+                month:
+                    "short",
+                day:
+                    "numeric",
+                year:
+                    new Date(millis).getFullYear() !== new Date().getFullYear()
+                        ? "numeric"
+                        : undefined
+            }
+        );
+
+}
+
+
+async function deleteOwnCustomerPost(post) {
+
+    if (
+        !post ||
+        !currentUser ||
+        post.authorUid !== currentUser.uid
+    ) {
+        return;
+    }
+
+    const confirmed =
+        window.confirm(
+            "Delete this post?"
+        );
+
+    if (!confirmed) {
+        return;
+    }
+
+    try {
+
+        const paths =
+            Array.isArray(
+                post.imageStoragePaths
+            )
+                ? post.imageStoragePaths
+                : [];
+
+        for (const path of paths) {
+
+            try {
+
+                await deleteObject(
+                    storageRef(
+                        storage,
+                        path
+                    )
+                );
+
+            } catch (photoError) {
+
+                console.warn(
+                    "DELETE POST PHOTO ERROR:",
+                    photoError
+                );
+
+            }
+
+        }
+
+        await updateDoc(
+            doc(
+                db,
+                "customerPosts",
+                post.id
+            ),
+            {
+                status:
+                    "deleted",
+
+                updatedAt:
+                    serverTimestamp()
+            }
+        );
+
+    } catch (error) {
+
+        console.error(
+            "DELETE CUSTOMER POST ERROR:",
+            error
+        );
+
+        window.alert(
+            "Unable to delete the post right now."
+        );
+
+    }
+
+}
+
+
+async function toggleCustomerPostLike(post, button) {
+
+    if (
+        !currentUser ||
+        !post
+    ) {
+        return;
+    }
+
+    const likeRef =
+        doc(
+            db,
+            "customerPosts",
+            post.id,
+            "likes",
+            currentUser.uid
+        );
+
+    try {
+
+        const snapshot =
+            await getDoc(
+                likeRef
+            );
+
+        if (snapshot.exists()) {
+
+            await deleteDoc(
+                likeRef
+            );
+
+            button?.classList.remove(
+                "is-liked"
+            );
+
+        } else {
+
+            await setDoc(
+                likeRef,
+                {
+                    userUid:
+                        currentUser.uid,
+
+                    createdAt:
+                        serverTimestamp()
+                }
+            );
+
+            button?.classList.add(
+                "is-liked"
+            );
+
+        }
+
+    } catch (error) {
+
+        console.error(
+            "LIKE POST ERROR:",
+            error
+        );
+
+    }
+
+}
+
+
+async function addCustomerPostComment(post, input, commentsList) {
+
+    if (
+        !currentUser ||
+        !post ||
+        !input
+    ) {
+        return;
+    }
+
+    const text =
+        String(
+            input.value ||
+            ""
+        ).trim();
+
+    if (!text) {
+        return;
+    }
+
+    if (text.length > 500) {
+        window.alert(
+            "Comment is too long."
+        );
+        return;
+    }
+
+    const commentRef =
+        doc(
+            collection(
+                db,
+                "customerPosts",
+                post.id,
+                "comments"
+            )
+        );
+
+    try {
+
+        await setDoc(
+            commentRef,
+            {
+                authorUid:
+                    currentUser.uid,
+
+                authorName:
+                    getCustomerAuthorName(),
+
+                text,
+
+                createdAt:
+                    serverTimestamp(),
+
+                createdAtMs:
+                    Date.now()
+            }
+        );
+
+        input.value =
+            "";
+
+        await loadCustomerPostComments(
+            post,
+            commentsList
+        );
+
+    } catch (error) {
+
+        console.error(
+            "COMMENT POST ERROR:",
+            error
+        );
+
+    }
+
+}
+
+
+async function loadCustomerPostComments(post, commentsList) {
+
+    if (
+        !post ||
+        !commentsList
+    ) {
+        return;
+    }
+
+    commentsList.innerHTML =
+        '<span class="tw-comments-loading">Loading comments...</span>';
+
+    try {
+
+        const snapshot =
+            await getDocs(
+                collection(
+                    db,
+                    "customerPosts",
+                    post.id,
+                    "comments"
+                )
+            );
+
+        const comments =
+            snapshot.docs
+                .map(
+                    commentDoc => ({
+                        id:
+                            commentDoc.id,
+                        ...commentDoc.data()
+                    })
+                )
+                .sort(
+                    (a, b) =>
+                        Number(
+                            a.createdAtMs ||
+                            a.createdAt?.toMillis?.() ||
+                            0
+                        ) -
+                        Number(
+                            b.createdAtMs ||
+                            b.createdAt?.toMillis?.() ||
+                            0
+                        )
+                )
+                .slice(-20);
+
+        if (!comments.length) {
+
+            commentsList.innerHTML =
+                '<span class="tw-comments-empty">No comments yet.</span>';
+
+            return;
+
+        }
+
+        commentsList.innerHTML =
+            comments.map(
+                comment => `
+                    <div class="tw-comment-item">
+                        <span class="tw-comment-avatar">
+                            <i class="fa-solid fa-user"></i>
+                        </span>
+                        <div>
+                            <strong>${escapeHtml(comment.authorName || "Traveler")}</strong>
+                            <p>${escapeHtml(comment.text || "")}</p>
+                        </div>
+                    </div>
+                `
+            ).join("");
+
+    } catch (error) {
+
+        console.error(
+            "LOAD COMMENTS ERROR:",
+            error
+        );
+
+        commentsList.innerHTML =
+            '<span class="tw-comments-empty">Unable to load comments.</span>';
+
+    }
+
+}
+
+
+async function shareCustomerPost(post) {
+
+    const shareText =
+        String(
+            post?.caption ||
+            "Check out this travel post on Trips Wonder."
+        ).trim();
+
+    const shareData = {
+        title:
+            "Trips Wonder Travel Post",
+        text:
+            shareText,
+        url:
+            window.location.href
+    };
+
+    try {
+
+        if (navigator.share) {
+
+            await navigator.share(
+                shareData
+            );
+
+            return;
+
+        }
+
+        await navigator.clipboard.writeText(
+            `${shareText}\n${window.location.href}`
+        );
+
+        window.alert(
+            "Post link copied."
+        );
+
+    } catch (error) {
+
+        if (error?.name !== "AbortError") {
+
+            console.error(
+                "SHARE POST ERROR:",
+                error
+            );
+
+        }
+
+    }
+
+}
+
+
+function createCustomerPostCard(post) {
+
+    const images =
+        Array.isArray(
+            post.imageUrls
+        )
+            ? post.imageUrls
+                .filter(Boolean)
+                .slice(0, 5)
+            : [];
+
+    const imageMarkup =
+        images.length
+            ? `
+                <div class="tw-community-gallery tw-community-gallery-${Math.min(images.length, 5)}">
+                    ${images.map(
+                        (url, index) => `
+                            <button
+                                type="button"
+                                class="tw-community-photo"
+                                data-post-photo="${index}">
+                                <img
+                                    src="${escapeHtml(url)}"
+                                    alt="Travel photo ${index + 1}"
+                                    loading="lazy">
+                            </button>
+                        `
+                    ).join("")}
+                </div>
+              `
+            : "";
+
+    const isOwner =
+        post.authorUid ===
+        currentUser?.uid;
+
+    const card =
+        document.createElement(
+            "article"
+        );
+
+    card.className =
+        "tw-feed-card tw-community-post";
+
+    card.dataset.postId =
+        post.id;
+
+    card.innerHTML = `
+        <header class="tw-feed-card-head">
+            <span class="tw-community-avatar">
+                <i class="fa-solid fa-user"></i>
+            </span>
+
+            <span class="tw-feed-brand-copy">
+                <strong>${escapeHtml(post.authorName || post.authorFirstName || "Traveler")}</strong>
+                <small>${escapeHtml(formatCustomerPostTime(post))} · <i class="fa-solid fa-earth-americas"></i></small>
+            </span>
+
+            ${
+                isOwner
+                    ? `
+                        <button type="button" class="tw-feed-more" data-delete-post aria-label="Delete your post" title="Delete post">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                      `
+                    : `
+                        <button type="button" class="tw-feed-more" aria-label="Post options" title="Post options">
+                            <i class="fa-solid fa-ellipsis"></i>
+                        </button>
+                      `
+            }
+        </header>
+
+        ${
+            post.caption
+                ? `
+                    <div class="tw-community-caption">
+                        <p>${escapeHtml(post.caption)}</p>
+                    </div>
+                  `
+                : ""
+        }
+
+        ${imageMarkup}
+
+        <div class="tw-feed-actions tw-community-actions">
+            <button type="button" data-like-post>
+                <i class="fa-regular fa-thumbs-up"></i>
+                <span>Like</span>
+            </button>
+
+            <button type="button" data-comment-post>
+                <i class="fa-regular fa-comment"></i>
+                <span>Comment</span>
+            </button>
+
+            <button type="button" data-share-post>
+                <i class="fa-solid fa-share"></i>
+                <span>Share</span>
+            </button>
+        </div>
+
+        <div class="tw-comment-panel" hidden>
+            <div class="tw-comment-list"></div>
+
+            <div class="tw-comment-compose">
+                <span class="tw-comment-avatar">
+                    <i class="fa-solid fa-user"></i>
+                </span>
+
+                <input
+                    type="text"
+                    maxlength="500"
+                    placeholder="Write a comment...">
+
+                <button type="button" aria-label="Send comment">
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    `;
+
+    card.querySelector(
+        "[data-delete-post]"
+    )?.addEventListener(
+        "click",
+        () => deleteOwnCustomerPost(post)
+    );
+
+    const likeButton =
+        card.querySelector(
+            "[data-like-post]"
+        );
+
+    likeButton?.addEventListener(
+        "click",
+        () => toggleCustomerPostLike(
+            post,
+            likeButton
+        )
+    );
+
+    const commentPanel =
+        card.querySelector(
+            ".tw-comment-panel"
+        );
+
+    const commentsList =
+        card.querySelector(
+            ".tw-comment-list"
+        );
+
+    const commentInput =
+        card.querySelector(
+            ".tw-comment-compose input"
+        );
+
+    const commentSend =
+        card.querySelector(
+            ".tw-comment-compose button"
+        );
+
+    card.querySelector(
+        "[data-comment-post]"
+    )?.addEventListener(
+        "click",
+        async () => {
+
+            const opening =
+                commentPanel?.hidden;
+
+            if (commentPanel) {
+                commentPanel.hidden =
+                    !opening;
+            }
+
+            if (opening) {
+
+                await loadCustomerPostComments(
+                    post,
+                    commentsList
+                );
+
+                commentInput?.focus();
+
+            }
+
+        }
+    );
+
+    commentSend?.addEventListener(
+        "click",
+        () => addCustomerPostComment(
+            post,
+            commentInput,
+            commentsList
+        )
+    );
+
+    commentInput?.addEventListener(
+        "keydown",
+        event => {
+
+            if (
+                event.key === "Enter" &&
+                !event.shiftKey
+            ) {
+
+                event.preventDefault();
+
+                addCustomerPostComment(
+                    post,
+                    commentInput,
+                    commentsList
+                );
+
+            }
+
+        }
+    );
+
+    card.querySelector(
+        "[data-share-post]"
+    )?.addEventListener(
+        "click",
+        () => shareCustomerPost(post)
+    );
+
+    return card;
+
+}
+
+
+openPostComposerButton
+    ?.addEventListener(
+        "click",
+        () => openCustomerPostModal(false)
+    );
+
+
+openPostPhotoButton
+    ?.addEventListener(
+        "click",
+        () => openCustomerPostModal(true)
+    );
+
+
+choosePostPhotos
+    ?.addEventListener(
+        "click",
+        () => customerPostFiles?.click()
+    );
+
+
+customerPostFiles
+    ?.addEventListener(
+        "change",
+        event => validatePostFiles(
+            event.target.files
+        )
+    );
+
+
+publishCustomerPostButton
+    ?.addEventListener(
+        "click",
+        publishCustomerPost
+    );
+
+
+customerPostModal
+    ?.querySelectorAll(
+        "[data-close-post-modal]"
+    )
+    .forEach(
+        element => element.addEventListener(
+            "click",
+            closeCustomerPostModal
+        )
+    );
+
+
+document.addEventListener(
+    "keydown",
+    event => {
+
+        if (
+            event.key === "Escape" &&
+            customerPostModal &&
+            !customerPostModal.hidden
+        ) {
+
+            closeCustomerPostModal();
+
+        }
+
+    }
+);
+
+
+function createFeedCard(packageItem, index) {
+
+    const image =
+        getPackageImage(packageItem);
+
+    const gallery =
+        getPackageGallery(packageItem);
+
+    const images =
+        gallery.length
+            ? gallery.slice(0, 3)
+            : image
+                ? [image]
+                : [];
+
+    const duration =
+        getPackageDuration(packageItem);
+
+    const location =
+        getPackageShortLocation(packageItem);
+
+    const about =
+        String(
+            packageItem?.description ||
+            packageItem?.about ||
+            "Discover this Trips Wonder tour package and plan your next adventure."
+        ).trim();
+
+    const inclusions =
+        normalizeDetailArray(packageItem?.inclusions)
+            .slice(0, 4);
+
+    const photoMarkup =
+        images.length
+            ? `
+                <div class="tw-feed-gallery tw-feed-gallery-${Math.min(images.length, 3)}">
+                    ${images.map((photo, photoIndex) => `
+                        <button
+                            type="button"
+                            class="tw-feed-photo"
+                            data-feed-photo="${photoIndex}">
+                            <img
+                                src="${escapeHtml(photo)}"
+                                alt="${escapeHtml(packageItem.name || "Tour")} photo"
+                                loading="lazy">
+                            ${
+                                photoIndex === 2 && gallery.length > 3
+                                    ? `<span class="tw-more-photos">+${gallery.length - 3}</span>`
+                                    : ""
+                            }
+                        </button>
+                    `).join("")}
+                </div>
+              `
+            : `
+                <button type="button" class="tw-feed-gallery tw-feed-gallery-empty">
+                    <i class="fa-solid fa-image"></i>
+                </button>
+              `;
+
+    const card =
+        document.createElement("article");
+
+    card.className =
+        "tw-feed-card";
+
+    card.innerHTML = `
+        <header class="tw-feed-card-head">
+            <span class="tw-feed-brand-avatar">
+                <img src="${escapeHtml(currentBusinessLogo)}" alt="Trips Wonder" data-business-logo>
+            </span>
+
+            <span class="tw-feed-brand-copy">
+                <strong>Trips Wonder Travel &amp; Tours</strong>
+                <small>${index === 0 ? "2h" : `${index + 1}d`} · <i class="fa-solid fa-earth-americas"></i></small>
+            </span>
+
+            <button type="button" class="tw-feed-more" aria-label="More options">
+                <i class="fa-solid fa-ellipsis"></i>
+            </button>
+        </header>
+
+        <div class="tw-feed-body">
+            <div class="tw-feed-package-head">
+                <div>
+                    <h3>🏝️ ${escapeHtml(packageItem.name || "Tour Package")} ${duration ? `– ${escapeHtml(duration)}` : ""}</h3>
+                    <strong class="tw-feed-date">${escapeHtml(getPackageScheduleText(packageItem))}</strong>
+                </div>
+
+                <div class="tw-feed-price-box">
+                    <strong>₱${formatMoney(packageItem.price)}</strong>
+                    <span>/person</span>
+                </div>
+            </div>
+
+            <p class="tw-feed-description">
+                ${escapeHtml(about)}
+            </p>
+
+            ${
+                inclusions.length
+                    ? `
+                        <div class="tw-feed-inclusions">
+                            ${inclusions.map(item => `
+                                <span><i class="fa-solid fa-square-check"></i>${escapeHtml(item)}</span>
+                            `).join("")}
+                        </div>
+                      `
+                    : `
+                        <div class="tw-feed-inclusions">
+                            <span><i class="fa-solid fa-location-dot"></i>${escapeHtml(location)}</span>
+                            ${duration ? `<span><i class="fa-solid fa-clock"></i>${escapeHtml(duration)}</span>` : ""}
+                        </div>
+                      `
+            }
+
+            <button type="button" class="tw-see-more">... See more</button>
+        </div>
+
+        ${photoMarkup}
+
+        <div class="tw-feed-social-summary">
+            <span class="tw-reaction-icons">
+                <i class="fa-solid fa-thumbs-up"></i>
+                <i class="fa-solid fa-heart"></i>
+                <i class="fa-solid fa-face-smile"></i>
+                <small>Trips Wonder</small>
+            </span>
+
+            <span class="tw-social-counts">
+                <small>View tour details</small>
+            </span>
+        </div>
+
+        <div class="tw-feed-actions">
+            <button type="button" data-action="details">
+                <i class="fa-regular fa-thumbs-up"></i>
+                <span>Like</span>
+            </button>
+            <button type="button" data-action="details">
+                <i class="fa-regular fa-comment"></i>
+                <span>Comment</span>
+            </button>
+            <button type="button" data-action="book">
+                <i class="fa-regular fa-paper-plane"></i>
+                <span>Book Now</span>
+            </button>
+        </div>
+    `;
+
+    card.querySelectorAll(
+        '[data-feed-photo], [data-action="details"], .tw-see-more'
+    ).forEach(
+        element => {
+
+            element.addEventListener(
+                "click",
+                () => openPackageDetails(packageItem)
+            );
+
+        }
+    );
+
+    card.querySelector(
+        '[data-action="book"]'
+    )?.addEventListener(
+        "click",
+        () => {
+
+            window.location.href =
+                `booking.html?package=${encodeURIComponent(packageItem.id)}`;
+
+        }
+    );
+
+    return card;
+
+}
+
+
+function renderMockupFeed() {
+
+    if (!tripsWonderFeed) {
+        return;
+    }
+
+    const posts =
+        getVisibleCustomerPosts();
+
+    const packages =
+        getVisiblePackages();
+
+    tripsWonderFeed.innerHTML = "";
+
+    if (
+        !posts.length &&
+        !packages.length
+    ) {
+
+        tripsWonderFeed.innerHTML = `
+            <div class="tw-home-empty">
+                <i class="fa-regular fa-compass"></i>
+                <strong>No feed results found</strong>
+                <span>Try another search term or share a travel moment.</span>
+            </div>
+        `;
+
+        return;
+
+    }
+
+    posts
+        .slice(0, 20)
+        .forEach(
+            post => {
+
+                tripsWonderFeed.appendChild(
+                    createCustomerPostCard(post)
+                );
+
+            }
+        );
+
+    packages
+        .slice(0, 8)
+        .forEach(
+            (packageItem, index) => {
+
+                tripsWonderFeed.appendChild(
+                    createFeedCard(packageItem, index)
+                );
+
+            }
+        );
+
+}
+
+
+function renderMockupPopular() {
+
+    if (!popularTours) {
+        return;
+    }
+
+    const packages =
+        getVisiblePackages().slice(0, 4);
+
+    popularTours.innerHTML = "";
+
+    packages.forEach(
+        packageItem => {
+
+            const image =
+                getPackageImage(packageItem);
+
+            const button =
+                document.createElement("button");
+
+            button.type = "button";
+            button.className =
+                "tw-popular-item";
+
+            button.innerHTML = `
+                <span class="tw-popular-image">
+                    ${
+                        image
+                            ? `<img src="${escapeHtml(image)}" alt="" loading="lazy">`
+                            : `<i class="fa-solid fa-image"></i>`
+                    }
+                </span>
+
+                <span class="tw-popular-copy">
+                    <strong>${escapeHtml(packageItem.name || "Tour Package")}</strong>
+                    <span>₱${formatMoney(packageItem.price)} <small>/person</small></span>
+                    <small>🔥 Most Booked</small>
+                </span>
+            `;
+
+            button.addEventListener(
+                "click",
+                () => openPackageDetails(packageItem)
+            );
+
+            popularTours.appendChild(button);
+
+        }
+    );
+
+}
+
+
+function renderMockupDepartures() {
+
+    if (!upcomingDepartures) {
+        return;
+    }
+
+    const packages =
+        getVisiblePackages().slice(0, 3);
+
+    upcomingDepartures.innerHTML = "";
+
+    packages.forEach(
+        packageItem => {
+
+            const schedule =
+                packageItem?.travelDate ||
+                packageItem?.departureDate ||
+                packageItem?.tourDate ||
+                packageItem?.date ||
+                null;
+
+            const date =
+                toDate(schedule);
+
+            const month =
+                date
+                    ? date.toLocaleDateString("en-US", { month: "short" }).toUpperCase()
+                    : "TRIP";
+
+            const day =
+                date
+                    ? String(date.getDate()).padStart(2, "0")
+                    : "•";
+
+            const item =
+                document.createElement("button");
+
+            item.type = "button";
+            item.className =
+                "tw-departure-item";
+
+            item.innerHTML = `
+                <span class="tw-date-box">
+                    <small>${escapeHtml(month)}</small>
+                    <strong>${escapeHtml(day)}</strong>
+                </span>
+
+                <span class="tw-departure-copy">
+                    <strong>${escapeHtml(packageItem.name || "Tour Package")}</strong>
+                    <small>${escapeHtml(getPackageScheduleText(packageItem))}</small>
+                </span>
+
+                <span class="tw-joiners-pill">JOINERS</span>
+            `;
+
+            item.addEventListener(
+                "click",
+                () => openPackageDetails(packageItem)
+            );
+
+            upcomingDepartures.appendChild(item);
+
+        }
+    );
+
+}
+
+
+function renderMockupShortcuts() {
+
+    if (!homeShortcutTours) {
+        return;
+    }
+
+    const packages =
+        customerPackages.slice(0, 4);
+
+    homeShortcutTours.innerHTML = "";
+
+    packages.forEach(
+        packageItem => {
+
+            const image =
+                getPackageImage(packageItem);
+
+            const button =
+                document.createElement("button");
+
+            button.type = "button";
+            button.className =
+                "tw-shortcut-item";
+
+            button.innerHTML = `
+                <span class="tw-shortcut-image">
+                    ${
+                        image
+                            ? `<img src="${escapeHtml(image)}" alt="" loading="lazy">`
+                            : `<i class="fa-solid fa-image"></i>`
+                    }
+                </span>
+
+                <span>
+                    <strong>${escapeHtml(packageItem.name || "Tour Package")}</strong>
+                    <small>${escapeHtml(getPackageDuration(packageItem) || packageItem.category || "Tour")}</small>
+                </span>
+            `;
+
+            button.addEventListener(
+                "click",
+                () => openPackageDetails(packageItem)
+            );
+
+            homeShortcutTours.appendChild(button);
+
+        }
+    );
+
+}
+
+
+function renderApprovedHomeMockup() {
+
+    renderMockupStories();
+    renderMockupFeed();
+    renderMockupPopular();
+    renderMockupDepartures();
+    renderMockupShortcuts();
+
+    applyBusinessLogo(
+        currentBusinessLogo
+    );
+
+}
 
 /* ==========================================================
    PACKAGE DETAILS MODAL
@@ -1786,7 +3832,7 @@ function renderUpcomingTrip() {
         getPackageImage(
             packageItem
         ) ||
-        "../../assets/images/logo.png";
+        currentBusinessLogo;
 
 
     const start =
@@ -1934,6 +3980,10 @@ onAuthStateChanged(
                 );
 
 
+            /* Show the actual customer's first name in the Home profile */
+            renderCustomerProfile();
+
+
             const role =
                 normalizeText(
                     currentProfile.role ||
@@ -1975,6 +4025,17 @@ onAuthStateChanged(
                         currentProfile
                 }
             );
+
+
+            if (postAuthorName) {
+                postAuthorName.textContent =
+                    getCustomerAuthorName();
+            }
+
+
+            startCustomerPostsListener();
+
+
             try {
 
                 await loadCustomerPackages();
@@ -2059,6 +4120,44 @@ onAuthStateChanged(
             );
 
         }
+
+    }
+);
+
+
+/* ==========================================================
+   APPROVED MOCKUP SEARCH BEHAVIOR
+   ========================================================== */
+
+if (searchSection) {
+    searchSection.hidden = true;
+}
+
+headerSearchButton?.addEventListener(
+    "click",
+    () => {
+        searchInput?.focus();
+    }
+);
+
+twSearchClear?.addEventListener(
+    "click",
+    event => {
+
+        event.preventDefault();
+
+        if (!searchInput) {
+            return;
+        }
+
+        searchInput.value = "";
+        currentSearch = "";
+        twSearchClear.hidden = true;
+
+        renderCustomerPackages();
+        renderApprovedHomeMockup();
+
+        searchInput.focus();
 
     }
 );

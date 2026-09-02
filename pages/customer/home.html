@@ -2,395 +2,274 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-
-    <meta
-        name="theme-color"
-        content="#f5f8fc">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="theme-color" content="#f4f7fb">
     <title>Trips Wonder</title>
 
-    <link
-        rel="stylesheet"
-        href="../../assets/css/shared/variables.css">
+    <link rel="stylesheet" href="../../assets/css/shared/variables.css">
+    <link rel="stylesheet" href="../../assets/css/shared/global.css">
+    <link rel="stylesheet" href="../../assets/css/customer/home.css">
+    <link rel="stylesheet" href="../../assets/css/customer/customer-nav.css">
 
-    <link
-        rel="stylesheet"
-        href="../../assets/css/shared/global.css">
-
-    <link
-        rel="stylesheet"
-        href="../../assets/css/customer/home.css">
-
-    <link
-        rel="stylesheet"
-        href="../../assets/css/customer/customer-nav.css">
-
-    <link
-        rel="preconnect"
-        href="https://fonts.googleapis.com">
-
-    <link
-        rel="preconnect"
-        href="https://fonts.gstatic.com"
-        crossorigin>
-
-    <link
-        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
-        rel="stylesheet">
-
-    <link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 </head>
 
 <body>
 
-<div class="mobile-shell">
+<div class="home-app-shell">
 
-    <!-- ==========================================================
-         SHARED CUSTOMER NAVIGATION
-    ========================================================== -->
+    <!-- Shared mobile navigation stays active on mobile -->
     <div id="customerBottomNav"></div>
 
-    <main class="home-page">
+    <!-- Exact desktop left rail based on approved mockup -->
+    <aside class="tw-left-rail">
+        <a class="tw-left-brand" href="home.html">
+            <img src="../../assets/images/logo.png" alt="Trips Wonder" data-business-logo>
+            <span>
+                <strong>Trips Wonder</strong>
+                <small>Travel & Tours</small>
+            </span>
+        </a>
 
-        <!-- ======================================================
-             HEADER
-        ======================================================= -->
+        <nav class="tw-left-menu" aria-label="Customer navigation">
+            <a class="active" href="home.html"><i class="fa-solid fa-house"></i><span>Home</span></a>
+            <a href="#storiesSection"><i class="fa-regular fa-compass"></i><span>Explore</span></a>
+            <a href="#feedSection"><i class="fa-solid fa-suitcase"></i><span>Tours</span></a>
+            <a href="my-trip.html"><i class="fa-regular fa-calendar-check"></i><span>My Trip</span></a>
+            <a href="promo.html"><i class="fa-solid fa-tag"></i><span>Promos</span></a>
+        </nav>
 
-        <header class="home-header">
+        <div class="tw-left-divider"></div>
 
-            <a
-                href="home.html"
-                class="home-brand"
-                aria-label="Trips Wonder Home">
+        <section class="tw-shortcuts">
+            <h3>Your Shortcuts</h3>
+            <div id="homeShortcutTours" class="tw-shortcut-list">
+                <div class="tw-shortcut-skeleton"></div>
+                <div class="tw-shortcut-skeleton"></div>
+                <div class="tw-shortcut-skeleton"></div>
+                <div class="tw-shortcut-skeleton"></div>
+            </div>
+            <a href="#feedSection" class="tw-view-tours">View all tours <i class="fa-solid fa-chevron-right"></i></a>
+        </section>
 
-                <img
-                    src="../../assets/images/logo.png"
-                    alt="Trips Wonder"
-                    class="home-brand-logo">
+        <section class="tw-left-cta">
+            <h3>Let’s make<br>your next trip<br>unforgettable!</h3>
+            <a href="#feedSection">Explore Tours <i class="fa-solid fa-chevron-right"></i></a>
+            <i class="fa-solid fa-umbrella-beach tw-left-cta-art" aria-hidden="true"></i>
+        </section>
+    </aside>
 
-                <div class="home-brand-copy">
+    <div class="tw-workspace">
 
-                    <strong>
-                        Trips Wonder
-                    </strong>
-
-                    <span>
-                        Travel & Tours
-                    </span>
-
-                </div>
-
-            </a>
-
-
-            <div class="header-actions">
-
-                <button
-                    type="button"
-                    class="header-icon-btn"
-                    id="headerSearchButton"
-                    aria-label="Search tours">
-
-                    <i class="fa-solid fa-magnifying-glass"></i>
-
+        <header class="tw-topbar">
+            <div class="tw-search-wrap">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input id="searchInput" type="search" placeholder="Where do you want to go?" autocomplete="off">
+                <button type="button" id="searchCloseButton" class="tw-search-clear" aria-label="Clear search" hidden>
+                    <i class="fa-solid fa-xmark"></i>
                 </button>
-
-
-                <a
-                    href="message.html"
-                    class="header-icon-btn"
-                    aria-label="Messages">
-
-                    <i class="fa-regular fa-comment"></i>
-
-                </a>
-
             </div>
 
+            <button type="button" class="tw-mobile-search-trigger" id="headerSearchButton" aria-label="Search tours">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </button>
+
+            <div class="tw-top-actions">
+                <a href="message.html" class="tw-top-icon" aria-label="Messages" title="Messages">
+                    <i class="fa-regular fa-comment-dots"></i>
+                </a>
+
+                <a href="message.html#notifications" class="tw-top-icon tw-bell" aria-label="Notifications" title="Notifications">
+                    <i class="fa-regular fa-bell"></i>
+                </a>
+
+                <a href="account.html" class="tw-account-mini" aria-label="Open account" title="Account">
+                    <span class="tw-avatar"><i class="fa-solid fa-user"></i></span>
+                    <span class="tw-account-name" id="customerName">Traveler</span>
+                    <i class="fa-solid fa-chevron-down"></i>
+                </a>
+            </div>
         </header>
 
+        <main class="tw-main">
 
-        <!-- ======================================================
-             SEARCH
-        ======================================================= -->
+            <section class="tw-center-column">
 
-        <section
-            class="search-section"
-            id="searchSection"
-            hidden>
-
-            <div class="search-box">
-
-                <i class="fa-solid fa-magnifying-glass"></i>
-
-                <input
-                    id="searchInput"
-                    type="search"
-                    placeholder="Search destination or tour..."
-                    autocomplete="off">
-
-                <button
-                    type="button"
-                    class="search-close-btn"
-                    id="searchCloseButton"
-                    aria-label="Close search">
-
-                    <i class="fa-solid fa-xmark"></i>
-
-                </button>
-
-            </div>
-
-        </section>
-
-
-        <!-- ======================================================
-             HERO
-        ======================================================= -->
-
-        <section class="home-hero">
-
-            <div class="home-hero-content">
-
-                <span class="home-hero-label">
-                    DISCOVER THE PHILIPPINES
-                </span>
-
-                <h2>
-                    Your next trip starts here.
-                </h2>
-
-                <p>
-                    Browse active Trips Wonder packages and book online.
-                </p>
-
-            </div>
-
-
-            <div class="home-hero-icon">
-
-                <i class="fa-solid fa-location-dot"></i>
-
-            </div>
-
-        </section>
-
-
-        <!-- ======================================================
-             UPCOMING TRIP
-        ======================================================= -->
-
-        <section class="home-section">
-
-            <div class="section-heading">
-
-                <div>
-
-                    <span class="section-eyebrow">
-                        YOUR TRIP
-                    </span>
-
-                    <h2>
-                        Upcoming Trip
-                    </h2>
-
-                </div>
-
-
-                <a
-                    href="my-trip.html"
-                    class="section-link">
-
-                    View
-
-                    <i class="fa-solid fa-chevron-right"></i>
-
-                </a>
-
-            </div>
-
-
-            <article
-                class="trip-card"
-                id="upcomingTripCard"
-                hidden>
-
-                <div class="trip-card-image">
-
-                    <img
-                        id="upcomingTripImage"
-                        src="../../assets/images/logo.png"
-                        alt="Upcoming Trip">
-
-                </div>
-
-
-                <div class="trip-card-info">
-
-                    <span
-                        id="upcomingTripCategory"
-                        class="trip-category">
-
-                        Tour
-
-                    </span>
-
-
-                    <h3 id="upcomingTripName">
-                        Upcoming Trip
-                    </h3>
-
-
-                    <p id="upcomingTripLocation">
-                        —
-                    </p>
-
-
-                    <p
-                        id="upcomingTripSchedule"
-                        class="trip-schedule">
-
-                        —
-
-                    </p>
-
-
-                    <div class="trip-card-bottom">
-
-                        <div>
-
-                            <span class="trip-reference-label">
-                                Booking
-                            </span>
-
-                            <strong id="upcomingTripReference">
-                                —
-                            </strong>
-
-                        </div>
-
-
-                        <button
-                            type="button"
-                            id="upcomingTripButton"
-                            class="trip-button">
-
-                            My Trip
-
-                        </button>
-
+                <section class="tw-stories-section" id="storiesSection">
+                    <div class="tw-section-title">
+                        <h2>Stories &amp; Highlights</h2>
                     </div>
 
-                </div>
+                    <div class="tw-stories-track" id="homeStories">
+                        <button type="button" class="tw-create-story">
+                            <span><i class="fa-solid fa-plus"></i></span>
+                            <strong>Create<br>story</strong>
+                        </button>
 
-            </article>
+                        <div class="tw-story-skeleton"></div>
+                        <div class="tw-story-skeleton"></div>
+                        <div class="tw-story-skeleton"></div>
+                        <div class="tw-story-skeleton"></div>
+                        <div class="tw-story-skeleton"></div>
+                    </div>
+                </section>
 
+                <section class="tw-feed-section" id="feedSection">
 
-            <div
-                class="empty-trip"
-                id="noUpcomingTrip">
+                    <div class="tw-post-composer">
+                        <span class="tw-composer-avatar" aria-hidden="true">
+                            <i class="fa-solid fa-user"></i>
+                        </span>
 
-                <div class="empty-trip-icon">
+                        <button type="button" class="tw-composer-trigger" id="openPostComposer">
+                            Share your travel moment...
+                        </button>
 
-                    <i class="fa-solid fa-suitcase-rolling"></i>
+                        <button type="button" class="tw-composer-photo" id="openPostPhoto" aria-label="Share photos" title="Share photos">
+                            <i class="fa-regular fa-image"></i>
+                        </button>
+                    </div>
 
-                </div>
+                    <div class="tw-feed-heading">
+                        <h2>Trips Wonder Feed</h2>
+                        <button type="button" class="tw-feed-sort">Most Recent <i class="fa-solid fa-chevron-down"></i></button>
+                    </div>
 
+                    <div id="tripsWonderFeed" class="tw-feed-list">
+                        <article class="tw-feed-skeleton"></article>
+                        <article class="tw-feed-skeleton"></article>
+                    </div>
+                </section>
 
-                <div class="empty-trip-content">
+            </section>
 
-                    <strong>
-                        No upcoming trip yet
-                    </strong>
+            <aside class="tw-right-column">
 
-                    <span>
-                        Browse available packages and reserve your next trip.
-                    </span>
+                <section class="tw-right-card">
+                    <div class="tw-right-heading">
+                        <h2>Popular Tours</h2>
+                        <a href="#feedSection">See all</a>
+                    </div>
+                    <div id="popularTours" class="tw-popular-list">
+                        <div class="tw-side-skeleton"></div>
+                        <div class="tw-side-skeleton"></div>
+                        <div class="tw-side-skeleton"></div>
+                    </div>
+                </section>
 
-                </div>
+                <section class="tw-right-card">
+                    <div class="tw-right-heading">
+                        <h2>Upcoming Departures</h2>
+                        <a href="#feedSection">See all</a>
+                    </div>
+                    <div id="upcomingDepartures" class="tw-departure-list">
+                        <div class="tw-side-skeleton"></div>
+                        <div class="tw-side-skeleton"></div>
+                    </div>
+                    <a href="#feedSection" class="tw-right-footer-link">View all schedules <i class="fa-solid fa-chevron-right"></i></a>
+                </section>
 
+                <section class="tw-right-card">
+                    <div class="tw-right-heading">
+                        <h2>Latest Promos</h2>
+                        <a href="promo.html">See all</a>
+                    </div>
 
-                <a
-                    href="#availableTours"
-                    class="empty-trip-button">
+                    <a href="promo.html" class="tw-promo-preview">
+                        <div class="tw-promo-art">
+                            <i class="fa-solid fa-tags"></i>
+                            <strong>TRAVEL<br>DEALS</strong>
+                        </div>
+                        <div class="tw-promo-copy">
+                            <strong>See our latest tour promos</strong>
+                            <span>Check available Trips Wonder offers and travel deals.</span>
+                            <small>View promos</small>
+                        </div>
+                    </a>
+                </section>
 
-                    Explore
+            </aside>
 
-                </a>
-
-            </div>
-
-        </section>
-
-
-        <!-- ======================================================
-             CATEGORIES
-        ======================================================= -->
-
-        <section class="home-section">
-
-            <div class="section-heading">
-
-                <div>
-
-                    <span class="section-eyebrow">
-                        FIND YOUR STYLE
-                    </span>
-
-                    <h2>
-                        Explore by Category
-                    </h2>
-
-                </div>
-
-            </div>
-
-
-            <div
-                class="tour-category-list"
-                id="tourCategoryList">
-
-                <button
-                    type="button"
-                    class="tour-category-btn active"
-                    data-category="all">
-
-                    All
-
-                </button>
-
-            </div>
-
-        </section>
-
-
-        <!-- ======================================================
-     AVAILABLE TOURS
-======================================================= -->
-
-<section
-    class="home-section tours-section"
-    id="availableTours">
-
-    <div
-        class="explore-wrapper"
-        id="exploreTours">
-
-        <div class="home-loading-card"></div>
-        <div class="home-loading-card"></div>
-
+        </main>
     </div>
 
-</section>
 
-</main>
+    <!-- Customer Post Composer -->
+    <div class="tw-post-modal" id="customerPostModal" hidden>
+        <div class="tw-post-modal-backdrop" data-close-post-modal></div>
 
+        <section class="tw-post-dialog" role="dialog" aria-modal="true" aria-labelledby="customerPostTitle">
+            <header class="tw-post-dialog-head">
+                <h2 id="customerPostTitle">Create Post</h2>
+                <button type="button" class="tw-post-dialog-close" data-close-post-modal aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </header>
 
+            <div class="tw-post-author">
+                <span class="tw-post-author-avatar"><i class="fa-solid fa-user"></i></span>
+                <div>
+                    <strong id="postAuthorName">Traveler</strong>
+                    <small><i class="fa-solid fa-earth-americas"></i> Trips Wonder Community</small>
+                </div>
+            </div>
+
+            <textarea
+                id="customerPostCaption"
+                class="tw-post-caption"
+                maxlength="1500"
+                placeholder="Share your travel experience..."></textarea>
+
+            <div class="tw-post-preview" id="customerPostPreview" hidden></div>
+
+            <div class="tw-post-add-photo">
+                <div>
+                    <strong>Add photos to your post</strong>
+                    <small>Up to 5 photos · JPG, PNG or WEBP</small>
+                </div>
+
+                <button type="button" id="choosePostPhotos" aria-label="Choose photos">
+                    <i class="fa-regular fa-images"></i>
+                </button>
+            </div>
+
+            <input
+                id="customerPostFiles"
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                multiple
+                hidden>
+
+            <p class="tw-post-message" id="customerPostMessage" aria-live="polite"></p>
+
+            <button type="button" class="tw-post-submit" id="publishCustomerPost">
+                Post
+            </button>
+        </section>
+    </div>
+
+    <!-- Compatibility nodes preserve the existing working booking/package logic -->
+    <div class="home-compatibility" aria-hidden="true">
+        <section id="searchSection"></section>
+        <span id="customerGreeting"></span>
+        <div id="tourCategoryList"><button data-category="all" class="tour-category-btn active">All</button></div>
+        <div id="exploreTours"></div>
+        <span id="packageResultText"></span>
+
+        <article id="upcomingTripCard" hidden>
+            <img id="upcomingTripImage" alt="">
+            <span id="upcomingTripCategory"></span>
+            <span id="upcomingTripName"></span>
+            <span id="upcomingTripLocation"></span>
+            <span id="upcomingTripSchedule"></span>
+            <span id="upcomingTripReference"></span>
+            <button id="upcomingTripButton" type="button"></button>
+        </article>
+        <div id="noUpcomingTrip"></div>
+    </div>
 
     <!-- ==========================================================
          PACKAGE DETAILS MODAL
@@ -480,16 +359,10 @@
 
 </div>
 
+</div>
 
-<script
-    type="module"
-    src="../../assets/js/customer/home.js">
-</script>
-
-<script
-    type="module"
-    src="../../assets/js/customer/customer-nav.js">
-</script>
+<script type="module" src="../../assets/js/customer/home.js"></script>
+<script type="module" src="../../assets/js/customer/customer-nav.js"></script>
 
 </body>
 </html>
