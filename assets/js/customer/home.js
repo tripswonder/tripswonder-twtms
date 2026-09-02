@@ -5091,7 +5091,7 @@ upcomingTripButton
 
 /* ==========================================================
    MEMBER-TO-MEMBER MESSENGER
-   One initial message until the recipient replies.
+   One initial request message. The conversation starts automatically when the recipient replies.
    ========================================================== */
 
 const memberMessageTrigger = document.getElementById("memberMessageTrigger");
@@ -5121,6 +5121,28 @@ let activeMemberConversation = null;
 let activeMemberProfile = null;
 let activeMemberTab = "chats";
 let memberSearchTimer = null;
+
+function memberConversationState(conversation) {
+    return String(conversation?.requestState || "").trim().toLowerCase();
+}
+
+function memberIsClosedConversation(conversation) {
+    const state = memberConversationState(conversation);
+    return state === "declined" || state === "blocked";
+}
+
+function memberIsBlockedConversation(conversation) {
+    return memberConversationState(conversation) === "blocked";
+}
+
+function renderMemberRequestActions() {
+    const existingHost =
+        memberChatRequestInfo?.querySelector(".tw-member-request-actions");
+
+    if (existingHost) {
+        existingHost.remove();
+    }
+}
 
 function memberConversationId(uidA, uidB) {
     return [String(uidA), String(uidB)].sort().join("__");
@@ -5205,9 +5227,156 @@ function memberIsOutgoingWaiting(conversation) {
 
 function setMemberMessageBadge(count) {
     if (!memberMessageBadge) return;
-    const safeCount = Math.max(0, Number(count) || 0);
-    memberMessageBadge.textContent = safeCount > 99 ? "99+" : String(safeCount);
-    memberMessageBadge.hidden = safeCount === 0;
+
+    const safeCount =
+        Math.max(
+            0,
+            Number(count) || 0
+        );
+
+    memberMessageBadge.textContent =
+        safeCount > 99
+            ? "99+"
+            : String(safeCount);
+
+    memberMessageBadge.hidden =
+        safeCount === 0;
+}
+
+
+function setMemberRequestBadge(count) {
+
+    const requestTab =
+        document.querySelector(
+            '[data-member-tab="requests"]'
+        );
+
+    if (!requestTab) {
+        return;
+    }
+
+
+    let badge =
+        requestTab.querySelector(
+            ".tw-member-request-badge"
+        );
+
+
+    const safeCount =
+        Math.max(
+            0,
+            Number(count) || 0
+        );
+
+
+    if (!badge) {
+
+        badge =
+            document.createElement(
+                "span"
+            );
+
+        badge.className =
+            "tw-member-request-badge";
+
+        badge.setAttribute(
+            "aria-label",
+            "Message requests"
+        );
+
+        requestTab.appendChild(
+            badge
+        );
+
+    }
+
+
+    badge.textContent =
+        safeCount > 99
+            ? "99+"
+            : String(safeCount);
+
+    badge.hidden =
+        safeCount === 0;
+
+}
+
+
+function updateMemberMessengerBadges() {
+
+    if (!currentUser) {
+
+        setMemberMessageBadge(0);
+        setMemberRequestBadge(0);
+
+        return;
+    }
+
+
+    let totalAttentionCount =
+        0;
+
+    let requestCount =
+        0;
+
+
+    memberConversations.forEach(
+        conversation => {
+
+            const unread =
+                Math.max(
+                    0,
+                    Number(
+                        conversation?.unread?.[
+                            currentUser.uid
+                        ]
+                    ) || 0
+                );
+
+
+            const incomingRequest =
+                memberIsIncomingRequest(
+                    conversation
+                );
+
+
+            /*
+             * A pending incoming request must stay visible
+             * in the badge even after the user opens it.
+             * Opening the request clears unread to 0, but
+             * the request still needs a reply/accept action.
+             */
+            if (incomingRequest) {
+
+                requestCount +=
+                    1;
+
+                totalAttentionCount +=
+                    Math.max(
+                        1,
+                        unread
+                    );
+
+                return;
+
+            }
+
+
+            totalAttentionCount +=
+                unread;
+
+        }
+    );
+
+
+    setMemberMessageBadge(
+        totalAttentionCount
+    );
+
+    setMemberRequestBadge(
+        requestCount
+    );
+
 }
 
 function openMemberMessenger() {
@@ -5435,6 +5604,22 @@ async function openMemberConversationWith(profile) {
 
     if (existingConversation) {
 
+        if (memberIsBlockedConversation(existingConversation)) {
+            window.alert(
+                existingConversation.blockedByUid === currentUser.uid
+                    ? "You blocked this member."
+                    : "This member is unavailable for messaging."
+            );
+            return;
+        }
+
+        if (memberConversationState(existingConversation) === "declined") {
+            window.alert(
+                "This message request was declined."
+            );
+            return;
+        }
+
         await openMemberConversation(
             existingConversation
         );
@@ -5529,43 +5714,82 @@ async function openMemberConversation(conversation) {
 
 function renderOpenMemberChat() {
     if (!activeMemberConversation || !activeMemberProfile) return;
+
     if (memberMessengerInbox) memberMessengerInbox.hidden = true;
     if (memberChatView) memberChatView.hidden = false;
 
-    if (memberChatName) memberChatName.textContent = memberProfileName(activeMemberProfile);
-    if (memberChatAvatar) memberChatAvatar.innerHTML = memberAvatarHtml(activeMemberProfile);
+    if (memberChatName) {
+        memberChatName.textContent =
+            memberProfileName(activeMemberProfile);
+    }
 
-    const incoming = memberIsIncomingRequest(activeMemberConversation);
-    const waiting = memberIsOutgoingWaiting(activeMemberConversation);
+    if (memberChatAvatar) {
+        memberChatAvatar.innerHTML =
+            memberAvatarHtml(activeMemberProfile);
+    }
+
+    const incoming =
+        memberIsIncomingRequest(activeMemberConversation);
+
+    const waiting =
+        memberIsOutgoingWaiting(activeMemberConversation);
+
+    const blocked =
+        memberIsBlockedConversation(activeMemberConversation);
+
+    const declined =
+        memberConversationState(activeMemberConversation) === "declined";
 
     if (memberChatStatus) {
         memberChatStatus.textContent =
+            blocked ? "Blocked" :
+            declined ? "Request declined" :
             incoming ? "Message request" :
             waiting ? "Waiting for reply" :
             "Trips Wonder member";
     }
 
     if (memberChatRequestInfo && memberChatRequestText) {
-        if (waiting) {
+        if (blocked) {
+            memberChatRequestInfo.hidden = false;
+            memberChatRequestText.textContent =
+                activeMemberConversation.blockedByUid === currentUser?.uid
+                    ? "You blocked this member."
+                    : "This conversation is unavailable.";
+        } else if (declined) {
+            memberChatRequestInfo.hidden = false;
+            memberChatRequestText.textContent =
+                "This message request was declined.";
+        } else if (waiting) {
             memberChatRequestInfo.hidden = false;
             memberChatRequestText.textContent =
                 "Your first message was sent. You can send more messages after this member replies.";
         } else if (incoming) {
-            memberChatRequestInfo.hidden = false;
-            memberChatRequestText.textContent =
-                "This member sent you a message request. Replying will open the conversation for both of you.";
+            memberChatRequestInfo.hidden = true;
+            memberChatRequestText.textContent = "";
         } else {
             memberChatRequestInfo.hidden = true;
             memberChatRequestText.textContent = "";
         }
     }
 
+    renderMemberRequestActions();
+
     if (memberChatInput && memberChatSend) {
-        memberChatInput.disabled = waiting;
-        memberChatSend.disabled = waiting;
-        memberChatInput.placeholder = waiting
-            ? "Waiting for this member to reply..."
-            : "Write a message...";
+        const locked =
+            waiting ||
+            blocked ||
+            declined;
+
+        memberChatInput.disabled = locked;
+        memberChatSend.disabled = locked;
+
+        memberChatInput.placeholder =
+            blocked ? "This conversation is blocked." :
+            declined ? "This request was declined." :
+            incoming ? "Write a reply..." :
+            waiting ? "Waiting for this member to reply..." :
+            "Write a message...";
     }
 }
 
@@ -5590,12 +5814,17 @@ function subscribeMemberConversations() {
                 return bDate - aDate;
             });
 
-            const unreadCount = memberConversations.reduce((sum, conversation) => {
-                const unread = conversation?.unread?.[currentUser.uid];
-                return sum + (Number(unread) || 0);
-            }, 0);
+            /*
+             * Keep the top Messages badge and the Requests-tab
+             * badge synchronized in real time.
+             *
+             * This covers:
+             * - unread replies in normal chats
+             * - new first-message requests
+             * - pending requests that were opened but not replied to yet
+             */
+            updateMemberMessengerBadges();
 
-            setMemberMessageBadge(unreadCount);
             renderMemberConversationList();
 
             if (activeMemberConversation) {
@@ -5615,8 +5844,16 @@ function renderMemberConversationList() {
     if (!memberChatList || !currentUser) return;
 
     const rows = memberConversations.filter(conversation => {
-        const incoming = memberIsIncomingRequest(conversation);
-        return activeMemberTab === "requests" ? incoming : !incoming;
+        if (memberIsClosedConversation(conversation)) {
+            return false;
+        }
+
+        const incoming =
+            memberIsIncomingRequest(conversation);
+
+        return activeMemberTab === "requests"
+            ? incoming
+            : !incoming;
     });
 
     if (!rows.length) {
@@ -5719,7 +5956,10 @@ memberChatForm?.addEventListener("submit", async event => {
     const text = String(memberChatInput?.value || "").trim();
     if (!text || !currentUser || !activeMemberConversation || !activeMemberProfile) return;
 
-    if (memberIsOutgoingWaiting(activeMemberConversation)) {
+    if (
+        memberIsOutgoingWaiting(activeMemberConversation) ||
+        memberIsClosedConversation(activeMemberConversation)
+    ) {
         renderOpenMemberChat();
         return;
     }
@@ -5777,6 +6017,8 @@ memberChatForm?.addEventListener("submit", async event => {
             if (incomingRequest) {
                 updates.requestState = "accepted";
                 updates.recipientReplyAt = serverTimestamp();
+                updates.acceptedByUid = currentUser.uid;
+                updates.acceptedAt = serverTimestamp();
             }
 
             await updateDoc(conversationRef, updates);
@@ -5856,7 +6098,12 @@ memberChatForm?.addEventListener("submit", async event => {
                 "Message could not be sent. Check your Firestore rules for memberConversations.";
         }
     } finally {
-        if (!memberIsOutgoingWaiting(activeMemberConversation)) {
+        const chatLocked =
+            memberIsOutgoingWaiting(activeMemberConversation) ||
+            memberIsIncomingRequest(activeMemberConversation) ||
+            memberIsClosedConversation(activeMemberConversation);
+
+        if (!chatLocked) {
             if (memberChatInput) memberChatInput.disabled = false;
             if (memberChatSend) memberChatSend.disabled = false;
             memberChatInput?.focus();

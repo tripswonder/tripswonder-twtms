@@ -2,19 +2,19 @@
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
-
     <meta
         name="viewport"
-        content="width=device-width, initial-scale=1.0">
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 
-    <title>Tour Packages | Trips Wonder</title>
+    <meta name="theme-color" content="#ffffff">
+
+    <title>Explore Tours | Trips Wonder</title>
 
     <link
-    rel="icon"
-    type="image/jpeg"
-    href="../../favicon.jpeg">
+        rel="icon"
+        type="image/jpeg"
+        href="../../favicon.jpeg">
 
     <link
         rel="preconnect"
@@ -26,7 +26,7 @@
         crossorigin>
 
     <link
-        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
         rel="stylesheet">
 
     <link
@@ -34,52 +34,167 @@
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 
     <link
-    rel="stylesheet"
-    href="../../assets/css/customer/tours.css">
+        rel="stylesheet"
+        href="../../assets/css/shared/variables.css">
 
+    <link
+        rel="stylesheet"
+        href="../../assets/css/shared/global.css">
+
+    <link
+        rel="stylesheet"
+        href="../../assets/css/customer/customer-nav.css">
+
+    <link
+        rel="stylesheet"
+        href="../../assets/css/customer/tours.css">
 </head>
 
 <body>
 
+    <!-- =========================================================
+         SHARED CUSTOMER NAV
+         Mobile = bottom navigation
+         Desktop = hidden by tours.css because Tours has top nav
+    ========================================================== -->
+    <div id="customerBottomNav"></div>
 
-    <!-- =====================================================
-         HEADER
-    ====================================================== -->
 
-    <header class="client-header">
+    <!-- =========================================================
+         DESKTOP HEADER
+    ========================================================== -->
+    <header class="tours-topbar">
 
-        <div class="header-inner">
+        <div class="tours-topbar-left">
 
             <a
-                href="../index.html"
-                class="client-brand">
+                href="home.html"
+                class="tours-brand"
+                aria-label="Trips Wonder Home">
 
                 <img
-                    src="../..assets/images/clogo.jpeg"
-                    alt="Trips Wonder">
-
-                <div>
-
-                    <strong>
-                        Trips Wonder
-                    </strong>
-
-                    <span>
-                        Travel and Tours
-                    </span>
-
-                </div>
+                    src="../../assets/images/logo.png"
+                    alt="Trips Wonder"
+                    data-tours-business-logo>
 
             </a>
 
 
+            <div class="tours-header-search">
+
+                <i class="fa-solid fa-magnifying-glass"></i>
+
+                <input
+                    id="tourSearch"
+                    type="search"
+                    placeholder="Search tours, destinations, packages..."
+                    autocomplete="off">
+
+                <button
+                    type="button"
+                    id="tourSearchClear"
+                    class="tours-search-clear"
+                    aria-label="Clear search"
+                    hidden>
+
+                    <i class="fa-solid fa-xmark"></i>
+
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <nav
+            class="tours-desktop-nav"
+            aria-label="Customer navigation">
+
             <a
-                href="#tourPackages"
-                class="header-link">
+                href="home.html"
+                class="tours-desktop-nav-item"
+                aria-label="Home"
+                title="Home">
 
-                <i class="fa-solid fa-compass"></i>
+                <i class="fa-solid fa-house"></i>
 
-                Tours
+            </a>
+
+            <a
+                href="home.html#explore"
+                class="tours-desktop-nav-item"
+                aria-label="Explore"
+                title="Explore">
+
+                <i class="fa-regular fa-compass"></i>
+
+            </a>
+
+            <a
+                href="tours.html"
+                class="tours-desktop-nav-item active"
+                aria-label="Tours"
+                title="Tours"
+                aria-current="page">
+
+                <i class="fa-solid fa-suitcase"></i>
+
+            </a>
+
+            <a
+                href="my-trip.html"
+                class="tours-desktop-nav-item"
+                aria-label="My Trip"
+                title="My Trip">
+
+                <i class="fa-regular fa-calendar-check"></i>
+
+            </a>
+
+            <a
+                href="promo.html"
+                class="tours-desktop-nav-item"
+                aria-label="Promos"
+                title="Promos">
+
+                <i class="fa-solid fa-tag"></i>
+
+            </a>
+
+        </nav>
+
+
+        <div class="tours-topbar-actions">
+
+            <a
+                href="message.html"
+                class="tours-header-action"
+                aria-label="Messages"
+                title="Messages">
+
+                <i class="fa-regular fa-comment-dots"></i>
+
+            </a>
+
+            <a
+                href="message.html#notifications"
+                class="tours-header-action"
+                aria-label="Notifications"
+                title="Notifications">
+
+                <i class="fa-regular fa-bell"></i>
+
+            </a>
+
+            <a
+                href="account.html"
+                class="tours-header-profile"
+                aria-label="Account"
+                title="Account">
+
+                <span class="tours-profile-avatar">
+                    <i class="fa-solid fa-user"></i>
+                </span>
 
             </a>
 
@@ -88,107 +203,417 @@
     </header>
 
 
-    <!-- =====================================================
-         HERO
-    ====================================================== -->
+    <!-- =========================================================
+         MOBILE HEADER
+    ========================================================== -->
+    <header class="tours-mobile-header">
 
-    <section class="tour-hero">
+        <div class="tours-mobile-header-left">
 
-        <div class="tour-hero-inner">
+            <a
+                href="home.html"
+                class="tours-mobile-brand"
+                aria-label="Trips Wonder Home">
 
-    
+                <img
+                    src="../../assets/images/logo.png"
+                    alt="Trips Wonder"
+                    data-tours-business-logo>
 
-            <h1>
-                Where do you want to go next?
-            </h1>
+            </a>
 
-
-            <div class="tour-search">
+            <button
+                type="button"
+                class="tours-mobile-search-trigger"
+                id="tourMobileSearchTrigger"
+                aria-label="Search tours">
 
                 <i class="fa-solid fa-magnifying-glass"></i>
 
-                <input
-                    type="search"
-                    id="tourSearch"
-                    placeholder="Search destination..."
-                    autocomplete="off">
+            </button>
 
-            </div>
+        </div>
+
+
+        <div class="tours-mobile-actions">
+
+            <a
+                href="message.html"
+                aria-label="Messages"
+                title="Messages">
+
+                <i class="fa-regular fa-comment-dots"></i>
+
+            </a>
+
+            <a
+                href="message.html#notifications"
+                aria-label="Notifications"
+                title="Notifications">
+
+                <i class="fa-regular fa-bell"></i>
+
+            </a>
+
+            <a
+                href="account.html"
+                class="tours-mobile-profile"
+                aria-label="Account"
+                title="Account">
+
+                <i class="fa-solid fa-user"></i>
+
+            </a>
+
+        </div>
+
+    </header>
+
+
+    <!-- =========================================================
+         MOBILE SEARCH PANEL
+    ========================================================== -->
+    <section
+        class="tours-mobile-search-panel"
+        id="tourMobileSearchPanel"
+        hidden>
+
+        <div class="tours-mobile-search-box">
+
+            <i class="fa-solid fa-magnifying-glass"></i>
+
+            <input
+                id="tourMobileSearch"
+                type="search"
+                placeholder="Search destination or tour..."
+                autocomplete="off">
+
+            <button
+                type="button"
+                id="tourMobileSearchClose"
+                aria-label="Close search">
+
+                <i class="fa-solid fa-xmark"></i>
+
+            </button>
 
         </div>
 
     </section>
 
 
-    <!-- =====================================================
-         MAIN
-    ====================================================== -->
+    <!-- =========================================================
+         APP BODY
+    ========================================================== -->
+    <div class="tours-app">
 
-    <main class="tour-main">
+        <!-- =====================================================
+             DESKTOP FILTER SIDEBAR
+        ====================================================== -->
+        <aside class="tours-sidebar">
 
-        <div class="tour-container">
+            <div class="tours-sidebar-scroll">
+
+                <h1>Tours</h1>
 
 
-            <!-- =================================================
-                 SECTION HEADER
-            ================================================== -->
+                <nav
+                    class="tours-sidebar-categories"
+                    id="tourSidebarCategories"
+                    aria-label="Tour categories">
 
-            <section class="tour-toolbar">
+                    <button
+                        type="button"
+                        class="tours-sidebar-category active"
+                        data-category="all">
+
+                        <span class="tours-sidebar-category-icon">
+                            <i class="fa-solid fa-suitcase"></i>
+                        </span>
+
+                        <span>Browse All Tours</span>
+
+                    </button>
+
+                </nav>
+
+
+                <div class="tours-sidebar-divider"></div>
+
+
+                <div class="tours-filter-heading">
+
+                    <h2>Filters</h2>
+
+                    <button
+                        type="button"
+                        id="clearTourFilters">
+
+                        Clear all
+
+                    </button>
+
+                </div>
+
+
+                <section class="tours-filter-section">
+
+                    <h3>Duration</h3>
+
+                    <div
+                        class="tours-duration-options"
+                        id="tourDurationOptions">
+
+                        <button
+                            type="button"
+                            class="active"
+                            data-duration="all">
+
+                            Any
+
+                        </button>
+
+                        <button
+                            type="button"
+                            data-duration="2d1n">
+
+                            2D1N
+
+                        </button>
+
+                        <button
+                            type="button"
+                            data-duration="3d2n">
+
+                            3D2N
+
+                        </button>
+
+                        <button
+                            type="button"
+                            data-duration="4d3n+">
+
+                            4D3N+
+
+                        </button>
+
+                    </div>
+
+                </section>
+
+
+                <section class="tours-filter-section">
+
+                    <div class="tours-price-heading">
+
+                        <h3>Max Price</h3>
+
+                        <span id="tourPriceLabel">₱10,000+</span>
+
+                    </div>
+
+                    <input
+                        id="tourPriceRange"
+                        class="tours-price-range"
+                        type="range"
+                        min="1000"
+                        max="10000"
+                        step="500"
+                        value="10000">
+
+                    <div class="tours-price-scale">
+
+                        <span>₱1,000</span>
+
+                        <span>₱10,000+</span>
+
+                    </div>
+
+                </section>
+
+
+                <section class="tours-filter-section">
+
+                    <h3>Location</h3>
+
+                    <select id="tourLocationFilter">
+
+                        <option value="all">
+                            All Locations
+                        </option>
+
+                    </select>
+
+                </section>
+
+
+                <section class="tours-filter-section">
+
+                    <h3>Sort By</h3>
+
+                    <select id="tourSort">
+
+                        <option value="recommended">
+                            Recommended
+                        </option>
+
+                        <option value="newest">
+                            Newest First
+                        </option>
+
+                        <option value="price-low">
+                            Price: Low to High
+                        </option>
+
+                        <option value="price-high">
+                            Price: High to Low
+                        </option>
+
+                        <option value="name-az">
+                            Name: A-Z
+                        </option>
+
+                    </select>
+
+                </section>
+
+
+                <button
+                    type="button"
+                    class="tours-apply-filter"
+                    id="applyTourFilters">
+
+                    <i class="fa-solid fa-sliders"></i>
+
+                    Apply Filters
+
+                </button>
+
+            </div>
+
+        </aside>
+
+
+        <!-- =====================================================
+             CONTENT
+        ====================================================== -->
+        <main class="tours-main">
+
+            <section class="tours-main-head">
 
                 <div>
 
-                    <span class="section-label">
-                        AVAILABLE TOURS
-                    </span>
+                    <h1>
+                        Explore Tours
+                    </h1>
 
-                    <h2>
-                        Tour Packages
-                    </h2>
-
-                    <p id="tourResultText">
-                        Loading packages...
+                    <p>
+                        Find your next unforgettable adventure.
                     </p>
 
                 </div>
 
-                <div class="tour-toolbar-controls">
 
-    <select id="tourCategoryFilter">
-        <option value="all">All Packages</option>
-    </select>
+                <select
+                    id="tourSortTop"
+                    class="tours-sort-top"
+                    aria-label="Sort tours">
 
-    <select id="tourSort">
-        <option value="newest">Newest First</option>
-        <option value="price-low">Price: Low to High</option>
-        <option value="price-high">Price: High to Low</option>
-        <option value="name-az">Name: A-Z</option>
-        <option value="name-za">Name: Z-A</option>
-    </select>
+                    <option value="recommended">
+                        Sort by: Recommended
+                    </option>
 
-</div>
+                    <option value="newest">
+                        Sort by: Newest
+                    </option>
 
+                    <option value="price-low">
+                        Price: Low to High
+                    </option>
 
-               
+                    <option value="price-high">
+                        Price: High to Low
+                    </option>
+
+                </select>
 
             </section>
 
 
-            <!-- =================================================
-                 PACKAGE GRID
-            ================================================== -->
+            <!-- MOBILE FILTERS -->
+            <section class="tours-mobile-filter-row">
 
+                <button
+                    type="button"
+                    id="tourMobileFilterButton">
+
+                    <i class="fa-solid fa-sliders"></i>
+
+                    Filters
+
+                </button>
+
+                <select
+                    id="tourMobileSort"
+                    aria-label="Sort tours">
+
+                    <option value="recommended">
+                        Recommended
+                    </option>
+
+                    <option value="newest">
+                        Newest
+                    </option>
+
+                    <option value="price-low">
+                        Lowest Price
+                    </option>
+
+                    <option value="price-high">
+                        Highest Price
+                    </option>
+
+                </select>
+
+            </section>
+
+
+            <!-- CATEGORY CHIPS -->
+            <div
+                class="tours-category-strip"
+                id="tourCategoryStrip">
+
+                <button
+                    type="button"
+                    class="tours-category-chip active"
+                    data-category="all">
+
+                    All Tours
+
+                </button>
+
+            </div>
+
+
+            <p
+                class="tours-result-text"
+                id="tourResultText">
+
+                Loading packages...
+
+            </p>
+
+
+            <!-- PACKAGE GRID -->
             <section
                 class="tour-packages"
                 id="tourPackages">
-
 
                 <div
                     class="tour-grid"
                     id="tourGrid">
                 </div>
 
-
-                <!-- LOADING -->
 
                 <div
                     class="tour-state"
@@ -207,8 +632,6 @@
                 </div>
 
 
-                <!-- EMPTY -->
-
                 <div
                     class="tour-state hidden"
                     id="tourEmpty">
@@ -220,13 +643,11 @@
                     </strong>
 
                     <span>
-                        Try another search or category.
+                        Try another search or filter.
                     </span>
 
                 </div>
 
-
-                <!-- ERROR -->
 
                 <div
                     class="tour-state hidden"
@@ -255,37 +676,204 @@
                 </div>
 
 
+                <div class="tours-load-more-wrap">
+
+                    <button
+                        type="button"
+                        class="tours-load-more"
+                        id="tourLoadMore"
+                        hidden>
+
+                        Load more tours
+
+                        <i class="fa-solid fa-chevron-down"></i>
+
+                    </button>
+
+                </div>
+
             </section>
 
+        </main>
+
+    </div>
+
+
+    <!-- =========================================================
+         MOBILE FILTER DRAWER
+    ========================================================== -->
+    <div
+        class="tours-filter-drawer"
+        id="tourFilterDrawer"
+        aria-hidden="true">
+
+        <div
+            class="tours-filter-drawer-backdrop"
+            data-close-filter-drawer>
         </div>
 
-    </main>
+        <section class="tours-filter-drawer-panel">
+
+            <header>
+
+                <div>
+
+                    <span>TOUR FILTERS</span>
+
+                    <h2>
+                        Find your perfect trip
+                    </h2>
+
+                </div>
+
+                <button
+                    type="button"
+                    data-close-filter-drawer
+                    aria-label="Close filters">
+
+                    <i class="fa-solid fa-xmark"></i>
+
+                </button>
+
+            </header>
 
 
-    <!-- =====================================================
+            <div class="tours-filter-drawer-content">
+
+                <section>
+
+                    <h3>Duration</h3>
+
+                    <div
+                        class="tours-duration-options"
+                        id="tourMobileDurationOptions">
+
+                        <button
+                            type="button"
+                            class="active"
+                            data-duration="all">
+
+                            Any
+
+                        </button>
+
+                        <button
+                            type="button"
+                            data-duration="2d1n">
+
+                            2D1N
+
+                        </button>
+
+                        <button
+                            type="button"
+                            data-duration="3d2n">
+
+                            3D2N
+
+                        </button>
+
+                        <button
+                            type="button"
+                            data-duration="4d3n+">
+
+                            4D3N+
+
+                        </button>
+
+                    </div>
+
+                </section>
+
+
+                <section>
+
+                    <h3>Location</h3>
+
+                    <select id="tourMobileLocationFilter">
+
+                        <option value="all">
+                            All Locations
+                        </option>
+
+                    </select>
+
+                </section>
+
+
+                <section>
+
+                    <div class="tours-price-heading">
+
+                        <h3>Max Price</h3>
+
+                        <span id="tourMobilePriceLabel">
+                            ₱10,000+
+                        </span>
+
+                    </div>
+
+                    <input
+                        id="tourMobilePriceRange"
+                        class="tours-price-range"
+                        type="range"
+                        min="1000"
+                        max="10000"
+                        step="500"
+                        value="10000">
+
+                </section>
+
+            </div>
+
+
+            <footer>
+
+                <button
+                    type="button"
+                    id="tourMobileClearFilters"
+                    class="secondary">
+
+                    Clear
+
+                </button>
+
+                <button
+                    type="button"
+                    id="tourMobileApplyFilters"
+                    class="primary">
+
+                    Show Tours
+
+                </button>
+
+            </footer>
+
+        </section>
+
+    </div>
+
+
+    <!-- =========================================================
          TOUR DETAILS MODAL
-    ====================================================== -->
-
+    ========================================================== -->
     <div
         class="tour-modal"
         id="tourModal"
         aria-hidden="true">
-
 
         <div
             class="tour-modal-backdrop"
             id="tourModalBackdrop">
         </div>
 
-
-        <div
+        <section
             class="tour-modal-panel"
             role="dialog"
             aria-modal="true"
             aria-labelledby="tourModalTitle">
 
-
-            <div class="tour-modal-header">
+            <header class="tour-modal-header">
 
                 <div>
 
@@ -299,7 +887,6 @@
 
                 </div>
 
-
                 <button
                     type="button"
                     class="modal-close"
@@ -310,7 +897,7 @@
 
                 </button>
 
-            </div>
+            </header>
 
 
             <div
@@ -319,7 +906,7 @@
             </div>
 
 
-            <div class="tour-modal-footer">
+            <footer class="tour-modal-footer">
 
                 <button
                     type="button"
@@ -329,7 +916,6 @@
                     Close
 
                 </button>
-
 
                 <button
                     type="button"
@@ -342,44 +928,22 @@
 
                 </button>
 
-            </div>
+            </footer>
 
-
-        </div>
+        </section>
 
     </div>
 
 
-    <!-- =====================================================
-         FOOTER
-    ====================================================== -->
-
-    <footer class="client-footer">
-
-        <div class="footer-inner">
-
-            <strong>
-                Trips Wonder Travel and Tours
-            </strong>
-
-            <span>
-                Your next adventure starts here.
-            </span>
-
-        </div>
-
-    </footer>
-
-
-    <!-- =====================================================
-         SCRIPT
-    ====================================================== -->
+    <script
+        type="module"
+        src="../../assets/js/customer/customer-nav.js">
+    </script>
 
     <script
-    type="module"
-    src="../../assets/js/customer/tours.js">
-</script>
-
+        type="module"
+        src="../../assets/js/customer/tours.js">
+    </script>
 
 </body>
 

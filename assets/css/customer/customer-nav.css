@@ -1,18 +1,33 @@
 /* ==========================================================
-   TRIPS WONDER — CUSTOMER SHARED NAVIGATION
-   FINAL RESPONSIVE VERSION
+   TRIPS WONDER — SHARED CUSTOMER NAVIGATION
+   FINAL SHARED HEADER + MOBILE BOTTOM NAV
 
-   Mobile / Tablet : Bottom navigation
-   Desktop >= 900px: Full-height integrated left sidebar
+   IMPORTANT:
+   - home.html keeps its current Home UI.
+   - Non-Home customer pages get the shared desktop header.
+   - Mobile uses the shared bottom nav.
+========================================================== */
+
+:root {
+    --customer-nav-blue: #0866ff;
+    --customer-nav-blue-soft: #eaf3ff;
+    --customer-nav-text: #111827;
+    --customer-nav-muted: #66758a;
+    --customer-nav-border: #e2e8f0;
+    --customer-nav-header-height: 76px;
+}
+
+/* ==========================================================
+   HOST
 ========================================================== */
 
 #customerBottomNav {
     position: relative;
-    z-index: 1000;
+    z-index: 1500;
 }
 
 /* ==========================================================
-   NAV ROOT
+   MOBILE BOTTOM NAV — ALSO USED BY HOME
 ========================================================== */
 
 .bottom-nav {
@@ -35,7 +50,7 @@
     background: rgba(255, 255, 255, 0.98);
 
     border: 0;
-    border-top: 1px solid #e2e8f0;
+    border-top: 1px solid var(--customer-nav-border);
 
     box-shadow:
         0 -4px 15px rgba(16, 35, 79, 0.08);
@@ -43,23 +58,12 @@
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
 
-    transform: none !important;
-
-    z-index: 1000;
+    z-index: 1500;
 }
-
-/* ==========================================================
-   BRAND
-   Hidden on mobile
-========================================================== */
 
 .customer-nav-brand {
     display: none;
 }
-
-/* ==========================================================
-   MENU
-========================================================== */
 
 .customer-nav-menu {
     width: 100%;
@@ -71,10 +75,6 @@
 
     gap: 0;
 }
-
-/* ==========================================================
-   MENU ITEM
-========================================================== */
 
 .bottom-nav-item {
     min-width: 0;
@@ -104,11 +104,6 @@
     font-size: 9px;
     font-weight: 500;
     line-height: 1;
-
-    transition:
-        color 0.2s ease,
-        background 0.2s ease,
-        transform 0.2s ease;
 }
 
 .bottom-icon {
@@ -119,27 +114,28 @@
     align-items: center;
     justify-content: center;
 
-    flex: 0 0 auto;
-
     font-size: 17px;
 }
 
 .bottom-label {
     display: block;
-
     line-height: 1;
     white-space: nowrap;
 }
 
-/* ACTIVE — MOBILE */
-
 .bottom-nav-item.active {
     color: #1264e8;
-
     font-weight: 700;
 }
 
 .bottom-nav-item.active .bottom-icon {
+    width: 31px;
+    height: 27px;
+
+    background: #eaf3ff;
+
+    border-radius: 9px;
+
     font-size: 18px;
 
     transform: translateY(-1px);
@@ -150,11 +146,13 @@
 
     position: absolute;
 
-    left: 15px;
-    right: 15px;
+    left: 50%;
     bottom: -1px;
 
+    width: 20px;
     height: 3px;
+
+    transform: translateX(-50%);
 
     background: #1264e8;
 
@@ -166,13 +164,338 @@
 }
 
 /* ==========================================================
-   SMALL MOBILE
+   SHARED DESKTOP HEADER — NON-HOME ONLY
 ========================================================== */
+
+.customer-shared-header {
+    display: none;
+}
+
+@media (min-width: 900px) {
+
+    body.customer-shared-nav-page {
+        padding-top: var(--customer-nav-header-height) !important;
+    }
+
+    body.customer-shared-nav-page > #customerBottomNav {
+        position: relative;
+        z-index: 1600;
+    }
+
+    body.customer-shared-nav-page .bottom-nav {
+        display: none !important;
+    }
+
+    .customer-shared-header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1600;
+
+        height: var(--customer-nav-header-height);
+
+        padding: 0 18px;
+
+        display: grid;
+        grid-template-columns:
+            minmax(255px, 1fr)
+            minmax(430px, 620px)
+            minmax(220px, 1fr);
+
+        align-items: center;
+        gap: 14px;
+
+        background: rgba(255, 255, 255, 0.98);
+
+        border-bottom: 1px solid #e3e8ef;
+
+        box-shadow:
+            0 2px 8px rgba(15, 23, 42, 0.04);
+
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+    }
+
+    .customer-shared-header-left {
+        min-width: 0;
+
+        display: flex;
+        align-items: center;
+
+        gap: 10px;
+    }
+
+    .customer-shared-brand {
+        width: 44px;
+        height: 44px;
+
+        flex: 0 0 44px;
+
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+
+        text-decoration: none;
+    }
+
+    .customer-shared-brand img {
+        width: 42px;
+        height: 42px;
+
+        display: block;
+
+        object-fit: contain;
+
+        border-radius: 50%;
+    }
+
+    .customer-shared-search {
+        width: min(100%, 430px);
+        height: 44px;
+
+        display: flex;
+        align-items: center;
+
+        gap: 9px;
+
+        padding: 0 13px;
+
+        background: #f0f2f5;
+
+        border: 1px solid transparent;
+        border-radius: 999px;
+
+        transition:
+            background 0.16s ease,
+            border-color 0.16s ease,
+            box-shadow 0.16s ease;
+    }
+
+    .customer-shared-search:focus-within {
+        background: #ffffff;
+
+        border-color: #bdd7ff;
+
+        box-shadow:
+            0 0 0 3px rgba(8, 102, 255, 0.08);
+    }
+
+    .customer-shared-search > i {
+        color: #68778b;
+
+        font-size: 15px;
+    }
+
+    .customer-shared-search input {
+        width: 100%;
+        min-width: 0;
+
+        color: #26354a;
+        background: transparent;
+
+        border: 0;
+        outline: 0;
+
+        font-size: 12px;
+        font-weight: 500;
+
+        appearance: none;
+        -webkit-appearance: none;
+    }
+
+    .customer-shared-search input::-webkit-search-cancel-button {
+        display: none;
+    }
+
+    .customer-shared-search input::placeholder {
+        color: #7c8999;
+    }
+
+    .customer-shared-search-clear {
+        width: 26px;
+        height: 26px;
+
+        flex: 0 0 26px;
+
+        display: grid;
+        place-items: center;
+
+        color: #65758b;
+        background: transparent;
+
+        border: 0;
+        border-radius: 50%;
+    }
+
+    .customer-shared-center-nav {
+        height: 100%;
+
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        align-items: stretch;
+    }
+
+    .customer-shared-center-item {
+        position: relative;
+
+        min-width: 72px;
+        height: 100%;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        color: #606a78;
+
+        text-decoration: none;
+
+        font-size: 22px;
+
+        transition:
+            color 0.16s ease,
+            background 0.16s ease;
+    }
+
+    .customer-shared-center-item:hover {
+        color: #344257;
+        background: #f4f6f8;
+    }
+
+    .customer-shared-center-item.active {
+        color: var(--customer-nav-blue);
+    }
+
+    .customer-shared-center-item.active::after {
+        content: "";
+
+        position: absolute;
+
+        left: 17%;
+        right: 17%;
+        bottom: 0;
+
+        height: 3px;
+
+        background: var(--customer-nav-blue);
+
+        border-radius: 999px 999px 0 0;
+    }
+
+    .customer-shared-actions {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+
+        gap: 8px;
+    }
+
+    .customer-shared-action,
+    .customer-shared-profile {
+        position: relative;
+
+        width: 42px;
+        height: 42px;
+
+        flex: 0 0 42px;
+
+        display: grid;
+        place-items: center;
+
+        color: #101828;
+        background: #eef1f4;
+
+        border-radius: 50%;
+
+        text-decoration: none;
+
+        font-size: 18px;
+    }
+
+    .customer-shared-action:hover,
+    .customer-shared-profile:hover {
+        background: #e5e9ee;
+    }
+
+    .customer-shared-avatar {
+        width: 36px;
+        height: 36px;
+
+        display: grid;
+        place-items: center;
+
+        overflow: hidden;
+
+        color: #ffffff;
+        background: #314862;
+
+        border-radius: 50%;
+
+        font-size: 14px;
+    }
+
+    .customer-shared-avatar img {
+        width: 100%;
+        height: 100%;
+
+        display: block;
+
+        object-fit: cover;
+    }
+
+    .customer-shared-badge {
+        position: absolute;
+
+        top: -5px;
+        right: -4px;
+
+        min-width: 17px;
+        height: 17px;
+
+        padding: 0 4px;
+
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+
+        color: #ffffff;
+        background: #e11d48;
+
+        border: 2px solid #ffffff;
+        border-radius: 999px;
+
+        font-size: 7px;
+        font-weight: 800;
+        line-height: 1;
+    }
+
+    .customer-shared-badge[hidden] {
+        display: none !important;
+    }
+}
+
+
+/* ==========================================================
+   TABLET / MOBILE
+========================================================== */
+
+@media (max-width: 899px) {
+
+    body {
+        padding-bottom:
+            calc(68px + env(safe-area-inset-bottom));
+    }
+
+    .customer-shared-header {
+        display: none !important;
+    }
+}
 
 @media (max-width: 360px) {
 
     .bottom-nav {
-        height: calc(66px + env(safe-area-inset-bottom));
+        height:
+            calc(66px + env(safe-area-inset-bottom));
 
         padding-left: 3px;
         padding-right: 3px;
@@ -187,229 +510,20 @@
     }
 }
 
+
 /* ==========================================================
-   DESKTOP — FINAL INTEGRATED SIDEBAR
+   SAFETY: HOME MODULE MUST REMAIN UNCHANGED
 ========================================================== */
 
 @media (min-width: 900px) {
 
+    body.customer-home-nav-protected
     #customerBottomNav {
-        width: 100%;
-        min-width: 0;
-        min-height: 100vh;
-
-        background: #eef3f8;
-
-        border-right: 1px solid #dde6ef;
-    }
-
-    .bottom-nav {
-        position: sticky !important;
-
-        top: 0 !important;
-        left: auto !important;
-        right: auto !important;
-        bottom: auto !important;
-
-        width: 100% !important;
-        max-width: none !important;
-        height: 100vh !important;
-
-        margin: 0 !important;
-
-        padding:
-            22px
-            14px !important;
-
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: stretch !important;
-        justify-content: flex-start !important;
-
-        gap: 18px !important;
-
-        overflow-y: auto;
-
-        background: #eef3f8 !important;
-
-        border: 0 !important;
-        border-radius: 0 !important;
-
-        box-shadow: none !important;
-
-        backdrop-filter: none !important;
-        -webkit-backdrop-filter: none !important;
-
-        transform: none !important;
-    }
-
-    /* BRAND */
-
-    .customer-nav-brand {
-        width: 100%;
-        min-height: 58px;
-
-        display: flex !important;
-        align-items: center;
-
-        gap: 10px;
-
-        flex: 0 0 auto !important;
-
-        padding:
-            5px
-            8px;
-
-        color: #123d70;
-
-        text-decoration: none;
-    }
-
-    .customer-nav-logo {
-        width: 38px;
-        height: 38px;
-
-        display: block;
-
-        flex: 0 0 38px;
-
-        object-fit: contain;
-    }
-
-    .customer-nav-brand-copy {
-        min-width: 0;
-
-        display: flex;
-        flex-direction: column;
-
-        line-height: 1.15;
-    }
-
-    .customer-nav-brand-copy strong {
-        color: #123d70;
-
-        font-size: 14px;
-        font-weight: 800;
-
-        white-space: nowrap;
-    }
-
-    .customer-nav-brand-copy span {
-        margin-top: 2px;
-
-        color: #7a8da3;
-
-        font-size: 9px;
-        font-weight: 500;
-
-        white-space: nowrap;
-    }
-
-    /* MENU */
-
-    .customer-nav-menu {
-        width: 100%;
-        height: auto !important;
-
-        display: flex !important;
-        flex: 0 0 auto !important;
-        flex-direction: column !important;
-
-        align-items: stretch !important;
-        justify-content: flex-start !important;
-
-        gap: 5px !important;
-    }
-
-    /* ITEM */
-
-    .bottom-nav-item {
-        width: 100% !important;
-        min-width: 0 !important;
-        min-height: 46px !important;
-        height: 46px !important;
-        max-height: 46px !important;
-
-        flex:
-            0
-            0
-            46px !important;
-
-        display: flex !important;
-        flex-direction: row !important;
-        align-items: center !important;
-        justify-content: flex-start !important;
-
-        gap: 10px !important;
-
-        padding:
-            0
-            12px !important;
-
-        color: #5f7389;
-
-        background: transparent;
-
-        border-radius: 10px !important;
-
-        font-size: 12px !important;
-        font-weight: 600;
-
-        line-height: 1;
-    }
-
-    .bottom-icon {
-        width: 28px !important;
-        height: 28px !important;
-
-        display: flex !important;
-        align-items: center;
-        justify-content: center;
-
-        flex:
-            0
-            0
-            28px !important;
-
-        font-size: 16px !important;
-
-        transform: none !important;
-    }
-
-    .bottom-label {
-        display: block !important;
-
-        flex: 0 0 auto;
-
-        font-size: 12px;
-        line-height: 1;
-
-        white-space: nowrap;
-    }
-
-    /* ACTIVE — DESKTOP */
-
-    .bottom-nav-item.active {
-        color: #1264e8 !important;
-
-        background: #dfeeff !important;
-
-        font-weight: 700;
-    }
-
-    .bottom-nav-item.active .bottom-icon {
-        font-size: 16px !important;
-
-        transform: none !important;
-    }
-
-    .bottom-nav-item.active::after {
         display: none !important;
     }
 
-    .bottom-nav-item:hover {
-        color: #1264e8;
-
-        background: #e7f1fc;
+    body.customer-home-nav-protected
+    .customer-shared-header {
+        display: none !important;
     }
 }

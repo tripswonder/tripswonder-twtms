@@ -3654,3 +3654,534 @@ body.tw-modal-open {
         font-size: 21px;
     }
 }
+
+/* ==========================================================
+   FINAL COMPACT HEADER ACTIONS
+   Message / Notification / Profile balanced and easy to see
+   ========================================================== */
+
+@media (min-width: 900px) {
+
+    .tw-top-actions {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 8px;
+    }
+
+    .tw-top-icon {
+        position: relative;
+        width: 44px;
+        height: 44px;
+
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+
+        flex: 0 0 44px;
+
+        color: #344054;
+        background: #ffffff;
+
+        border: 1px solid #dfe5ec;
+        border-radius: 50%;
+
+        box-shadow:
+            0 3px 10px rgba(15, 23, 42, 0.06);
+
+        font-size: 21px;
+
+        transition:
+            background .16s ease,
+            color .16s ease,
+            border-color .16s ease,
+            box-shadow .16s ease,
+            transform .16s ease;
+    }
+
+    .tw-top-icon:hover {
+        color: #0b67df;
+        background: #f3f7ff;
+        border-color: #cfe0f7;
+
+        box-shadow:
+            0 5px 14px rgba(15, 23, 42, 0.08);
+    }
+
+    .tw-top-icon:active {
+        transform: scale(.96);
+    }
+
+    .tw-bell {
+        font-size: 21px;
+    }
+
+    .tw-top-icon .badge,
+    .tw-top-icon [class*="badge"],
+    #memberMessageBadge {
+        position: absolute;
+        top: -3px;
+        right: -3px;
+
+        min-width: 18px;
+        height: 18px;
+
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+
+        padding: 0 5px;
+
+        color: #ffffff;
+        background: #ef3340;
+
+        border: 2px solid #ffffff;
+        border-radius: 999px;
+
+        font-size: 9px;
+        font-weight: 800;
+        line-height: 1;
+
+        box-shadow:
+            0 2px 6px rgba(239, 51, 64, .22);
+    }
+
+    .tw-account-mini {
+        min-height: 44px;
+        max-width: 158px;
+
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+
+        margin-left: 2px;
+        padding: 3px 10px 3px 4px;
+
+        color: #182035;
+        background: #ffffff;
+
+        border: 1px solid #dfe5ec;
+        border-radius: 24px;
+
+        box-shadow:
+            0 3px 10px rgba(15, 23, 42, 0.06);
+
+        transition:
+            background .16s ease,
+            border-color .16s ease,
+            box-shadow .16s ease;
+    }
+
+    .tw-account-mini:hover {
+        background: #f8fafc;
+        border-color: #d3dce8;
+
+        box-shadow:
+            0 5px 14px rgba(15, 23, 42, 0.08);
+    }
+
+    .tw-account-mini .tw-avatar {
+        width: 36px;
+        height: 36px;
+
+        flex: 0 0 36px;
+
+        border: 1px solid #e1e6ec;
+    }
+
+    .tw-account-name {
+        min-width: 0;
+        max-width: 82px;
+
+        overflow: hidden;
+
+        color: #182035;
+
+        font-size: 12px;
+        font-weight: 700;
+
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .tw-account-mini > i {
+        flex: 0 0 auto;
+        color: #667085;
+        font-size: 9px;
+    }
+}
+
+
+/* Mobile remains compact */
+@media (max-width: 899px) {
+
+    .tw-top-actions {
+        gap: 4px;
+    }
+
+    .tw-top-icon {
+        width: 36px;
+        height: 36px;
+        flex-basis: 36px;
+        font-size: 17px;
+    }
+
+    .tw-bell {
+        font-size: 18px;
+    }
+
+    .tw-account-mini {
+        display: none;
+    }
+
+    .tw-top-icon .badge,
+    .tw-top-icon [class*="badge"],
+    #memberMessageBadge {
+        min-width: 16px;
+        height: 16px;
+        padding: 0 4px;
+        font-size: 8px;
+    }
+}
+
+/* ==========================================================
+   FINAL FIXED HEADER
+   Header stays visible while the Home feed scrolls
+   ========================================================== */
+
+/* Desktop */
+.tw-topbar {
+    position: fixed !important;
+    top: 0;
+    right: 0;
+    left: 285px;
+    z-index: 100;
+    width: auto;
+}
+
+/* Reserve the original 78px header space because fixed
+   elements are removed from normal document flow. */
+.tw-workspace {
+    padding-top: 78px;
+}
+
+/* Left rail becomes 235px in the existing tablet/desktop breakpoint. */
+@media (max-width: 1280px) and (min-width: 900px) {
+    .tw-topbar {
+        left: 235px;
+    }
+}
+
+/* Mobile */
+@media (max-width: 899px) {
+    .tw-topbar {
+        top: 0;
+        right: 0;
+        left: 0;
+        width: 100%;
+    }
+
+    .tw-workspace {
+        padding-top: 58px;
+    }
+}
+
+/* ==========================================================
+   FINAL MOBILE APP-STYLE HOME HEADER
+   Trips Wonder logo | Search | Message | Notification | Profile
+   Desktop layout remains unchanged.
+   ========================================================== */
+
+.tw-mobile-brand {
+    display: none;
+}
+
+@media (max-width: 899px) {
+
+    /* Fixed compact first row */
+    .tw-topbar {
+        height: 58px !important;
+        display: flex !important;
+        align-items: center;
+        gap: 7px !important;
+        padding: 0 10px !important;
+        background: rgba(255,255,255,.98);
+        border-bottom: 1px solid #e4e9f0;
+        box-shadow: 0 2px 8px rgba(15,23,42,.05);
+        backdrop-filter: blur(12px);
+    }
+
+    .tw-mobile-brand {
+        width: 38px;
+        height: 38px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 38px;
+        overflow: hidden;
+        border-radius: 50%;
+        text-decoration: none;
+    }
+
+    .tw-mobile-brand img {
+        width: 100%;
+        height: 100%;
+        display: block;
+        object-fit: contain;
+        border-radius: 50%;
+    }
+
+    /* Hide desktop search field; use the compact search icon. */
+    .tw-search-wrap {
+        display: none !important;
+    }
+
+    .tw-mobile-search-trigger {
+        width: 36px;
+        height: 36px;
+        display: inline-flex !important;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 36px;
+        margin-left: auto;
+        padding: 0;
+        color: #344054;
+        background: #f1f3f6;
+        border: 0;
+        border-radius: 50%;
+        font-size: 15px;
+        cursor: pointer;
+    }
+
+    .tw-top-actions {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        flex: 0 0 auto;
+    }
+
+    .tw-top-icon {
+        position: relative;
+        width: 36px;
+        height: 36px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 36px;
+        padding: 0;
+        color: #263044;
+        background: #f1f3f6;
+        border: 0;
+        border-radius: 50%;
+        text-decoration: none;
+        font-size: 17px;
+        box-shadow: none;
+    }
+
+    .tw-bell {
+        font-size: 18px;
+    }
+
+    /* Mobile profile = avatar only, like an app header. */
+    .tw-account-mini {
+        width: 36px !important;
+        height: 36px !important;
+        min-height: 36px !important;
+        max-width: 36px !important;
+        display: inline-flex !important;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 36px;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: visible;
+        background: transparent !important;
+        border: 0 !important;
+        border-radius: 50% !important;
+        box-shadow: none !important;
+    }
+
+    .tw-account-mini .tw-avatar {
+        width: 36px !important;
+        height: 36px !important;
+        flex: 0 0 36px;
+        border: 1px solid #dce3eb;
+        box-shadow: 0 1px 4px rgba(15,23,42,.08);
+    }
+
+    .tw-account-mini .tw-account-name,
+    .tw-account-mini > i {
+        display: none !important;
+    }
+
+    /* Clear, Facebook-style unread badge. */
+    .tw-top-icon .badge,
+    .tw-top-icon [class*="badge"],
+    #memberMessageBadge {
+        top: -4px !important;
+        right: -4px !important;
+        min-width: 17px !important;
+        height: 17px !important;
+        padding: 0 4px !important;
+        color: #fff;
+        background: #e41e3f;
+        border: 2px solid #fff;
+        border-radius: 999px;
+        font-size: 8px !important;
+        font-weight: 800;
+        line-height: 1;
+        box-shadow: none;
+    }
+
+    /* Feed starts immediately below the fixed header. */
+    .tw-workspace {
+        padding-top: 58px !important;
+    }
+
+    /* Composer becomes the second compact row visually. */
+    .tw-main {
+        padding-top: 10px;
+    }
+
+    .tw-post-composer {
+        min-height: 50px;
+        margin-bottom: 10px;
+        padding: 7px 9px;
+        gap: 7px;
+        border-radius: 11px;
+    }
+
+    .tw-composer-avatar {
+        width: 34px;
+        height: 34px;
+        flex: 0 0 34px;
+    }
+
+    .tw-composer-trigger {
+        height: 34px;
+        padding: 0 11px;
+        font-size: 11px;
+    }
+
+    .tw-composer-photo {
+        width: 34px;
+        height: 34px;
+        flex: 0 0 34px;
+        font-size: 17px;
+    }
+
+    /* Messenger remains directly below the fixed mobile header. */
+    .tw-messenger-panel {
+        top: 58px;
+    }
+}
+
+/* Extra-tight phones */
+@media (max-width: 374px) {
+    .tw-topbar {
+        gap: 4px !important;
+        padding-right: 7px !important;
+        padding-left: 7px !important;
+    }
+
+    .tw-mobile-brand {
+        width: 34px;
+        height: 34px;
+        flex-basis: 34px;
+    }
+
+    .tw-mobile-search-trigger,
+    .tw-top-icon,
+    .tw-account-mini,
+    .tw-account-mini .tw-avatar {
+        width: 34px !important;
+        height: 34px !important;
+        flex-basis: 34px !important;
+    }
+
+    .tw-top-actions {
+        gap: 3px;
+    }
+}
+
+/* ==========================================================
+   FINAL MOBILE HEADER ALIGNMENT
+   Logo + Search together on the left
+   Messages + Notifications + Profile on the right
+   ========================================================== */
+
+@media (max-width: 899px) {
+
+    .tw-topbar {
+        gap: 5px !important;
+        padding-left: 10px !important;
+        padding-right: 10px !important;
+    }
+
+    /* Keep search directly beside the Trips Wonder logo. */
+    .tw-mobile-brand {
+        margin-right: 0 !important;
+    }
+
+    .tw-mobile-search-trigger {
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+
+    /* Push only the communication/account group to the right. */
+    .tw-top-actions {
+        margin-left: auto !important;
+        gap: 5px !important;
+    }
+
+    /* Slightly clearer action controls. */
+    .tw-top-icon,
+    .tw-account-mini,
+    .tw-account-mini .tw-avatar {
+        width: 37px !important;
+        height: 37px !important;
+        flex-basis: 37px !important;
+    }
+
+    .tw-top-icon {
+        font-size: 18px !important;
+    }
+
+    .tw-bell {
+        font-size: 19px !important;
+    }
+
+    /* Cleaner badge position. */
+    .tw-top-icon .badge,
+    .tw-top-icon [class*="badge"],
+    #memberMessageBadge {
+        top: -5px !important;
+        right: -4px !important;
+    }
+
+    /* Slightly tighter second row under the header. */
+    .tw-main {
+        padding-top: 8px !important;
+    }
+}
+
+@media (max-width: 374px) {
+    .tw-topbar {
+        gap: 3px !important;
+        padding-left: 7px !important;
+        padding-right: 7px !important;
+    }
+
+    .tw-mobile-search-trigger,
+    .tw-top-icon,
+    .tw-account-mini,
+    .tw-account-mini .tw-avatar {
+        width: 34px !important;
+        height: 34px !important;
+        flex-basis: 34px !important;
+    }
+
+    .tw-top-actions {
+        gap: 3px !important;
+    }
+}
