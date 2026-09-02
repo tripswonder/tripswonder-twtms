@@ -2177,6 +2177,229 @@ exports.notifyCustomerOnBookingUpdate = onDocumentUpdated(
     },
 );
 
+
+// ======================================================
+// EXACT CUSTOMER MEMBER SEARCH
+// ======================================================
+
+exports.searchMemberExact = onCall(
+    async (request) => {
+
+      if (!request.auth) {
+        throw new HttpsError(
+            "unauthenticated",
+            "You must be logged in.",
+        );
+      }
+
+      const search =
+        String(
+            request.data?.search || "",
+        )
+            .trim()
+            .toLowerCase();
+
+      if (
+        search.length < 2 ||
+        search.length > 120
+      ) {
+        throw new HttpsError(
+            "invalid-argument",
+            "Enter a valid username or email.",
+        );
+      }
+
+      const requesterUid =
+        request.auth.uid;
+
+      const requesterDoc =
+        await db
+            .collection("users")
+            .doc(requesterUid)
+            .get();
+
+      if (!requesterDoc.exists) {
+        throw new HttpsError(
+            "permission-denied",
+            "Customer profile not found.",
+        );
+      }
+
+      const requester =
+        requesterDoc.data() || {};
+
+      const requesterRole =
+        String(
+            requester.role || "client",
+        )
+            .trim()
+            .toLowerCase();
+
+      if (
+        requesterRole !== "client" &&
+        requesterRole !== "customer"
+      ) {
+        throw new HttpsError(
+            "permission-denied",
+            "Customer account required.",
+        );
+      }
+
+      let matchedDoc = null;
+
+      if (search.includes("@")) {
+
+        const snapshot =
+          await db
+              .collection("users")
+              .where(
+                  "email",
+                  "==",
+                  search,
+              )
+              .limit(5)
+              .get();
+
+        matchedDoc =
+          snapshot.docs.find(
+              (item) =>
+                item.id !== requesterUid,
+          ) || null;
+
+      } else {
+
+        const fields = [
+          "username",
+          "displayName",
+          "fullName",
+          "name",
+          "customerName",
+        ];
+
+        for (const field of fields) {
+
+          const snapshot =
+            await db
+                .collection("users")
+                .where(
+                    field,
+                    "==",
+                    search,
+                )
+                .limit(5)
+                .get();
+
+          const candidate =
+            snapshot.docs.find(
+                (item) =>
+                  item.id !== requesterUid,
+            );
+
+          if (candidate) {
+            matchedDoc = candidate;
+            break;
+          }
+        }
+      }
+
+      if (!matchedDoc) {
+        return {
+          member: null,
+        };
+      }
+
+      const profile =
+        matchedDoc.data() || {};
+
+      const role =
+        String(
+            profile.role || "client",
+        )
+            .trim()
+            .toLowerCase();
+
+      const status =
+        String(
+            profile.status || "active",
+        )
+            .trim()
+            .toLowerCase();
+
+      if (
+        (
+          role !== "client" &&
+          role !== "customer"
+        ) ||
+        status !== "active"
+      ) {
+        return {
+          member: null,
+        };
+      }
+
+      const firstName =
+        String(
+            profile.firstName ||
+            profile.firstname ||
+            "",
+        ).trim();
+
+      const lastName =
+        String(
+            profile.lastName ||
+            profile.lastname ||
+            "",
+        ).trim();
+
+      const displayName =
+        [firstName, lastName]
+            .filter(Boolean)
+            .join(" ")
+            .trim() ||
+        String(
+            profile.displayName ||
+            profile.fullName ||
+            profile.name ||
+            profile.customerName ||
+            profile.username ||
+            "Trips Wonder Member",
+        ).trim();
+
+      const avatar =
+        String(
+            profile.profilePhotoUrl ||
+            profile.profilePhoto ||
+            profile.photoURL ||
+            profile.photoUrl ||
+            profile.avatarUrl ||
+            profile.avatar ||
+            profile.imageUrl ||
+            "",
+        ).trim();
+
+      return {
+        member: {
+          uid: matchedDoc.id,
+          firstName,
+          lastName,
+          displayName,
+          username:
+            String(
+                profile.username || "",
+            ).trim(),
+          email:
+            String(
+                profile.email || "",
+            ).trim(),
+          profilePhotoUrl:
+            avatar,
+          role:
+            "client",
+        },
+      };
+    },
+);
+
 // ======================================================
 // END OF FIREBASE FUNCTIONS
 // ======================================================

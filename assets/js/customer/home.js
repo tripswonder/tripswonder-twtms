@@ -36,7 +36,9 @@ import {
     onSnapshot,
     query,
     where,
-    serverTimestamp
+    serverTimestamp,
+    addDoc,
+    arrayUnion
 
 } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
@@ -49,6 +51,12 @@ import {
     deleteObject
 
 } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-storage.js";
+
+
+import {
+    getFunctions,
+    httpsCallable
+} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-functions.js";
 
 
 /* ==========================================================
@@ -5079,6 +5087,788 @@ upcomingTripButton
     );
 
 
+
+
+/* ==========================================================
+   MEMBER-TO-MEMBER MESSENGER
+   One initial message until the recipient replies.
+   ========================================================== */
+
+const memberMessageTrigger = document.getElementById("memberMessageTrigger");
+const memberMessageBadge = document.getElementById("memberMessageBadge");
+const memberMessengerPanel = document.getElementById("memberMessengerPanel");
+const memberMessengerInbox = document.getElementById("memberMessengerInbox");
+const memberChatView = document.getElementById("memberChatView");
+const memberSearchInput = document.getElementById("memberSearchInput");
+const memberSearchClear = document.getElementById("memberSearchClear");
+const memberSearchResults = document.getElementById("memberSearchResults");
+const memberChatList = document.getElementById("memberChatList");
+const memberChatBack = document.getElementById("memberChatBack");
+const memberChatAvatar = document.getElementById("memberChatAvatar");
+const memberChatName = document.getElementById("memberChatName");
+const memberChatStatus = document.getElementById("memberChatStatus");
+const memberChatMessages = document.getElementById("memberChatMessages");
+const memberChatRequestInfo = document.getElementById("memberChatRequestInfo");
+const memberChatRequestText = document.getElementById("memberChatRequestText");
+const memberChatForm = document.getElementById("memberChatForm");
+const memberChatInput = document.getElementById("memberChatInput");
+const memberChatSend = document.getElementById("memberChatSend");
+
+let memberConversationUnsubscribe = null;
+let memberMessagesUnsubscribe = null;
+let memberConversations = [];
+let activeMemberConversation = null;
+let activeMemberProfile = null;
+let activeMemberTab = "chats";
+let memberSearchTimer = null;
+
+function memberConversationId(uidA, uidB) {
+    return [String(uidA), String(uidB)].sort().join("__");
+}
+
+function memberProfileName(profile = {}) {
+    const full = [
+        profile.firstName || profile.firstname || profile.givenName || "",
+        profile.lastName || profile.lastname || profile.surname || ""
+    ].filter(Boolean).join(" ").trim();
+
+    return full ||
+        String(
+            profile.displayName ||
+            profile.fullName ||
+            profile.name ||
+            profile.customerName ||
+            profile.username ||
+            profile.email ||
+            "Trips Wonder Member"
+        ).trim();
+}
+
+function memberProfileAvatar(profile = {}) {
+    return String(
+        profile.profilePhotoUrl ||
+        profile.profilePhoto ||
+        profile.photoURL ||
+        profile.photoUrl ||
+        profile.avatarUrl ||
+        profile.avatar ||
+        profile.imageUrl ||
+        ""
+    ).trim();
+}
+
+function memberAvatarHtml(profile = {}) {
+    const avatar = memberProfileAvatar(profile);
+    return avatar
+        ? `<img src="${escapeHtml(avatar)}" alt="" loading="lazy">`
+        : `<i class="fa-solid fa-user"></i>`;
+}
+
+function memberTimestampDate(value) {
+    if (!value) return null;
+    if (typeof value.toDate === "function") return value.toDate();
+    const parsed = value instanceof Date ? value : new Date(value);
+    return Number.isNaN(parsed.getTime()) ? null : parsed;
+}
+
+function memberTimeLabel(value) {
+    const date = memberTimestampDate(value);
+    if (!date) return "";
+    const now = new Date();
+    const sameDay = date.toDateString() === now.toDateString();
+    return sameDay
+        ? date.toLocaleTimeString("en-PH", { hour: "numeric", minute: "2-digit" })
+        : date.toLocaleDateString("en-PH", { month: "short", day: "numeric" });
+}
+
+function memberOtherUid(conversation) {
+    return (conversation?.participants || []).find(uid => uid !== currentUser?.uid) || "";
+}
+
+function memberOtherProfile(conversation) {
+    const otherUid = memberOtherUid(conversation);
+    const profiles = conversation?.participantProfiles || {};
+    return { uid: otherUid, ...(profiles[otherUid] || {}) };
+}
+
+function memberIsIncomingRequest(conversation) {
+    return conversation?.requestState === "pending" &&
+        conversation?.requestSenderUid &&
+        conversation.requestSenderUid !== currentUser?.uid;
+}
+
+function memberIsOutgoingWaiting(conversation) {
+    return conversation?.requestState === "pending" &&
+        conversation?.requestSenderUid === currentUser?.uid &&
+        !conversation?.recipientReplyAt;
+}
+
+function setMemberMessageBadge(count) {
+    if (!memberMessageBadge) return;
+    const safeCount = Math.max(0, Number(count) || 0);
+    memberMessageBadge.textContent = safeCount > 99 ? "99+" : String(safeCount);
+    memberMessageBadge.hidden = safeCount === 0;
+}
+
+function openMemberMessenger() {
+    if (!memberMessengerPanel) return;
+    memberMessengerPanel.hidden = false;
+    memberMessengerPanel.setAttribute("aria-hidden", "false");
+    memberMessageTrigger?.setAttribute("aria-expanded", "true");
+    showMemberInbox();
+    setTimeout(() => memberSearchInput?.focus(), 50);
+}
+
+function closeMemberMessenger() {
+    if (!memberMessengerPanel) return;
+    memberMessengerPanel.hidden = true;
+    memberMessengerPanel.setAttribute("aria-hidden", "true");
+    memberMessageTrigger?.setAttribute("aria-expanded", "false");
+}
+
+function showMemberInbox() {
+    if (memberMessengerInbox) memberMessengerInbox.hidden = false;
+    if (memberChatView) memberChatView.hidden = true;
+    activeMemberConversation = null;
+    activeMemberProfile = null;
+    if (memberMessagesUnsubscribe) {
+        memberMessagesUnsubscribe();
+        memberMessagesUnsubscribe = null;
+    }
+    renderMemberConversationList();
+}
+
+memberMessageTrigger?.addEventListener("click", event => {
+    event.preventDefault();
+    event.stopPropagation();
+    if (memberMessengerPanel?.hidden) openMemberMessenger();
+    else closeMemberMessenger();
+});
+
+memberMessengerPanel?.addEventListener("click", event => event.stopPropagation());
+document.addEventListener("click", () => {
+    if (memberMessengerPanel && !memberMessengerPanel.hidden) closeMemberMessenger();
+});
+document.addEventListener("keydown", event => {
+    if (event.key === "Escape" && memberMessengerPanel && !memberMessengerPanel.hidden) {
+        closeMemberMessenger();
+    }
+});
+memberChatBack?.addEventListener("click", showMemberInbox);
+
+document.querySelectorAll("[data-member-tab]").forEach(button => {
+    button.addEventListener("click", () => {
+        activeMemberTab = button.dataset.memberTab || "chats";
+        document.querySelectorAll("[data-member-tab]").forEach(item => {
+            item.classList.toggle("active", item === button);
+        });
+        renderMemberConversationList();
+    });
+});
+
+const memberSearchFunctions =
+    getFunctions();
+
+const searchMemberExactCallable =
+    httpsCallable(
+        memberSearchFunctions,
+        "searchMemberExact"
+    );
+
+
+async function searchMemberDirectory(term) {
+
+    const raw =
+        String(
+            term || ""
+        ).trim();
+
+    if (
+        !raw ||
+        raw.length < 2 ||
+        !currentUser
+    ) {
+
+        if (memberSearchResults) {
+            memberSearchResults.hidden =
+                true;
+
+            memberSearchResults.innerHTML =
+                "";
+        }
+
+        return;
+    }
+
+
+    if (memberSearchResults) {
+
+        memberSearchResults.hidden =
+            false;
+
+        memberSearchResults.innerHTML = `
+            <div class="tw-messenger-empty" style="min-height:110px">
+                <i class="fa-solid fa-spinner fa-spin"></i>
+                <strong>Searching member...</strong>
+                <span>Checking exact username or email.</span>
+            </div>
+        `;
+    }
+
+
+    try {
+
+        const response =
+            await searchMemberExactCallable(
+                {
+                    search:
+                        raw
+                }
+            );
+
+
+        const member =
+            response?.data?.member ||
+            null;
+
+
+        renderMemberSearchResults(
+            member
+                ? [member]
+                : [],
+            raw
+        );
+
+    } catch (error) {
+
+        console.error(
+            "MEMBER SEARCH ERROR:",
+            error
+        );
+
+
+        renderMemberSearchResults(
+            [],
+            raw
+        );
+
+    }
+
+}
+
+
+function renderMemberSearchResults(results, term) {
+    if (!memberSearchResults) return;
+    memberSearchResults.hidden = false;
+
+    if (!results.length) {
+        memberSearchResults.innerHTML = `
+            <div class="tw-messenger-empty" style="min-height:110px">
+                <i class="fa-solid fa-user-magnifying-glass"></i>
+                <strong>No member found</strong>
+                <span>Try the exact username or email address.</span>
+            </div>
+        `;
+        return;
+    }
+
+    memberSearchResults.innerHTML = "";
+
+    results.forEach(profile => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "tw-member-result";
+        button.innerHTML = `
+            <span class="tw-member-avatar">${memberAvatarHtml(profile)}</span>
+            <span class="tw-member-copy">
+                <strong>${escapeHtml(memberProfileName(profile))}</strong>
+                <small>${escapeHtml(profile.email || profile.username || "Trips Wonder member")}</small>
+            </span>
+            <i class="fa-regular fa-message"></i>
+        `;
+        button.addEventListener("click", () => openMemberConversationWith(profile));
+        memberSearchResults.appendChild(button);
+    });
+}
+
+memberSearchInput?.addEventListener("input", event => {
+    const term = event.target.value || "";
+    if (memberSearchClear) memberSearchClear.hidden = !term.trim();
+    clearTimeout(memberSearchTimer);
+    memberSearchTimer = setTimeout(() => searchMemberDirectory(term), 350);
+});
+
+memberSearchClear?.addEventListener("click", () => {
+    if (memberSearchInput) memberSearchInput.value = "";
+    memberSearchClear.hidden = true;
+    if (memberSearchResults) {
+        memberSearchResults.hidden = true;
+        memberSearchResults.innerHTML = "";
+    }
+    memberSearchInput?.focus();
+});
+
+async function openMemberConversationWith(profile) {
+    if (!currentUser || !profile?.uid) return;
+
+    const conversationId =
+        memberConversationId(
+            currentUser.uid,
+            profile.uid
+        );
+
+    /*
+     * IMPORTANT:
+     * Do not getDoc() a conversation that may not exist yet.
+     * Firestore rules protect memberConversations by participant,
+     * and a missing document has no resource.data.participants.
+     *
+     * The real-time memberConversations listener already contains
+     * every conversation where the signed-in customer participates.
+     */
+    const existingConversation =
+        memberConversations.find(
+            conversation =>
+                conversation.id ===
+                conversationId
+        );
+
+    if (existingConversation) {
+
+        await openMemberConversation(
+            existingConversation
+        );
+
+        return;
+    }
+
+    activeMemberConversation = {
+        id:
+            conversationId,
+
+        participants: [
+            currentUser.uid,
+            profile.uid
+        ],
+
+        participantProfiles: {
+            [currentUser.uid]: {
+                name:
+                    memberProfileName(
+                        currentProfile ||
+                        {}
+                    ),
+
+                email:
+                    currentProfile?.email ||
+                    currentUser.email ||
+                    "",
+
+                avatar:
+                    getCustomerAvatarUrl()
+            },
+
+            [profile.uid]: {
+                name:
+                    memberProfileName(
+                        profile
+                    ),
+
+                email:
+                    profile.email ||
+                    "",
+
+                avatar:
+                    memberProfileAvatar(
+                        profile
+                    )
+            }
+        },
+
+        requestState:
+            "new"
+    };
+
+    activeMemberProfile =
+        profile;
+
+    renderOpenMemberChat();
+
+    /*
+     * IMPORTANT:
+     * Do not subscribe to the messages subcollection yet.
+     * The parent conversation document does not exist until
+     * the first message request is actually sent.
+     *
+     * Firestore rules correctly deny reads under a missing
+     * parent conversation, so we simply render the local
+     * empty-chat state for a brand-new conversation.
+     */
+    renderMemberMessages(
+        []
+    );
+}
+
+async function openMemberConversation(conversation) {
+    activeMemberConversation = conversation;
+    activeMemberProfile = memberOtherProfile(conversation);
+    renderOpenMemberChat();
+    subscribeMemberMessages(conversation.id);
+
+    if (conversation.lastMessageSenderUid &&
+        conversation.lastMessageSenderUid !== currentUser?.uid) {
+        try {
+            await updateDoc(doc(db, "memberConversations", conversation.id), {
+                [`unread.${currentUser.uid}`]: 0
+            });
+        } catch (error) {
+            console.warn("MEMBER READ UPDATE:", error);
+        }
+    }
+}
+
+function renderOpenMemberChat() {
+    if (!activeMemberConversation || !activeMemberProfile) return;
+    if (memberMessengerInbox) memberMessengerInbox.hidden = true;
+    if (memberChatView) memberChatView.hidden = false;
+
+    if (memberChatName) memberChatName.textContent = memberProfileName(activeMemberProfile);
+    if (memberChatAvatar) memberChatAvatar.innerHTML = memberAvatarHtml(activeMemberProfile);
+
+    const incoming = memberIsIncomingRequest(activeMemberConversation);
+    const waiting = memberIsOutgoingWaiting(activeMemberConversation);
+
+    if (memberChatStatus) {
+        memberChatStatus.textContent =
+            incoming ? "Message request" :
+            waiting ? "Waiting for reply" :
+            "Trips Wonder member";
+    }
+
+    if (memberChatRequestInfo && memberChatRequestText) {
+        if (waiting) {
+            memberChatRequestInfo.hidden = false;
+            memberChatRequestText.textContent =
+                "Your first message was sent. You can send more messages after this member replies.";
+        } else if (incoming) {
+            memberChatRequestInfo.hidden = false;
+            memberChatRequestText.textContent =
+                "This member sent you a message request. Replying will open the conversation for both of you.";
+        } else {
+            memberChatRequestInfo.hidden = true;
+            memberChatRequestText.textContent = "";
+        }
+    }
+
+    if (memberChatInput && memberChatSend) {
+        memberChatInput.disabled = waiting;
+        memberChatSend.disabled = waiting;
+        memberChatInput.placeholder = waiting
+            ? "Waiting for this member to reply..."
+            : "Write a message...";
+    }
+}
+
+function subscribeMemberConversations() {
+    if (!currentUser) return;
+    if (memberConversationUnsubscribe) memberConversationUnsubscribe();
+
+    const conversationQuery = query(
+        collection(db, "memberConversations"),
+        where("participants", "array-contains", currentUser.uid)
+    );
+
+    memberConversationUnsubscribe = onSnapshot(
+        conversationQuery,
+        snapshot => {
+            memberConversations = snapshot.docs.map(item => ({
+                id: item.id,
+                ...item.data()
+            })).sort((a, b) => {
+                const aDate = memberTimestampDate(a.updatedAt || a.createdAt)?.getTime() || 0;
+                const bDate = memberTimestampDate(b.updatedAt || b.createdAt)?.getTime() || 0;
+                return bDate - aDate;
+            });
+
+            const unreadCount = memberConversations.reduce((sum, conversation) => {
+                const unread = conversation?.unread?.[currentUser.uid];
+                return sum + (Number(unread) || 0);
+            }, 0);
+
+            setMemberMessageBadge(unreadCount);
+            renderMemberConversationList();
+
+            if (activeMemberConversation) {
+                const fresh = memberConversations.find(item => item.id === activeMemberConversation.id);
+                if (fresh) {
+                    activeMemberConversation = fresh;
+                    activeMemberProfile = memberOtherProfile(fresh);
+                    renderOpenMemberChat();
+                }
+            }
+        },
+        error => console.error("MEMBER CONVERSATIONS ERROR:", error)
+    );
+}
+
+function renderMemberConversationList() {
+    if (!memberChatList || !currentUser) return;
+
+    const rows = memberConversations.filter(conversation => {
+        const incoming = memberIsIncomingRequest(conversation);
+        return activeMemberTab === "requests" ? incoming : !incoming;
+    });
+
+    if (!rows.length) {
+        memberChatList.innerHTML = `
+            <div class="tw-messenger-empty">
+                <i class="${activeMemberTab === "requests" ? "fa-regular fa-envelope" : "fa-regular fa-comments"}"></i>
+                <strong>${activeMemberTab === "requests" ? "No message requests" : "No conversations yet"}</strong>
+                <span>${activeMemberTab === "requests"
+                    ? "New member requests will appear here."
+                    : "Search a username or email above to start a conversation."}</span>
+            </div>
+        `;
+        return;
+    }
+
+    memberChatList.innerHTML = "";
+
+    rows.forEach(conversation => {
+        const profile = memberOtherProfile(conversation);
+        const unread = Number(conversation?.unread?.[currentUser.uid]) || 0;
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "tw-member-chat-row";
+        button.innerHTML = `
+            <span class="tw-member-avatar">${memberAvatarHtml(profile)}</span>
+            <span class="tw-member-chat-copy">
+                <strong>${escapeHtml(memberProfileName(profile))}</strong>
+                <small>${escapeHtml(conversation.lastMessage || "Start a conversation")}</small>
+            </span>
+            <span class="tw-chat-meta">
+                ${escapeHtml(memberTimeLabel(conversation.updatedAt || conversation.createdAt))}
+                ${unread ? '<span class="tw-chat-unread-dot"></span>' : ""}
+            </span>
+        `;
+        button.addEventListener("click", () => openMemberConversation(conversation));
+        memberChatList.appendChild(button);
+    });
+}
+
+function subscribeMemberMessages(conversationId) {
+    if (memberMessagesUnsubscribe) memberMessagesUnsubscribe();
+
+    memberMessagesUnsubscribe = onSnapshot(
+        collection(db, "memberConversations", conversationId, "messages"),
+        snapshot => {
+            const messages = snapshot.docs.map(item => ({
+                id: item.id,
+                ...item.data()
+            })).sort((a, b) => {
+                const aDate = memberTimestampDate(a.createdAt)?.getTime() || 0;
+                const bDate = memberTimestampDate(b.createdAt)?.getTime() || 0;
+                return aDate - bDate;
+            });
+            renderMemberMessages(messages);
+        },
+        error => console.error("MEMBER MESSAGES ERROR:", error)
+    );
+}
+
+function renderMemberMessages(messages) {
+    if (!memberChatMessages) return;
+
+    if (!messages.length) {
+        memberChatMessages.innerHTML = `
+            <div class="tw-messenger-empty">
+                <i class="fa-regular fa-message"></i>
+                <strong>Start the conversation</strong>
+                <span>Your first message acts as a message request.</span>
+            </div>
+        `;
+        return;
+    }
+
+    memberChatMessages.innerHTML = "";
+
+    messages.forEach(message => {
+        const bubble = document.createElement("div");
+        bubble.className = "tw-message-bubble" +
+            (message.senderUid === currentUser?.uid ? " mine" : "");
+        bubble.innerHTML = `
+            ${escapeHtml(message.text || "")}
+            <span class="tw-message-time">${escapeHtml(memberTimeLabel(message.createdAt))}</span>
+        `;
+        memberChatMessages.appendChild(bubble);
+    });
+
+    requestAnimationFrame(() => {
+        memberChatMessages.scrollTop = memberChatMessages.scrollHeight;
+    });
+}
+
+memberChatInput?.addEventListener("input", () => {
+    memberChatInput.style.height = "auto";
+    memberChatInput.style.height = Math.min(memberChatInput.scrollHeight, 100) + "px";
+});
+
+memberChatForm?.addEventListener("submit", async event => {
+    event.preventDefault();
+
+    const text = String(memberChatInput?.value || "").trim();
+    if (!text || !currentUser || !activeMemberConversation || !activeMemberProfile) return;
+
+    if (memberIsOutgoingWaiting(activeMemberConversation)) {
+        renderOpenMemberChat();
+        return;
+    }
+
+    const conversationId = activeMemberConversation.id ||
+        memberConversationId(currentUser.uid, activeMemberProfile.uid);
+    const conversationRef = doc(db, "memberConversations", conversationId);
+    const otherUid = activeMemberProfile.uid || memberOtherUid(activeMemberConversation);
+    const isNew = activeMemberConversation.requestState === "new";
+    const incomingRequest = memberIsIncomingRequest(activeMemberConversation);
+
+    if (memberChatInput) memberChatInput.disabled = true;
+    if (memberChatSend) memberChatSend.disabled = true;
+
+    try {
+        const currentSafeProfile = {
+            name: memberProfileName(currentProfile || {}),
+            email: currentProfile?.email || currentUser.email || "",
+            avatar: getCustomerAvatarUrl()
+        };
+        const otherSafeProfile = {
+            name: memberProfileName(activeMemberProfile),
+            email: activeMemberProfile.email || "",
+            avatar: memberProfileAvatar(activeMemberProfile)
+        };
+
+        if (isNew) {
+            await setDoc(conversationRef, {
+                participants: [currentUser.uid, otherUid],
+                participantProfiles: {
+                    [currentUser.uid]: currentSafeProfile,
+                    [otherUid]: otherSafeProfile
+                },
+                requestState: "pending",
+                requestSenderUid: currentUser.uid,
+                recipientReplyAt: null,
+                createdAt: serverTimestamp(),
+                updatedAt: serverTimestamp(),
+                lastMessage: text,
+                lastMessageSenderUid: currentUser.uid,
+                unread: {
+                    [currentUser.uid]: 0,
+                    [otherUid]: 1
+                }
+            });
+        } else {
+            const updates = {
+                updatedAt: serverTimestamp(),
+                lastMessage: text,
+                lastMessageSenderUid: currentUser.uid,
+                [`unread.${currentUser.uid}`]: 0,
+                [`unread.${otherUid}`]: (Number(activeMemberConversation?.unread?.[otherUid]) || 0) + 1
+            };
+
+            if (incomingRequest) {
+                updates.requestState = "accepted";
+                updates.recipientReplyAt = serverTimestamp();
+            }
+
+            await updateDoc(conversationRef, updates);
+        }
+
+        const messageData = {
+            senderUid: currentUser.uid,
+            recipientUid: otherUid,
+            text,
+            createdAt: serverTimestamp()
+        };
+
+        if (isNew) {
+
+            // Security rule: only one initial request message is permitted.
+            // A fixed document id prevents duplicate/spam request messages.
+            await setDoc(
+                doc(
+                    db,
+                    "memberConversations",
+                    conversationId,
+                    "messages",
+                    "request"
+                ),
+                messageData
+            );
+
+        } else {
+
+            await addDoc(
+                collection(
+                    db,
+                    "memberConversations",
+                    conversationId,
+                    "messages"
+                ),
+                messageData
+            );
+
+        }
+
+        if (memberChatInput) {
+            memberChatInput.value = "";
+            memberChatInput.style.height = "auto";
+        }
+
+        const fresh = await getDoc(conversationRef);
+
+        if (fresh.exists()) {
+
+            activeMemberConversation = {
+                id:
+                    fresh.id,
+                ...fresh.data()
+            };
+
+            activeMemberProfile =
+                memberOtherProfile(
+                    activeMemberConversation
+                );
+
+            renderOpenMemberChat();
+
+            /*
+             * The parent conversation now exists, so the
+             * messages listener is permitted by Firestore.
+             */
+            subscribeMemberMessages(
+                conversationId
+            );
+        }
+    } catch (error) {
+        console.error("MEMBER SEND ERROR:", error);
+        if (memberChatRequestInfo && memberChatRequestText) {
+            memberChatRequestInfo.hidden = false;
+            memberChatRequestText.textContent =
+                "Message could not be sent. Check your Firestore rules for memberConversations.";
+        }
+    } finally {
+        if (!memberIsOutgoingWaiting(activeMemberConversation)) {
+            if (memberChatInput) memberChatInput.disabled = false;
+            if (memberChatSend) memberChatSend.disabled = false;
+            memberChatInput?.focus();
+        }
+    }
+});
+
+function startMemberMessenger() {
+    subscribeMemberConversations();
+}
+
+
 /* ==========================================================
    AUTH + HOME INITIALIZATION
    ========================================================== */
@@ -5118,6 +5908,9 @@ onAuthStateChanged(
 
             /* Show the actual customer's first name in the Home profile */
             renderCustomerProfile();
+
+            /* Start member-to-member Messenger after profile is ready */
+            startMemberMessenger();
 
 
             const role =

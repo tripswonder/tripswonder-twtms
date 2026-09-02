@@ -78,9 +78,15 @@
             </button>
 
             <div class="tw-top-actions">
-                <a href="message.html" class="tw-top-icon" aria-label="Messages" title="Messages">
+                <button type="button"
+                        class="tw-top-icon tw-message-trigger"
+                        id="memberMessageTrigger"
+                        aria-label="Messages"
+                        title="Messages"
+                        aria-expanded="false">
                     <i class="fa-regular fa-comment-dots"></i>
-                </a>
+                    <span class="tw-message-badge" id="memberMessageBadge" hidden>0</span>
+                </button>
 
                 <a href="message.html#notifications" class="tw-top-icon tw-bell" aria-label="Notifications" title="Notifications">
                     <i class="fa-regular fa-bell"></i>
@@ -93,6 +99,88 @@
                 </a>
             </div>
         </header>
+
+        <!-- Member-to-member Messenger panel -->
+        <aside class="tw-messenger-panel"
+               id="memberMessengerPanel"
+               aria-label="Member messages"
+               aria-hidden="true"
+               hidden>
+
+            <div class="tw-messenger-view tw-messenger-inbox" id="memberMessengerInbox">
+                <header class="tw-messenger-head">
+                    <div>
+                        <h2>Messages</h2>
+                        <p>Trips Wonder Community</p>
+                    </div>
+                    <a href="message.html" class="tw-messenger-open-page" aria-label="Open full messages">
+                        <i class="fa-solid fa-up-right-from-square"></i>
+                    </a>
+                </header>
+
+                <div class="tw-member-search">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input id="memberSearchInput"
+                           type="search"
+                           placeholder="Search username or email"
+                           autocomplete="off">
+                    <button type="button" id="memberSearchClear" aria-label="Clear search" hidden>
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <p class="tw-member-search-note">
+                    Members only appear after you search their username or email.
+                </p>
+
+                <div class="tw-member-search-results" id="memberSearchResults" hidden></div>
+
+                <div class="tw-messenger-tabs" role="tablist">
+                    <button type="button" class="active" data-member-tab="chats">Chats</button>
+                    <button type="button" data-member-tab="requests">Requests</button>
+                </div>
+
+                <div class="tw-member-chat-list" id="memberChatList">
+                    <div class="tw-messenger-empty">
+                        <i class="fa-regular fa-comments"></i>
+                        <strong>No conversations yet</strong>
+                        <span>Search a member above to start a conversation.</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tw-messenger-view tw-chat-view" id="memberChatView" hidden>
+                <header class="tw-chat-head">
+                    <button type="button" class="tw-chat-back" id="memberChatBack" aria-label="Back to chats">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+                    <span class="tw-chat-avatar" id="memberChatAvatar">
+                        <i class="fa-solid fa-user"></i>
+                    </span>
+                    <div class="tw-chat-person">
+                        <strong id="memberChatName">Member</strong>
+                        <small id="memberChatStatus">Trips Wonder member</small>
+                    </div>
+                </header>
+
+                <div class="tw-chat-messages" id="memberChatMessages"></div>
+
+                <div class="tw-chat-request-info" id="memberChatRequestInfo" hidden>
+                    <i class="fa-solid fa-shield-heart"></i>
+                    <span id="memberChatRequestText"></span>
+                </div>
+
+                <form class="tw-chat-composer" id="memberChatForm">
+                    <textarea id="memberChatInput"
+                              rows="1"
+                              maxlength="1000"
+                              placeholder="Write a message..."></textarea>
+                    <button type="submit" id="memberChatSend" aria-label="Send message">
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </form>
+            </div>
+        </aside>
 
         <main class="tw-main">
 

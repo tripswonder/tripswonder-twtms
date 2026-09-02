@@ -3177,3 +3177,480 @@ body.tw-modal-open {
 .tw-feed-list {
     margin-top: 0;
 }
+
+
+/* ==========================================================
+   MEMBER MESSENGER — HEADER POPUP
+   ========================================================== */
+
+.tw-message-trigger {
+    position: relative;
+    appearance: none;
+    -webkit-appearance: none;
+    border: 0;
+    background: transparent;
+}
+
+.tw-message-badge {
+    position: absolute;
+    top: -7px;
+    right: -9px;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    background: #e41e3f;
+    border: 2px solid #fff;
+    border-radius: 999px;
+    font-size: 9px;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.tw-messenger-panel {
+    position: fixed;
+    top: 68px;
+    right: 20px;
+    z-index: 150;
+    width: min(390px, calc(100vw - 32px));
+    height: min(680px, calc(100vh - 88px));
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid #e1e6ed;
+    border-radius: 18px;
+    box-shadow: 0 18px 50px rgba(15, 23, 42, .20);
+}
+
+.tw-messenger-view {
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+}
+
+.tw-messenger-inbox {
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+}
+
+.tw-messenger-head,
+.tw-chat-head {
+    display: flex;
+    align-items: center;
+}
+
+.tw-messenger-head {
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 13px;
+}
+
+.tw-messenger-head h2 {
+    margin: 0;
+    color: #111827;
+    font-size: 24px;
+    font-weight: 800;
+}
+
+.tw-messenger-head p {
+    margin: 2px 0 0;
+    color: #667085;
+    font-size: 11px;
+}
+
+.tw-messenger-open-page,
+.tw-chat-back {
+    width: 36px;
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    color: #344054;
+    background: #f2f4f7;
+    border: 0;
+    border-radius: 50%;
+    text-decoration: none;
+}
+
+.tw-member-search {
+    height: 42px;
+    display: grid;
+    grid-template-columns: 20px minmax(0, 1fr) 28px;
+    align-items: center;
+    gap: 8px;
+    padding: 0 11px;
+    background: #f2f4f7;
+    border-radius: 21px;
+}
+
+.tw-member-search > i {
+    color: #667085;
+    font-size: 14px;
+}
+
+.tw-member-search input {
+    width: 100%;
+    min-width: 0;
+    padding: 0;
+    color: #1d2939;
+    background: transparent;
+    border: 0;
+    outline: 0;
+    font-size: 12px;
+}
+
+.tw-member-search button {
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    color: #667085;
+    background: transparent;
+    border: 0;
+    border-radius: 50%;
+}
+
+.tw-member-search-note {
+    margin: 8px 4px 10px;
+    color: #98a2b3;
+    font-size: 9px;
+    line-height: 1.45;
+}
+
+.tw-member-search-results {
+    max-height: 210px;
+    margin-bottom: 8px;
+    overflow-y: auto;
+    background: #fff;
+    border: 1px solid #eaecf0;
+    border-radius: 12px;
+}
+
+.tw-member-result,
+.tw-member-chat-row {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 8px;
+    text-align: left;
+    background: transparent;
+    border: 0;
+    border-radius: 10px;
+}
+
+.tw-member-result:hover,
+.tw-member-chat-row:hover {
+    background: #f7f9fc;
+}
+
+.tw-member-avatar,
+.tw-chat-avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    color: #fff;
+    background: linear-gradient(135deg, #6b7280, #344054);
+    border-radius: 50%;
+}
+
+.tw-member-avatar {
+    width: 44px;
+    height: 44px;
+}
+
+.tw-member-avatar img,
+.tw-chat-avatar img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+}
+
+.tw-member-copy,
+.tw-member-chat-copy {
+    min-width: 0;
+}
+
+.tw-member-copy strong,
+.tw-member-copy small,
+.tw-member-chat-copy strong,
+.tw-member-chat-copy small {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.tw-member-copy strong,
+.tw-member-chat-copy strong {
+    color: #1d2939;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.tw-member-copy small,
+.tw-member-chat-copy small {
+    margin-top: 2px;
+    color: #667085;
+    font-size: 10px;
+}
+
+.tw-member-result > i {
+    color: #1570ef;
+    font-size: 13px;
+}
+
+.tw-messenger-tabs {
+    display: flex;
+    gap: 6px;
+    margin: 2px 0 8px;
+}
+
+.tw-messenger-tabs button {
+    height: 32px;
+    padding: 0 13px;
+    color: #475467;
+    background: transparent;
+    border: 0;
+    border-radius: 16px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.tw-messenger-tabs button.active {
+    color: #0560db;
+    background: #e8f1ff;
+}
+
+.tw-member-chat-list {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+}
+
+.tw-member-chat-row {
+    grid-template-columns: 48px minmax(0, 1fr) auto;
+    padding: 9px 6px;
+}
+
+.tw-member-chat-row .tw-member-avatar {
+    width: 48px;
+    height: 48px;
+}
+
+.tw-chat-meta {
+    min-width: 38px;
+    color: #98a2b3;
+    text-align: right;
+    font-size: 9px;
+}
+
+.tw-chat-unread-dot {
+    width: 9px;
+    height: 9px;
+    display: inline-block;
+    margin-top: 5px;
+    background: #1570ef;
+    border-radius: 50%;
+}
+
+.tw-messenger-empty {
+    min-height: 210px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    color: #98a2b3;
+    text-align: center;
+}
+
+.tw-messenger-empty i {
+    margin-bottom: 12px;
+    font-size: 30px;
+}
+
+.tw-messenger-empty strong {
+    color: #475467;
+    font-size: 12px;
+}
+
+.tw-messenger-empty span {
+    max-width: 240px;
+    margin-top: 5px;
+    font-size: 10px;
+    line-height: 1.5;
+}
+
+.tw-chat-view {
+    display: flex;
+    flex-direction: column;
+}
+
+.tw-chat-head {
+    min-height: 64px;
+    gap: 10px;
+    padding: 10px 12px;
+    border-bottom: 1px solid #eaecf0;
+}
+
+.tw-chat-avatar {
+    width: 40px;
+    height: 40px;
+    flex: 0 0 auto;
+}
+
+.tw-chat-person {
+    min-width: 0;
+}
+
+.tw-chat-person strong,
+.tw-chat-person small {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.tw-chat-person strong {
+    color: #1d2939;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.tw-chat-person small {
+    margin-top: 2px;
+    color: #667085;
+    font-size: 9px;
+}
+
+.tw-chat-messages {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 14px 12px;
+    overflow-y: auto;
+    background: #fff;
+}
+
+.tw-chat-day {
+    align-self: center;
+    margin: 6px 0;
+    color: #98a2b3;
+    font-size: 9px;
+}
+
+.tw-message-bubble {
+    max-width: 78%;
+    padding: 8px 11px;
+    color: #1d2939;
+    background: #f0f2f5;
+    border-radius: 16px 16px 16px 4px;
+    font-size: 11px;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+}
+
+.tw-message-bubble.mine {
+    align-self: flex-end;
+    color: #fff;
+    background: #0866ff;
+    border-radius: 16px 16px 4px 16px;
+}
+
+.tw-message-time {
+    display: block;
+    margin-top: 3px;
+    opacity: .7;
+    font-size: 8px;
+}
+
+.tw-chat-request-info {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin: 0 12px 8px;
+    padding: 9px 10px;
+    color: #475467;
+    background: #f8fafc;
+    border: 1px solid #eaecf0;
+    border-radius: 10px;
+    font-size: 9px;
+    line-height: 1.45;
+}
+
+.tw-chat-request-info i {
+    margin-top: 2px;
+    color: #1570ef;
+}
+
+.tw-chat-composer {
+    min-height: 58px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 38px;
+    align-items: end;
+    gap: 8px;
+    padding: 9px 10px;
+    border-top: 1px solid #eaecf0;
+}
+
+.tw-chat-composer textarea {
+    width: 100%;
+    max-height: 100px;
+    resize: none;
+    padding: 9px 12px;
+    color: #1d2939;
+    background: #f2f4f7;
+    border: 0;
+    border-radius: 18px;
+    outline: 0;
+    font-size: 11px;
+    line-height: 1.35;
+}
+
+.tw-chat-composer textarea:disabled {
+    color: #98a2b3;
+    cursor: not-allowed;
+}
+
+.tw-chat-composer button {
+    width: 38px;
+    height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    color: #fff;
+    background: #0866ff;
+    border: 0;
+    border-radius: 50%;
+}
+
+.tw-chat-composer button:disabled {
+    opacity: .42;
+    cursor: not-allowed;
+}
+
+@media (max-width: 899px) {
+    .tw-messenger-panel {
+        top: 58px;
+        right: 8px;
+        left: 8px;
+        width: auto;
+        height: calc(100dvh - 128px);
+        max-height: none;
+        border-radius: 16px;
+    }
+
+    .tw-messenger-head h2 {
+        font-size: 21px;
+    }
+}
