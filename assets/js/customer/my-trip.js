@@ -135,6 +135,37 @@ const itineraryContent =
     document.getElementById("itineraryContent");
 
 
+const bookingProcessShell =
+    document.getElementById("bookingProcessShell");
+
+const bookingProcessPanel =
+    document.getElementById("bookingProcessPanel");
+
+const bookingTripLock =
+    document.getElementById("bookingTripLock");
+
+const bookingProcessStatus =
+    document.getElementById("bookingProcessStatus");
+
+const processDestination =
+    document.getElementById("processDestination");
+
+const processReference =
+    document.getElementById("processReference");
+
+const processCurrentBadge =
+    document.getElementById("processCurrentBadge");
+
+const bookingProgressFill =
+    document.getElementById("bookingProgressFill");
+
+const verificationStepText =
+    document.getElementById("verificationStepText");
+
+const bookingProcessNote =
+    document.getElementById("bookingProcessNote");
+
+
 /* ==========================================================
    UI STATE HELPERS
 ========================================================== */
@@ -1912,6 +1943,325 @@ function chooseCustomerTrip(bookings) {
 }
 
 
+
+/* ==========================================================
+   BOOKING PROCESS
+========================================================== */
+
+let processBooking = null;
+let processTripUnlocked = false;
+
+function getLatestCustomerBooking(bookings) {
+    if (!Array.isArray(bookings) || !bookings.length) {
+        return null;
+    }
+
+    const requestedBooking =
+        new URLSearchParams(window.location.search).get("booking");
+
+    if (requestedBooking) {
+        const requested = bookings.find(booking =>
+            booking.id === requestedBooking ||
+            getBookingReferenceValue(booking) === requestedBooking
+        );
+
+        if (requested) {
+            return requested;
+        }
+    }
+
+    return [...bookings].sort((a, b) => {
+        const getTime = booking => {
+            const candidates = [
+                booking.updatedAt,
+                booking.createdAt,
+                booking.bookedAt,
+                booking.bookingDate
+            ];
+
+            for (const value of candidates) {
+                const date = toDateValue(value);
+                if (date) return date.getTime();
+            }
+
+            return 0;
+        };
+
+        return getTime(b) - getTime(a);
+    })[0];
+}
+
+function getBookingProcessState(booking) {
+    const bookingState = normalizeLower(
+        booking?.bookingStatus ||
+        booking?.status ||
+        booking?.booking_status
+    );
+
+    const paymentState = normalizeLower(
+        booking?.paymentStatus ||
+        booking?.payment_status ||
+        booking?.paymentStatusLabel
+    );
+
+    const rejected =
+        bookingState === "cancelled" ||
+        bookingState === "canceled" ||
+        bookingState === "rejected" ||
+        paymentState === "rejected";
+
+    const confirmed =
+        bookingState === "confirmed" ||
+        bookingState === "approved";
+
+    const paid =
+        paymentState === "paid";
+
+    const verified =
+        paid ||
+        paymentState === "partial" ||
+        paymentState === "verified" ||
+        paymentState === "confirmed";
+
+    const awaitingVerification =
+        paymentState === "pending_verification" ||
+        paymentState === "pending verification" ||
+        paymentState === "pending";
+
+    if (rejected) {
+        return {
+            key: "rejected",
+            label: bookingState === "cancelled" || bookingState === "canceled"
+                ? "Cancelled"
+                : "Needs Attention",
+            step: 1,
+            progress: 33,
+            confirmed: false
+        };
+    }
+
+    if (confirmed) {
+        return {
+            key: "confirmed",
+            label: "Confirmed",
+            step: 3,
+            progress: 100,
+            confirmed: true
+        };
+    }
+
+    if (awaitingVerification) {
+        return {
+            key: "verification",
+            label: "Verifying Payment",
+            step: 1,
+            progress: 33,
+            confirmed: false
+        };
+    }
+
+    if (verified) {
+        return {
+            key: "verification",
+            label: "Payment Verified",
+            step: 2,
+            progress: 66,
+            confirmed: false
+        };
+    }
+
+    return {
+        key: "submitted",
+        label: "Submitted",
+        step: 0,
+        progress: 0,
+        confirmed: false
+    };
+}
+
+function setBookingView(view) {
+    const showTrip =
+        view === "trip" &&
+        processTripUnlocked;
+
+    const page =
+        document.querySelector(
+            ".my-trip-page"
+        );
+
+    /*
+     * Keep Booking Process visible even after confirmation.
+     * Once confirmed, the lock disappears and the full My Trip
+     * content opens directly underneath the completed process.
+     */
+    if (bookingProcessShell) {
+        bookingProcessShell.hidden =
+            false;
+
+        bookingProcessShell.style.display =
+            "";
+    }
+
+    if (bookingProcessPanel) {
+        bookingProcessPanel.hidden =
+            false;
+
+        bookingProcessPanel.style.display =
+            "";
+    }
+
+    if (tripContent) {
+        tripContent.hidden =
+            !showTrip;
+
+        tripContent.style.display =
+            showTrip
+                ? ""
+                : "none";
+    }
+
+    page?.classList.toggle(
+        "booking-process-confirmed",
+        showTrip
+    );
+}
+
+function renderBookingProcess(booking) {
+    if (!bookingProcessShell || !booking) return;
+
+    processBooking = booking;
+
+    const state = getBookingProcessState(booking);
+    processTripUnlocked = state.confirmed;
+
+    bookingProcessShell.hidden = false;
+    bookingProcessShell.style.display = "";
+
+    const destination = clean(
+        booking.packageName ||
+        booking.destination ||
+        booking.packageLocation ||
+        "Your Booking"
+    );
+
+    const reference = getBookingReferenceValue(booking);
+
+    if (processDestination) {
+        processDestination.textContent = destination;
+    }
+
+    if (processReference) {
+        processReference.textContent = `Booking ID: ${reference}`;
+    }
+
+    if (bookingProcessStatus) {
+        bookingProcessStatus.textContent = state.label;
+        bookingProcessStatus.dataset.state = state.key;
+    }
+
+    if (processCurrentBadge) {
+        processCurrentBadge.dataset.state = state.key;
+        processCurrentBadge.innerHTML = `
+            <i class="fa-solid ${
+                state.confirmed
+                    ? "fa-circle-check"
+                    : state.key === "rejected"
+                        ? "fa-triangle-exclamation"
+                        : "fa-clock"
+            }"></i>
+            ${state.label}
+        `;
+    }
+
+    if (bookingProgressFill) {
+        bookingProgressFill.style.height = `${state.progress}%`;
+    }
+
+    const steps =
+        bookingProcessShell.querySelectorAll(
+            ".booking-progress-step"
+        );
+
+    steps.forEach((step, index) => {
+        step.classList.remove(
+            "complete",
+            "current",
+            "blocked"
+        );
+
+        if (state.key === "rejected") {
+            if (index === 0) step.classList.add("complete");
+            if (index === 1) step.classList.add("blocked");
+            return;
+        }
+
+        if (index < state.step) {
+            step.classList.add("complete");
+        } else if (index === state.step) {
+            step.classList.add(
+                state.confirmed ? "complete" : "current"
+            );
+        }
+    });
+
+    if (verificationStepText) {
+        if (state.key === "rejected") {
+            verificationStepText.textContent =
+                "Payment verification needs attention. Please check your Messages for details.";
+        } else if (state.confirmed) {
+            verificationStepText.textContent =
+                "Payment verification completed.";
+        } else if (state.label === "Payment Verified") {
+            verificationStepText.textContent =
+                "Payment verified. Waiting for final booking confirmation.";
+        } else {
+            verificationStepText.textContent =
+                "Your submitted payment is being reviewed by Trips Wonder.";
+        }
+    }
+
+    if (bookingTripLock) {
+        bookingTripLock.hidden =
+            state.confirmed;
+
+        bookingTripLock.style.display =
+            state.confirmed
+                ? "none"
+                : "";
+
+        bookingTripLock.dataset.state =
+            state.key;
+    }
+
+
+    if (bookingProcessNote) {
+        if (state.key === "rejected") {
+            bookingProcessNote.className =
+                "booking-process-note attention";
+            bookingProcessNote.innerHTML = `
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <span>This booking needs attention. Please check your Messages or contact Trips Wonder Support.</span>
+            `;
+        } else if (state.confirmed) {
+            bookingProcessNote.className =
+                "booking-process-note success";
+            bookingProcessNote.innerHTML = `
+                <i class="fa-solid fa-circle-check"></i>
+                <span>Your booking is confirmed. Your complete trip details are now available in My Trip.</span>
+            `;
+        } else {
+            bookingProcessNote.className =
+                "booking-process-note";
+            bookingProcessNote.innerHTML = `
+                <i class="fa-solid fa-circle-info"></i>
+                <span>Your booking is being processed. This status updates automatically after Admin verification.</span>
+            `;
+        }
+    }
+}
+
+
+
 /* ==========================================================
    TRIP OPERATIONS
 ========================================================== */
@@ -2392,14 +2742,53 @@ async function loadBooking(user) {
             bookings.length
         );
 
+        if (!bookings.length) {
+            if (bookingProcessShell) {
+                bookingProcessShell.hidden = true;
+                bookingProcessShell.style.display = "none";
+            }
+
+            showNoTrip();
+            return;
+        }
+
+        const latestBooking =
+            getLatestCustomerBooking(
+                bookings
+            );
+
+        renderBookingProcess(
+            latestBooking
+        );
+
         const booking =
             chooseCustomerTrip(
                 bookings
             );
 
+        /*
+         * Pending / verification bookings stay inside Booking Process.
+         * A centered My Trip lock is shown inside the module.
+         * Full My Trip content remains hidden until Admin confirms
+         * bookingStatus = "confirmed".
+         */
         if (!booking) {
+            if (loading) {
+                loading.hidden = true;
+                loading.style.display = "none";
+            }
 
-            showNoTrip();
+            if (noTrip) {
+                noTrip.hidden = true;
+                noTrip.style.display = "none";
+            }
+
+            if (tripContent) {
+                tripContent.hidden = true;
+                tripContent.style.display = "none";
+            }
+
+            setBookingView("process");
             return;
         }
 
@@ -2408,23 +2797,16 @@ async function loadBooking(user) {
                 booking.packageId
             );
 
-        /*
-         * Package data supplies gallery, inclusions, itinerary,
-         * etc. Booking snapshot remains the source of customer
-         * and reservation-specific values.
-         */
         const bookingWithPackage = {
             ...(packageData || {}),
             ...booking,
             id: booking.id
         };
 
-
         const tripOperation =
             await loadTripOperation(
                 bookingWithPackage
             );
-
 
         const completeBooking =
             applyTripOperationToBooking(
@@ -2432,29 +2814,40 @@ async function loadBooking(user) {
                 tripOperation
             );
 
-
         console.log(
             "SELECTED MY TRIP:",
             completeBooking
         );
 
-
         renderBooking(
             completeBooking
         );
-
-
-        /*
-         * Override the basic booking pickup / vehicle fields with
-         * the exact Admin Trip Operations details for this departure.
-         */
 
         renderOperationalPickupDetails(
             completeBooking
         );
 
+        if (loading) {
+            loading.hidden = true;
+            loading.style.display = "none";
+        }
 
-        showTripContent();
+        if (noTrip) {
+            noTrip.hidden = true;
+            noTrip.style.display = "none";
+        }
+
+        /*
+         * Confirmed booking:
+         * keep the completed Booking Process visible on top,
+         * remove the lock, and reveal the full My Trip below it.
+         */
+        processTripUnlocked =
+            true;
+
+        setBookingView(
+            "trip"
+        );
 
         console.log(
             "MY TRIP DISPLAYED SUCCESSFULLY"
@@ -2467,10 +2860,14 @@ async function loadBooking(user) {
             error
         );
 
+        if (bookingProcessShell) {
+            bookingProcessShell.hidden = true;
+            bookingProcessShell.style.display = "none";
+        }
+
         showNoTrip();
     }
 }
-
 
 /* ==========================================================
    BACK BUTTON

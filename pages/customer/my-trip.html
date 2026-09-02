@@ -87,6 +87,101 @@
     </header>
 
 
+
+    <!-- =====================================================
+         BOOKING PROCESS / MY TRIP SWITCHER
+    ====================================================== -->
+    <section
+        class="booking-process-shell"
+        id="bookingProcessShell"
+        hidden
+    >
+<div class="booking-process-panel" id="bookingProcessPanel">
+            <div class="booking-process-card">
+                <div class="booking-process-head">
+                    <div>
+                        <span class="booking-process-eyebrow">BOOKING STATUS</span>
+                        <h2 id="processDestination">Your Booking</h2>
+                        <p id="processReference">Booking ID: —</p>
+                    </div>
+                    <span class="process-current-badge" id="processCurrentBadge">
+                        <i class="fa-solid fa-clock"></i>
+                        Pending
+                    </span>
+                </div>
+
+                <div class="booking-progress-track" id="bookingProgressTrack">
+                    <div class="booking-progress-line">
+                        <span class="booking-progress-fill" id="bookingProgressFill"></span>
+                    </div>
+
+                    <div class="booking-progress-step" data-process-step="submitted">
+                        <span class="booking-progress-dot">
+                            <i class="fa-solid fa-check"></i>
+                        </span>
+                        <div>
+                            <strong>Booking Submitted</strong>
+                            <small>Your booking request has been received.</small>
+                        </div>
+                    </div>
+
+                    <div class="booking-progress-step" data-process-step="verification">
+                        <span class="booking-progress-dot">
+                            <i class="fa-solid fa-credit-card"></i>
+                        </span>
+                        <div>
+                            <strong>Payment Verification</strong>
+                            <small id="verificationStepText">Waiting for payment verification.</small>
+                        </div>
+                    </div>
+
+                    <div class="booking-progress-step" data-process-step="confirmed">
+                        <span class="booking-progress-dot">
+                            <i class="fa-solid fa-circle-check"></i>
+                        </span>
+                        <div>
+                            <strong>Booking Confirmed</strong>
+                            <small>Full trip details unlock after Admin confirmation.</small>
+                        </div>
+                    </div>
+
+                    <div class="booking-progress-step" data-process-step="ready">
+                        <span class="booking-progress-dot">
+                            <i class="fa-solid fa-route"></i>
+                        </span>
+                        <div>
+                            <strong>Trip Ready</strong>
+                            <small>Itinerary, pickup, QR pass and trip details are available.</small>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div
+                    class="booking-trip-lock"
+                    id="bookingTripLock"
+                    aria-live="polite"
+                >
+                    <div class="booking-trip-lock-icon">
+                        <i class="fa-solid fa-lock"></i>
+                    </div>
+
+                    <div class="booking-trip-lock-copy">
+                        <strong>My Trip</strong>
+                        <span>
+                            Full trip details will unlock once your booking is confirmed.
+                        </span>
+                    </div>
+                </div>
+
+                <div class="booking-process-note" id="bookingProcessNote">
+                    <i class="fa-solid fa-circle-info"></i>
+                    <span>Your booking is being processed. We'll update this status automatically.</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- =====================================================
          LOADING
     ====================================================== -->
