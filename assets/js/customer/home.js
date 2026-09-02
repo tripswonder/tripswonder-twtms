@@ -567,7 +567,69 @@ function getDisplayName(
 }
 
 
+
+function getCustomerAvatarUrl(
+    profile = currentProfile,
+    user = currentUser
+) {
+
+    const candidates = [
+        profile?.profilePhotoUrl,
+        profile?.profilePhoto,
+        profile?.photoURL,
+        profile?.photoUrl,
+        profile?.avatarUrl,
+        profile?.avatar,
+        profile?.imageUrl,
+        user?.photoURL
+    ];
+
+    return String(
+        candidates.find(
+            value => String(value || "").trim()
+        ) || ""
+    ).trim();
+
+}
+
+
+function renderCustomerAvatars() {
+
+    const avatarUrl =
+        getCustomerAvatarUrl();
+
+    document
+        .querySelectorAll(
+            "[data-customer-avatar]"
+        )
+        .forEach(
+            holder => {
+
+                if (!avatarUrl) {
+
+                    holder.innerHTML =
+                        '<i class="fa-solid fa-user"></i>';
+
+                    return;
+
+                }
+
+                holder.innerHTML = `
+                    <img
+                        src="${escapeHtml(avatarUrl)}"
+                        alt=""
+                        loading="lazy">
+                `;
+
+            }
+        );
+
+}
+
+
 function renderCustomerProfile() {
+
+    renderCustomerAvatars();
 
     if (
         customerName
@@ -1625,6 +1687,9 @@ async function publishCustomerPost() {
                         currentProfile
                     ),
 
+                authorPhotoUrl:
+                    getCustomerAvatarUrl(),
+
                 caption,
 
                 imageUrls:
@@ -2058,6 +2123,9 @@ async function addCustomerPostComment(post, input, commentsList) {
                 authorName:
                     getCustomerAuthorName(),
 
+                authorPhotoUrl:
+                    getCustomerAvatarUrl(),
+
                 text,
 
                 createdAt:
@@ -2150,7 +2218,11 @@ async function loadCustomerPostComments(post, commentsList) {
                 comment => `
                     <div class="tw-comment-item">
                         <span class="tw-comment-avatar">
-                            <i class="fa-solid fa-user"></i>
+                            ${
+                                comment.authorPhotoUrl
+                                    ? `<img src="${escapeHtml(comment.authorPhotoUrl)}" alt="" loading="lazy">`
+                                    : `<i class="fa-solid fa-user"></i>`
+                            }
                         </span>
                         <div>
                             <strong>${escapeHtml(comment.authorName || "Traveler")}</strong>
@@ -2228,6 +2300,132 @@ async function shareCustomerPost(post) {
 }
 
 
+
+async function hydrateCustomerPostSocial(
+    post,
+    card
+) {
+
+    if (
+        !post ||
+        !card
+    ) {
+        return;
+    }
+
+    const likeCount =
+        card.querySelector(
+            "[data-post-like-count]"
+        );
+
+    const commentCount =
+        card.querySelector(
+            "[data-post-comment-count]"
+        );
+
+    const likeButton =
+        card.querySelector(
+            "[data-like-post]"
+        );
+
+    try {
+
+        const [
+            likesSnapshot,
+            commentsSnapshot,
+            ownLikeSnapshot
+        ] =
+            await Promise.all([
+                getDocs(
+                    collection(
+                        db,
+                        "customerPosts",
+                        post.id,
+                        "likes"
+                    )
+                ),
+                getDocs(
+                    collection(
+                        db,
+                        "customerPosts",
+                        post.id,
+                        "comments"
+                    )
+                ),
+                currentUser
+                    ? getDoc(
+                        doc(
+                            db,
+                            "customerPosts",
+                            post.id,
+                            "likes",
+                            currentUser.uid
+                        )
+                    )
+                    : Promise.resolve(null)
+            ]);
+
+        const likes =
+            likesSnapshot.size;
+
+        const comments =
+            commentsSnapshot.size;
+
+        if (likeCount) {
+
+            likeCount.textContent =
+                likes === 1
+                    ? "1 like"
+                    : `${likes} likes`;
+
+            likeCount.hidden =
+                likes === 0;
+
+        }
+
+        if (commentCount) {
+
+            commentCount.textContent =
+                comments === 1
+                    ? "1 comment"
+                    : `${comments} comments`;
+
+            commentCount.hidden =
+                comments === 0;
+
+        }
+
+        likeButton?.classList.toggle(
+            "is-liked",
+            Boolean(
+                ownLikeSnapshot?.exists?.()
+            )
+        );
+
+        const icon =
+            likeButton?.querySelector("i");
+
+        if (icon) {
+
+            icon.className =
+                ownLikeSnapshot?.exists?.()
+                    ? "fa-solid fa-thumbs-up"
+                    : "fa-regular fa-thumbs-up";
+
+        }
+
+    } catch (error) {
+
+        console.error(
+            "POST SOCIAL STATS ERROR:",
+            error
+        );
+
+    }
+
+}
+
+
 function createCustomerPostCard(post) {
 
     const images =
@@ -2264,6 +2462,12 @@ function createCustomerPostCard(post) {
         post.authorUid ===
         currentUser?.uid;
 
+    const authorPhoto =
+        String(
+            post.authorPhotoUrl ||
+            ""
+        ).trim();
+
     const card =
         document.createElement(
             "article"
@@ -2278,7 +2482,11 @@ function createCustomerPostCard(post) {
     card.innerHTML = `
         <header class="tw-feed-card-head">
             <span class="tw-community-avatar">
-                <i class="fa-solid fa-user"></i>
+                ${
+                    authorPhoto
+                        ? `<img src="${escapeHtml(authorPhoto)}" alt="" loading="lazy">`
+                        : `<i class="fa-solid fa-user"></i>`
+                }
             </span>
 
             <span class="tw-feed-brand-copy">
@@ -2313,6 +2521,13 @@ function createCustomerPostCard(post) {
 
         ${imageMarkup}
 
+        <div class="tw-community-social-summary">
+            <span data-post-like-count hidden></span>
+            <button type="button" data-open-comments>
+                <span data-post-comment-count hidden></span>
+            </button>
+        </div>
+
         <div class="tw-feed-actions tw-community-actions">
             <button type="button" data-like-post>
                 <i class="fa-regular fa-thumbs-up"></i>
@@ -2334,8 +2549,12 @@ function createCustomerPostCard(post) {
             <div class="tw-comment-list"></div>
 
             <div class="tw-comment-compose">
-                <span class="tw-comment-avatar">
-                    <i class="fa-solid fa-user"></i>
+                <span class="tw-comment-avatar" data-customer-avatar>
+                    ${
+                        getCustomerAvatarUrl()
+                            ? `<img src="${escapeHtml(getCustomerAvatarUrl())}" alt="" loading="lazy">`
+                            : `<i class="fa-solid fa-user"></i>`
+                    }
                 </span>
 
                 <input
@@ -2364,10 +2583,19 @@ function createCustomerPostCard(post) {
 
     likeButton?.addEventListener(
         "click",
-        () => toggleCustomerPostLike(
-            post,
-            likeButton
-        )
+        async () => {
+
+            await toggleCustomerPostLike(
+                post,
+                likeButton
+            );
+
+            await hydrateCustomerPostSocial(
+                post,
+                card
+            );
+
+        }
     );
 
     const commentPanel =
@@ -2390,10 +2618,7 @@ function createCustomerPostCard(post) {
             ".tw-comment-compose button"
         );
 
-    card.querySelector(
-        "[data-comment-post]"
-    )?.addEventListener(
-        "click",
+    const toggleComments =
         async () => {
 
             const opening =
@@ -2415,16 +2640,41 @@ function createCustomerPostCard(post) {
 
             }
 
-        }
+        };
+
+    card.querySelector(
+        "[data-comment-post]"
+    )?.addEventListener(
+        "click",
+        toggleComments
     );
+
+    card.querySelector(
+        "[data-open-comments]"
+    )?.addEventListener(
+        "click",
+        toggleComments
+    );
+
+    const submitComment =
+        async () => {
+
+            await addCustomerPostComment(
+                post,
+                commentInput,
+                commentsList
+            );
+
+            await hydrateCustomerPostSocial(
+                post,
+                card
+            );
+
+        };
 
     commentSend?.addEventListener(
         "click",
-        () => addCustomerPostComment(
-            post,
-            commentInput,
-            commentsList
-        )
+        submitComment
     );
 
     commentInput?.addEventListener(
@@ -2438,11 +2688,7 @@ function createCustomerPostCard(post) {
 
                 event.preventDefault();
 
-                addCustomerPostComment(
-                    post,
-                    commentInput,
-                    commentsList
-                );
+                submitComment();
 
             }
 
@@ -2456,10 +2702,14 @@ function createCustomerPostCard(post) {
         () => shareCustomerPost(post)
     );
 
+    hydrateCustomerPostSocial(
+        post,
+        card
+    );
+
     return card;
 
 }
-
 
 openPostComposerButton
     ?.addEventListener(
@@ -2528,185 +2778,1003 @@ document.addEventListener(
 );
 
 
-function createFeedCard(packageItem, index) {
 
-    const image =
-        getPackageImage(packageItem);
+function getFeedTimestamp(value) {
 
-    const gallery =
-        getPackageGallery(packageItem);
+    return Number(
+        value?.toMillis?.() ||
+        toDate(value)?.getTime?.() ||
+        0
+    );
 
-    const images =
-        gallery.length
-            ? gallery.slice(0, 3)
-            : image
-                ? [image]
-                : [];
+}
 
-    const duration =
-        getPackageDuration(packageItem);
 
-    const location =
-        getPackageShortLocation(packageItem);
+function getPackageFeedTimestamp(packageItem) {
 
-    const about =
+    return (
+        getFeedTimestamp(packageItem?.feedPublishedAt) ||
+        getFeedTimestamp(packageItem?.postPublishedAt) ||
+        getFeedTimestamp(packageItem?.publishedAt) ||
+        getFeedTimestamp(packageItem?.createdAt) ||
+        getFeedTimestamp(packageItem?.updatedAt) ||
+        Number(packageItem?.createdAtMs || 0) ||
+        Number(packageItem?.updatedAtMs || 0) ||
+        0
+    );
+
+}
+
+
+function formatPackageFeedTime(packageItem) {
+
+    const millis =
+        getPackageFeedTimestamp(
+            packageItem
+        );
+
+    if (!millis) {
+        return "Official tour package";
+    }
+
+    return formatCustomerPostTime({
+        createdAtMs:
+            millis
+    });
+
+}
+
+
+
+function getPackagePostImages(packageItem) {
+
+    const candidates = [
+        packageItem?.feedImages,
+        packageItem?.postImages,
+        packageItem?.postingPhotos,
+        packageItem?.postingImages
+    ];
+
+    for (const candidate of candidates) {
+
+        if (Array.isArray(candidate)) {
+
+            const images =
+                candidate
+                    .map(item =>
+                        typeof item === "string"
+                            ? item
+                            : item?.url
+                    )
+                    .filter(Boolean);
+
+            if (images.length) {
+                return images;
+            }
+
+        }
+
+    }
+
+    return getPackageGallery(
+        packageItem
+    );
+
+}
+
+
+function getPackagePostCaption(packageItem) {
+
+    return String(
+        packageItem?.feedCaption ||
+        packageItem?.postCaption ||
+        packageItem?.caption ||
+        packageItem?.description ||
+        packageItem?.about ||
+        "Plan your next getaway with Trips Wonder."
+    ).trim();
+
+}
+
+
+function getPackageAllInText(packageItem) {
+
+    const direct =
         String(
-            packageItem?.description ||
-            packageItem?.about ||
-            "Discover this Trips Wonder tour package and plan your next adventure."
+            packageItem?.feedAllInMessage ||
+            packageItem?.allInMessage ||
+            packageItem?.packageAllInMessage ||
+            ""
         ).trim();
 
-    const inclusions =
-        normalizeDetailArray(packageItem?.inclusions)
-            .slice(0, 4);
+    if (direct) {
+        return direct;
+    }
 
-    const photoMarkup =
-        images.length
-            ? `
-                <div class="tw-feed-gallery tw-feed-gallery-${Math.min(images.length, 3)}">
-                    ${images.map((photo, photoIndex) => `
+    const inclusions =
+        normalizeDetailArray(
+            packageItem?.inclusions
+        )
+            .slice(0, 5);
+
+    if (inclusions.length) {
+
+        return (
+            inclusions.join(", ") +
+            (normalizeDetailArray(packageItem?.inclusions).length > inclusions.length
+                ? " and more!"
+                : ".")
+        );
+
+    }
+
+    return "Tap any photo to view the complete package details.";
+
+}
+
+
+function buildPackagePostGallery(packageItem) {
+
+    const allImages =
+        getPackagePostImages(
+            packageItem
+        );
+
+    if (!allImages.length) {
+
+        return `
+            <button
+                type="button"
+                class="tw-package-post-gallery tw-package-post-gallery-empty"
+                data-package-photo>
+                <i class="fa-solid fa-image"></i>
+            </button>
+        `;
+
+    }
+
+    const total =
+        allImages.length;
+
+    const visibleCount =
+        total >= 5
+            ? 4
+            : total;
+
+    const visible =
+        allImages.slice(
+            0,
+            visibleCount
+        );
+
+    const classCount =
+        total >= 5
+            ? "5plus"
+            : String(total);
+
+    return `
+        <div class="tw-package-post-gallery tw-package-post-gallery-${classCount}">
+            ${visible.map(
+                (url, index) => {
+
+                    const remaining =
+                        total >= 5 &&
+                        index === visible.length - 1
+                            ? total - visible.length
+                            : 0;
+
+                    return `
                         <button
                             type="button"
-                            class="tw-feed-photo"
-                            data-feed-photo="${photoIndex}">
+                            class="tw-package-post-photo tw-package-post-photo-${index + 1}"
+                            data-package-photo="${index}"
+                            aria-label="Open package details">
                             <img
-                                src="${escapeHtml(photo)}"
-                                alt="${escapeHtml(packageItem.name || "Tour")} photo"
+                                src="${escapeHtml(url)}"
+                                alt="${escapeHtml(packageItem?.name || "Tour package")} photo ${index + 1}"
                                 loading="lazy">
                             ${
-                                photoIndex === 2 && gallery.length > 3
-                                    ? `<span class="tw-more-photos">+${gallery.length - 3}</span>`
+                                remaining > 0
+                                    ? `<span class="tw-package-more-photos">+${remaining}</span>`
                                     : ""
                             }
                         </button>
-                    `).join("")}
-                </div>
-              `
-            : `
-                <button type="button" class="tw-feed-gallery tw-feed-gallery-empty">
-                    <i class="fa-solid fa-image"></i>
-                </button>
-              `;
+                    `;
+
+                }
+            ).join("")}
+        </div>
+    `;
+
+}
+
+
+async function togglePackagePostLike(packageItem, button) {
+
+    if (
+        !currentUser ||
+        !packageItem?.id
+    ) {
+        return;
+    }
+
+    const likeRef =
+        doc(
+            db,
+            "packages",
+            packageItem.id,
+            "likes",
+            currentUser.uid
+        );
+
+    try {
+
+        const snapshot =
+            await getDoc(
+                likeRef
+            );
+
+        if (snapshot.exists()) {
+
+            await deleteDoc(
+                likeRef
+            );
+
+        } else {
+
+            await setDoc(
+                likeRef,
+                {
+                    userUid:
+                        currentUser.uid,
+                    createdAt:
+                        serverTimestamp()
+                }
+            );
+
+        }
+
+        button?.classList.toggle(
+            "is-liked",
+            !snapshot.exists()
+        );
+
+    } catch (error) {
+
+        console.error(
+            "PACKAGE LIKE ERROR:",
+            error
+        );
+
+    }
+
+}
+
+
+async function addPackagePostComment(
+    packageItem,
+    input,
+    commentsList
+) {
+
+    if (
+        !currentUser ||
+        !packageItem?.id ||
+        !input
+    ) {
+        return;
+    }
+
+    const text =
+        String(
+            input.value ||
+            ""
+        ).trim();
+
+    if (!text) {
+        return;
+    }
+
+    if (text.length > 500) {
+
+        window.alert(
+            "Comment is too long."
+        );
+
+        return;
+    }
+
+    const commentRef =
+        doc(
+            collection(
+                db,
+                "packages",
+                packageItem.id,
+                "comments"
+            )
+        );
+
+    try {
+
+        await setDoc(
+            commentRef,
+            {
+                authorUid:
+                    currentUser.uid,
+                authorName:
+                    getCustomerAuthorName(),
+                authorPhotoUrl:
+                    getCustomerAvatarUrl(),
+                text,
+                createdAt:
+                    serverTimestamp(),
+                createdAtMs:
+                    Date.now()
+            }
+        );
+
+        input.value =
+            "";
+
+        await loadPackagePostComments(
+            packageItem,
+            commentsList
+        );
+
+    } catch (error) {
+
+        console.error(
+            "PACKAGE COMMENT ERROR:",
+            error
+        );
+
+    }
+
+}
+
+
+async function loadPackagePostComments(
+    packageItem,
+    commentsList
+) {
+
+    if (
+        !packageItem?.id ||
+        !commentsList
+    ) {
+        return;
+    }
+
+    commentsList.innerHTML =
+        '<span class="tw-comments-loading">Loading comments...</span>';
+
+    try {
+
+        const snapshot =
+            await getDocs(
+                collection(
+                    db,
+                    "packages",
+                    packageItem.id,
+                    "comments"
+                )
+            );
+
+        const comments =
+            snapshot.docs
+                .map(commentDoc => ({
+                    id:
+                        commentDoc.id,
+                    ...commentDoc.data()
+                }))
+                .sort(
+                    (a, b) =>
+                        Number(
+                            a.createdAtMs ||
+                            a.createdAt?.toMillis?.() ||
+                            0
+                        ) -
+                        Number(
+                            b.createdAtMs ||
+                            b.createdAt?.toMillis?.() ||
+                            0
+                        )
+                )
+                .slice(-20);
+
+        if (!comments.length) {
+
+            commentsList.innerHTML =
+                '<span class="tw-comments-empty">No comments yet.</span>';
+
+            return;
+        }
+
+        commentsList.innerHTML =
+            comments.map(
+                comment => `
+                    <div class="tw-comment-item">
+                        <span class="tw-comment-avatar">
+                            ${
+                                comment.authorPhotoUrl
+                                    ? `<img src="${escapeHtml(comment.authorPhotoUrl)}" alt="" loading="lazy">`
+                                    : `<i class="fa-solid fa-user"></i>`
+                            }
+                        </span>
+                        <div>
+                            <strong>${escapeHtml(comment.authorName || "Traveler")}</strong>
+                            <p>${escapeHtml(comment.text || "")}</p>
+                        </div>
+                    </div>
+                `
+            ).join("");
+
+    } catch (error) {
+
+        console.error(
+            "LOAD PACKAGE COMMENTS ERROR:",
+            error
+        );
+
+        commentsList.innerHTML =
+            '<span class="tw-comments-empty">Unable to load comments.</span>';
+
+    }
+
+}
+
+
+async function hydratePackagePostSocial(
+    packageItem,
+    card
+) {
+
+    if (
+        !packageItem?.id ||
+        !card
+    ) {
+        return;
+    }
+
+    const likeCount =
+        card.querySelector(
+            "[data-package-like-count]"
+        );
+
+    const commentCount =
+        card.querySelector(
+            "[data-package-comment-count]"
+        );
+
+    const likeButton =
+        card.querySelector(
+            "[data-package-like]"
+        );
+
+    try {
+
+        const [
+            likesSnapshot,
+            commentsSnapshot,
+            ownLikeSnapshot
+        ] =
+            await Promise.all([
+                getDocs(
+                    collection(
+                        db,
+                        "packages",
+                        packageItem.id,
+                        "likes"
+                    )
+                ),
+                getDocs(
+                    collection(
+                        db,
+                        "packages",
+                        packageItem.id,
+                        "comments"
+                    )
+                ),
+                currentUser
+                    ? getDoc(
+                        doc(
+                            db,
+                            "packages",
+                            packageItem.id,
+                            "likes",
+                            currentUser.uid
+                        )
+                    )
+                    : Promise.resolve(null)
+            ]);
+
+        const likes =
+            likesSnapshot.size;
+
+        const comments =
+            commentsSnapshot.size;
+
+        if (likeCount) {
+
+            likeCount.textContent =
+                likes === 1
+                    ? "1 like"
+                    : `${likes} likes`;
+
+            likeCount.hidden =
+                likes === 0;
+
+        }
+
+        if (commentCount) {
+
+            commentCount.textContent =
+                comments === 1
+                    ? "1 comment"
+                    : `${comments} comments`;
+
+            commentCount.hidden =
+                comments === 0;
+
+        }
+
+        const liked =
+            Boolean(
+                ownLikeSnapshot?.exists?.()
+            );
+
+        likeButton?.classList.toggle(
+            "is-liked",
+            liked
+        );
+
+        const icon =
+            likeButton?.querySelector("i");
+
+        if (icon) {
+
+            icon.className =
+                liked
+                    ? "fa-solid fa-thumbs-up"
+                    : "fa-regular fa-thumbs-up";
+
+        }
+
+    } catch (error) {
+
+        console.error(
+            "PACKAGE SOCIAL STATS ERROR:",
+            error
+        );
+
+    }
+
+}
+
+
+async function sharePackagePost(packageItem) {
+
+    const name =
+        String(
+            packageItem?.name ||
+            "Trips Wonder Tour Package"
+        ).trim();
+
+    const price =
+        normalizeNumber(
+            packageItem?.price
+        );
+
+    const text =
+        `${name}${price ? ` · ₱${formatMoney(price)}/person` : ""}`;
+
+    const url =
+        `${window.location.origin}${window.location.pathname}?package=${encodeURIComponent(packageItem.id || "")}`;
+
+    try {
+
+        if (navigator.share) {
+
+            await navigator.share({
+                title:
+                    name,
+                text,
+                url
+            });
+
+            return;
+
+        }
+
+        await navigator.clipboard.writeText(
+            `${text}\n${url}`
+        );
+
+        window.alert(
+            "Package link copied."
+        );
+
+    } catch (error) {
+
+        if (error?.name !== "AbortError") {
+
+            console.error(
+                "SHARE PACKAGE ERROR:",
+                error
+            );
+
+        }
+
+    }
+
+}
+
+
+function createFeedCard(packageItem, index) {
+
+    const duration =
+        getPackageDuration(
+            packageItem
+        );
+
+    const caption =
+        getPackagePostCaption(
+            packageItem
+        );
+
+    const shortCaption =
+        caption.length > 180
+            ? `${caption.slice(0, 180).trim()}…`
+            : caption;
+
+    const allInText =
+        getPackageAllInText(
+            packageItem
+        );
+
+    const galleryMarkup =
+        buildPackagePostGallery(
+            packageItem
+        );
 
     const card =
-        document.createElement("article");
+        document.createElement(
+            "article"
+        );
 
     card.className =
-        "tw-feed-card";
+        "tw-feed-card tw-package-feed-post";
+
+    card.dataset.packageId =
+        packageItem.id ||
+        "";
 
     card.innerHTML = `
         <header class="tw-feed-card-head">
             <span class="tw-feed-brand-avatar">
-                <img src="${escapeHtml(currentBusinessLogo)}" alt="Trips Wonder" data-business-logo>
+                <img
+                    src="${escapeHtml(currentBusinessLogo)}"
+                    alt="Trips Wonder"
+                    data-business-logo>
             </span>
 
             <span class="tw-feed-brand-copy">
-                <strong>Trips Wonder Travel &amp; Tours</strong>
-                <small>${index === 0 ? "2h" : `${index + 1}d`} · <i class="fa-solid fa-earth-americas"></i></small>
+                <strong>
+                    Trips Wonder Travel &amp; Tours
+                    <i
+                        class="fa-solid fa-circle-check tw-official-check"
+                        title="Trips Wonder">
+                    </i>
+                </strong>
+
+                <small>
+                    ${escapeHtml(formatPackageFeedTime(packageItem))}
+                    ·
+                    <i class="fa-solid fa-earth-americas"></i>
+                </small>
             </span>
 
-            <button type="button" class="tw-feed-more" aria-label="More options">
+            <button
+                type="button"
+                class="tw-feed-more"
+                aria-label="More options">
                 <i class="fa-solid fa-ellipsis"></i>
             </button>
         </header>
 
-        <div class="tw-feed-body">
-            <div class="tw-feed-package-head">
-                <div>
-                    <h3>🏝️ ${escapeHtml(packageItem.name || "Tour Package")} ${duration ? `– ${escapeHtml(duration)}` : ""}</h3>
-                    <strong class="tw-feed-date">${escapeHtml(getPackageScheduleText(packageItem))}</strong>
-                </div>
+        <div class="tw-package-caption">
+            <h3>
+                🏝️ ${escapeHtml(packageItem.name || "Tour Package")}
+                ${duration ? `– ${escapeHtml(duration)}` : ""}
+            </h3>
 
-                <div class="tw-feed-price-box">
-                    <strong>₱${formatMoney(packageItem.price)}</strong>
-                    <span>/person</span>
-                </div>
-            </div>
-
-            <p class="tw-feed-description">
-                ${escapeHtml(about)}
+            <p data-package-caption-text>
+                ${escapeHtml(shortCaption)}
             </p>
 
             ${
-                inclusions.length
+                caption.length > 180
                     ? `
-                        <div class="tw-feed-inclusions">
-                            ${inclusions.map(item => `
-                                <span><i class="fa-solid fa-square-check"></i>${escapeHtml(item)}</span>
-                            `).join("")}
-                        </div>
+                        <button
+                            type="button"
+                            class="tw-package-see-more"
+                            data-package-see-more>
+                            See more
+                        </button>
                       `
-                    : `
-                        <div class="tw-feed-inclusions">
-                            <span><i class="fa-solid fa-location-dot"></i>${escapeHtml(location)}</span>
-                            ${duration ? `<span><i class="fa-solid fa-clock"></i>${escapeHtml(duration)}</span>` : ""}
-                        </div>
-                      `
+                    : ""
             }
-
-            <button type="button" class="tw-see-more">... See more</button>
         </div>
 
-        ${photoMarkup}
+        ${galleryMarkup}
 
-        <div class="tw-feed-social-summary">
-            <span class="tw-reaction-icons">
-                <i class="fa-solid fa-thumbs-up"></i>
-                <i class="fa-solid fa-heart"></i>
-                <i class="fa-solid fa-face-smile"></i>
-                <small>Trips Wonder</small>
-            </span>
+        <section class="tw-package-offer-strip">
+            <div class="tw-package-price-inline">
+                <strong>₱${formatMoney(packageItem.price)}</strong>
+                <span>/ person</span>
+            </div>
 
-            <span class="tw-social-counts">
-                <small>View tour details</small>
+            <span class="tw-all-in-badge">
+                <i class="fa-solid fa-shield-heart"></i>
+                ALL-IN PACKAGE
             </span>
+        </section>
+
+        <div class="tw-all-in-message">
+            <i class="fa-solid fa-shield-halved"></i>
+            <span>${escapeHtml(allInText)}</span>
         </div>
 
-        <div class="tw-feed-actions">
-            <button type="button" data-action="details">
+        <div class="tw-community-social-summary tw-package-social-summary">
+            <span data-package-like-count hidden></span>
+
+            <button
+                type="button"
+                data-package-open-comments>
+                <span data-package-comment-count hidden></span>
+            </button>
+        </div>
+
+        <div class="tw-feed-actions tw-package-actions">
+            <button
+                type="button"
+                data-package-like>
                 <i class="fa-regular fa-thumbs-up"></i>
                 <span>Like</span>
             </button>
-            <button type="button" data-action="details">
+
+            <button
+                type="button"
+                data-package-comment>
                 <i class="fa-regular fa-comment"></i>
                 <span>Comment</span>
             </button>
-            <button type="button" data-action="book">
-                <i class="fa-regular fa-paper-plane"></i>
-                <span>Book Now</span>
+
+            <button
+                type="button"
+                data-package-share>
+                <i class="fa-solid fa-share"></i>
+                <span>Share</span>
             </button>
+        </div>
+
+        <div class="tw-comment-panel tw-package-comment-panel" hidden>
+            <div class="tw-comment-list"></div>
+
+            <div class="tw-comment-compose">
+                <span
+                    class="tw-comment-avatar"
+                    data-customer-avatar>
+                    ${
+                        getCustomerAvatarUrl()
+                            ? `<img src="${escapeHtml(getCustomerAvatarUrl())}" alt="" loading="lazy">`
+                            : `<i class="fa-solid fa-user"></i>`
+                    }
+                </span>
+
+                <input
+                    type="text"
+                    maxlength="500"
+                    placeholder="Write a comment...">
+
+                <button
+                    type="button"
+                    aria-label="Send comment">
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </div>
         </div>
     `;
 
     card.querySelectorAll(
-        '[data-feed-photo], [data-action="details"], .tw-see-more'
+        "[data-package-photo]"
     ).forEach(
-        element => {
+        photoButton => {
 
-            element.addEventListener(
+            photoButton.addEventListener(
                 "click",
-                () => openPackageDetails(packageItem)
+                () => openPackageDetails(
+                    packageItem
+                )
             );
 
         }
     );
 
-    card.querySelector(
-        '[data-action="book"]'
-    )?.addEventListener(
+    const captionText =
+        card.querySelector(
+            "[data-package-caption-text]"
+        );
+
+    const seeMore =
+        card.querySelector(
+            "[data-package-see-more]"
+        );
+
+    seeMore?.addEventListener(
         "click",
         () => {
 
-            window.location.href =
-                `booking.html?package=${encodeURIComponent(packageItem.id)}`;
+            const expanded =
+                seeMore.dataset.expanded ===
+                "true";
+
+            seeMore.dataset.expanded =
+                expanded
+                    ? "false"
+                    : "true";
+
+            captionText.textContent =
+                expanded
+                    ? shortCaption
+                    : caption;
+
+            seeMore.textContent =
+                expanded
+                    ? "See more"
+                    : "See less";
 
         }
+    );
+
+    const likeButton =
+        card.querySelector(
+            "[data-package-like]"
+        );
+
+    likeButton?.addEventListener(
+        "click",
+        async () => {
+
+            await togglePackagePostLike(
+                packageItem,
+                likeButton
+            );
+
+            await hydratePackagePostSocial(
+                packageItem,
+                card
+            );
+
+        }
+    );
+
+    const commentPanel =
+        card.querySelector(
+            ".tw-package-comment-panel"
+        );
+
+    const commentsList =
+        card.querySelector(
+            ".tw-package-comment-panel .tw-comment-list"
+        );
+
+    const commentInput =
+        card.querySelector(
+            ".tw-package-comment-panel .tw-comment-compose input"
+        );
+
+    const commentSend =
+        card.querySelector(
+            ".tw-package-comment-panel .tw-comment-compose button"
+        );
+
+    const toggleComments =
+        async () => {
+
+            const opening =
+                commentPanel?.hidden;
+
+            if (commentPanel) {
+
+                commentPanel.hidden =
+                    !opening;
+
+            }
+
+            if (opening) {
+
+                await loadPackagePostComments(
+                    packageItem,
+                    commentsList
+                );
+
+                commentInput?.focus();
+
+            }
+
+        };
+
+    card.querySelector(
+        "[data-package-comment]"
+    )?.addEventListener(
+        "click",
+        toggleComments
+    );
+
+    card.querySelector(
+        "[data-package-open-comments]"
+    )?.addEventListener(
+        "click",
+        toggleComments
+    );
+
+    const submitComment =
+        async () => {
+
+            await addPackagePostComment(
+                packageItem,
+                commentInput,
+                commentsList
+            );
+
+            await hydratePackagePostSocial(
+                packageItem,
+                card
+            );
+
+        };
+
+    commentSend?.addEventListener(
+        "click",
+        submitComment
+    );
+
+    commentInput?.addEventListener(
+        "keydown",
+        event => {
+
+            if (
+                event.key === "Enter" &&
+                !event.shiftKey
+            ) {
+
+                event.preventDefault();
+
+                submitComment();
+
+            }
+
+        }
+    );
+
+    card.querySelector(
+        "[data-package-share]"
+    )?.addEventListener(
+        "click",
+        () => sharePackagePost(
+            packageItem
+        )
+    );
+
+    hydratePackagePostSocial(
+        packageItem,
+        card
     );
 
     return card;
 
 }
-
 
 function renderMockupFeed() {
 
@@ -2739,32 +3807,100 @@ function renderMockupFeed() {
 
     }
 
-    posts
-        .slice(0, 20)
-        .forEach(
-            post => {
+    const feedItems = [
+        ...posts
+            .slice(0, 30)
+            .map(
+                post => ({
+                    type:
+                        "customer",
+                    timestamp:
+                        Number(
+                            post.createdAtMs ||
+                            post.createdAt?.toMillis?.() ||
+                            0
+                        ),
+                    data:
+                        post
+                })
+            ),
+        ...packages
+            .slice(0, 20)
+            .map(
+                packageItem => ({
+                    type:
+                        "package",
+                    timestamp:
+                        getPackageFeedTimestamp(
+                            packageItem
+                        ),
+                    data:
+                        packageItem
+                })
+            )
+    ];
 
-                tripsWonderFeed.appendChild(
-                    createCustomerPostCard(post)
-                );
+    feedItems.sort(
+        (a, b) => {
 
+            if (
+                a.timestamp &&
+                b.timestamp
+            ) {
+                return b.timestamp - a.timestamp;
             }
-        );
 
-    packages
-        .slice(0, 8)
-        .forEach(
-            (packageItem, index) => {
-
-                tripsWonderFeed.appendChild(
-                    createFeedCard(packageItem, index)
-                );
-
+            if (a.timestamp) {
+                return -1;
             }
-        );
+
+            if (b.timestamp) {
+                return 1;
+            }
+
+            if (
+                a.type === "customer" &&
+                b.type !== "customer"
+            ) {
+                return -1;
+            }
+
+            if (
+                b.type === "customer" &&
+                a.type !== "customer"
+            ) {
+                return 1;
+            }
+
+            return 0;
+
+        }
+    );
+
+    feedItems.forEach(
+        (item, index) => {
+
+            tripsWonderFeed.appendChild(
+                item.type === "customer"
+                    ? createCustomerPostCard(
+                        item.data
+                    )
+                    : createFeedCard(
+                        item.data,
+                        index
+                    )
+            );
+
+        }
+    );
+
+    applyBusinessLogo(
+        currentBusinessLogo
+    );
+
+    renderCustomerAvatars();
 
 }
-
 
 function renderMockupPopular() {
 

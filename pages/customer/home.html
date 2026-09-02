@@ -36,7 +36,7 @@
 
         <nav class="tw-left-menu" aria-label="Customer navigation">
             <a class="active" href="home.html"><i class="fa-solid fa-house"></i><span>Home</span></a>
-            <a href="#storiesSection"><i class="fa-regular fa-compass"></i><span>Explore</span></a>
+            <a href="#feedSection"><i class="fa-regular fa-compass"></i><span>Explore</span></a>
             <a href="#feedSection"><i class="fa-solid fa-suitcase"></i><span>Tours</span></a>
             <a href="my-trip.html"><i class="fa-regular fa-calendar-check"></i><span>My Trip</span></a>
             <a href="promo.html"><i class="fa-solid fa-tag"></i><span>Promos</span></a>
@@ -87,7 +87,7 @@
                 </a>
 
                 <a href="account.html" class="tw-account-mini" aria-label="Open account" title="Account">
-                    <span class="tw-avatar"><i class="fa-solid fa-user"></i></span>
+                    <span class="tw-avatar" data-customer-avatar><i class="fa-solid fa-user"></i></span>
                     <span class="tw-account-name" id="customerName">Traveler</span>
                     <i class="fa-solid fa-chevron-down"></i>
                 </a>
@@ -97,30 +97,10 @@
         <main class="tw-main">
 
             <section class="tw-center-column">
-
-                <section class="tw-stories-section" id="storiesSection">
-                    <div class="tw-section-title">
-                        <h2>Stories &amp; Highlights</h2>
-                    </div>
-
-                    <div class="tw-stories-track" id="homeStories">
-                        <button type="button" class="tw-create-story">
-                            <span><i class="fa-solid fa-plus"></i></span>
-                            <strong>Create<br>story</strong>
-                        </button>
-
-                        <div class="tw-story-skeleton"></div>
-                        <div class="tw-story-skeleton"></div>
-                        <div class="tw-story-skeleton"></div>
-                        <div class="tw-story-skeleton"></div>
-                        <div class="tw-story-skeleton"></div>
-                    </div>
-                </section>
-
-                <section class="tw-feed-section" id="feedSection">
+<section class="tw-feed-section" id="feedSection">
 
                     <div class="tw-post-composer">
-                        <span class="tw-composer-avatar" aria-hidden="true">
+                        <span class="tw-composer-avatar" data-customer-avatar aria-hidden="true">
                             <i class="fa-solid fa-user"></i>
                         </span>
 
@@ -132,13 +112,7 @@
                             <i class="fa-regular fa-image"></i>
                         </button>
                     </div>
-
-                    <div class="tw-feed-heading">
-                        <h2>Trips Wonder Feed</h2>
-                        <button type="button" class="tw-feed-sort">Most Recent <i class="fa-solid fa-chevron-down"></i></button>
-                    </div>
-
-                    <div id="tripsWonderFeed" class="tw-feed-list">
+<div id="tripsWonderFeed" class="tw-feed-list">
                         <article class="tw-feed-skeleton"></article>
                         <article class="tw-feed-skeleton"></article>
                     </div>
@@ -210,7 +184,7 @@
             </header>
 
             <div class="tw-post-author">
-                <span class="tw-post-author-avatar"><i class="fa-solid fa-user"></i></span>
+                <span class="tw-post-author-avatar" data-customer-avatar><i class="fa-solid fa-user"></i></span>
                 <div>
                     <strong id="postAuthorName">Traveler</strong>
                     <small><i class="fa-solid fa-earth-americas"></i> Trips Wonder Community</small>
