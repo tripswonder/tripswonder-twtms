@@ -527,3 +527,207 @@
         display: none !important;
     }
 }
+
+
+/* ==========================================================
+   TRIPS WONDER — FINAL MOBILE NAV ALIGNMENT
+   Strict 5 equal columns:
+   Home | Explore | Tours | My Trip | Promos
+   ========================================================== */
+@media (max-width: 899px) {
+
+    #customerBottomNav {
+        position: fixed !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+
+        width: 100% !important;
+        height: calc(64px + env(safe-area-inset-bottom)) !important;
+
+        margin: 0 !important;
+        padding: 0 !important;
+
+        z-index: 1600 !important;
+
+        pointer-events: none;
+    }
+
+    #customerBottomNav .bottom-nav {
+        position: absolute !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+
+        width: 100% !important;
+        max-width: none !important;
+        height: calc(64px + env(safe-area-inset-bottom)) !important;
+
+        margin: 0 !important;
+        padding:
+            4px
+            max(6px, env(safe-area-inset-left))
+            calc(4px + env(safe-area-inset-bottom))
+            max(6px, env(safe-area-inset-right)) !important;
+
+        display: block !important;
+
+        background: rgba(255,255,255,.98) !important;
+        border: 0 !important;
+        border-top: 1px solid #e2e8f0 !important;
+        border-radius: 0 !important;
+
+        box-shadow: 0 -4px 18px rgba(15,23,42,.07) !important;
+
+        transform: none !important;
+
+        pointer-events: auto;
+    }
+
+    #customerBottomNav .customer-nav-menu {
+        width: 100% !important;
+        height: 56px !important;
+
+        margin: 0 !important;
+        padding: 0 !important;
+
+        display: grid !important;
+        grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+        align-items: stretch !important;
+        justify-items: stretch !important;
+
+        gap: 0 !important;
+    }
+
+    #customerBottomNav .bottom-nav-item {
+        position: relative !important;
+
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: none !important;
+        height: 56px !important;
+
+        margin: 0 !important;
+        padding: 3px 2px 2px !important;
+
+        display: flex !important;
+        flex: none !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+
+        gap: 2px !important;
+
+        color: #66758a !important;
+        background: transparent !important;
+
+        border: 0 !important;
+        border-radius: 10px !important;
+
+        text-align: center !important;
+        text-decoration: none !important;
+
+        overflow: visible !important;
+        box-sizing: border-box !important;
+
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    #customerBottomNav .bottom-icon {
+        width: 30px !important;
+        height: 27px !important;
+
+        flex: 0 0 27px !important;
+
+        display: grid !important;
+        place-items: center !important;
+
+        margin: 0 auto !important;
+
+        color: inherit !important;
+        background: transparent !important;
+
+        border-radius: 9px !important;
+
+        font-size: 17px !important;
+        line-height: 1 !important;
+    }
+
+    #customerBottomNav .bottom-label {
+        display: block !important;
+
+        width: 100% !important;
+        max-width: 100% !important;
+
+        margin: 0 !important;
+        padding: 0 !important;
+
+        overflow: hidden !important;
+
+        color: inherit !important;
+
+        font-family: "Poppins", sans-serif !important;
+        font-size: 8px !important;
+        font-weight: 600 !important;
+        line-height: 1.15 !important;
+
+        text-align: center !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+    }
+
+    #customerBottomNav .bottom-nav-item.active {
+        color: #0866ff !important;
+        background: transparent !important;
+        font-weight: 700 !important;
+    }
+
+    #customerBottomNav .bottom-nav-item.active .bottom-icon {
+        color: #0866ff !important;
+        background: #eaf3ff !important;
+
+        transform: none !important;
+    }
+
+    #customerBottomNav .bottom-nav-item.active::after {
+        content: "" !important;
+
+        position: absolute !important;
+        left: 50% !important;
+        bottom: 0 !important;
+
+        width: 20px !important;
+        height: 2px !important;
+
+        transform: translateX(-50%) !important;
+
+        background: #0866ff !important;
+
+        border-radius: 999px !important;
+    }
+
+    #customerBottomNav .bottom-nav-item:active {
+        transform: scale(.96) !important;
+    }
+
+    body {
+        padding-bottom:
+            calc(64px + env(safe-area-inset-bottom)) !important;
+    }
+}
+
+/* Extra compact phones */
+@media (max-width: 360px) {
+    #customerBottomNav .bottom-nav {
+        padding-left: 3px !important;
+        padding-right: 3px !important;
+    }
+
+    #customerBottomNav .bottom-icon {
+        font-size: 16px !important;
+    }
+
+    #customerBottomNav .bottom-label {
+        font-size: 7.5px !important;
+    }
+}

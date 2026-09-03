@@ -4097,3 +4097,137 @@ body {
         max-width: 240px;
     }
 }
+
+
+/* ==========================================================
+   MY TRIP — FINAL SHARED CUSTOMER NAV OWNERSHIP
+   customer-nav.css / customer-nav.js own ALL customer navigation.
+   My Trip owns page content only.
+========================================================== */
+
+/* Never turn the shared-nav mount into a My Trip sidebar. */
+#customerBottomNav {
+    position: relative !important;
+    inset: auto !important;
+    top: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    left: auto !important;
+
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+
+    height: auto !important;
+    min-height: 0 !important;
+
+    margin: 0 !important;
+    overflow: visible !important;
+}
+
+/* My Trip must use the full viewport under the shared header. */
+.my-trip-page {
+    width: 100% !important;
+    max-width: none !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
+
+/* The old My Trip page header is no longer the app header.
+   Keep it as the page title area only. */
+.my-trip-header {
+    z-index: 1 !important;
+}
+
+/* Remove legacy page-owned bottom-navigation styling.
+   Shared customer-nav.css is the source of truth. */
+
+/* ---------------- DESKTOP ---------------- */
+@media (min-width: 900px) {
+
+    body {
+        overflow: hidden;
+        background: #f4f7fb;
+    }
+
+    .my-trip-page {
+        height: calc(100vh - 64px) !important;
+        min-height: calc(100vh - 64px) !important;
+        overflow: hidden;
+    }
+
+    .my-trip-header {
+        width: 100%;
+        height: 88px;
+        padding: 20px 32px 14px;
+        display: flex;
+        align-items: center;
+        background: rgba(255, 255, 255, 0.88);
+        border-bottom: 1px solid #e3eaf3;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+    }
+
+    .trip-content {
+        width: 100%;
+        height: calc(100vh - 152px);
+        overflow-y: auto;
+        padding: 24px 32px 44px;
+    }
+
+    .trip-loading,
+    .no-trip-state {
+        width: 100% !important;
+        margin-left: 0 !important;
+    }
+
+    .booking-process-shell {
+        width: 100% !important;
+        margin-left: 0 !important;
+    }
+}
+
+/* ---------------- MOBILE / TABLET ---------------- */
+@media (max-width: 899px) {
+
+    .my-trip-page {
+        width: 100% !important;
+        max-width: none !important;
+        min-height: 100vh;
+        margin: 0 !important;
+    }
+
+    /* No page-owned fixed sidebar or nav offset on mobile. */
+    #customerBottomNav {
+        width: 100% !important;
+        height: auto !important;
+    }
+
+    .trip-loading,
+    .no-trip-state,
+    .booking-process-shell,
+    .trip-content {
+        margin-left: 0 !important;
+    }
+}
+
+/* Large desktop must NOT restore the legacy 250px sidebar. */
+@media (min-width: 1400px) {
+
+    #customerBottomNav {
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: none !important;
+    }
+
+    .my-trip-page {
+        width: 100% !important;
+        margin-left: 0 !important;
+    }
+
+    .trip-loading,
+    .no-trip-state {
+        width: 100% !important;
+        margin-left: 0 !important;
+    }
+}

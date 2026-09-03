@@ -153,7 +153,7 @@ button {
     flex: 0 0 42px;
 
     display: grid;
-    grid-template-columns: 20px minmax(0, 1fr) 28px;
+    grid-template-columns: 20px minmax(0, 1fr);
     align-items: center;
 
     gap: 8px;
@@ -1534,30 +1534,6 @@ button {
         display:block;
         background:#f4f7fb
     }
-    #customerBottomNav {
-        position:fixed !important;
-        top:0 !important;
-        left:0 !important;
-        right:auto !important;
-        bottom:0 !important;
-        width:240px !important;
-        min-width:240px !important;
-        max-width:240px !important;
-        height:100vh !important;
-        min-height:100vh !important;
-        margin:0 !important;
-        z-index:1000
-    }
-    .message-shell {
-        width:calc(100% - 240px);
-        max-width:none;
-        height:100vh;
-        max-height:100vh;
-        margin:0 0 0 240px;
-        border:0;
-        box-shadow:none;
-        background:#f4f7fb
-    }
     .message-center-page {
         padding:0;
         background:#f4f7fb
@@ -1823,17 +1799,6 @@ button {
         font-weight:700
     }
 }
-@media (min-width:1400px) {
-    #customerBottomNav {
-        width:250px !important;
-        min-width:250px !important;
-        max-width:250px !important
-    }
-    .message-shell {
-        width:calc(100% - 250px);
-        margin-left:250px
-    }
-}
 @media (max-width:360px) {
     .message-center-topbar {
         padding-left:12px;
@@ -1863,4 +1828,208 @@ button {
 .message-center-bell-badge[hidden],
 .tab-badge[hidden] {
     display: none !important;
+}
+
+
+/* ==========================================================
+   MESSAGE PAGE — SHARED NAV HOST FIX
+   Keeps #customerBottomNav from covering the Messenger workspace.
+   ========================================================== */
+@media (min-width: 900px) {
+    body.customer-shared-nav-page > #customerBottomNav {
+        position: relative !important;
+        top: auto !important;
+        left: auto !important;
+        right: auto !important;
+        bottom: auto !important;
+
+        width: 0 !important;
+        min-width: 0 !important;
+        max-width: 0 !important;
+
+        height: 0 !important;
+        min-height: 0 !important;
+
+        margin: 0 !important;
+        padding: 0 !important;
+
+        overflow: visible !important;
+        z-index: 1600 !important;
+        pointer-events: none !important;
+    }
+
+    body.customer-shared-nav-page > #customerBottomNav .customer-shared-header,
+    body.customer-shared-nav-page > #customerBottomNav .customer-shared-header * {
+        pointer-events: auto !important;
+    }
+}
+
+
+/* ==========================================================
+   MEMBER SEARCH — SINGLE NATIVE CLEAR X
+   ========================================================== */
+.tw-member-search input[type="search"] {
+    width: 100%;
+    min-width: 0;
+    padding-right: 4px;
+}
+
+.tw-member-search input[type="search"]::-webkit-search-cancel-button {
+    cursor: pointer;
+}
+
+
+/* ==========================================================
+   MEMBER SEARCH — ONE CLEAN SEARCH BAR ONLY
+   The wrapper is the visible search bar.
+   The <input> itself has no inner box/border/background.
+   ========================================================== */
+.tw-member-search {
+    position: relative;
+    grid-template-columns: 20px minmax(0, 1fr) !important;
+}
+
+.tw-member-search input,
+.tw-member-search input[type="search"] {
+    width: 100% !important;
+    height: 100% !important;
+    min-width: 0 !important;
+
+    margin: 0 !important;
+    padding: 0 4px 0 0 !important;
+
+    color: #1d2939 !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+
+    border: 0 !important;
+    border-radius: 0 !important;
+    outline: 0 !important;
+
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+
+    appearance: none;
+    -webkit-appearance: none;
+
+    font: inherit;
+}
+
+.tw-member-search input:focus,
+.tw-member-search input[type="search"]:focus {
+    background: transparent !important;
+    border: 0 !important;
+    outline: 0 !important;
+    box-shadow: none !important;
+}
+
+.tw-member-search input[type="search"]::-webkit-search-decoration {
+    -webkit-appearance: none;
+}
+
+.tw-member-search input[type="search"]::-webkit-search-cancel-button {
+    cursor: pointer;
+}
+
+
+/* ==========================================================
+   MEMBER SEARCH — COMPACT FONT + NATIVE CLEAR X
+   ========================================================== */
+.tw-member-search input,
+.tw-member-search input[type="search"] {
+    font-size: 11px !important;
+    font-weight: 500 !important;
+    line-height: 1.2 !important;
+}
+
+.tw-member-search input::placeholder,
+.tw-member-search input[type="search"]::placeholder {
+    font-size: 11px !important;
+    font-weight: 400 !important;
+    color: #667085 !important;
+    opacity: 1 !important;
+}
+
+/* Keep the browser-native clear X inside the search field */
+.tw-member-search input[type="search"] {
+    appearance: auto !important;
+    -webkit-appearance: searchfield !important;
+}
+
+.tw-member-search input[type="search"]::-webkit-search-cancel-button {
+    display: block !important;
+    cursor: pointer !important;
+    opacity: 1 !important;
+}
+
+
+/* ==========================================================
+   MEMBER SEARCH — FINAL CUSTOM FUNCTIONAL CLEAR X
+   One clean search bar, no browser-native clear control.
+   ========================================================== */
+.tw-member-search {
+    grid-template-columns: 20px minmax(0, 1fr) 28px !important;
+}
+
+.tw-member-search input,
+.tw-member-search input[type="text"] {
+    width: 100% !important;
+    min-width: 0 !important;
+    height: 100% !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    color: #1d2939 !important;
+    background: transparent !important;
+
+    border: 0 !important;
+    border-radius: 0 !important;
+    outline: 0 !important;
+    box-shadow: none !important;
+
+    font-size: 11px !important;
+    font-weight: 500 !important;
+    line-height: 1.2 !important;
+}
+
+.tw-member-search input::placeholder {
+    color: #667085 !important;
+    opacity: 1 !important;
+
+    font-size: 11px !important;
+    font-weight: 400 !important;
+}
+
+.tw-member-search-clear {
+    width: 28px !important;
+    height: 28px !important;
+
+    display: grid;
+    place-items: center;
+
+    padding: 0 !important;
+
+    color: #667085 !important;
+    background: transparent !important;
+
+    border: 0 !important;
+    border-radius: 50% !important;
+
+    cursor: pointer;
+}
+
+.tw-member-search-clear:hover {
+    color: #344054 !important;
+    background: rgba(15, 23, 42, 0.06) !important;
+}
+
+.tw-member-search-clear[hidden] {
+    display: none !important;
+}
+
+.tw-member-search-clear i {
+    font-size: 11px;
+    pointer-events: none;
 }

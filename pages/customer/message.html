@@ -73,14 +73,15 @@
 
                     <input
                         id="memberSearchInput"
-                        type="search"
+                        type="text"
                         placeholder="Search username or email"
                         autocomplete="off">
 
                     <button
                         type="button"
                         id="memberSearchClear"
-                        aria-label="Clear search"
+                        class="tw-member-search-clear"
+                        aria-label="Clear member search"
                         hidden>
                         <i class="fa-solid fa-xmark"></i>
                     </button>
@@ -106,15 +107,19 @@
                     aria-label="Chat lists">
 
                     <button
+                        id="memberChatsTab"
                         type="button"
                         class="active"
-                        data-member-tab="chats">
+                        data-member-tab="chats"
+                        aria-selected="true">
                         Chats
                     </button>
 
                     <button
+                        id="memberRequestsTab"
                         type="button"
-                        data-member-tab="requests">
+                        data-member-tab="requests"
+                        aria-selected="false">
                         Requests
                     </button>
 
@@ -541,7 +546,7 @@
 
     <script
         type="module"
-        src="../../assets/js/customer/message.js">
+        src="../../assets/js/customer/message.js?v=20260903-0235">
     </script>
 
     <script

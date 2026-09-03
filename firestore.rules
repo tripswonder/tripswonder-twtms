@@ -1,0 +1,773 @@
+rules_version = '2';
+
+service cloud.firestore {
+
+  match /databases/{database}/documents {
+
+    // =====================================================
+    // HELPER FUNCTIONS
+    // =====================================================
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner() {
+      return isSignedIn()
+        && get(
+          /databases/$(database)/documents/users/$(request.auth.uid)
+        ).data.role == "owner";
+    }
+
+    function isAdmin() {
+      return isSignedIn()
+        && get(
+          /databases/$(database)/documents/users/$(request.auth.uid)
+        ).data.role == "admin";
+    }
+
+    function isOwnerOrAdmin() {
+      return isOwner() || isAdmin();
+    }
+
+
+    // =====================================================
+    // USERS
+    // =====================================================
+
+    match /users/{userId} {
+
+      allow create: if isSignedIn()
+                    && request.auth.uid == userId;
+
+      // Keep customer profiles private.
+      // Exact member lookup is handled by a callable Cloud Function.
+      allow read: if isOwnerOrAdmin()
+                  || (
+                    isSignedIn()
+                    && request.auth.uid == userId
+                  );
+
+      allow update: if isOwnerOrAdmin()
+                    || (
+                      isSignedIn()
+                      && request.auth.uid == userId
+                    );
+
+      allow delete: if isOwner();
+    }
+
+
+    // =====================================================
+    // MEMBER-TO-MEMBER MESSENGER
+    // =====================================================
+    // Flow:
+    // pending  -> recipient can Accept / Decline / Block
+    // accepted -> both participants can chat normally
+    // declined -> closed
+    // blocked  -> closed; no further member messages
+    //
+    // Initial request message uses the fixed id "request".
+    // =====================================================
+
+    match /memberConversations/{conversationId} {
+
+      function isConversationParticipant() {
+        return isSignedIn()
+          && request.auth.uid in resource.data.participants;
+      }
+
+      function isIncomingRequestRecipient() {
+        return isConversationParticipant()
+          && resource.data.requestState == "pending"
+          && request.auth.uid != resource.data.requestSenderUid;
+      }
+
+      function keepsConversationIdentity() {
+        return request.resource.data.participants == resource.data.participants
+          && request.resource.data.requestSenderUid == resource.data.requestSenderUid;
+      }
+
+      function isReadStateOnlyUpdate() {
+        return request.resource.data.diff(resource.data)
+          .affectedKeys()
+          .hasOnly([
+            "unread",
+            "updatedAt"
+          ]);
+      }
+
+      function isAcceptedChatUpdate() {
+        return resource.data.requestState == "accepted"
+          && request.resource.data.requestState == "accepted"
+          && request.resource.data.diff(resource.data)
+            .affectedKeys()
+            .hasOnly([
+              "lastMessage",
+              "lastMessageSenderUid",
+              "unread",
+              "updatedAt"
+            ])
+          && (
+            !request.resource.data.diff(resource.data)
+              .affectedKeys()
+              .hasAny([
+                "lastMessage",
+                "lastMessageSenderUid"
+              ])
+            || request.resource.data.lastMessageSenderUid == request.auth.uid
+          );
+      }
+
+
+      // -----------------------------------------------------
+      // CONVERSATION DOCUMENT
+      // -----------------------------------------------------
+
+      allow read: if isConversationParticipant();
+
+      // Sender creates one deterministic conversation document.
+      // The first message itself is protected below by fixed id "request".
+      allow create: if isSignedIn()
+                    && request.resource.data.participants is list
+                    && request.resource.data.participants.size() == 2
+                    && request.auth.uid in request.resource.data.participants
+                    && request.resource.data.requestState == "pending"
+                    && request.resource.data.requestSenderUid == request.auth.uid
+                    && request.resource.data.unread is map;
+
+      allow update: if isConversationParticipant()
+                    && keepsConversationIdentity()
+                    && (
+
+                      // Recipient opening a pending request may only
+                      // clear/update read state. Sender cannot change
+                      // the pending conversation content.
+                      (
+                        resource.data.requestState == "pending"
+                        && request.resource.data.requestState == "pending"
+                        && isIncomingRequestRecipient()
+                        && isReadStateOnlyUpdate()
+                      )
+
+                      ||
+
+                      // ACCEPT + FIRST REPLY:
+                      // The recipient's first reply accepts the request and
+                      // updates the conversation preview in the same write.
+                      (
+                        isIncomingRequestRecipient()
+                        && request.resource.data.requestState == "accepted"
+                        && request.resource.data.acceptedByUid == request.auth.uid
+                        && request.resource.data.lastMessageSenderUid == request.auth.uid
+                        && request.resource.data.diff(resource.data)
+                          .affectedKeys()
+                          .hasOnly([
+                            "requestState",
+                            "recipientReplyAt",
+                            "acceptedByUid",
+                            "acceptedAt",
+                            "lastMessage",
+                            "lastMessageSenderUid",
+                            "unread",
+                            "updatedAt"
+                          ])
+                      )
+
+                      ||
+
+                      // DECLINE:
+                      // Closed permanently unless Owner/Admin intervenes.
+                      (
+                        isIncomingRequestRecipient()
+                        && request.resource.data.requestState == "declined"
+                        && request.resource.data.declinedByUid == request.auth.uid
+                        && request.resource.data.diff(resource.data)
+                          .affectedKeys()
+                          .hasOnly([
+                            "requestState",
+                            "declinedByUid",
+                            "declinedAt",
+                            "unread",
+                            "updatedAt"
+                          ])
+                      )
+
+                      ||
+
+                      // BLOCK:
+                      // Only the request recipient can block the sender.
+                      (
+                        isIncomingRequestRecipient()
+                        && request.resource.data.requestState == "blocked"
+                        && request.resource.data.blockedByUid == request.auth.uid
+                        && request.resource.data.blockedUid == resource.data.requestSenderUid
+                        && request.resource.data.diff(resource.data)
+                          .affectedKeys()
+                          .hasOnly([
+                            "requestState",
+                            "blockedByUid",
+                            "blockedUid",
+                            "blockedAt",
+                            "unread",
+                            "updatedAt"
+                          ])
+                      )
+
+                      ||
+
+                      // ACCEPTED CHAT:
+                      // Participants can update last-message/read metadata.
+                      // Declined/blocked conversations do not match this rule.
+                      isAcceptedChatUpdate()
+                    );
+
+      allow delete: if isOwnerOrAdmin();
+
+
+      // -----------------------------------------------------
+      // MEMBER MESSAGES
+      // -----------------------------------------------------
+
+      match /messages/{messageId} {
+
+        function parentConversation() {
+          return get(
+            /databases/$(database)/documents/memberConversations/$(conversationId)
+          );
+        }
+
+        function isParentParticipant() {
+          return isSignedIn()
+            && request.auth.uid in parentConversation().data.participants;
+        }
+
+        function isValidMessageEnvelope() {
+          return request.resource.data.senderUid == request.auth.uid
+            && request.resource.data.recipientUid in parentConversation().data.participants
+            && request.resource.data.recipientUid != request.auth.uid
+            && request.resource.data.text is string
+            && request.resource.data.text.size() > 0
+            && request.resource.data.text.size() <= 1000;
+        }
+
+        allow read: if isParentParticipant();
+
+        allow create: if isParentParticipant()
+                      && isValidMessageEnvelope()
+                      && (
+
+                        // Exactly one first request message.
+                        (
+                          parentConversation().data.requestState == "pending"
+                          && parentConversation().data.requestSenderUid == request.auth.uid
+                          && messageId == "request"
+                        )
+
+                        ||
+
+                        // Normal two-way chat only after explicit Accept.
+                        (
+                          parentConversation().data.requestState == "accepted"
+                        )
+                      );
+
+        // Member messages are immutable.
+        allow update: if false;
+
+        // Customers cannot erase request/chat history.
+        // Moderation may remove messages if needed.
+        allow delete: if isOwnerOrAdmin();
+      }
+    }
+
+
+    // =====================================================
+    // SYSTEM SETTINGS
+    // =====================================================
+    // Used by:
+    // Admin Profile → Page Setup
+    // Customer-facing shared settings
+    //
+    // Document:
+    // systemSettings/general
+    // =====================================================
+
+    match /systemSettings/{settingId} {
+
+      allow read: if isSignedIn();
+
+      allow create: if isOwner();
+
+      allow update: if isOwner();
+
+      allow delete: if isOwner();
+    }
+
+
+    // =====================================================
+    // SYSTEM COUNTERS
+    // =====================================================
+    // Used for unique booking reference numbers
+    // Example: TW-2026-000001
+    // =====================================================
+
+    match /systemCounters/{counterId} {
+
+      allow read: if isOwnerOrAdmin();
+
+      allow create: if isOwnerOrAdmin();
+
+      allow update: if isOwnerOrAdmin();
+
+      allow delete: if isOwner();
+    }
+
+
+    // =====================================================
+    // PACKAGES
+    // =====================================================
+
+    match /packages/{packageId} {
+
+      // Existing package behavior preserved.
+      allow read, write: if true;
+
+      // Customer engagement on package feed posts.
+      match /likes/{userId} {
+
+        allow read: if isSignedIn();
+
+        allow create, update: if isSignedIn()
+                              && request.auth.uid == userId
+                              && request.resource.data.userUid == request.auth.uid;
+
+        allow delete: if isOwnerOrAdmin()
+                      || (
+                        isSignedIn()
+                        && request.auth.uid == userId
+                      );
+      }
+
+      match /comments/{commentId} {
+
+        allow read: if isSignedIn();
+
+        allow create: if isSignedIn()
+                      && request.resource.data.authorUid == request.auth.uid;
+
+        allow update, delete: if isOwnerOrAdmin()
+                              || (
+                                isSignedIn()
+                                && resource.data.authorUid == request.auth.uid
+                              );
+      }
+    }
+
+
+    // =====================================================
+    // BOOKINGS
+    // =====================================================
+
+    match /bookings/{bookingId} {
+
+      allow create: if true;
+
+      allow read: if true;
+
+      // Owner/Admin can edit booking payment information.
+      allow update: if isOwnerOrAdmin();
+
+      allow delete: if isOwner();
+    }
+
+
+    // =====================================================
+    // CUSTOMERS
+    // =====================================================
+
+    match /customers/{customerId} {
+
+      allow read: if isOwnerOrAdmin();
+
+      allow create: if isOwnerOrAdmin();
+
+      allow update: if isOwnerOrAdmin();
+
+      allow delete: if isOwner();
+    }
+
+
+    // =====================================================
+    // PAYMENTS
+    // =====================================================
+
+    match /payments/{paymentId} {
+
+      allow read: if isOwnerOrAdmin();
+
+      allow create: if isOwnerOrAdmin();
+
+      allow update: if isOwnerOrAdmin();
+
+      allow delete: if isOwner();
+    }
+
+
+    // =====================================================
+    // TRIP OPERATIONS
+    // =====================================================
+
+    match /tripOperations/{operationId} {
+
+      // Customer + Admin + Owner can read.
+      allow read: if isSignedIn();
+
+      // Admin + Owner only can create.
+      allow create: if isOwnerOrAdmin();
+
+      // Admin + Owner only can update.
+      allow update: if isOwnerOrAdmin();
+
+      // Owner only can delete.
+      allow delete: if isOwner();
+    }
+
+
+    // =====================================================
+    // PROMOS
+    // =====================================================
+
+    match /promos/{promoId} {
+
+      // Owner/Admin can read all promo records.
+      allow read: if isOwnerOrAdmin();
+
+      // Signed-in customers can read active promos.
+      allow read: if isSignedIn()
+                  && resource.data.status == "active";
+
+      allow create: if isOwnerOrAdmin();
+
+      allow update: if isOwnerOrAdmin();
+
+      allow delete: if isOwner();
+    }
+
+
+    // =====================================================
+    // MESSAGES / CONVERSATIONS
+    // =====================================================
+    //
+    // Structure:
+    // conversations/{customerUid}
+    // conversations/{customerUid}/messages/{messageId}
+    //
+    // Customer:
+    // - Can create/read/update own conversation
+    // - Can read/send messages in own conversation
+    //
+    // Owner/Admin:
+    // - Can view all conversations
+    // - Can reply to all conversations
+    // =====================================================
+
+    match /conversations/{conversationId} {
+
+      // Customer creates their own conversation.
+      // Owner/Admin can also create.
+      allow create: if isOwnerOrAdmin()
+                    || (
+                      isSignedIn()
+                      && conversationId == request.auth.uid
+                      && request.resource.data.customerUid == request.auth.uid
+                    );
+
+      // Read conversation.
+      allow read: if isOwnerOrAdmin()
+                  || (
+                    isSignedIn()
+                    && conversationId == request.auth.uid
+                  );
+
+      // Used for:
+      // lastMessage
+      // unread count
+      // read timestamps
+      allow update: if isOwnerOrAdmin()
+                    || (
+                      isSignedIn()
+                      && resource.data.customerUid == request.auth.uid
+                      && request.resource.data.customerUid == request.auth.uid
+                    );
+
+      allow delete: if isOwner();
+
+
+      // ===================================================
+      // MESSAGES SUBCOLLECTION
+      // ===================================================
+
+      match /messages/{messageId} {
+
+        allow read: if isOwnerOrAdmin()
+                    || (
+                      isSignedIn()
+                      && get(
+                        /databases/$(database)/documents/conversations/$(conversationId)
+                      ).data.customerUid == request.auth.uid
+                    );
+
+        allow create: if
+
+          // Customer sends message.
+          (
+            isSignedIn()
+            && get(
+              /databases/$(database)/documents/conversations/$(conversationId)
+            ).data.customerUid == request.auth.uid
+            && request.resource.data.senderUid == request.auth.uid
+            && request.resource.data.senderRole == "customer"
+          )
+
+          ||
+
+          // Owner/Admin sends reply.
+          (
+            isOwnerOrAdmin()
+            && request.resource.data.senderUid == request.auth.uid
+            && request.resource.data.senderRole == "admin"
+          );
+
+        // Existing messages should not normally be edited
+        // or deleted by customers.
+        allow update: if isOwnerOrAdmin();
+
+        allow delete: if isOwner();
+      }
+    }
+
+
+    // =====================================================
+    // CUSTOMER NOTIFICATIONS
+    // =====================================================
+    //
+    // Structure:
+    // notifications/{notificationId}
+    //
+    // Expected fields:
+    // customerUid
+    // type
+    // title
+    // message
+    // isRead
+    // createdAt
+    // readAt (optional)
+    // bookingId (optional)
+    // destination (optional)
+    // travelDate (optional)
+    // referenceNumber (optional)
+    // actionUrl (optional)
+    // actionLabel (optional)
+    //
+    // Customer:
+    // - Can read only notifications assigned to them
+    // - Can only change isRead/readAt on their own notifications
+    //
+    // Owner/Admin:
+    // - Can read/create/update notifications
+    //
+    // Owner:
+    // - Can delete notifications
+    // =====================================================
+
+    match /notifications/{notificationId} {
+
+      // Owner/Admin can read all notifications.
+      // Customer can read only their own notifications.
+      allow read: if isOwnerOrAdmin()
+                  || (
+                    isSignedIn()
+                    && resource.data.customerUid == request.auth.uid
+                  );
+
+      // Notification records are generated by Owner/Admin only.
+      allow create: if isOwnerOrAdmin();
+
+      // Owner/Admin can fully update notifications.
+      // Customer can only mark their own notification read/unread
+      // and update the read timestamp.
+      allow update: if isOwnerOrAdmin()
+                    || (
+                      isSignedIn()
+                      && resource.data.customerUid == request.auth.uid
+                      && request.resource.data.customerUid == resource.data.customerUid
+                      && request.resource.data.diff(resource.data)
+                           .affectedKeys()
+                           .hasOnly([
+                             "isRead",
+                             "readAt"
+                           ])
+                    );
+
+      // Permanent deletion is Owner only.
+      allow delete: if isOwner();
+    }
+
+    // =====================================================
+    // ADMIN NOTIFICATION READ STATE
+    // =====================================================
+    //
+    // Source notifications are derived from real business
+    // records (currently client website bookings).
+    //
+    // One read-state document belongs to one Owner/Admin
+    // account. This allows each admin account to maintain
+    // its own unread count.
+    // =====================================================
+
+    match /adminNotificationReads/{readId} {
+
+      allow read: if isOwnerOrAdmin()
+                  && resource.data.adminUid == request.auth.uid;
+
+      allow create: if isOwnerOrAdmin()
+                    && request.resource.data.adminUid == request.auth.uid;
+
+      allow update: if isOwnerOrAdmin()
+                    && resource.data.adminUid == request.auth.uid
+                    && request.resource.data.adminUid == request.auth.uid;
+
+      allow delete: if isOwner();
+    }
+
+
+    // =====================================================
+    // CUSTOMER COMMUNITY POSTS
+    // =====================================================
+    //
+    // customerPosts/{postId}
+    // customerPosts/{postId}/likes/{userUid}
+    // customerPosts/{postId}/comments/{commentId}
+    // customerPosts/{postId}/moderation/{moderationId}
+    //
+    // Customer posts publish immediately.
+    // Customers can soft-delete their own posts.
+    // Owner/Admin can moderate, warn, report, or permanently delete.
+    // =====================================================
+
+    match /customerPosts/{postId} {
+
+      allow read: if isOwnerOrAdmin()
+                  || (
+                    isSignedIn()
+                    && resource.data.status == "active"
+                  );
+
+      allow create: if isSignedIn()
+                    && request.resource.data.authorUid == request.auth.uid
+                    && request.resource.data.status == "active"
+                    && request.resource.data.caption is string
+                    && request.resource.data.caption.size() <= 1500
+                    && request.resource.data.imageUrls is list
+                    && request.resource.data.imageUrls.size() <= 5
+                    && request.resource.data.imageStoragePaths is list
+                    && request.resource.data.imageStoragePaths.size() <= 5;
+
+      // Owner/Admin may apply moderation updates.
+      // A customer may only soft-delete their own post.
+      allow update: if isOwnerOrAdmin()
+                    || (
+                      isSignedIn()
+                      && resource.data.authorUid == request.auth.uid
+                      && request.resource.data.authorUid == resource.data.authorUid
+                      && request.resource.data.diff(resource.data)
+                           .affectedKeys()
+                           .hasOnly([
+                             "status",
+                             "updatedAt"
+                           ])
+                      && request.resource.data.status == "deleted"
+                    );
+
+      // Permanent deletion is moderation-only.
+      allow delete: if isOwnerOrAdmin();
+
+
+      // -----------------------------------------------------
+      // LIKES
+      // -----------------------------------------------------
+
+      match /likes/{userUid} {
+
+        allow read: if isSignedIn()
+                    && get(
+                      /databases/$(database)/documents/customerPosts/$(postId)
+                    ).data.status == "active";
+
+        allow create: if isSignedIn()
+                      && request.auth.uid == userUid
+                      && request.resource.data.userUid == request.auth.uid
+                      && get(
+                        /databases/$(database)/documents/customerPosts/$(postId)
+                      ).data.status == "active";
+
+        allow update: if false;
+
+        allow delete: if isOwnerOrAdmin()
+                      || (
+                        isSignedIn()
+                        && request.auth.uid == userUid
+                      );
+      }
+
+
+      // -----------------------------------------------------
+      // COMMENTS
+      // -----------------------------------------------------
+
+      match /comments/{commentId} {
+
+        allow read: if isSignedIn()
+                    && get(
+                      /databases/$(database)/documents/customerPosts/$(postId)
+                    ).data.status == "active";
+
+        allow create: if isSignedIn()
+                      && request.resource.data.authorUid == request.auth.uid
+                      && request.resource.data.text is string
+                      && request.resource.data.text.size() > 0
+                      && request.resource.data.text.size() <= 500
+                      && get(
+                        /databases/$(database)/documents/customerPosts/$(postId)
+                      ).data.status == "active";
+
+        allow update: if false;
+
+        allow delete: if isOwnerOrAdmin()
+                      || (
+                        isSignedIn()
+                        && resource.data.authorUid == request.auth.uid
+                      );
+      }
+
+
+      // -----------------------------------------------------
+      // ADMIN MODERATION HISTORY
+      // -----------------------------------------------------
+
+      match /moderation/{moderationId} {
+
+        allow read: if isOwnerOrAdmin();
+
+        allow create, update: if isOwnerOrAdmin();
+
+        allow delete: if isOwner();
+      }
+    }
+
+
+
+  }
+
+}

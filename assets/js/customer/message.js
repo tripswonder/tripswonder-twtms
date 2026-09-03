@@ -1133,8 +1133,8 @@ const memberMessengerPanel = document.getElementById("memberMessengerPanel");
 const memberMessengerInbox = document.getElementById("memberMessengerInbox");
 const memberChatView = document.getElementById("memberChatView");
 const memberSearchInput = document.getElementById("memberSearchInput");
-const memberSearchClear = document.getElementById("memberSearchClear");
 const memberSearchResults = document.getElementById("memberSearchResults");
+const memberSearchClear = document.getElementById("memberSearchClear");
 const memberChatList = document.getElementById("memberChatList");
 const memberChatBack = document.getElementById("memberChatBack");
 const memberChatAvatar = document.getElementById("memberChatAvatar");
@@ -1442,15 +1442,51 @@ function showMemberInbox() {
 
 memberChatBack?.addEventListener("click", showMemberInbox);
 
-document.querySelectorAll("[data-member-tab]").forEach(button => {
-    button.addEventListener("click", () => {
-        activeMemberTab = button.dataset.memberTab || "chats";
-        document.querySelectorAll("[data-member-tab]").forEach(item => {
-            item.classList.toggle("active", item === button);
-        });
-        renderMemberConversationList();
-    });
+function setMemberTab(tabName) {
+    const nextTab = tabName === "requests" ? "requests" : "chats";
+    activeMemberTab = nextTab;
+
+    const chatsControl = document.getElementById("memberChatsTab");
+    const requestsControl = document.getElementById("memberRequestsTab");
+
+    chatsControl?.classList.toggle("active", nextTab === "chats");
+    requestsControl?.classList.toggle("active", nextTab === "requests");
+
+    chatsControl?.setAttribute(
+        "aria-selected",
+        String(nextTab === "chats")
+    );
+
+    requestsControl?.setAttribute(
+        "aria-selected",
+        String(nextTab === "requests")
+    );
+
+    renderMemberConversationList();
+}
+
+/*
+ * FINAL TAB CONTROLLER
+ * Bind directly to the two permanent buttons by ID.
+ * No inline onclick, no delegation, no hash routing.
+ */
+const memberChatsTab =
+    document.getElementById("memberChatsTab");
+
+const memberRequestsTab =
+    document.getElementById("memberRequestsTab");
+
+memberChatsTab?.addEventListener("click", event => {
+    event.preventDefault();
+    setMemberTab("chats");
 });
+
+memberRequestsTab?.addEventListener("click", event => {
+    event.preventDefault();
+    setMemberTab("requests");
+});
+
+setMemberTab("chats");
 
 const memberSearchFunctions =
     getFunctions();
@@ -1578,19 +1614,43 @@ function renderMemberSearchResults(results, term) {
 }
 
 memberSearchInput?.addEventListener("input", event => {
-    const term = event.target.value || "";
-    if (memberSearchClear) memberSearchClear.hidden = !term.trim();
+    const term = String(event.target.value || "");
+
     clearTimeout(memberSearchTimer);
-    memberSearchTimer = setTimeout(() => searchMemberDirectory(term), 350);
+
+    if (memberSearchClear) {
+        memberSearchClear.hidden = !term.trim();
+    }
+
+    if (!term.trim()) {
+        if (memberSearchResults) {
+            memberSearchResults.hidden = true;
+            memberSearchResults.innerHTML = "";
+        }
+        return;
+    }
+
+    memberSearchTimer =
+        setTimeout(
+            () => searchMemberDirectory(term),
+            350
+        );
 });
 
 memberSearchClear?.addEventListener("click", () => {
-    if (memberSearchInput) memberSearchInput.value = "";
+    clearTimeout(memberSearchTimer);
+
+    if (memberSearchInput) {
+        memberSearchInput.value = "";
+    }
+
     memberSearchClear.hidden = true;
+
     if (memberSearchResults) {
         memberSearchResults.hidden = true;
         memberSearchResults.innerHTML = "";
     }
+
     memberSearchInput?.focus();
 });
 
@@ -1895,9 +1955,13 @@ function renderMemberConversationList() {
         const incoming =
             memberIsIncomingRequest(conversation);
 
+        const isOpenIncomingRequest =
+            incoming &&
+            activeMemberConversation?.id === conversation.id;
+
         return activeMemberTab === "requests"
             ? incoming
-            : !incoming;
+            : (!incoming || isOpenIncomingRequest);
     });
 
     if (!rows.length) {
@@ -2050,6 +2114,7 @@ memberChatInput?.addEventListener("input", () => {
     memberChatInput.style.height = Math.min(memberChatInput.scrollHeight, 100) + "px";
 });
 
+
 memberChatForm?.addEventListener("submit", async event => {
     event.preventDefault();
 
@@ -2181,6 +2246,10 @@ memberChatForm?.addEventListener("submit", async event => {
                 );
 
             renderOpenMemberChat();
+
+            if (incomingRequest) {
+                setMemberTab("chats");
+            }
 
             /*
              * The parent conversation now exists, so the
@@ -2393,70 +2462,3 @@ document.addEventListener(
         }
     }
 );
-
-
-/* ==========================================================
-   FINAL CHATS / REQUESTS TAB CLICK FIX
-   This targets ONLY the small left-side Chats / Requests tabs.
-   ========================================================== */
-
-document.addEventListener(
-    "click",
-    event => {
-
-        const tab =
-            event.target.closest(
-                "[data-member-tab]"
-            );
-
-        if (!tab) {
-            return;
-        }
-
-        event.preventDefault();
-        event.stopPropagation();
-
-        const nextTab =
-            tab.dataset.memberTab ===
-                "requests"
-                ? "requests"
-                : "chats";
-
-        activeMemberTab =
-            nextTab;
-
-        document
-            .querySelectorAll(
-                "[data-member-tab]"
-            )
-            .forEach(
-                button => {
-
-                    const active =
-                        button.dataset.memberTab ===
-                        nextTab;
-
-                    button.classList.toggle(
-                        "active",
-                        active
-                    );
-
-                    button.setAttribute(
-                        "aria-selected",
-                        active
-                            ? "true"
-                            : "false"
-                    );
-                }
-            );
-
-        /*
-         * Only the LEFT conversation list changes.
-         * The currently opened conversation in the center
-         * remains open on desktop.
-         */
-        renderMemberConversationList();
-    },
-    true
-);
-
