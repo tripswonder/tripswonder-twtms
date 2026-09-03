@@ -2673,3 +2673,93 @@ button {
         gap: 7px !important;
     }
 }   
+
+/* ==========================================================
+   TOURS — FINAL COMPACT MOBILE CARDS
+   Reduce excess white space inside cards
+========================================================== */
+
+@media (max-width: 899px) {
+
+    /* Card */
+    .tour-card {
+        min-height: 0 !important;
+        height: auto !important;
+        border-radius: 9px !important;
+    }
+
+    /* Slightly shorter image */
+    .tour-card-image {
+        aspect-ratio: 16 / 9 !important;
+    }
+
+    /* Main white information area */
+    .tour-card-body {
+        min-height: 0 !important;
+        height: auto !important;
+
+        padding: 7px 7px 6px !important;
+
+        display: flex !important;
+        flex-direction: column !important;
+    }
+
+    /* Package title */
+    .tour-card h3 {
+        margin: 0 !important;
+
+        font-size: 10px !important;
+        line-height: 1.18 !important;
+    }
+
+    /* Location */
+    .tour-location {
+        margin-top: 4px !important;
+        margin-bottom: 0 !important;
+
+        font-size: 6px !important;
+        line-height: 1.2 !important;
+    }
+
+    /* Price section */
+    .tour-card-price {
+        margin-top: 5px !important;
+        margin-bottom: 0 !important;
+    }
+
+    .tour-price-inline {
+        margin: 0 !important;
+    }
+
+    .tour-price-inline strong {
+        font-size: 12px !important;
+        line-height: 1 !important;
+    }
+
+    .tour-price-inline span {
+        font-size: 5.5px !important;
+    }
+
+    /* Bottom duration / tour type */
+    .tour-card-footer {
+        min-height: 28px !important;
+        height: 28px !important;
+
+        margin-top: 0 !important;
+        padding: 4px 7px !important;
+
+        gap: 4px !important;
+
+        font-size: 5.5px !important;
+        line-height: 1.1 !important;
+    }
+
+    .tour-card-footer i {
+        font-size: 6px !important;
+    }
+
+    /* Compact spacing between cards */
+    .tour-grid {
+        gap: 7px !important;
+    }
+}
