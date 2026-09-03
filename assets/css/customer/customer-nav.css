@@ -731,3 +731,262 @@
         font-size: 7.5px !important;
     }
 }
+
+
+/* ==========================================================
+   TRIPS WONDER — SHARED MOBILE TOP HEADER
+   Non-Home customer modules only.
+   Home is safe because customer-nav.js does not render
+   .customer-shared-header on home.html.
+========================================================== */
+
+@media (max-width: 899px) {
+
+    body.customer-shared-nav-page {
+        padding-top: 60px !important;
+        padding-bottom: calc(64px + env(safe-area-inset-bottom)) !important;
+    }
+
+    body.customer-shared-nav-page .customer-shared-header {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+
+        width: 100% !important;
+        height: 60px !important;
+
+        padding:
+            0
+            max(10px, env(safe-area-inset-left))
+            0
+            max(10px, env(safe-area-inset-right)) !important;
+
+        display: grid !important;
+        grid-template-columns: minmax(0, 1fr) auto !important;
+        align-items: center !important;
+        gap: 8px !important;
+
+        background: rgba(255,255,255,.98) !important;
+        border-bottom: 1px solid #e2e8f0 !important;
+        box-shadow: 0 2px 10px rgba(15,23,42,.05) !important;
+
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+
+        z-index: 1700 !important;
+        box-sizing: border-box !important;
+    }
+
+    body.customer-shared-nav-page .customer-shared-header-left {
+        min-width: 0 !important;
+
+        display: flex !important;
+        align-items: center !important;
+
+        gap: 8px !important;
+    }
+
+    body.customer-shared-nav-page .customer-shared-brand {
+        width: 38px !important;
+        height: 38px !important;
+
+        flex: 0 0 38px !important;
+
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    body.customer-shared-nav-page .customer-shared-brand img {
+        width: 36px !important;
+        height: 36px !important;
+
+        display: block !important;
+
+        object-fit: contain !important;
+
+        border-radius: 50% !important;
+    }
+
+    body.customer-shared-nav-page .customer-shared-search {
+        min-width: 0 !important;
+        width: min(100%, 260px) !important;
+        height: 38px !important;
+
+        padding: 0 11px !important;
+
+        display: flex !important;
+        align-items: center !important;
+
+        gap: 8px !important;
+
+        background: #f0f2f5 !important;
+        border: 1px solid transparent !important;
+        border-radius: 999px !important;
+    }
+
+    body.customer-shared-nav-page .customer-shared-search > i {
+        flex: 0 0 auto !important;
+
+        color: #68778b !important;
+
+        font-size: 13px !important;
+    }
+
+    body.customer-shared-nav-page .customer-shared-search input {
+        width: 100% !important;
+        min-width: 0 !important;
+
+        padding: 0 !important;
+
+        color: #26354a !important;
+        background: transparent !important;
+
+        border: 0 !important;
+        outline: 0 !important;
+
+        font-family: "Poppins", sans-serif !important;
+        font-size: 10px !important;
+    }
+
+    body.customer-shared-nav-page
+    .customer-shared-search input::placeholder {
+        color: #7c8999 !important;
+    }
+
+    body.customer-shared-nav-page
+    .customer-shared-search-clear {
+        width: 22px !important;
+        height: 22px !important;
+
+        flex: 0 0 22px !important;
+
+        padding: 0 !important;
+
+        display: grid;
+        place-items: center;
+
+        color: #65758b !important;
+        background: transparent !important;
+
+        border: 0 !important;
+        border-radius: 50% !important;
+    }
+
+    /* Bottom nav owns module switching on mobile. */
+    body.customer-shared-nav-page .customer-shared-center-nav {
+        display: none !important;
+    }
+
+    body.customer-shared-nav-page .customer-shared-actions {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: flex-end !important;
+
+        gap: 5px !important;
+    }
+
+    body.customer-shared-nav-page .customer-shared-action,
+    body.customer-shared-nav-page .customer-shared-profile {
+        position: relative !important;
+
+        width: 36px !important;
+        height: 36px !important;
+
+        flex: 0 0 36px !important;
+
+        display: grid !important;
+        place-items: center !important;
+
+        color: #111827 !important;
+        background: #eef1f4 !important;
+
+        border-radius: 50% !important;
+
+        text-decoration: none !important;
+
+        font-size: 15px !important;
+    }
+
+    body.customer-shared-nav-page .customer-shared-avatar {
+        width: 31px !important;
+        height: 31px !important;
+
+        display: grid !important;
+        place-items: center !important;
+
+        overflow: hidden !important;
+
+        color: #ffffff !important;
+        background: #314862 !important;
+
+        border-radius: 50% !important;
+
+        font-size: 12px !important;
+    }
+
+    body.customer-shared-nav-page .customer-shared-avatar img {
+        width: 100% !important;
+        height: 100% !important;
+
+        display: block !important;
+
+        object-fit: cover !important;
+    }
+
+    body.customer-shared-nav-page .customer-shared-badge {
+        position: absolute !important;
+
+        top: -5px !important;
+        right: -4px !important;
+
+        min-width: 16px !important;
+        height: 16px !important;
+
+        padding: 0 4px !important;
+
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+
+        color: #ffffff !important;
+        background: #e11d48 !important;
+
+        border: 2px solid #ffffff !important;
+        border-radius: 999px !important;
+
+        font-size: 7px !important;
+        font-weight: 800 !important;
+        line-height: 1 !important;
+    }
+
+    body.customer-shared-nav-page .customer-shared-badge[hidden] {
+        display: none !important;
+    }
+}
+
+/* Smaller phones: preserve all three right-side actions. */
+@media (max-width: 430px) {
+
+    body.customer-shared-nav-page .customer-shared-search {
+        width: min(100%, 190px) !important;
+    }
+
+    body.customer-shared-nav-page
+    .customer-shared-search input {
+        font-size: 9px !important;
+    }
+}
+
+@media (max-width: 380px) {
+
+    body.customer-shared-nav-page .customer-shared-search {
+        width: min(100%, 150px) !important;
+    }
+
+    body.customer-shared-nav-page
+    .customer-shared-search input::placeholder {
+        color: transparent !important;
+    }
+}
