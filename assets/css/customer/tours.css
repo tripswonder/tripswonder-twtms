@@ -2323,3 +2323,353 @@ button {
         padding-top: 18px !important;
     }
 }
+
+/* ==========================================================
+   FINAL MOBILE COMPACT LAYOUT
+   Approved mobile result:
+   - content starts close to the 58px fixed header
+   - no oversized blank gap
+   - Filters / Recommended appears immediately
+   - category chips stay compact
+   - two tour cards per row
+   Desktop is intentionally untouched.
+========================================================== */
+@media (max-width: 899px) {
+
+    .tours-app {
+        padding-top: var(--tours-mobile-header-h) !important;
+    }
+
+    .tours-main {
+        width: 100% !important;
+        padding: 8px 10px 24px !important;
+    }
+
+    .tours-main-head {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .tours-main-head > div:first-child {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .tours-main-head h1 {
+        margin: 0 !important;
+        font-size: 20px !important;
+        line-height: 1.12 !important;
+    }
+
+    .tours-main-head p {
+        margin: 2px 0 0 !important;
+        line-height: 1.35 !important;
+    }
+
+    .tours-mobile-filter-row {
+        margin-top: 8px !important;
+    }
+
+    .tours-category-strip {
+        margin-top: 8px !important;
+        margin-bottom: 8px !important;
+    }
+
+    .tours-result-text {
+        display: none !important;
+        margin: 0 !important;
+        height: 0 !important;
+    }
+
+    .tour-packages {
+        margin-top: 0 !important;
+    }
+
+    .tour-grid {
+        margin-top: 0 !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 8px !important;
+    }
+}
+
+/* Slightly tighter spacing for compact phones. */
+@media (max-width: 430px) {
+    .tours-main {
+        padding-top: 7px !important;
+    }
+}
+
+/* ==========================================================
+   FINAL TOP ALIGNMENT — TOURS
+   Desktop: package grid starts level with the Tours sidebar title.
+   Mobile: controls start immediately below the shared header.
+========================================================== */
+
+/* DESKTOP */
+@media (min-width: 900px) {
+    .tours-main {
+        padding-top: 24px !important;
+    }
+
+    /* The old hidden desktop rows must occupy zero space. */
+    .tours-main-head,
+    .tours-category-strip,
+    .tours-result-text {
+        display: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        min-height: 0 !important;
+        height: 0 !important;
+    }
+
+    .tour-packages,
+    .tour-grid {
+        margin-top: 0 !important;
+    }
+}
+
+/* MOBILE */
+@media (max-width: 899px) {
+    .tours-app {
+        padding-top: var(--tours-mobile-header-h) !important;
+    }
+
+    .tours-main {
+        padding-top: 6px !important;
+    }
+
+    /* No title/subtitle spacer above Filters. */
+    .tours-main-head {
+        display: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        min-height: 0 !important;
+        height: 0 !important;
+    }
+
+    .tours-mobile-filter-row {
+        margin-top: 0 !important;
+    }
+
+    .tours-category-strip {
+        margin-top: 7px !important;
+    }
+
+    .tours-result-text {
+        display: none !important;
+        margin: 0 !important;
+        height: 0 !important;
+    }
+
+    .tour-packages,
+    .tour-grid {
+        margin-top: 0 !important;
+    }
+}
+
+
+/* ==========================================================
+   FINAL DESKTOP PACKAGE TOP ALIGNMENT
+   Align first row of tour cards with sidebar "Tours" heading
+========================================================== */
+
+@media (min-width: 900px) {
+
+    .tours-main {
+        padding-top: 24px !important;
+    }
+
+    .tours-main-head,
+    .tours-category-strip,
+    .tours-result-text {
+        display: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        min-height: 0 !important;
+        height: 0 !important;
+    }
+
+    .tour-grid-wrap,
+    .tour-results,
+    .tour-packages,
+    .tour-grid {
+        margin-top: 0 !important;
+        padding-top: 0 !important;
+    }
+
+    .tour-grid {
+        transform: translateY(-2px);
+    }
+}
+
+/* ==========================================================
+   TOURS — FINAL DESKTOP GRID ALIGNMENT
+   First package row aligns with sidebar "Tours"
+========================================================== */
+
+@media (min-width: 900px) {
+
+    .tours-main {
+        padding-top: 18px !important;
+    }
+
+    .tours-main-head,
+    .tours-category-strip,
+    .tours-result-text {
+        display: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        height: 0 !important;
+        min-height: 0 !important;
+    }
+
+    .tour-packages,
+    .tour-grid-wrap,
+    .tour-results {
+        margin-top: 0 !important;
+        padding-top: 0 !important;
+    }
+
+    /* THIS is the important part */
+    .tour-grid {
+        position: relative !important;
+        top: -60px !important;
+        margin-top: 0 !important;
+    }
+}
+
+/* ==========================================================
+   TOURS — FINAL MOBILE HEADER SPACING FIX
+   Shared customer header already reserves its own space.
+========================================================== */
+
+@media (max-width: 899px) {
+
+    /* IMPORTANT: remove the second 58px header reservation */
+    .tours-app {
+        padding-top: 0 !important;
+    }
+
+    .tours-main {
+        padding-top: 6px !important;
+    }
+
+    .tours-main-head {
+        display: none !important;
+        height: 0 !important;
+        min-height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .tours-mobile-filter-row {
+        margin-top: 0 !important;
+    }
+
+    .tours-category-strip {
+        margin-top: 7px !important;
+    }
+
+    .tours-result-text {
+        display: none !important;
+        height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .tour-packages,
+    .tour-grid {
+        margin-top: 0 !important;
+        padding-top: 0 !important;
+    }
+}
+
+/* ==========================================================
+   TOURS — FINAL COMPACT MOBILE CARDS
+   Reduce excess white space inside cards
+========================================================== */
+
+@media (max-width: 899px) {
+
+    /* Card */
+    .tour-card {
+        min-height: 0 !important;
+        height: auto !important;
+        border-radius: 9px !important;
+    }
+
+    /* Slightly shorter image */
+    .tour-card-image {
+        aspect-ratio: 16 / 9 !important;
+    }
+
+    /* Main white information area */
+    .tour-card-body {
+        min-height: 0 !important;
+        height: auto !important;
+
+        padding: 7px 7px 6px !important;
+
+        display: flex !important;
+        flex-direction: column !important;
+    }
+
+    /* Package title */
+    .tour-card h3 {
+        margin: 0 !important;
+
+        font-size: 10px !important;
+        line-height: 1.18 !important;
+    }
+
+    /* Location */
+    .tour-location {
+        margin-top: 4px !important;
+        margin-bottom: 0 !important;
+
+        font-size: 6px !important;
+        line-height: 1.2 !important;
+    }
+
+    /* Price section */
+    .tour-card-price {
+        margin-top: 5px !important;
+        margin-bottom: 0 !important;
+    }
+
+    .tour-price-inline {
+        margin: 0 !important;
+    }
+
+    .tour-price-inline strong {
+        font-size: 12px !important;
+        line-height: 1 !important;
+    }
+
+    .tour-price-inline span {
+        font-size: 5.5px !important;
+    }
+
+    /* Bottom duration / tour type */
+    .tour-card-footer {
+        min-height: 28px !important;
+        height: 28px !important;
+
+        margin-top: 0 !important;
+        padding: 4px 7px !important;
+
+        gap: 4px !important;
+
+        font-size: 5.5px !important;
+        line-height: 1.1 !important;
+    }
+
+    .tour-card-footer i {
+        font-size: 6px !important;
+    }
+
+    /* Compact spacing between cards */
+    .tour-grid {
+        gap: 7px !important;
+    }
+}   
