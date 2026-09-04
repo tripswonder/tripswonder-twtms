@@ -24,7 +24,7 @@
 
 import {
     db
-} from "../firebase/firebase-config.js";
+} from "../../assets/js/firebase/firebase-config.js";
 
 
 import {

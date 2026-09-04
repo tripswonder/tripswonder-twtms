@@ -1145,7 +1145,6 @@ function startBusinessBrandingListener() {
 
 
 applyBusinessLogo();
-startBusinessBrandingListener();
 
 
 /* ==========================================================
@@ -3258,6 +3257,30 @@ async function hydratePackagePostSocial(
         card.querySelector(
             "[data-package-like]"
         );
+
+    /*
+     * GUEST MODE:
+     * Package likes/comments are protected by Firestore.
+     * Guests can browse packages without reading social collections.
+     */
+    if (!currentUser) {
+
+        if (likeCount) {
+            likeCount.textContent = "";
+            likeCount.hidden = true;
+        }
+
+        if (commentCount) {
+            commentCount.textContent = "";
+            commentCount.hidden = true;
+        }
+
+        likeButton?.classList.remove(
+            "is-liked"
+        );
+
+        return;
+    }
 
     try {
 
@@ -6126,18 +6149,57 @@ onAuthStateChanged(
 
         if (!user) {
 
-            console.warn(
-                "HOME: No authenticated customer."
+            console.log(
+                "HOME: Guest visitor mode."
             );
 
+            currentUser = null;
+            currentProfile = null;
+            customerBookings = [];
 
-            window.location.replace(
-                "../../index.html"
+            /*
+             * Public content is available without login.
+             * We load tours only; private customer data is not loaded.
+             */
+            renderCustomerProfile();
+
+            if (postAuthorName) {
+                postAuthorName.textContent = "Traveler";
+            }
+
+            try {
+
+                await loadCustomerPackages();
+
+            } catch (packageError) {
+
+                console.error(
+                    "HOME GUEST PACKAGE ERROR:",
+                    packageError
+                );
+
+                if (packageResultText) {
+                    packageResultText.textContent =
+                        "Unable to load tours";
+                }
+            }
+
+            /*
+             * Guest visitors do not load My Trips or Messenger.
+             */
+            if (upcomingTripCard) {
+                upcomingTripCard.hidden = true;
+            }
+
+            if (noUpcomingTrip) {
+                noUpcomingTrip.hidden = false;
+            }
+
+            console.log(
+                "CUSTOMER HOME READY — GUEST MODE"
             );
-
 
             return;
-
         }
 
 
@@ -6145,6 +6207,11 @@ onAuthStateChanged(
 
             currentUser =
                 user;
+
+            /*
+             * Centralized branding is readable only after login.
+             */
+            startBusinessBrandingListener();
 
 
             currentProfile =

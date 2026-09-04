@@ -1000,8 +1000,31 @@ function initCustomerAuthState() {
                 null;
 
 
+            if (!user) {
+
+                /*
+                 * Guest visitor:
+                 * Keep default branding and do not read
+                 * protected Firestore customer data.
+                 */
+                state.unsubscribeBranding?.();
+                state.unsubscribeBranding = null;
+
+                applyCustomerBranding();
+                applyCustomerProfile();
+
+                return;
+            }
+
+
+            /*
+             * Signed-in customer:
+             * Centralized branding is allowed after authentication.
+             */
+            subscribeCustomerBranding();
+
+
             if (
-                !user ||
                 isHomeModule()
             ) {
                 return;
@@ -1029,7 +1052,12 @@ function initCustomerNav() {
 
     renderCustomerNav();
 
-    subscribeCustomerBranding();
+    /*
+     * Guest-safe startup:
+     * Use default/local branding first.
+     * Firestore branding will only start after authentication.
+     */
+    applyCustomerBranding();
 
     initCustomerAuthState();
 }

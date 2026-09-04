@@ -3348,6 +3348,16 @@ bookingNumber:
     auth.currentUser?.uid ||
     "",
 
+customerType:
+    (currentCustomer?.uid || auth.currentUser?.uid)
+        ? "registered"
+        : "guest",
+
+accountStatus:
+    (currentCustomer?.uid || auth.currentUser?.uid)
+        ? "registered"
+        : "guest",
+
 customerName:
     normalizeText(
         customerName.value
@@ -3710,31 +3720,13 @@ customerFb:
 
 
                 /*
-                 * Check if payment reference
-                 * has already been submitted.
+                 * SECURITY:
+                 * Do not query the private /bookings collection from
+                 * the public customer booking page.
+                 *
+                 * Duplicate payment-reference verification is handled
+                 * by Admin during payment verification.
                  */
-
-                const duplicate =
-                    await paymentReferenceExists(
-                        reference
-                    );
-
-
-                if (
-                    duplicate
-                ) {
-
-                    alert(
-                        "This payment reference number has already been submitted. Please check your reference number or contact Trips Wonder."
-                    );
-
-
-                    paymentReference.focus();
-
-
-                    return;
-
-                }
 
 
                 /*
@@ -4103,12 +4095,249 @@ await setDoc(
             }
         }
 
+        function renderPostBookingAccountPrompt() {
+
+            if (!bookingSuccessModal) {
+                return;
+            }
+
+            /*
+             * Registered customers already have an account,
+             * so no account-creation prompt is needed.
+             */
+            if (currentCustomer?.uid || auth.currentUser?.uid) {
+
+                bookingSuccessModal
+                    .querySelector(
+                        "#postBookingAccountPrompt"
+                    )
+                    ?.remove();
+
+                return;
+            }
+
+
+            let prompt =
+                bookingSuccessModal.querySelector(
+                    "#postBookingAccountPrompt"
+                );
+
+
+            if (!prompt) {
+
+                prompt =
+                    document.createElement(
+                        "section"
+                    );
+
+                prompt.id =
+                    "postBookingAccountPrompt";
+
+                prompt.className =
+                    "post-booking-account-prompt";
+
+                prompt.innerHTML = `
+                    <div
+                        style="
+                            margin-top:16px;
+                            padding:16px;
+                            border:1px solid #e2e8f0;
+                            border-radius:14px;
+                            background:#f8fafc;
+                            text-align:center;
+                        "
+                    >
+                        <div
+                            style="
+                                width:42px;
+                                height:42px;
+                                margin:0 auto 10px;
+                                display:grid;
+                                place-items:center;
+                                border-radius:50%;
+                                background:#eaf2ff;
+                                color:#1264e8;
+                                font-size:18px;
+                            "
+                        >
+                            <i class="fa-regular fa-user"></i>
+                        </div>
+
+                        <strong
+                            style="
+                                display:block;
+                                margin-bottom:5px;
+                                color:#0f172a;
+                                font-size:14px;
+                            "
+                        >
+                            Manage your booking easier
+                        </strong>
+
+                        <p
+                            style="
+                                margin:0 auto 13px;
+                                max-width:320px;
+                                color:#64748b;
+                                font-size:11px;
+                                line-height:1.5;
+                            "
+                        >
+                            Create a Trips Wonder account to track your trip,
+                            view booking updates, and access My Trip and Messages.
+                        </p>
+
+                        <div
+                            style="
+                                display:flex;
+                                gap:8px;
+                                justify-content:center;
+                                flex-wrap:wrap;
+                            "
+                        >
+                            <button
+                                type="button"
+                                id="createAccountAfterBooking"
+                                style="
+                                    min-height:40px;
+                                    padding:0 16px;
+                                    border:0;
+                                    border-radius:10px;
+                                    background:#1264e8;
+                                    color:#ffffff;
+                                    font:inherit;
+                                    font-size:11px;
+                                    font-weight:700;
+                                    cursor:pointer;
+                                "
+                            >
+                                <i class="fa-solid fa-user-plus"></i>
+                                Create Account
+                            </button>
+
+                            <button
+                                type="button"
+                                id="maybeLaterAfterBooking"
+                                style="
+                                    min-height:40px;
+                                    padding:0 16px;
+                                    border:1px solid #cbd5e1;
+                                    border-radius:10px;
+                                    background:#ffffff;
+                                    color:#334155;
+                                    font:inherit;
+                                    font-size:11px;
+                                    font-weight:700;
+                                    cursor:pointer;
+                                "
+                            >
+                                Maybe Later
+                            </button>
+                        </div>
+                    </div>
+                `;
+
+
+                const modalPanel =
+                    bookingSuccessModal.querySelector(
+                        ".success-modal-panel"
+                    ) ||
+                    bookingSuccessModal.firstElementChild ||
+                    bookingSuccessModal;
+
+
+                modalPanel.appendChild(
+                    prompt
+                );
+            }
+
+
+            const bookingEmail =
+                normalizeLower(
+                    submittedBooking?.data?.customerEmail ||
+                    customerEmail?.value ||
+                    ""
+                );
+
+
+            const bookingNumber =
+                normalizeText(
+                    submittedBooking?.bookingNumber ||
+                    bookingRequestReference?.textContent ||
+                    ""
+                );
+
+
+            prompt
+                .querySelector(
+                    "#createAccountAfterBooking"
+                )
+                ?.addEventListener(
+                    "click",
+                    () => {
+
+                        const params =
+                            new URLSearchParams();
+
+                        if (bookingEmail) {
+                            params.set(
+                                "email",
+                                bookingEmail
+                            );
+                        }
+
+                        if (bookingNumber) {
+                            params.set(
+                                "booking",
+                                bookingNumber
+                            );
+                        }
+
+                        params.set(
+                            "from",
+                            "booking"
+                        );
+
+
+                        window.location.href =
+                            `../../register.html?${params.toString()}`;
+
+                    },
+                    {
+                        once:
+                            true
+                    }
+                );
+
+
+            prompt
+                .querySelector(
+                    "#maybeLaterAfterBooking"
+                )
+                ?.addEventListener(
+                    "click",
+                    () => {
+
+                        window.location.href =
+                            "home.html";
+
+                    },
+                    {
+                        once:
+                            true
+                    }
+                );
+        }
+
+
         function showSuccessModal(requestReference) {
             if (bookingRequestReference) {
                 bookingRequestReference.textContent = requestReference;
             }
 
             renderPostBookingAddons();
+            renderPostBookingAccountPrompt();
+
             bookingSuccessModal?.classList.add("show");
             bookingSuccessModal?.setAttribute("aria-hidden", "false");
             document.body.style.overflow = "hidden";
@@ -4370,20 +4599,33 @@ onAuthStateChanged(
     auth,
     async user => {
 
+        /*
+         * GUEST MODE:
+         * Visitors may book without creating an account first.
+         */
         if (!user) {
 
-            console.warn(
-                "BOOKING: NO LOGGED-IN CUSTOMER"
+            currentCustomer = null;
+            currentCustomerProfile = null;
+
+            if (customerEmail) {
+                customerEmail.readOnly = false;
+            }
+
+            await loadSelectedPackage();
+
+            console.log(
+                "GUEST BOOKING READY"
             );
 
-            window.location.href =
-                "../../index.html";
-
             return;
-
         }
 
 
+        /*
+         * REGISTERED CUSTOMER:
+         * Prefill the booking form from the saved customer profile.
+         */
         const profileLoaded =
             await loadCustomerProfile(
                 user
@@ -4392,12 +4634,19 @@ onAuthStateChanged(
 
         if (!profileLoaded) {
 
-            alert(
-                "Unable to load your customer profile."
+            console.warn(
+                "BOOKING: Signed-in profile could not be loaded. Continuing with editable booking form."
             );
 
-            return;
+            currentCustomer = user;
+            currentCustomerProfile = null;
 
+            if (customerEmail) {
+                customerEmail.value =
+                    normalizeLower(user.email || "");
+
+                customerEmail.readOnly = false;
+            }
         }
 
 

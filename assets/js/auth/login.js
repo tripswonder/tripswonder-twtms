@@ -14,6 +14,10 @@ import {
 } from "../firebase/firebase-config.js";
 
 import {
+    signOut
+} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
+
+import {
     doc,
     getDoc
 } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
@@ -53,6 +57,30 @@ let processing = false;
 
 
 // ================================================
+// URL CONTEXT
+// ================================================
+
+const loginParams =
+    new URLSearchParams(
+        window.location.search
+    );
+
+const emailFromUrl =
+    (loginParams.get("email") || "")
+        .trim()
+        .toLowerCase();
+
+const pendingBookingReference =
+    (loginParams.get("booking") || "")
+        .trim();
+
+const loginSource =
+    (loginParams.get("from") || "")
+        .trim()
+        .toLowerCase();
+
+
+// ================================================
 // PASSWORD TOGGLE
 // ================================================
 
@@ -65,12 +93,14 @@ if (togglePassword) {
             const icon =
                 togglePassword.querySelector("i");
 
+
             if (
                 password.type === "password"
             ) {
 
                 password.type = "text";
 
+
                 if (icon) {
 
                     icon.classList.remove(
@@ -80,16 +110,20 @@ if (togglePassword) {
                     icon.classList.add(
                         "fa-eye-slash"
                     );
+
                 }
+
 
                 togglePassword.setAttribute(
                     "aria-label",
                     "Hide Password"
                 );
 
+
             } else {
 
                 password.type = "password";
+
 
                 if (icon) {
 
@@ -100,33 +134,63 @@ if (togglePassword) {
                     icon.classList.add(
                         "fa-eye"
                     );
+
                 }
+
 
                 togglePassword.setAttribute(
                     "aria-label",
                     "Show Password"
                 );
+
             }
+
         }
     );
+
 }
 
 
 // ================================================
-// REMEMBER EMAIL
+// EMAIL PREFILL
 // ================================================
 
 const savedEmail =
-    localStorage.getItem("rememberEmail");
+    localStorage.getItem(
+        "rememberEmail"
+    );
 
-if (savedEmail) {
+
+/*
+ * Priority:
+ * 1. Email passed from registration
+ * 2. Remembered email
+ */
+
+if (
+    emailFromUrl &&
+    username
+) {
+
+    username.value =
+        emailFromUrl;
+
+} else if (
+    savedEmail &&
+    username
+) {
 
     username.value =
         savedEmail;
 
+
     if (remember) {
-        remember.checked = true;
+
+        remember.checked =
+            true;
+
     }
+
 }
 
 
@@ -140,13 +204,18 @@ form.addEventListener(
 
         e.preventDefault();
 
+
         if (processing) {
+
             return;
+
         }
 
 
         const email =
-            username.value.trim();
+            username.value
+                .trim()
+                .toLowerCase();
 
         const userPassword =
             password.value;
@@ -165,6 +234,7 @@ form.addEventListener(
             username.focus();
 
             return;
+
         }
 
 
@@ -177,17 +247,20 @@ form.addEventListener(
             password.focus();
 
             return;
+
         }
 
 
-        processing = true;
+        processing =
+            true;
 
-        button.disabled = true;
+        button.disabled =
+            true;
 
         button.innerHTML =
             `
-            <i class="fa-solid fa-spinner fa-spin"></i>
-            Signing In...
+                <i class="fa-solid fa-spinner fa-spin"></i>
+                Signing In...
             `;
 
 
@@ -215,28 +288,6 @@ form.addEventListener(
 
 
             // ========================================
-            // REMEMBER EMAIL
-            // ========================================
-
-            if (
-                remember &&
-                remember.checked
-            ) {
-
-                localStorage.setItem(
-                    "rememberEmail",
-                    email
-                );
-
-            } else {
-
-                localStorage.removeItem(
-                    "rememberEmail"
-                );
-            }
-
-
-            // ========================================
             // GET FIRESTORE PROFILE
             // ========================================
 
@@ -249,7 +300,9 @@ form.addEventListener(
 
 
             const userSnapshot =
-                await getDoc(userRef);
+                await getDoc(
+                    userRef
+                );
 
 
             // ========================================
@@ -260,11 +313,18 @@ form.addEventListener(
                 !userSnapshot.exists()
             ) {
 
+                await signOut(
+                    auth
+                );
+
+
                 alert(
                     "Your account profile was not found. Please contact the administrator."
                 );
 
+
                 return;
+
             }
 
 
@@ -287,13 +347,22 @@ form.addEventListener(
                 "active";
 
 
-            if (status !== "active") {
+            if (
+                status !== "active"
+            ) {
+
+                await signOut(
+                    auth
+                );
+
 
                 alert(
                     "Your account is currently inactive. Please contact Trips Wonder Travel & Tours."
                 );
 
+
                 return;
+
             }
 
 
@@ -312,43 +381,149 @@ form.addEventListener(
             );
 
 
-// ========================================
-// REDIRECT BASED ON ROLE
-// ========================================
+            // ========================================
+            // CLIENT EMAIL VERIFICATION
+            // ========================================
 
-if (
-    role === "owner" ||
-    role === "admin"
-) {
-    console.log(
-        "Redirecting to Admin Dashboard..."
-    );
+            /*
+             * IMPORTANT:
+             *
+             * Owner/Admin accounts continue normally.
+             *
+             * Only customer/client accounts are required
+             * to verify their email before entering the
+             * protected customer website.
+             */
 
-    window.location.href =
-        "/pages/admin/dashboard.html";
+            if (
+                role === "client" &&
+                user.emailVerified !== true
+            ) {
 
-    return;
-}
+                console.warn(
+                    "LOGIN BLOCKED: EMAIL NOT VERIFIED"
+                );
 
-if (role === "client") {
-    console.log(
-        "Redirecting to Customer Home..."
-    );
 
-    window.location.href =
-        "/pages/customer/home.html";
+                await signOut(
+                    auth
+                );
 
-    return;
-}
+
+                alert(
+                    "Please verify your email first. Open the verification email from Trips Wonder, click the verification link, then sign in again."
+                );
+
+
+                return;
+
+            }
+
+
+            // ========================================
+            // REMEMBER EMAIL
+            // ========================================
+
+            if (
+                remember &&
+                remember.checked
+            ) {
+
+                localStorage.setItem(
+                    "rememberEmail",
+                    email
+                );
+
+
+            } else {
+
+                localStorage.removeItem(
+                    "rememberEmail"
+                );
+
+            }
+
+
+            // ========================================
+            // STORE BOOKING CONTEXT TEMPORARILY
+            // ========================================
+
+            /*
+             * We are NOT linking the booking yet.
+             *
+             * We only preserve the reference so the next
+             * step can securely link it after Firestore
+             * Rules are updated.
+             */
+
+            if (
+                role === "client" &&
+                loginSource === "booking" &&
+                pendingBookingReference
+            ) {
+
+                sessionStorage.setItem(
+                    "pendingBookingReference",
+                    pendingBookingReference
+                );
+
+            }
+
+
+            // ========================================
+            // REDIRECT BASED ON ROLE
+            // ========================================
+
+            if (
+                role === "owner" ||
+                role === "admin"
+            ) {
+
+                console.log(
+                    "Redirecting to Admin Dashboard..."
+                );
+
+
+                window.location.href =
+                    "/pages/admin/dashboard.html";
+
+
+                return;
+
+            }
+
+
+            if (
+                role === "client"
+            ) {
+
+                console.log(
+                    "Redirecting to Customer Home..."
+                );
+
+
+                window.location.href =
+                    "/pages/customer/home.html";
+
+
+                return;
+
+            }
 
 
             // ========================================
             // UNKNOWN ROLE
             // ========================================
 
+            await signOut(
+                auth
+            );
+
+
             alert(
                 "Your account role is not configured correctly. Please contact the administrator."
             );
+
 
         } catch (error) {
 
@@ -366,7 +541,9 @@ if (role === "client") {
                 "Unable to sign in. Please try again.";
 
 
-            switch (error.code) {
+            switch (
+                error.code
+            ) {
 
                 case "auth/invalid-credential":
 
@@ -422,22 +599,29 @@ if (role === "client") {
                         "Unable to access your account profile. Please contact the administrator.";
 
                     break;
+
             }
 
 
-            alert(message);
+            alert(
+                message
+            );
+
 
         } finally {
 
-            processing = false;
+            processing =
+                false;
 
-            button.disabled = false;
+            button.disabled =
+                false;
 
             button.innerHTML =
                 `
-                <i class="fa-solid fa-right-to-bracket"></i>
-                <span>Login</span>
+                    <i class="fa-solid fa-right-to-bracket"></i>
+                    <span>Login</span>
                 `;
+
         }
 
     }
@@ -456,11 +640,14 @@ if (forgotPassword) {
 
             e.preventDefault();
 
+
             alert(
                 "Password reset will be added next."
             );
+
         }
     );
+
 }
 
 
