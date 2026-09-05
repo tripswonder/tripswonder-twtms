@@ -2184,7 +2184,6 @@ exports.notifyCustomerOnBookingUpdate = onDocumentUpdated(
 
 exports.searchMemberExact = onCall(
     async (request) => {
-
       if (!request.auth) {
         throw new HttpsError(
             "unauthenticated",
@@ -2193,11 +2192,14 @@ exports.searchMemberExact = onCall(
       }
 
       const search =
-        String(
-            request.data?.search || "",
-        )
-            .trim()
-            .toLowerCase();
+  String(
+      (
+        request.data &&
+        request.data.search
+      ) || "",
+  )
+      .trim()
+      .toLowerCase();
 
       if (
         search.length < 2 ||
@@ -2248,7 +2250,6 @@ exports.searchMemberExact = onCall(
       let matchedDoc = null;
 
       if (search.includes("@")) {
-
         const snapshot =
           await db
               .collection("users")
@@ -2265,9 +2266,7 @@ exports.searchMemberExact = onCall(
               (item) =>
                 item.id !== requesterUid,
           ) || null;
-
       } else {
-
         const fields = [
           "username",
           "displayName",
@@ -2277,7 +2276,6 @@ exports.searchMemberExact = onCall(
         ];
 
         for (const field of fields) {
-
           const snapshot =
             await db
                 .collection("users")
@@ -2406,4 +2404,338 @@ exports.searchMemberExact = onCall(
 
 console.log(
     "TWTMS Firebase Functions loaded successfully.",
+);
+
+// ======================================================
+// SEND CLIENT EMAIL VERIFICATION
+// ======================================================
+
+exports.sendClientVerificationEmail = onCall(
+    {
+      secrets: [resendApiKey],
+    },
+    async (request) => {
+      // User must be logged in.
+      if (!request.auth) {
+        throw new HttpsError(
+            "unauthenticated",
+            "You must be logged in.",
+        );
+      }
+
+      const uid = request.auth.uid;
+
+      try {
+        // ===============================================
+        // GET AUTH USER
+        // ===============================================
+
+        const userRecord =
+          await auth.getUser(uid);
+
+        const email =
+          String(userRecord.email || "")
+              .trim()
+              .toLowerCase();
+
+        if (!email) {
+          throw new HttpsError(
+              "failed-precondition",
+              "No email address was found for this account.",
+          );
+        }
+
+        // Already verified.
+        if (userRecord.emailVerified) {
+          return {
+            success: true,
+            alreadyVerified: true,
+            message: "Email is already verified.",
+          };
+        }
+
+        // ===============================================
+        // GET CUSTOMER NAME
+        // ===============================================
+
+        const userDoc =
+          await db
+              .collection("users")
+              .doc(uid)
+              .get();
+
+        const userData =
+          userDoc.exists ?
+            userDoc.data() :
+            {};
+
+        const firstName =
+          String(
+              userData.firstName || "",
+          ).trim();
+
+        const customerName =
+          firstName ||
+          userRecord.displayName ||
+          "Traveler";
+
+        // ===============================================
+        // GENERATE FIREBASE VERIFICATION LINK
+        // ===============================================
+
+        const verificationLink =
+          await auth.generateEmailVerificationLink(
+              email,
+              {
+                url:
+                  "https://tripswonder.tours/",
+                handleCodeInApp:
+                  false,
+              },
+          );
+
+        // ===============================================
+        // CREATE TRIPS WONDER VERIFICATION URL
+        // ===============================================
+
+        const firebaseVerificationUrl =
+  new URL(
+      verificationLink,
+  );
+
+        const oobCode =
+  firebaseVerificationUrl
+      .searchParams
+      .get("oobCode");
+
+        if (!oobCode) {
+          throw new HttpsError(
+              "internal",
+              "Unable to create verification code.",
+          );
+        }
+
+        const customVerificationUrl =
+  new URL(
+      "https://tripswonder.tours/" +
+      "pages/customer/verify-email.html",
+  );
+
+        customVerificationUrl.searchParams.set(
+            "mode",
+            "verifyEmail",
+        );
+
+        customVerificationUrl.searchParams.set(
+            "oobCode",
+            oobCode,
+        );
+
+        // ===============================================
+        // ESCAPE HTML
+        // ===============================================
+
+        const safe = (value) =>
+          String(value || "")
+              .replace(/&/g, "&amp;")
+              .replace(/</g, "&lt;")
+              .replace(/>/g, "&gt;")
+              .replace(/"/g, "&quot;")
+              .replace(/'/g, "&#039;");
+
+        // ===============================================
+        // EMAIL DESIGN
+        // ===============================================
+
+        const emailHtml = `
+          <div style="
+            margin:0;
+            padding:30px 12px;
+            background:#f5f7fa;
+            font-family:Arial,Helvetica,sans-serif;
+            color:#111827;
+          ">
+            <div style="
+              max-width:600px;
+              margin:0 auto;
+              background:#ffffff;
+              border-radius:12px;
+              overflow:hidden;
+            ">
+
+              <div style="
+                padding:28px 30px;
+                background:#1769b0;
+                color:#ffffff;
+                text-align:center;
+              ">
+                <div style="
+                  font-size:26px;
+                  font-weight:800;
+                ">
+                  Trips Wonder
+                </div>
+
+                <div style="
+                  margin-top:4px;
+                  font-size:13px;
+                ">
+                  Travel and Tours
+                </div>
+              </div>
+
+              <div style="
+                padding:36px 30px;
+                font-size:16px;
+                line-height:1.6;
+              ">
+
+                <p style="margin:0 0 22px;">
+                  Hi ${safe(customerName)},
+                </p>
+
+                <p style="margin:0 0 22px;">
+                  Thank you for creating your
+                  Trips Wonder account.
+                </p>
+
+                <p style="margin:0 0 28px;">
+                  Please verify your email address
+                  to activate your account.
+                </p>
+
+                <div style="
+                  text-align:center;
+                  margin:32px 0;
+                ">
+                  <a
+                    href="${safe(customVerificationUrl.toString())}"
+                    style="
+                      display:inline-block;
+                      padding:14px 30px;
+                      background:#1769b0;
+                      color:#ffffff;
+                      text-decoration:none;
+                      border-radius:8px;
+                      font-weight:700;
+                    "
+                  >
+                    Verify Email
+                  </a>
+                </div>
+
+                <p style="
+                  margin:28px 0 0;
+                  font-size:14px;
+                  color:#6b7280;
+                ">
+                  If you did not create this account,
+                  you can safely ignore this email.
+                </p>
+
+                <p style="margin:28px 0 0;">
+                  Regards,<br>
+                  <strong>
+                    Trips Wonder Travel and Tours
+                  </strong>
+                </p>
+
+              </div>
+
+              <div style="
+                padding:20px 30px;
+                border-top:1px solid #e5e7eb;
+                color:#9ca3af;
+                font-size:11px;
+                line-height:1.5;
+                text-align:center;
+              ">
+                This is a system-generated email.
+                Please do not reply.
+                <br>
+                noreply@tripswonder.tours
+              </div>
+
+            </div>
+          </div>
+        `;
+
+        // ===============================================
+        // SEND THROUGH RESEND
+        // ===============================================
+
+        const response =
+          await fetch(
+              "https://api.resend.com/emails",
+              {
+                method: "POST",
+
+                headers: {
+                  "Authorization":
+                    `Bearer ${resendApiKey.value()}`,
+
+                  "Content-Type":
+                    "application/json",
+                },
+
+                body: JSON.stringify({
+                  from:
+                    "Trips Wonder Travel and Tours " +
+                    "<noreply@tripswonder.tours>",
+
+                  to: [email],
+
+                  subject:
+                    "Verify Your Email | Trips Wonder",
+
+                  html:
+                    emailHtml,
+                }),
+              },
+          );
+
+        const result =
+          await response.json();
+
+        if (!response.ok) {
+          console.error(
+              "Resend verification email error:",
+              result,
+          );
+
+          throw new HttpsError(
+              "internal",
+              result.message ||
+              "Unable to send verification email.",
+          );
+        }
+
+        console.log(
+            "Verification email sent:",
+            uid,
+            result.id || "",
+        );
+
+        return {
+          success: true,
+          emailId: result.id || "",
+          message:
+            "Verification email sent successfully.",
+        };
+      } catch (error) {
+        console.error(
+            "Send verification email error:",
+            error,
+        );
+
+        if (error instanceof HttpsError) {
+          throw error;
+        }
+
+        throw new HttpsError(
+            "internal",
+            "Unable to send verification email.",
+        );
+      }
+    },
 );

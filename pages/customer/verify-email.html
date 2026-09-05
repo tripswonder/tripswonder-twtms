@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    Verify Email | Trips Wonder Travel and Tours
+  </title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      padding: 24px;
+
+      background:
+        linear-gradient(
+          135deg,
+          #eef5ff,
+          #f8fbff
+        );
+
+      font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+      color: #172033;
+    }
+
+    .verification-card {
+      width: 100%;
+      max-width: 520px;
+
+      background: #ffffff;
+
+      border-radius: 20px;
+
+      overflow: hidden;
+
+      box-shadow:
+        0 18px 50px
+        rgba(15, 45, 90, 0.15);
+
+      text-align: center;
+    }
+
+    .brand-header {
+      padding: 32px 24px;
+
+      background: #1769b0;
+
+      color: #ffffff;
+    }
+
+    .brand-title {
+      font-size: 30px;
+      font-weight: 800;
+    }
+
+    .brand-subtitle {
+      margin-top: 6px;
+
+      font-size: 14px;
+      opacity: 0.92;
+    }
+
+    .content {
+      padding: 42px 32px 36px;
+    }
+
+    .status-icon {
+      width: 76px;
+      height: 76px;
+
+      margin:
+        0 auto
+        24px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      border-radius: 50%;
+
+      background: #e8f5ee;
+
+      color: #16834a;
+
+      font-size: 38px;
+      font-weight: bold;
+    }
+
+    .status-icon.error {
+      background: #fdecec;
+      color: #c83b3b;
+    }
+
+    .status-icon.loading {
+      background: #edf4ff;
+      color: #1769b0;
+    }
+
+    h1 {
+      margin-bottom: 14px;
+
+      font-size: 27px;
+      line-height: 1.25;
+    }
+
+    #message {
+      color: #64748b;
+
+      font-size: 15px;
+      line-height: 1.7;
+    }
+
+    .continue-btn {
+      width: 100%;
+
+      margin-top: 30px;
+
+      padding: 15px 20px;
+
+      border: none;
+      border-radius: 10px;
+
+      background: #1769b0;
+
+      color: #ffffff;
+
+      font-size: 16px;
+      font-weight: 700;
+
+      cursor: pointer;
+
+      text-decoration: none;
+
+      display: none;
+
+      transition:
+        transform 0.15s ease,
+        opacity 0.15s ease;
+    }
+
+    .continue-btn:hover {
+      transform: translateY(-1px);
+      opacity: 0.95;
+    }
+
+    .footer {
+      margin-top: 30px;
+
+      padding-top: 22px;
+
+      border-top:
+        1px solid #e8edf4;
+
+      color: #94a3b8;
+
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 540px) {
+      body {
+        padding: 16px;
+      }
+
+      .content {
+        padding:
+          34px 22px
+          30px;
+      }
+
+      .brand-title {
+        font-size: 26px;
+      }
+
+      h1 {
+        font-size: 23px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="verification-card">
+
+    <header class="brand-header">
+
+      <div class="brand-title">
+        Trips Wonder
+      </div>
+
+      <div class="brand-subtitle">
+        Travel and Tours
+      </div>
+
+    </header>
+
+
+    <section class="content">
+
+      <div
+        id="statusIcon"
+        class="status-icon loading"
+      >
+        •••
+      </div>
+
+
+      <h1 id="statusTitle">
+        Verifying Your Email
+      </h1>
+
+
+      <p id="message">
+        Please wait while we securely verify
+        your email address.
+      </p>
+
+
+      <a
+        id="continueButton"
+        class="continue-btn"
+        href="../../index.html"
+      >
+        Continue to Sign In
+      </a>
+
+
+      <div class="footer">
+
+        Trips Wonder Travel and Tours
+
+        <br>
+
+        Your account security is important to us.
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <script type="module">
+
+    import {
+      auth
+    } from "../../assets/js/firebase/firebase-config.js";
+
+
+    import {
+      applyActionCode
+    } from
+      "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
+
+
+    // =========================================
+    // ELEMENTS
+    // =========================================
+
+    const statusIcon =
+      document.getElementById(
+        "statusIcon"
+      );
+
+    const statusTitle =
+      document.getElementById(
+        "statusTitle"
+      );
+
+    const message =
+      document.getElementById(
+        "message"
+      );
+
+    const continueButton =
+      document.getElementById(
+        "continueButton"
+      );
+
+
+    // =========================================
+    // URL PARAMETERS
+    // =========================================
+
+    const params =
+      new URLSearchParams(
+        window.location.search
+      );
+
+    const mode =
+      params.get("mode");
+
+    const oobCode =
+      params.get("oobCode");
+
+
+    // =========================================
+    // SUCCESS
+    // =========================================
+
+    function showSuccess() {
+
+      statusIcon.className =
+        "status-icon";
+
+      statusIcon.textContent =
+        "✓";
+
+      statusTitle.textContent =
+        "Email Verified Successfully";
+
+      message.textContent =
+        "Your Trips Wonder account is now active. " +
+        "You can now sign in and continue managing " +
+        "your bookings.";
+
+      continueButton.style.display =
+        "inline-block";
+
+    }
+
+
+    // =========================================
+    // ERROR
+    // =========================================
+
+    function showError(
+      text
+    ) {
+
+      statusIcon.className =
+        "status-icon error";
+
+      statusIcon.textContent =
+        "!";
+
+      statusTitle.textContent =
+        "Verification Failed";
+
+      message.textContent =
+        text;
+
+      continueButton.textContent =
+        "Back to Sign In";
+
+      continueButton.style.display =
+        "inline-block";
+
+    }
+
+
+    // =========================================
+    // VERIFY EMAIL
+    // =========================================
+
+    async function verifyEmail() {
+
+      if (
+        mode !== "verifyEmail" ||
+        !oobCode
+      ) {
+
+        showError(
+          "This verification link is invalid or incomplete."
+        );
+
+        return;
+
+      }
+
+
+      try {
+
+        await applyActionCode(
+          auth,
+          oobCode
+        );
+
+
+        showSuccess();
+
+
+      } catch (error) {
+
+        console.error(
+          "Email verification error:",
+          error
+        );
+
+
+        switch (
+          error.code
+        ) {
+
+          case "auth/expired-action-code":
+
+            showError(
+              "This verification link has expired. " +
+              "Please request a new verification email."
+            );
+
+            break;
+
+
+          case "auth/invalid-action-code":
+
+            showError(
+              "This verification link is invalid " +
+              "or has already been used."
+            );
+
+            break;
+
+
+          case "auth/user-disabled":
+
+            showError(
+              "This account is currently disabled."
+            );
+
+            break;
+
+
+          case "auth/user-not-found":
+
+            showError(
+              "We could not find the account associated " +
+              "with this verification link."
+            );
+
+            break;
+
+
+          default:
+
+            showError(
+              "We were unable to verify your email. " +
+              "Please try again or request a new link."
+            );
+
+            break;
+
+        }
+
+      }
+
+    }
+
+
+    verifyEmail();
+
+  </script>
+
+</body>
+</html>

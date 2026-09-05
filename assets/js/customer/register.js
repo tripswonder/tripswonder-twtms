@@ -1,12 +1,12 @@
 import {
   auth,
-  db
+  db,
+  functions
 } from "../firebase/firebase-config.js";
 
 import {
   createUserWithEmailAndPassword,
   updateProfile,
-  sendEmailVerification,
   signOut
 } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
 
@@ -15,6 +15,10 @@ import {
   setDoc,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+
+import {
+  httpsCallable
+} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-functions.js";
 
 
 // =========================================
@@ -356,25 +360,16 @@ registerForm.addEventListener(
 
 
       // =====================================
-      // SEND EMAIL VERIFICATION
-      // =====================================
+// SEND BRANDED EMAIL VERIFICATION
+// =====================================
 
-      await sendEmailVerification(
-        user
-      );
+const sendClientVerificationEmail =
+  httpsCallable(
+    functions,
+    "sendClientVerificationEmail"
+  );
 
-
-      /*
-       * Firebase automatically signs in
-       * the newly-created account.
-       *
-       * We sign it out so the customer
-       * must verify the email first.
-       */
-
-      await signOut(
-        auth
-      );
+await sendClientVerificationEmail();
 
 
       // =====================================
