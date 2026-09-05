@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Tripswonder">
+    <title>Tripswonder</title>
+
+    <link rel="icon" type="image/jpeg" href="favicon.jpg">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+    <link rel="stylesheet" href="assets/css/shared/variables.css">
+    <link rel="stylesheet" href="assets/css/shared/global.css">
+    <link rel="stylesheet" href="assets/css/login.css">
+</head>
+
+<body>
+    <main class="login-page">
+
+        <!-- DESKTOP HERO -->
+        <section class="desktop-hero">
+            <div class="hero-shade"></div>
+
+            <div class="desktop-hero-content">
+                <img
+                    src="assets/images/logo.png"
+                    alt="Trips Wonder"
+                    class="desktop-logo">
+
+                <p class="hero-kicker">Your Next Adventure Awaits</p>
+
+                <h1>
+                    Welcome to
+                    <span>TWTMS</span>
+                </h1>
+
+                <div class="hero-accent"></div>
+
+                <p class="hero-intro">
+                    Manage your travel bookings securely, quickly, and conveniently through
+                    <strong>Trips Wonder Travel & Tours.</strong>
+                </p>
+
+                <div class="desktop-features">
+
+                    <article class="feature-card">
+                        <span class="feature-icon">
+                            <i class="fa-solid fa-shield-halved"></i>
+                        </span>
+                        <div>
+                            <h3>Secure Account Access</h3>
+                            <p>Your account is protected with secure authentication.</p>
+                        </div>
+                    </article>
+
+                    <article class="feature-card">
+                        <span class="feature-icon">
+                            <i class="fa-solid fa-calendar-check"></i>
+                        </span>
+                        <div>
+                            <h3>Manage Your Bookings</h3>
+                            <p>View and manage your reservations anytime.</p>
+                        </div>
+                    </article>
+
+                    <article class="feature-card">
+                        <span class="feature-icon">
+                            <i class="fa-solid fa-plane-departure"></i>
+                        </span>
+                        <div>
+                            <h3>Trusted Travel Experience</h3>
+                            <p>Book with confidence through Trips Wonder Travel & Tours.</p>
+                        </div>
+                    </article>
+
+                    <article class="feature-card">
+                        <span class="feature-icon">
+                            <i class="fa-solid fa-mobile-screen"></i>
+                        </span>
+                        <div>
+                            <h3>Mobile Friendly</h3>
+                            <p>Optimized for desktop, tablet, and mobile devices.</p>
+                        </div>
+                    </article>
+
+                </div>
+
+                <div class="desktop-cta">
+                    <span class="cta-icon">
+                        <i class="fa-solid fa-location-arrow"></i>
+                    </span>
+
+                    <div>
+                        <strong>Discover More Destinations.</strong>
+                        <span>Travel with Confidence.</span>
+                        <a href="#">Explore Now</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MOBILE HERO -->
+        <section class="mobile-hero">
+            <div class="mobile-hero-shade"></div>
+
+            <div class="mobile-topbar">
+                <img
+                    src="assets/images/logo.png"
+                    alt="Trips Wonder"
+                    class="mobile-logo">
+
+                <button type="button" class="language-pill">
+                    <i class="fa-solid fa-globe"></i>
+                    <span>English</span>
+                    <i class="fa-solid fa-chevron-down"></i>
+                </button>
+            </div>
+
+            <div class="mobile-hero-copy">
+                <p class="mobile-kicker">Your Next Adventure Awaits</p>
+
+                <h1>
+                    Welcome to
+                    <span>TWTMS</span>
+                </h1>
+
+                <div class="hero-accent"></div>
+
+                <p>
+                    Manage your travel bookings securely, quickly, and conveniently with
+                    <strong>Trips Wonder Travel & Tours.</strong>
+                </p>
+            </div>
+        </section>
+
+        <!-- LOGIN PANEL -->
+        <section class="login-panel">
+            <div class="login-card">
+
+                <div class="mobile-card-badge">
+                    <i class="fa-regular fa-user"></i>
+                </div>
+
+                <header class="login-header">
+                    <h2>Sign In</h2>
+                    <p>Sign in to continue to your <strong>account.</strong></p>
+                </header>
+
+                <form id="loginForm">
+
+                    <div class="input-group">
+                        <label for="username">Username or Email</label>
+
+                        <div class="field-shell">
+                            <i class="fa-solid fa-user field-icon"></i>
+
+                            <input
+                                type="text"
+                                id="username"
+                                placeholder="Enter your username or email"
+                                autocomplete="username"
+                                required>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="password">Password</label>
+
+                        <div class="field-shell password-shell">
+                            <i class="fa-solid fa-lock field-icon"></i>
+
+                            <input
+                                type="password"
+                                id="password"
+                                placeholder="Enter your password"
+                                autocomplete="current-password"
+                                required>
+
+                            <button
+                                type="button"
+                                id="togglePassword"
+                                class="toggle-password"
+                                aria-label="Show Password">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="login-options">
+                        <label class="remember-me">
+                            <input type="checkbox" id="rememberMe">
+                            <span>Remember Me</span>
+                        </label>
+
+                        <a href="#" class="forgot-password">Forgot Password?</a>
+                    </div>
+
+                    <button type="submit" class="login-btn">
+                        <i class="fa-solid fa-right-to-bracket"></i>
+                        <span>Login</span>
+                    </button>
+
+                    <div class="social-divider">
+                        <span>OR</span>
+                    </div>
+
+                    <div class="social-login">
+                        <button type="button" class="google-btn">
+                            <i class="fa-brands fa-google"></i>
+                            <span>Continue with Google</span>
+                        </button>
+
+                        <button type="button" class="facebook-btn">
+                            <i class="fa-brands fa-facebook-f"></i>
+                            <span>Continue with Facebook</span>
+                        </button>
+                    </div>
+
+                    <div class="create-account">
+                        <p>
+                            Don't have an account?
+                            <a href="register.html">Create Account</a>
+                        </p>
+                    </div>
+
+                    <div class="secure-info">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        <span>Your data is secure.</span>
+                    </div>
+                </form>
+
+                <footer class="login-footer">
+                    <small>© 2026 Trips Wonder Travel and Tours · Version 1.1.0</small>
+                </footer>
+            </div>
+        </section>
+
+        <!-- TRUST BAR -->
+        <div class="trust-bar">
+            <div class="trust-item">
+                <i class="fa-solid fa-shield-halved"></i>
+                <div>
+                    <strong>100% Secure</strong>
+                    <span>Your data is protected</span>
+                </div>
+            </div>
+
+            <div class="trust-item">
+                <i class="fa-solid fa-headset"></i>
+                <div>
+                    <strong>24/7 Support</strong>
+                    <span>We're here to help</span>
+                </div>
+            </div>
+
+            <div class="trust-item">
+                <i class="fa-solid fa-globe"></i>
+                <div>
+                    <strong>200+ Destinations</strong>
+                    <span>Explore the world</span>
+                </div>
+            </div>
+
+            <div class="trust-item">
+                <i class="fa-regular fa-star"></i>
+                <div>
+                    <strong>Trusted by Thousands</strong>
+                    <span>Happy travelers</span>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script type="module" src="assets/js/auth/login.js"></script>
+</body>
+</html>
