@@ -24,7 +24,8 @@
 
 import {
     auth,
-    db
+    db,
+    functions
 } from "../firebase/firebase-config.js";
 
 
@@ -42,6 +43,10 @@ import {
 import {
     onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
+
+import {
+    httpsCallable
+} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-functions.js";
 
 
 /* =========================================================
@@ -4095,56 +4100,278 @@ await setDoc(
             }
         }
 
-        function renderPostBookingAccountPrompt() {
+        function showPostBookingAccountMessage(
+    element,
+    message,
+    type = "error"
+) {
 
-            if (!bookingSuccessModal) {
-                return;
-            }
-
-            /*
-             * Registered customers already have an account,
-             * so no account-creation prompt is needed.
-             */
-            if (currentCustomer?.uid || auth.currentUser?.uid) {
-
-                bookingSuccessModal
-                    .querySelector(
-                        "#postBookingAccountPrompt"
-                    )
-                    ?.remove();
-
-                return;
-            }
+    if (!element) {
+        return;
+    }
 
 
-            let prompt =
-                bookingSuccessModal.querySelector(
-                    "#postBookingAccountPrompt"
-                );
+    element.style.display =
+        "block";
+
+    element.textContent =
+        message;
 
 
-            if (!prompt) {
+    if (
+        type ===
+        "success"
+    ) {
 
-                prompt =
-                    document.createElement(
-                        "section"
-                    );
+        element.style.background =
+            "#ecfdf5";
 
-                prompt.id =
-                    "postBookingAccountPrompt";
+        element.style.color =
+            "#166534";
 
-                prompt.className =
-                    "post-booking-account-prompt";
+        element.style.border =
+            "1px solid #bbf7d0";
 
-                prompt.innerHTML = `
+    } else {
+
+        element.style.background =
+            "#fef2f2";
+
+        element.style.color =
+            "#991b1b";
+
+        element.style.border =
+            "1px solid #fecaca";
+
+    }
+
+}
+
+async function renderPostBookingAccountPrompt() {
+
+    if (!bookingSuccessModal) {
+        return;
+    }
+
+    // Logged-in customer already has an account.
+    if (
+        currentCustomer?.uid ||
+        auth.currentUser?.uid
+    ) {
+
+        bookingSuccessModal
+            .querySelector(
+                "#postBookingAccountPrompt"
+            )
+            ?.remove();
+
+        return;
+    }
+
+
+    let prompt =
+        bookingSuccessModal.querySelector(
+            "#postBookingAccountPrompt"
+        );
+
+
+    if (!prompt) {
+
+        prompt =
+            document.createElement(
+                "section"
+            );
+
+        prompt.id =
+            "postBookingAccountPrompt";
+
+        prompt.className =
+            "post-booking-account-prompt";
+
+
+        const modalPanel =
+            bookingSuccessModal.querySelector(
+                ".success-modal-panel"
+            ) ||
+            bookingSuccessModal.firstElementChild ||
+            bookingSuccessModal;
+
+
+        modalPanel.appendChild(
+            prompt
+        );
+    }
+
+
+    const bookingId =
+        normalizeText(
+            submittedBooking?.id ||
+            ""
+        );
+
+
+    const bookingEmail =
+        normalizeLower(
+            submittedBooking?.data?.customerEmail ||
+            customerEmail?.value ||
+            ""
+        );
+
+
+    const bookingNumber =
+        normalizeText(
+            submittedBooking?.bookingNumber ||
+            bookingRequestReference?.textContent ||
+            ""
+        );
+
+
+    if (
+        !bookingId ||
+        !bookingEmail
+    ) {
+
+        prompt.innerHTML = `
+            <div
+                style="
+                    margin-top:16px;
+                    padding:16px;
+                    border:1px solid #e2e8f0;
+                    border-radius:14px;
+                    background:#f8fafc;
+                    text-align:center;
+                "
+            >
+                <strong
+                    style="
+                        display:block;
+                        color:#0f172a;
+                        font-size:14px;
+                    "
+                >
+                    Booking saved successfully
+                </strong>
+
+                <p
+                    style="
+                        margin:6px 0 0;
+                        color:#64748b;
+                        font-size:11px;
+                    "
+                >
+                    You can create your Trips Wonder account later.
+                </p>
+            </div>
+        `;
+
+        return;
+    }
+
+
+    prompt.innerHTML = `
+        <div
+            style="
+                margin-top:16px;
+                padding:18px;
+                border:1px solid #e2e8f0;
+                border-radius:14px;
+                background:#f8fafc;
+                text-align:center;
+            "
+        >
+            <div
+                style="
+                    width:42px;
+                    height:42px;
+                    margin:0 auto 10px;
+                    display:grid;
+                    place-items:center;
+                    border-radius:50%;
+                    background:#eaf2ff;
+                    color:#1264e8;
+                    font-size:18px;
+                "
+            >
+                <i class="fa-solid fa-spinner fa-spin"></i>
+            </div>
+
+            <strong
+                style="
+                    display:block;
+                    margin-bottom:5px;
+                    color:#0f172a;
+                    font-size:14px;
+                "
+            >
+                Preparing your account options...
+            </strong>
+
+            <p
+                style="
+                    margin:0;
+                    color:#64748b;
+                    font-size:11px;
+                "
+            >
+                Please wait a moment.
+            </p>
+        </div>
+    `;
+
+
+    try {
+
+        const checkBookingAccount =
+            httpsCallable(
+                functions,
+                "checkBookingAccount"
+            );
+
+
+        const result =
+            await checkBookingAccount({
+                bookingId:
+                    bookingId,
+
+                email:
+                    bookingEmail
+            });
+
+
+        const data =
+            result?.data ||
+            {};
+
+
+        const mode =
+            normalizeLower(
+                data.mode
+            );
+
+
+        // =====================================================
+        // NEW CUSTOMER
+        // =====================================================
+
+        if (
+            mode ===
+            "new"
+        ) {
+
+            prompt.innerHTML = `
+                <div
+                    style="
+                        margin-top:16px;
+                        padding:18px;
+                        border:1px solid #e2e8f0;
+                        border-radius:14px;
+                        background:#f8fafc;
+                    "
+                >
                     <div
                         style="
-                            margin-top:16px;
-                            padding:16px;
-                            border:1px solid #e2e8f0;
-                            border-radius:14px;
-                            background:#f8fafc;
                             text-align:center;
+                            margin-bottom:14px;
                         "
                     >
                         <div
@@ -4160,7 +4387,7 @@ await setDoc(
                                 font-size:18px;
                             "
                         >
-                            <i class="fa-regular fa-user"></i>
+                            <i class="fa-solid fa-user-plus"></i>
                         </div>
 
                         <strong
@@ -4171,141 +4398,302 @@ await setDoc(
                                 font-size:14px;
                             "
                         >
-                            Manage your booking easier
+                            Create your Trips Wonder account
                         </strong>
 
                         <p
                             style="
-                                margin:0 auto 13px;
-                                max-width:320px;
+                                margin:0;
                                 color:#64748b;
                                 font-size:11px;
                                 line-height:1.5;
                             "
                         >
-                            Create a Trips Wonder account to track your trip,
-                            view booking updates, and access My Trip and Messages.
+                            Your booking details are already saved.
+                            Just create a password to manage your trip.
                         </p>
+                    </div>
 
-                        <div
+
+                    <div
+                        style="
+                            margin-bottom:10px;
+                            padding:10px 12px;
+                            border-radius:10px;
+                            background:#ffffff;
+                            border:1px solid #e2e8f0;
+                            font-size:11px;
+                            color:#475569;
+                        "
+                    >
+                        <strong>Email:</strong>
+                        ${bookingEmail}
+
+                        <br>
+
+                        <strong>Booking:</strong>
+                        ${bookingNumber}
+                    </div>
+
+
+                    <div
+                        style="
+                            display:grid;
+                            gap:10px;
+                        "
+                    >
+                        <input
+                            type="password"
+                            id="postBookingPassword"
+                            placeholder="Create password"
+                            autocomplete="new-password"
                             style="
-                                display:flex;
-                                gap:8px;
-                                justify-content:center;
-                                flex-wrap:wrap;
+                                width:100%;
+                                box-sizing:border-box;
+                                min-height:44px;
+                                padding:0 12px;
+                                border:1px solid #cbd5e1;
+                                border-radius:10px;
+                                font:inherit;
+                                font-size:12px;
                             "
                         >
-                            <button
-                                type="button"
-                                id="createAccountAfterBooking"
-                                style="
-                                    min-height:40px;
-                                    padding:0 16px;
-                                    border:0;
-                                    border-radius:10px;
-                                    background:#1264e8;
-                                    color:#ffffff;
-                                    font:inherit;
-                                    font-size:11px;
-                                    font-weight:700;
-                                    cursor:pointer;
-                                "
-                            >
-                                <i class="fa-solid fa-user-plus"></i>
-                                Create Account
-                            </button>
 
-                            <button
-                                type="button"
-                                id="maybeLaterAfterBooking"
-                                style="
-                                    min-height:40px;
-                                    padding:0 16px;
-                                    border:1px solid #cbd5e1;
-                                    border-radius:10px;
-                                    background:#ffffff;
-                                    color:#334155;
-                                    font:inherit;
-                                    font-size:11px;
-                                    font-weight:700;
-                                    cursor:pointer;
-                                "
-                            >
-                                Maybe Later
-                            </button>
-                        </div>
+                        <input
+                            type="password"
+                            id="postBookingConfirmPassword"
+                            placeholder="Confirm password"
+                            autocomplete="new-password"
+                            style="
+                                width:100%;
+                                box-sizing:border-box;
+                                min-height:44px;
+                                padding:0 12px;
+                                border:1px solid #cbd5e1;
+                                border-radius:10px;
+                                font:inherit;
+                                font-size:12px;
+                            "
+                        >
+
+                        <div
+                            id="postBookingAccountMessage"
+                            style="
+                                display:none;
+                                padding:9px 10px;
+                                border-radius:8px;
+                                font-size:11px;
+                                line-height:1.4;
+                            "
+                        ></div>
+
+                        <button
+                            type="button"
+                            id="createAccountAfterBooking"
+                            style="
+                                min-height:42px;
+                                border:0;
+                                border-radius:10px;
+                                background:#1264e8;
+                                color:#ffffff;
+                                font:inherit;
+                                font-size:11px;
+                                font-weight:700;
+                                cursor:pointer;
+                            "
+                        >
+                            <i class="fa-solid fa-user-plus"></i>
+                            Create Account
+                        </button>
+
+                        <button
+                            type="button"
+                            id="maybeLaterAfterBooking"
+                            style="
+                                min-height:40px;
+                                border:1px solid #cbd5e1;
+                                border-radius:10px;
+                                background:#ffffff;
+                                color:#334155;
+                                font:inherit;
+                                font-size:11px;
+                                font-weight:700;
+                                cursor:pointer;
+                            "
+                        >
+                            Maybe Later
+                        </button>
                     </div>
-                `;
+                </div>
+            `;
 
 
-                const modalPanel =
-                    bookingSuccessModal.querySelector(
-                        ".success-modal-panel"
-                    ) ||
-                    bookingSuccessModal.firstElementChild ||
-                    bookingSuccessModal;
-
-
-                modalPanel.appendChild(
-                    prompt
-                );
-            }
-
-
-            const bookingEmail =
-                normalizeLower(
-                    submittedBooking?.data?.customerEmail ||
-                    customerEmail?.value ||
-                    ""
+            const passwordInput =
+                prompt.querySelector(
+                    "#postBookingPassword"
                 );
 
 
-            const bookingNumber =
-                normalizeText(
-                    submittedBooking?.bookingNumber ||
-                    bookingRequestReference?.textContent ||
-                    ""
+            const confirmPasswordInput =
+                prompt.querySelector(
+                    "#postBookingConfirmPassword"
                 );
 
 
-            prompt
-                .querySelector(
+            const createButton =
+                prompt.querySelector(
                     "#createAccountAfterBooking"
-                )
+                );
+
+
+            const messageBox =
+                prompt.querySelector(
+                    "#postBookingAccountMessage"
+                );
+
+
+            createButton
                 ?.addEventListener(
                     "click",
-                    () => {
+                    async () => {
 
-                        const params =
-                            new URLSearchParams();
+                        const password =
+                            passwordInput?.value ||
+                            "";
 
-                        if (bookingEmail) {
-                            params.set(
-                                "email",
-                                bookingEmail
+
+                        const confirmPassword =
+                            confirmPasswordInput?.value ||
+                            "";
+
+
+                        if (
+                            password.length <
+                            6
+                        ) {
+
+                            showPostBookingAccountMessage(
+                                messageBox,
+                                "Password must be at least 6 characters.",
+                                "error"
+                            );
+
+                            return;
+                        }
+
+
+                        if (
+                            password !==
+                            confirmPassword
+                        ) {
+
+                            showPostBookingAccountMessage(
+                                messageBox,
+                                "Passwords do not match.",
+                                "error"
+                            );
+
+                            return;
+                        }
+
+
+                        const originalText =
+                            createButton.innerHTML;
+
+
+                        try {
+
+                            createButton.disabled =
+                                true;
+
+                            createButton.innerHTML = `
+                                <i class="fa-solid fa-spinner fa-spin"></i>
+                                Creating Account...
+                            `;
+
+
+                            const createAccountFromBooking =
+                                httpsCallable(
+                                    functions,
+                                    "createAccountFromBooking"
+                                );
+
+
+                            await createAccountFromBooking({
+                                bookingId:
+                                    bookingId,
+
+                                email:
+                                    bookingEmail,
+
+                                password:
+                                    password
+                            });
+
+
+                            showPostBookingAccountMessage(
+                                messageBox,
+                                "Account created successfully. Redirecting to login...",
+                                "success"
+                            );
+
+
+                            window.setTimeout(
+                                () => {
+
+                                    const params =
+                                        new URLSearchParams();
+
+
+                                    params.set(
+                                        "email",
+                                        bookingEmail
+                                    );
+
+
+                                    params.set(
+                                        "booking",
+                                        bookingNumber
+                                    );
+
+
+                                    params.set(
+                                        "from",
+                                        "booking"
+                                    );
+
+
+                                    window.location.href =
+                                        `../../login.html?${params.toString()}`;
+
+                                },
+                                1000
+                            );
+
+
+                        } catch (error) {
+
+                            console.error(
+                                "CREATE ACCOUNT FROM BOOKING ERROR:",
+                                error
+                            );
+
+
+                            createButton.disabled =
+                                false;
+
+                            createButton.innerHTML =
+                                originalText;
+
+
+                            showPostBookingAccountMessage(
+                                messageBox,
+                                error?.message ||
+                                "Unable to create your account.",
+                                "error"
                             );
                         }
 
-                        if (bookingNumber) {
-                            params.set(
-                                "booking",
-                                bookingNumber
-                            );
-                        }
-
-                        params.set(
-                            "from",
-                            "booking"
-                        );
-
-
-                        window.location.href =
-                            `../../register.html?${params.toString()}`;
-
-                    },
-                    {
-                        once:
-                            true
                     }
                 );
 
@@ -4321,13 +4709,517 @@ await setDoc(
                         window.location.href =
                             "home.html";
 
-                    },
-                    {
-                        once:
-                            true
                     }
                 );
+
+
+            return;
         }
+
+
+        // =====================================================
+        // EXISTING CUSTOMER
+        // =====================================================
+
+        if (
+            mode ===
+            "existing"
+        ) {
+
+            prompt.innerHTML = `
+                <div
+                    style="
+                        margin-top:16px;
+                        padding:18px;
+                        border:1px solid #e2e8f0;
+                        border-radius:14px;
+                        background:#f8fafc;
+                        text-align:center;
+                    "
+                >
+                    <div
+                        style="
+                            width:42px;
+                            height:42px;
+                            margin:0 auto 10px;
+                            display:grid;
+                            place-items:center;
+                            border-radius:50%;
+                            background:#eaf2ff;
+                            color:#1264e8;
+                            font-size:18px;
+                        "
+                    >
+                        <i class="fa-solid fa-link"></i>
+                    </div>
+
+                    <strong
+                        style="
+                            display:block;
+                            margin-bottom:6px;
+                            color:#0f172a;
+                            font-size:14px;
+                        "
+                    >
+                        You already have a Trips Wonder account
+                    </strong>
+
+                    <p
+                        style="
+                            margin:0 auto 12px;
+                            max-width:330px;
+                            color:#64748b;
+                            font-size:11px;
+                            line-height:1.5;
+                        "
+                    >
+                        Send a secure connection link to
+                        <strong>${bookingEmail}</strong>
+                        to connect this booking to your existing account.
+                    </p>
+
+
+                    <div
+                        id="postBookingAccountMessage"
+                        style="
+                            display:none;
+                            margin-bottom:10px;
+                            padding:9px 10px;
+                            border-radius:8px;
+                            font-size:11px;
+                            line-height:1.4;
+                        "
+                    ></div>
+
+
+                    <div
+                        style="
+                            display:flex;
+                            gap:8px;
+                            justify-content:center;
+                            flex-wrap:wrap;
+                        "
+                    >
+                        <button
+                            type="button"
+                            id="connectAccountAfterBooking"
+                            style="
+                                min-height:40px;
+                                padding:0 16px;
+                                border:0;
+                                border-radius:10px;
+                                background:#1264e8;
+                                color:#ffffff;
+                                font:inherit;
+                                font-size:11px;
+                                font-weight:700;
+                                cursor:pointer;
+                            "
+                        >
+                            <i class="fa-regular fa-envelope"></i>
+                            Connect with Email
+                        </button>
+
+                        <button
+                            type="button"
+                            id="maybeLaterAfterBooking"
+                            style="
+                                min-height:40px;
+                                padding:0 16px;
+                                border:1px solid #cbd5e1;
+                                border-radius:10px;
+                                background:#ffffff;
+                                color:#334155;
+                                font:inherit;
+                                font-size:11px;
+                                font-weight:700;
+                                cursor:pointer;
+                            "
+                        >
+                            Maybe Later
+                        </button>
+                    </div>
+                </div>
+            `;
+
+
+            const connectButton =
+                prompt.querySelector(
+                    "#connectAccountAfterBooking"
+                );
+
+
+            const messageBox =
+                prompt.querySelector(
+                    "#postBookingAccountMessage"
+                );
+
+
+            connectButton
+                ?.addEventListener(
+                    "click",
+                    async () => {
+
+                        const originalText =
+                            connectButton.innerHTML;
+
+
+                        try {
+
+                            connectButton.disabled =
+                                true;
+
+                            connectButton.innerHTML = `
+                                <i class="fa-solid fa-spinner fa-spin"></i>
+                                Sending...
+                            `;
+
+
+                            const sendBookingConnectEmail =
+                                httpsCallable(
+                                    functions,
+                                    "sendBookingConnectEmail"
+                                );
+
+
+                            await sendBookingConnectEmail({
+                                bookingId:
+                                    bookingId,
+
+                                email:
+                                    bookingEmail
+                            });
+
+
+                            showPostBookingAccountMessage(
+                                messageBox,
+                                "Connection email sent. Please check your inbox.",
+                                "success"
+                            );
+
+
+                            connectButton.innerHTML = `
+                                <i class="fa-solid fa-check"></i>
+                                Email Sent
+                            `;
+
+
+                        } catch (error) {
+
+                            console.error(
+                                "SEND BOOKING CONNECT EMAIL ERROR:",
+                                error
+                            );
+
+
+                            connectButton.disabled =
+                                false;
+
+                            connectButton.innerHTML =
+                                originalText;
+
+
+                            showPostBookingAccountMessage(
+                                messageBox,
+                                error?.message ||
+                                "Unable to send the connection email.",
+                                "error"
+                            );
+                        }
+
+                    }
+                );
+
+
+            prompt
+                .querySelector(
+                    "#maybeLaterAfterBooking"
+                )
+                ?.addEventListener(
+                    "click",
+                    () => {
+
+                        window.location.href =
+                            "home.html";
+
+                    }
+                );
+
+
+            return;
+        }
+
+
+        // =====================================================
+        // ALREADY LINKED
+        // =====================================================
+
+        if (
+            mode ===
+            "linked"
+        ) {
+
+            prompt.innerHTML = `
+                <div
+                    style="
+                        margin-top:16px;
+                        padding:18px;
+                        border:1px solid #bbf7d0;
+                        border-radius:14px;
+                        background:#f0fdf4;
+                        text-align:center;
+                    "
+                >
+                    <div
+                        style="
+                            width:42px;
+                            height:42px;
+                            margin:0 auto 10px;
+                            display:grid;
+                            place-items:center;
+                            border-radius:50%;
+                            background:#dcfce7;
+                            color:#16a34a;
+                            font-size:18px;
+                        "
+                    >
+                        <i class="fa-solid fa-check"></i>
+                    </div>
+
+                    <strong
+                        style="
+                            display:block;
+                            margin-bottom:6px;
+                            color:#14532d;
+                            font-size:14px;
+                        "
+                    >
+                        Booking already connected
+                    </strong>
+
+                    <p
+                        style="
+                            margin:0 0 12px;
+                            color:#64748b;
+                            font-size:11px;
+                        "
+                    >
+                        Sign in to manage this booking in My Trip.
+                    </p>
+
+                    <button
+                        type="button"
+                        id="goToLoginAfterBooking"
+                        style="
+                            min-height:40px;
+                            padding:0 16px;
+                            border:0;
+                            border-radius:10px;
+                            background:#1264e8;
+                            color:#ffffff;
+                            font:inherit;
+                            font-size:11px;
+                            font-weight:700;
+                            cursor:pointer;
+                        "
+                    >
+                        Go to Login
+                    </button>
+                </div>
+            `;
+
+
+            prompt
+                .querySelector(
+                    "#goToLoginAfterBooking"
+                )
+                ?.addEventListener(
+                    "click",
+                    () => {
+
+                        const params =
+                            new URLSearchParams();
+
+
+                        params.set(
+                            "email",
+                            bookingEmail
+                        );
+
+
+                        window.location.href =
+                            `../../login.html?${params.toString()}`;
+
+                    }
+                );
+
+
+            return;
+        }
+
+
+        throw new Error(
+            "Unknown account status."
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "POST BOOKING ACCOUNT CHECK ERROR:",
+            error
+        );
+
+
+        prompt.innerHTML = `
+            <div
+                style="
+                    margin-top:16px;
+                    padding:16px;
+                    border:1px solid #fecaca;
+                    border-radius:14px;
+                    background:#fff7f7;
+                    text-align:center;
+                "
+            >
+                <strong
+                    style="
+                        display:block;
+                        margin-bottom:5px;
+                        color:#991b1b;
+                        font-size:13px;
+                    "
+                >
+                    Unable to load account options
+                </strong>
+
+                <p
+                    style="
+                        margin:0 0 12px;
+                        color:#64748b;
+                        font-size:11px;
+                    "
+                >
+                    Your booking is still saved successfully.
+                    You may continue without creating an account.
+                </p>
+
+                <button
+                    type="button"
+                    id="maybeLaterAfterBooking"
+                    style="
+                        min-height:40px;
+                        padding:0 16px;
+                        border:1px solid #cbd5e1;
+                        border-radius:10px;
+                        background:#ffffff;
+                        color:#334155;
+                        font:inherit;
+                        font-size:11px;
+                        font-weight:700;
+                        cursor:pointer;
+                    "
+                >
+                    Continue
+                </button>
+            </div>
+        `;
+
+
+        prompt
+            .querySelector(
+                "#maybeLaterAfterBooking"
+            )
+            ?.addEventListener(
+                "click",
+                () => {
+
+                    window.location.href =
+                        "home.html";
+
+                }
+            );
+
+    }
+}
+
+
+function showPostBookingAccountMessage(
+    element,
+    message,
+    type = "error"
+) {
+
+    if (!element) {
+        return;
+    }
+
+
+    element.style.display =
+        "block";
+
+    element.textContent =
+        message;
+
+
+    if (
+        type ===
+        "success"
+    ) {
+
+        element.style.background =
+            "#ecfdf5";
+
+        element.style.color =
+            "#166534";
+
+        element.style.border =
+            "1px solid #bbf7d0";
+
+    } else {
+
+        element.style.background =
+            "#fef2f2";
+
+        element.style.color =
+            "#991b1b";
+
+        element.style.border =
+            "1px solid #fecaca";
+
+    }
+}
+
+
+function showSuccessModal(requestReference) {
+
+    if (bookingRequestReference) {
+        bookingRequestReference.textContent =
+            requestReference;
+    }
+
+
+    renderPostBookingAddons();
+
+    void renderPostBookingAccountPrompt();
+
+
+    bookingSuccessModal
+        ?.classList.add(
+            "show"
+        );
+
+
+    bookingSuccessModal
+        ?.setAttribute(
+            "aria-hidden",
+            "false"
+        );
+
+
+    document.body.style.overflow =
+        "hidden";
+}
 
 
         function showSuccessModal(requestReference) {
@@ -4336,7 +5228,7 @@ await setDoc(
             }
 
             renderPostBookingAddons();
-            renderPostBookingAccountPrompt();
+void renderPostBookingAccountPrompt();
 
             bookingSuccessModal?.classList.add("show");
             bookingSuccessModal?.setAttribute("aria-hidden", "false");

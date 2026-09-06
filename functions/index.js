@@ -4,6 +4,7 @@ const {defineSecret} = require("firebase-functions/params");
 const {initializeApp} = require("firebase-admin/app");
 const {getAuth} = require("firebase-admin/auth");
 const {getFirestore} = require("firebase-admin/firestore");
+const crypto = require("crypto");
 
 // ======================================================
 // INITIALIZE FIREBASE ADMIN
@@ -2739,3 +2740,980 @@ exports.sendClientVerificationEmail = onCall(
       }
     },
 );
+
+// ======================================================
+// POST-BOOKING CUSTOMER ACCOUNT FLOW
+// ======================================================
+//
+// Guest booking flow:
+//
+// 1. checkBookingAccount
+//    - Verifies booking ID + booking email.
+//    - Returns whether the email is NEW or EXISTING.
+//
+// 2. createAccountFromBooking
+//    - NEW email only.
+//    - Creates Firebase Auth + client profile.
+//    - Links the guest booking to the new UID.
+//    - Email verification is intentionally NOT required here.
+//
+// 3. sendBookingConnectEmail
+//    - EXISTING account only.
+//    - Sends a secure one-time connection link by email.
+//
+// 4. finalizeBookingConnect
+//    - Consumes the one-time token.
+//    - Links the guest booking to the existing account.
+//
+// Existing sendClientVerificationEmail remains available so
+// customers can verify their email later from Profile.
+// ======================================================
+
+
+/**
+ * Normalizes a customer email address.
+ *
+ * @param {*} value Raw email value.
+ * @return {string} Normalized email.
+ */
+function normalizeCustomerEmail(value) {
+  return String(value || "")
+      .trim()
+      .toLowerCase();
+}
+
+
+/**
+ * Validates an email address.
+ *
+ * @param {string} email Normalized email.
+ * @return {boolean} True when valid.
+ */
+function isValidCustomerEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+
+/**
+ * Splits the booking customer name into first and last name.
+ *
+ * @param {*} value Full customer name.
+ * @return {{firstName: string, lastName: string}}
+ */
+function splitBookingCustomerName(value) {
+  const cleanName = String(value || "")
+      .trim()
+      .replace(/\s+/g, " ");
+
+  if (!cleanName) {
+    return {
+      firstName: "Traveler",
+      lastName: "",
+    };
+  }
+
+  const parts = cleanName.split(" ");
+
+  return {
+    firstName: parts.shift() || "Traveler",
+    lastName: parts.join(" "),
+  };
+}
+
+
+/**
+ * Returns a Firebase Auth user by email, or null.
+ *
+ * @param {string} email Normalized email.
+ * @return {Promise<object|null>}
+ */
+async function getAuthUserByEmailOrNull(email) {
+  try {
+    return await auth.getUserByEmail(email);
+  } catch (error) {
+    if (error.code === "auth/user-not-found") {
+      return null;
+    }
+
+    throw error;
+  }
+}
+
+
+/**
+ * Loads and validates the booking used for an account action.
+ *
+ * Security:
+ * - Requires the real Firestore booking ID.
+ * - Requires the submitted booking email to match exactly.
+ *
+ * @param {*} bookingId Firestore booking document ID.
+ * @param {*} email Submitted booking email.
+ * @return {Promise<{ref: object, data: object, email: string}>}
+ */
+async function getBookingForAccountAction(
+    bookingId,
+    email,
+) {
+  const cleanBookingId = String(bookingId || "").trim();
+  const cleanEmail = normalizeCustomerEmail(email);
+
+  if (!cleanBookingId) {
+    throw new HttpsError(
+        "invalid-argument",
+        "Booking ID is required.",
+    );
+  }
+
+  if (
+    !cleanEmail ||
+    !isValidCustomerEmail(cleanEmail)
+  ) {
+    throw new HttpsError(
+        "invalid-argument",
+        "A valid booking email is required.",
+    );
+  }
+
+  const bookingRef = db
+      .collection("bookings")
+      .doc(cleanBookingId);
+
+  const bookingDoc = await bookingRef.get();
+
+  if (!bookingDoc.exists) {
+    throw new HttpsError(
+        "not-found",
+        "Booking could not be found.",
+    );
+  }
+
+  const booking = bookingDoc.data() || {};
+
+  const storedEmail =
+    normalizeCustomerEmail(
+        booking.customerEmail,
+    );
+
+  if (
+    !storedEmail ||
+    storedEmail !== cleanEmail
+  ) {
+    throw new HttpsError(
+        "permission-denied",
+        "The booking information does not match.",
+    );
+  }
+
+  return {
+    ref: bookingRef,
+    data: booking,
+    email: cleanEmail,
+  };
+}
+
+
+// ======================================================
+// CHECK BOOKING ACCOUNT STATUS
+// ======================================================
+
+exports.checkBookingAccount = onCall(
+    async (request) => {
+      const {
+        bookingId,
+        email,
+      } = request.data || {};
+
+      const bookingResult =
+        await getBookingForAccountAction(
+            bookingId,
+            email,
+        );
+
+      const booking =
+        bookingResult.data;
+
+      const linkedUid =
+        String(
+            booking.customerUid || "",
+        ).trim();
+
+      if (linkedUid) {
+        return {
+          success: true,
+          mode: "linked",
+          message:
+            "This booking is already connected to an account.",
+        };
+      }
+
+      const existingUser =
+        await getAuthUserByEmailOrNull(
+            bookingResult.email,
+        );
+
+      return {
+        success: true,
+        mode:
+          existingUser ?
+            "existing" :
+            "new",
+        bookingReference:
+          String(
+              booking.bookingReference ||
+              booking.bookingNumber ||
+              "",
+          ).trim(),
+        email:
+          bookingResult.email,
+      };
+    },
+);
+
+
+// ======================================================
+// CREATE ACCOUNT FROM GUEST BOOKING
+// ======================================================
+
+exports.createAccountFromBooking = onCall(
+    async (request) => {
+      const {
+        bookingId,
+        email,
+        password,
+      } = request.data || {};
+
+      const cleanPassword =
+        String(password || "");
+
+      if (cleanPassword.length < 6) {
+        throw new HttpsError(
+            "invalid-argument",
+            "Password must be at least 6 characters.",
+        );
+      }
+
+      const bookingResult =
+        await getBookingForAccountAction(
+            bookingId,
+            email,
+        );
+
+      const booking =
+        bookingResult.data;
+
+      const alreadyLinkedUid =
+        String(
+            booking.customerUid || "",
+        ).trim();
+
+      if (alreadyLinkedUid) {
+        throw new HttpsError(
+            "failed-precondition",
+            "This booking is already connected to an account.",
+        );
+      }
+
+      const existingUser =
+        await getAuthUserByEmailOrNull(
+            bookingResult.email,
+        );
+
+      if (existingUser) {
+        throw new HttpsError(
+            "already-exists",
+            "An account already exists for this email. " +
+            "Use Connect with Email instead.",
+        );
+      }
+
+      const fullName =
+        String(
+            booking.customerName || "",
+        ).trim();
+
+      const nameParts =
+        splitBookingCustomerName(
+            fullName,
+        );
+
+      const phone =
+        String(
+            booking.customerContact ||
+            booking.contactNumber ||
+            "",
+        ).trim();
+
+      let newUser = null;
+
+      try {
+        newUser =
+          await auth.createUser({
+            email:
+              bookingResult.email,
+
+            password:
+              cleanPassword,
+
+            displayName:
+              fullName ||
+              nameParts.firstName,
+
+            emailVerified:
+              false,
+          });
+
+        const userRef = db
+            .collection("users")
+            .doc(newUser.uid);
+
+        await db.runTransaction(
+            async (transaction) => {
+              const latestBooking =
+                await transaction.get(
+                    bookingResult.ref,
+                );
+
+              if (!latestBooking.exists) {
+                throw new HttpsError(
+                    "not-found",
+                    "Booking could not be found.",
+                );
+              }
+
+              const latestData =
+                latestBooking.data() || {};
+
+              const latestUid =
+                String(
+                    latestData.customerUid || "",
+                ).trim();
+
+              if (latestUid) {
+                throw new HttpsError(
+                    "failed-precondition",
+                    "This booking is already connected to an account.",
+                );
+              }
+
+              transaction.set(
+                  userRef,
+                  {
+                    uid:
+                      newUser.uid,
+
+                    email:
+                      bookingResult.email,
+
+                    firstName:
+                      nameParts.firstName,
+
+                    lastName:
+                      nameParts.lastName,
+
+                    phone:
+                      phone,
+
+                    role:
+                      "client",
+
+                    status:
+                      "active",
+
+                    registrationSource:
+                      "booking",
+
+                    emailVerified:
+                      false,
+
+                    emailVerificationStatus:
+                      "pending",
+
+                    firstBookingId:
+                      bookingResult.ref.id,
+
+                    firstBookingReference:
+                      String(
+                          latestData.bookingReference ||
+                          latestData.bookingNumber ||
+                          "",
+                      ).trim(),
+
+                    createdAt:
+                      new Date(),
+                  },
+                  {
+                    merge: true,
+                  },
+              );
+
+              transaction.update(
+                  bookingResult.ref,
+                  {
+                    customerUid:
+                      newUser.uid,
+
+                    customerType:
+                      "registered",
+
+                    accountStatus:
+                      "registered",
+
+                    accountLinkedAt:
+                      new Date(),
+
+                    accountLinkMethod:
+                      "created_after_booking",
+                  },
+              );
+            },
+        );
+
+        return {
+          success: true,
+          mode: "created",
+          uid: newUser.uid,
+          email:
+            bookingResult.email,
+          emailVerified: false,
+          message:
+            "Account created and booking connected successfully.",
+        };
+      } catch (error) {
+        console.error(
+            "CREATE ACCOUNT FROM BOOKING ERROR:",
+            error,
+        );
+
+        if (newUser) {
+          try {
+            await auth.deleteUser(
+                newUser.uid,
+            );
+          } catch (cleanupError) {
+            console.error(
+                "BOOKING ACCOUNT CLEANUP ERROR:",
+                cleanupError,
+            );
+          }
+        }
+
+        if (error instanceof HttpsError) {
+          throw error;
+        }
+
+        if (
+          error.code ===
+          "auth/email-already-exists"
+        ) {
+          throw new HttpsError(
+              "already-exists",
+              "An account already exists for this email. " +
+              "Use Connect with Email instead.",
+          );
+        }
+
+        throw new HttpsError(
+            "internal",
+            "Unable to create your account right now.",
+        );
+      }
+    },
+);
+
+
+// ======================================================
+// SEND EXISTING-ACCOUNT BOOKING CONNECTION EMAIL
+// ======================================================
+
+exports.sendBookingConnectEmail = onCall(
+    {
+      secrets: [resendApiKey],
+    },
+    async (request) => {
+      const {
+        bookingId,
+        email,
+      } = request.data || {};
+
+      const bookingResult =
+        await getBookingForAccountAction(
+            bookingId,
+            email,
+        );
+
+      const booking =
+        bookingResult.data;
+
+      const alreadyLinkedUid =
+        String(
+            booking.customerUid || "",
+        ).trim();
+
+      if (alreadyLinkedUid) {
+        return {
+          success: true,
+          alreadyLinked: true,
+          message:
+            "This booking is already connected to an account.",
+        };
+      }
+
+      const existingUser =
+        await getAuthUserByEmailOrNull(
+            bookingResult.email,
+        );
+
+      if (!existingUser) {
+        throw new HttpsError(
+            "not-found",
+            "No existing Trips Wonder account was found for this email.",
+        );
+      }
+
+      const rawToken =
+        crypto
+            .randomBytes(32)
+            .toString("hex");
+
+      const tokenHash =
+        crypto
+            .createHash("sha256")
+            .update(rawToken)
+            .digest("hex");
+
+      const now =
+        new Date();
+
+      const expiresAt =
+        new Date(
+            now.getTime() +
+            (30 * 60 * 1000),
+        );
+
+      const tokenRef = db
+          .collection("bookingConnectTokens")
+          .doc(tokenHash);
+
+      await tokenRef.set({
+        bookingId:
+          bookingResult.ref.id,
+
+        bookingReference:
+          String(
+              booking.bookingReference ||
+              booking.bookingNumber ||
+              "",
+          ).trim(),
+
+        uid:
+          existingUser.uid,
+
+        email:
+          bookingResult.email,
+
+        createdAt:
+          now,
+
+        expiresAt:
+          expiresAt,
+
+        used:
+          false,
+      });
+
+      const connectUrl =
+        "https://tripswonder.tours/" +
+        "pages/customer/connect-booking.html?token=" +
+        encodeURIComponent(rawToken);
+
+      const safeName =
+        String(
+            booking.customerName ||
+            existingUser.displayName ||
+            "Traveler",
+        )
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+
+      const safeReference =
+        String(
+            booking.bookingReference ||
+            booking.bookingNumber ||
+            "",
+        )
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+
+      const emailHtml = `
+        <div style="
+          margin:0;
+          padding:24px 12px;
+          background:#f5f7fa;
+          font-family:Arial,Helvetica,sans-serif;
+          color:#111827;
+        ">
+          <div style="
+            max-width:620px;
+            margin:0 auto;
+            overflow:hidden;
+            background:#ffffff;
+            border-radius:16px;
+          ">
+            <div style="
+              padding:25px 30px;
+              background:#1769b0;
+              color:#ffffff;
+            ">
+              <div style="
+                font-size:24px;
+                font-weight:800;
+              ">
+                Trips Wonder
+              </div>
+
+              <div style="
+                margin-top:4px;
+                font-size:13px;
+                opacity:.9;
+              ">
+                Travel and Tours
+              </div>
+            </div>
+
+            <div style="
+              padding:34px 30px 30px;
+              font-size:15px;
+              line-height:1.6;
+            ">
+              <p style="margin:0 0 20px;">
+                Hi ${safeName},
+              </p>
+
+              <h2 style="
+                margin:0 0 14px;
+                color:#111827;
+                font-size:22px;
+              ">
+                Connect your booking
+              </h2>
+
+              <p style="margin:0 0 18px;">
+                A booking was made using the email address
+                connected to your Trips Wonder account.
+              </p>
+
+              <p style="margin:0 0 24px;">
+                Booking reference:
+                <strong>${safeReference}</strong>
+              </p>
+
+              <p style="margin:0 0 26px;">
+                Click the button below to confirm that this
+                email belongs to you and connect the booking
+                to your existing account.
+              </p>
+
+              <div style="text-align:center;">
+                <a
+                  href="${connectUrl}"
+                  style="
+                    display:inline-block;
+                    padding:14px 24px;
+                    color:#ffffff;
+                    background:#1769b0;
+                    border-radius:9px;
+                    text-decoration:none;
+                    font-weight:700;
+                  "
+                >
+                  Connect Booking
+                </a>
+              </div>
+
+              <p style="
+                margin:26px 0 0;
+                color:#6b7280;
+                font-size:12px;
+              ">
+                This secure link expires in 30 minutes.
+                If you did not make this booking, you can
+                safely ignore this email.
+              </p>
+            </div>
+
+            <div style="
+              padding:20px 30px 26px;
+              border-top:1px solid #e5e7eb;
+              color:#9ca3af;
+              font-size:11px;
+              line-height:1.5;
+              text-align:center;
+            ">
+              Trips Wonder Travel and Tours
+              <br>
+              noreply@tripswonder.tours
+            </div>
+          </div>
+        </div>
+      `;
+
+      const response =
+        await fetch(
+            "https://api.resend.com/emails",
+            {
+              method: "POST",
+
+              headers: {
+                "Authorization":
+                  `Bearer ${resendApiKey.value()}`,
+
+                "Content-Type":
+                  "application/json",
+              },
+
+              body: JSON.stringify({
+                from:
+                  "Trips Wonder Travel and Tours " +
+                  "<noreply@tripswonder.tours>",
+
+                to: [
+                  bookingResult.email,
+                ],
+
+                subject:
+                  "Connect Your Booking | Trips Wonder",
+
+                html:
+                  emailHtml,
+              }),
+            },
+        );
+
+      const result =
+        await response.json();
+
+      if (!response.ok) {
+        console.error(
+            "BOOKING CONNECT EMAIL ERROR:",
+            result,
+        );
+
+        await tokenRef.delete();
+
+        throw new HttpsError(
+            "internal",
+            result.message ||
+            "Unable to send the connection email.",
+        );
+      }
+
+      return {
+        success: true,
+        emailSent: true,
+        message:
+          "Connection email sent successfully.",
+      };
+    },
+);
+
+
+// ======================================================
+// FINALIZE EXISTING-ACCOUNT BOOKING CONNECTION
+// ======================================================
+
+exports.finalizeBookingConnect = onCall(
+    async (request) => {
+      const rawToken =
+  String(
+      (
+        request.data &&
+        request.data.token
+      ) || "",
+  ).trim();
+
+      if (
+        !rawToken ||
+        rawToken.length < 32
+      ) {
+        throw new HttpsError(
+            "invalid-argument",
+            "Invalid connection link.",
+        );
+      }
+
+      const tokenHash =
+        crypto
+            .createHash("sha256")
+            .update(rawToken)
+            .digest("hex");
+
+      const tokenRef = db
+          .collection("bookingConnectTokens")
+          .doc(tokenHash);
+
+      await db.runTransaction(
+          async (transaction) => {
+            const tokenDoc =
+              await transaction.get(
+                  tokenRef,
+              );
+
+            if (!tokenDoc.exists) {
+              throw new HttpsError(
+                  "not-found",
+                  "This connection link is invalid or has expired.",
+              );
+            }
+
+            const token =
+              tokenDoc.data() || {};
+
+            if (token.used === true) {
+              throw new HttpsError(
+                  "failed-precondition",
+                  "This connection link has already been used.",
+              );
+            }
+
+            const expiresAt =
+  token.expiresAt &&
+  typeof token.expiresAt.toDate === "function" ?
+    token.expiresAt.toDate() :
+    new Date(token.expiresAt);
+
+            if (
+              !expiresAt ||
+              Number.isNaN(
+                  expiresAt.getTime(),
+              ) ||
+              expiresAt.getTime() <
+              Date.now()
+            ) {
+              throw new HttpsError(
+                  "deadline-exceeded",
+                  "This connection link has expired.",
+              );
+            }
+
+            const bookingId =
+              String(
+                  token.bookingId || "",
+              ).trim();
+
+            const uid =
+              String(
+                  token.uid || "",
+              ).trim();
+
+            const email =
+              normalizeCustomerEmail(
+                  token.email,
+              );
+
+            if (
+              !bookingId ||
+              !uid ||
+              !email
+            ) {
+              throw new HttpsError(
+                  "failed-precondition",
+                  "This connection request is incomplete.",
+              );
+            }
+
+            const bookingRef = db
+                .collection("bookings")
+                .doc(bookingId);
+
+            const bookingDoc =
+              await transaction.get(
+                  bookingRef,
+              );
+
+            if (!bookingDoc.exists) {
+              throw new HttpsError(
+                  "not-found",
+                  "Booking could not be found.",
+              );
+            }
+
+            const booking =
+              bookingDoc.data() || {};
+
+            const bookingEmail =
+              normalizeCustomerEmail(
+                  booking.customerEmail,
+              );
+
+            if (bookingEmail !== email) {
+              throw new HttpsError(
+                  "permission-denied",
+                  "The booking email no longer matches.",
+              );
+            }
+
+            const currentUid =
+              String(
+                  booking.customerUid || "",
+              ).trim();
+
+            if (
+              currentUid &&
+              currentUid !== uid
+            ) {
+              throw new HttpsError(
+                  "failed-precondition",
+                  "This booking is already connected to another account.",
+              );
+            }
+
+            transaction.update(
+                bookingRef,
+                {
+                  customerUid:
+                    uid,
+
+                  customerType:
+                    "registered",
+
+                  accountStatus:
+                    "registered",
+
+                  accountLinkedAt:
+                    new Date(),
+
+                  accountLinkMethod:
+                    "email_connection",
+                },
+            );
+
+            transaction.update(
+                tokenRef,
+                {
+                  used:
+                    true,
+
+                  usedAt:
+                    new Date(),
+                },
+            );
+          },
+      );
+
+      return {
+        success: true,
+        connected: true,
+        message:
+          "Your booking has been connected successfully.",
+      };
+    },
+);
+
+
