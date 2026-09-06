@@ -69,6 +69,7 @@ const DEFAULT_CUSTOMER_BRANDING = {
 
 const state = {
     user: null,
+    authReady: false,
     profile: {},
     branding: {},
     unsubscribeBranding: null,
@@ -966,6 +967,732 @@ function subscribeHeaderBadges(
 }
 
 
+
+/* ==========================================================
+   GUEST MEMBER ACCESS GATE
+   ==========================================================
+
+   Public pages remain accessible to everyone.
+
+   When a guest clicks:
+   - My Trip
+   - Messages
+   - Notifications
+   - Profile / Account
+
+   stay on the current page and show the Sign In / Register
+   modal instead of navigating to a protected module.
+========================================================== */
+
+const GUEST_PROTECTED_FILES = new Set([
+    "my-trip.html",
+    "message.html",
+    "account.html",
+    "account-security.html",
+    "profile.html",
+    "payments.html"
+]);
+
+
+function isSignedInCustomer() {
+
+    return Boolean(
+        state.user ||
+        auth?.currentUser
+    );
+}
+
+
+function getProtectedDestination(anchor) {
+
+    if (!anchor) {
+        return "";
+    }
+
+    const rawHref =
+        String(
+            anchor.getAttribute("href") ||
+            ""
+        ).trim();
+
+
+    if (!rawHref) {
+        return "";
+    }
+
+
+    try {
+
+        const url =
+            new URL(
+                rawHref,
+                window.location.href
+            );
+
+        const fileName =
+            url.pathname
+                .split("/")
+                .pop()
+                ?.toLowerCase() ||
+            "";
+
+        return GUEST_PROTECTED_FILES.has(fileName)
+            ? fileName
+            : "";
+
+    } catch (error) {
+
+        return "";
+
+    }
+}
+
+
+function ensureSharedGuestAuthModal() {
+
+    let modal =
+        document.getElementById(
+            "sharedGuestAuthModal"
+        );
+
+
+    if (modal) {
+        return modal;
+    }
+
+
+    const style =
+        document.createElement(
+            "style"
+        );
+
+    style.id =
+        "sharedGuestAuthModalStyle";
+
+    style.textContent = `
+        body.shared-guest-auth-open {
+            overflow: hidden !important;
+        }
+
+        .shared-guest-auth-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 99999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            background: rgba(15, 23, 42, .68);
+            backdrop-filter: blur(4px);
+        }
+
+        .shared-guest-auth-modal[hidden] {
+            display: none !important;
+        }
+
+        .shared-guest-auth-card {
+            position: relative;
+            width: min(920px, 96vw);
+            max-height: min(720px, 92vh);
+            display: grid;
+            grid-template-columns: minmax(0, 1.08fr) minmax(300px, .92fr);
+            overflow: auto;
+            background: #ffffff;
+            border-radius: 18px;
+            box-shadow: 0 28px 80px rgba(15, 23, 42, .30);
+        }
+
+        .shared-guest-auth-left,
+        .shared-guest-auth-right {
+            padding: 52px 56px;
+        }
+
+        .shared-guest-auth-left {
+            background: #ffffff;
+        }
+
+        .shared-guest-auth-right {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background: #f5f8fc;
+        }
+
+        .shared-guest-auth-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 28px;
+            color: #0758c7;
+            font-size: 18px;
+            font-weight: 800;
+        }
+
+        .shared-guest-auth-brand img {
+            width: 38px;
+            height: 38px;
+            object-fit: contain;
+            border-radius: 50%;
+        }
+
+        .shared-guest-auth-close {
+            position: absolute;
+            top: 20px;
+            right: 22px;
+            z-index: 2;
+            width: 38px;
+            height: 38px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            color: #172036;
+            background: transparent;
+            border: 0;
+            border-radius: 50%;
+            font-size: 22px;
+        }
+
+        .shared-guest-auth-close:hover {
+            background: rgba(15, 23, 42, .06);
+        }
+
+        .shared-guest-auth-title {
+            margin: 0;
+            color: #10192f;
+            font-size: 31px;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        .shared-guest-auth-benefits {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px 22px;
+            margin: 18px 0 30px;
+            color: #455168;
+            font-size: 13px;
+        }
+
+        .shared-guest-auth-benefits span {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .shared-guest-auth-benefits i {
+            color: #0874ff;
+        }
+
+        .shared-guest-auth-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #334155;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .shared-guest-auth-email {
+            width: 100%;
+            height: 56px;
+            padding: 0 16px;
+            color: #172036;
+            background: #ffffff;
+            border: 1px solid #cfd8e6;
+            border-radius: 9px;
+            outline: none;
+            font: inherit;
+        }
+
+        .shared-guest-auth-email:focus {
+            border-color: #1671df;
+            box-shadow: 0 0 0 3px rgba(22, 113, 223, .10);
+        }
+
+        .shared-guest-auth-primary,
+        .shared-guest-auth-social {
+            width: 100%;
+            height: 54px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 12px;
+            padding: 0 18px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        .shared-guest-auth-primary {
+            color: #ffffff;
+            background: #176de4;
+            border: 1px solid #176de4;
+        }
+
+        .shared-guest-auth-social {
+            color: #182137;
+            background: #ffffff;
+            border: 1px solid #d6deea;
+        }
+
+        .shared-guest-auth-social.google {
+            color: #ffffff;
+            background: #4285f4;
+            border-color: #4285f4;
+        }
+
+        .shared-guest-auth-separator {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            gap: 12px;
+            margin: 22px 0 8px;
+            color: #7a869b;
+            font-size: 12px;
+        }
+
+        .shared-guest-auth-separator::before,
+        .shared-guest-auth-separator::after {
+            content: "";
+            height: 1px;
+            background: #e2e8f0;
+        }
+
+        .shared-guest-auth-note {
+            margin: 20px 0 0;
+            color: #718096;
+            font-size: 11px;
+            line-height: 1.55;
+        }
+
+        .shared-guest-auth-illustration {
+            width: 112px;
+            height: 112px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 30px;
+            color: #0874ff;
+            background: #e8f1ff;
+            border-radius: 28px;
+            font-size: 48px;
+        }
+
+        .shared-guest-auth-right h3 {
+            margin: 0;
+            color: #10192f;
+            text-align: center;
+            font-size: 24px;
+            font-weight: 800;
+        }
+
+        .shared-guest-auth-right > p {
+            max-width: 350px;
+            margin: 12px auto 26px;
+            color: #6b778d;
+            text-align: center;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .shared-guest-auth-list {
+            display: grid;
+            gap: 14px;
+            max-width: 330px;
+            margin: 0 auto;
+            color: #536078;
+            font-size: 13px;
+        }
+
+        .shared-guest-auth-list span {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .shared-guest-auth-list i {
+            color: #16a34a;
+        }
+
+        @media (max-width: 760px) {
+            .shared-guest-auth-modal {
+                padding: 12px;
+                align-items: flex-end;
+            }
+
+            .shared-guest-auth-card {
+                width: 100%;
+                max-height: 92vh;
+                grid-template-columns: 1fr;
+                border-radius: 20px 20px 0 0;
+            }
+
+            .shared-guest-auth-left {
+                padding: 38px 22px 26px;
+            }
+
+            .shared-guest-auth-right {
+                display: none;
+            }
+
+            .shared-guest-auth-title {
+                font-size: 25px;
+            }
+
+            .shared-guest-auth-brand {
+                margin-bottom: 20px;
+            }
+        }
+    `;
+
+
+    document.head.appendChild(
+        style
+    );
+
+
+    modal =
+        document.createElement(
+            "div"
+        );
+
+    modal.id =
+        "sharedGuestAuthModal";
+
+    modal.className =
+        "shared-guest-auth-modal";
+
+    modal.hidden =
+        true;
+
+    modal.innerHTML = `
+        <section
+            class="shared-guest-auth-card"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="sharedGuestAuthTitle"
+        >
+            <button
+                type="button"
+                class="shared-guest-auth-close"
+                data-shared-guest-auth-close
+                aria-label="Close"
+            >
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="shared-guest-auth-left">
+                <div class="shared-guest-auth-brand">
+                    <img
+                        src="../../assets/images/logo.png"
+                        alt="Trips Wonder"
+                    >
+                    <span>Trips Wonder</span>
+                </div>
+
+                <h2
+                    class="shared-guest-auth-title"
+                    id="sharedGuestAuthTitle"
+                >
+                    Sign in / register
+                </h2>
+
+                <div class="shared-guest-auth-benefits">
+                    <span>
+                        <i class="fa-solid fa-gift"></i>
+                        Member travel updates
+                    </span>
+
+                    <span>
+                        <i class="fa-solid fa-calendar-check"></i>
+                        Manage bookings with ease
+                    </span>
+                </div>
+
+                <label
+                    class="shared-guest-auth-label"
+                    for="sharedGuestAuthEmail"
+                >
+                    Email address
+                </label>
+
+                <input
+                    class="shared-guest-auth-email"
+                    id="sharedGuestAuthEmail"
+                    type="email"
+                    placeholder="Please enter an email address"
+                    autocomplete="email"
+                >
+
+                <a
+                    class="shared-guest-auth-primary"
+                    id="sharedGuestAuthEmailContinue"
+                    href="../../login.html"
+                >
+                    Continue with email
+                </a>
+
+                <div class="shared-guest-auth-separator">
+                    <span>or</span>
+                </div>
+
+                <a
+                    class="shared-guest-auth-social google"
+                    href="../../login.html"
+                >
+                    <i class="fa-brands fa-google"></i>
+                    Continue with Google
+                </a>
+
+                <a
+                    class="shared-guest-auth-social"
+                    href="../../login.html"
+                >
+                    <i class="fa-brands fa-facebook"></i>
+                    Continue with Facebook
+                </a>
+
+                <p class="shared-guest-auth-note">
+                    You can continue browsing and booking as a guest.
+                    Sign in only when you want to access member features
+                    or manage your account.
+                </p>
+            </div>
+
+            <div class="shared-guest-auth-right">
+                <div class="shared-guest-auth-illustration">
+                    <i class="fa-solid fa-suitcase-rolling"></i>
+                </div>
+
+                <h3>Your trips, all in one place</h3>
+
+                <p>
+                    Sign in to view your bookings, messages,
+                    notifications and travel activity.
+                </p>
+
+                <div class="shared-guest-auth-list">
+                    <span>
+                        <i class="fa-solid fa-check"></i>
+                        Manage My Trip
+                    </span>
+
+                    <span>
+                        <i class="fa-solid fa-check"></i>
+                        Send and receive messages
+                    </span>
+
+                    <span>
+                        <i class="fa-solid fa-check"></i>
+                        Access account and notifications
+                    </span>
+                </div>
+            </div>
+        </section>
+    `;
+
+
+    document.body.appendChild(
+        modal
+    );
+
+
+    modal
+        .querySelectorAll(
+            "[data-shared-guest-auth-close]"
+        )
+        .forEach(
+            button => {
+                button.addEventListener(
+                    "click",
+                    closeSharedGuestAuthModal
+                );
+            }
+        );
+
+
+    modal.addEventListener(
+        "click",
+        event => {
+
+            if (
+                event.target ===
+                modal
+            ) {
+
+                closeSharedGuestAuthModal();
+
+            }
+
+        }
+    );
+
+
+    const emailInput =
+        modal.querySelector(
+            "#sharedGuestAuthEmail"
+        );
+
+    const emailContinue =
+        modal.querySelector(
+            "#sharedGuestAuthEmailContinue"
+        );
+
+
+    emailContinue?.addEventListener(
+        "click",
+        () => {
+
+            const email =
+                String(
+                    emailInput?.value ||
+                    ""
+                ).trim();
+
+            if (!email) {
+                return;
+            }
+
+            emailContinue.href =
+                `../../login.html?email=${encodeURIComponent(
+                    email
+                )}`;
+
+        }
+    );
+
+
+    return modal;
+}
+
+
+function openSharedGuestAuthModal() {
+
+    if (isSignedInCustomer()) {
+        return;
+    }
+
+
+    const modal =
+        ensureSharedGuestAuthModal();
+
+
+    modal.hidden =
+        false;
+
+    document.body.classList.add(
+        "shared-guest-auth-open"
+    );
+
+
+    requestAnimationFrame(
+        () => {
+            modal
+                .querySelector(
+                    "#sharedGuestAuthEmail"
+                )
+                ?.focus();
+        }
+    );
+}
+
+
+function closeSharedGuestAuthModal() {
+
+    const modal =
+        document.getElementById(
+            "sharedGuestAuthModal"
+        );
+
+
+    if (modal) {
+        modal.hidden = true;
+    }
+
+
+    document.body.classList.remove(
+        "shared-guest-auth-open"
+    );
+}
+
+
+function handleGuestProtectedNavigation(
+    event
+) {
+
+    if (isSignedInCustomer()) {
+        return;
+    }
+
+
+    const anchor =
+        event.target.closest(
+            "a[href]"
+        );
+
+
+    if (!anchor) {
+        return;
+    }
+
+
+    const destination =
+        getProtectedDestination(
+            anchor
+        );
+
+
+    if (!destination) {
+        return;
+    }
+
+
+    event.preventDefault();
+    event.stopPropagation();
+    event.stopImmediatePropagation();
+
+
+    openSharedGuestAuthModal();
+}
+
+
+function bindGuestProtectedNavigation() {
+
+    /*
+     * Capture phase is intentional.
+     * This runs before normal link navigation or page-level handlers.
+     */
+    document.addEventListener(
+        "click",
+        handleGuestProtectedNavigation,
+        true
+    );
+
+
+    document.addEventListener(
+        "keydown",
+        event => {
+
+            if (
+                event.key === "Escape" &&
+                !document
+                    .getElementById(
+                        "sharedGuestAuthModal"
+                    )
+                    ?.hidden
+            ) {
+
+                closeSharedGuestAuthModal();
+
+            }
+
+        }
+    );
+}
+
+
 /* ==========================================================
    AUTH
 ========================================================== */
@@ -983,6 +1710,9 @@ function initCustomerAuthState() {
 
             state.user =
                 user || null;
+
+            state.authReady =
+                true;
 
 
             state.unsubscribeProfile?.();
@@ -1049,6 +1779,13 @@ function initCustomerAuthState() {
 ========================================================== */
 
 function initCustomerNav() {
+
+    /*
+     * Bind the guest gate before any protected navigation can happen.
+     * This is document-level and works on Tours, Explore, Promos,
+     * Home mobile nav, and future shared customer pages.
+     */
+    bindGuestProtectedNavigation();
 
     renderCustomerNav();
 

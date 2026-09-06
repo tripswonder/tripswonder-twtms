@@ -4185,3 +4185,61 @@ body.tw-modal-open {
         gap: 3px !important;
     }
 }
+
+
+/* ==========================================================
+   GUEST SIGN IN / REGISTER — PUBLIC HOME
+   ========================================================== */
+body.tw-guest-auth-open { overflow: hidden; }
+.tw-guest-signin-toast {
+    position: fixed; top: 92px; right: 24px; z-index: 450; width: min(330px, calc(100vw - 32px));
+    padding: 20px 18px 18px; background: #fff; border: 1px solid #e3e8ef; border-radius: 14px;
+    box-shadow: 0 16px 42px rgba(15,23,42,.18); text-align: center;
+}
+.tw-guest-toast-close { position:absolute; top:10px; right:10px; width:30px; height:30px; border:0; background:transparent; color:#64748b; border-radius:50%; }
+.tw-guest-toast-close:hover { background:#f1f5f9; }
+.tw-guest-toast-icon { width:52px; height:52px; margin:0 auto 10px; display:flex; align-items:center; justify-content:center; color:#0868e8; background:#eef5ff; border-radius:50%; font-size:22px; }
+.tw-guest-signin-toast strong { display:block; color:#111827; font-size:17px; }
+.tw-guest-signin-toast > span { display:block; margin:6px 8px 14px; color:#64748b; font-size:11px; line-height:1.55; }
+.tw-guest-toast-action { width:100%; height:43px; border:0; border-radius:8px; color:#fff; background:#1768e8; font-weight:700; }
+
+.tw-guest-auth { position:fixed; inset:0; z-index:900; display:flex; align-items:center; justify-content:center; padding:22px; }
+.tw-guest-auth[hidden] { display:none !important; }
+.tw-guest-auth-backdrop { position:absolute; inset:0; background:rgba(9,18,33,.68); backdrop-filter:blur(2px); }
+.tw-guest-auth-dialog { position:relative; z-index:1; width:min(900px, 100%); min-height:590px; display:grid; grid-template-columns:1.12fr .88fr; overflow:hidden; background:#fff; border-radius:16px; box-shadow:0 26px 70px rgba(0,0,0,.28); }
+.tw-guest-auth-close { position:absolute; top:17px; right:17px; z-index:4; width:38px; height:38px; display:flex; align-items:center; justify-content:center; padding:0; border:0; border-radius:50%; background:transparent; color:#172036; font-size:20px; }
+.tw-guest-auth-close:hover { background:#eef2f7; }
+.tw-guest-auth-main { padding:58px 56px 42px; }
+.tw-guest-auth-brand { display:flex; align-items:center; gap:9px; margin-bottom:22px; color:#0d4fae; font-weight:800; }
+.tw-guest-auth-brand img { width:34px; height:34px; object-fit:contain; border-radius:50%; }
+.tw-guest-auth-main h2 { margin:0; color:#111827; font-size:27px; line-height:1.2; }
+.tw-guest-auth-benefits { display:flex; flex-wrap:wrap; gap:16px 22px; margin:18px 0 30px; color:#263247; font-size:11px; }
+.tw-guest-auth-benefits i { margin-right:6px; color:#0a73e8; }
+.tw-guest-email-label { display:block; margin-bottom:7px; color:#334155; font-size:11px; font-weight:600; }
+.tw-guest-email { width:100%; height:55px; padding:0 15px; border:1px solid #cfd8e5; border-radius:8px; outline:0; color:#172036; background:#fff; font-size:14px; }
+.tw-guest-email:focus { border-color:#2b75e8; box-shadow:0 0 0 3px rgba(43,117,232,.10); }
+.tw-guest-email-continue, .tw-guest-social { width:100%; height:53px; display:flex; align-items:center; justify-content:center; gap:10px; margin-top:12px; border-radius:8px; font-size:14px; font-weight:700; }
+.tw-guest-email-continue { color:#fff; background:#1768e8; border:1px solid #1768e8; }
+.tw-guest-auth-or { display:flex; align-items:center; gap:12px; margin:21px 0 5px; color:#8792a5; font-size:11px; }
+.tw-guest-auth-or::before,.tw-guest-auth-or::after { content:""; height:1px; flex:1; background:#e1e6ed; }
+.tw-guest-social { color:#172036; background:#fff; border:1px solid #d7dee8; }
+.tw-guest-social i { font-size:20px; }
+.tw-guest-social.tw-google { color:#fff; background:#4285f4; border-color:#4285f4; }
+.tw-guest-social.tw-google i { color:#fff; }
+.tw-guest-social .fa-facebook { color:#1877f2; }
+.tw-guest-auth-terms { margin:22px 0 0; color:#7b8798; font-size:10px; line-height:1.6; }
+.tw-guest-auth-side { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:58px 46px; text-align:center; background:#f5f7fa; }
+.tw-guest-side-icon { width:120px; height:120px; display:flex; align-items:center; justify-content:center; margin-bottom:24px; color:#1768e8; background:#e8f1ff; border-radius:28px; font-size:50px; transform:rotate(-3deg); }
+.tw-guest-auth-side h3 { margin:0; color:#111827; font-size:22px; line-height:1.35; }
+.tw-guest-auth-side p { max-width:300px; margin:12px 0 22px; color:#64748b; font-size:12px; line-height:1.65; }
+.tw-guest-side-list { display:grid; gap:10px; width:100%; max-width:280px; text-align:left; color:#334155; font-size:11px; }
+.tw-guest-side-list i { width:22px; color:#16a34a; }
+@media (max-width: 760px) {
+    .tw-guest-signin-toast { top:72px; right:12px; }
+    .tw-guest-auth { padding:12px; align-items:flex-end; }
+    .tw-guest-auth-dialog { width:100%; min-height:0; max-height:92vh; grid-template-columns:1fr; overflow-y:auto; border-radius:18px 18px 0 0; }
+    .tw-guest-auth-main { padding:45px 22px 28px; }
+    .tw-guest-auth-side { display:none; }
+    .tw-guest-auth-benefits { margin-bottom:22px; gap:10px; }
+    .tw-guest-auth-main h2 { font-size:23px; }
+}

@@ -427,8 +427,149 @@
 
 </div>
 
+    <!-- Guest Sign In / Register Prompt -->
+    <div class="tw-guest-signin-toast" id="guestSigninToast" hidden>
+        <button type="button" class="tw-guest-toast-close" id="guestSigninToastClose" aria-label="Close sign in reminder">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+        <div class="tw-guest-toast-icon"><i class="fa-solid fa-gift"></i></div>
+        <strong>Sign in to manage your trips</strong>
+        <span>Access your bookings, messages, travel posts and account.</span>
+        <button type="button" class="tw-guest-toast-action" data-open-guest-auth>Sign In or Register</button>
+    </div>
+
+    <div class="tw-guest-auth" id="guestAuthModal" hidden aria-hidden="true">
+        <div class="tw-guest-auth-backdrop" data-close-guest-auth></div>
+        <section class="tw-guest-auth-dialog" role="dialog" aria-modal="true" aria-labelledby="guestAuthTitle">
+            <button type="button" class="tw-guest-auth-close" data-close-guest-auth aria-label="Close">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="tw-guest-auth-main">
+                <div class="tw-guest-auth-brand">
+                    <img src="../../assets/images/logo.png" alt="Trips Wonder">
+                    <span>Trips Wonder</span>
+                </div>
+                <h2 id="guestAuthTitle">Sign in / register</h2>
+                <div class="tw-guest-auth-benefits">
+                    <span><i class="fa-solid fa-gift"></i> Member travel updates</span>
+                    <span><i class="fa-solid fa-calendar-check"></i> Manage bookings with ease</span>
+                </div>
+
+                <label class="tw-guest-email-label" for="guestSigninEmail">Email address</label>
+                <input id="guestSigninEmail" class="tw-guest-email" type="email" autocomplete="email" placeholder="Please enter an email address">
+                <button type="button" class="tw-guest-email-continue" id="guestEmailContinue">Continue with email</button>
+
+                <div class="tw-guest-auth-or"><span>or</span></div>
+
+                <button type="button" class="tw-guest-social tw-google" data-guest-login>
+                    <i class="fa-brands fa-google"></i> Continue with Google
+                </button>
+                <button type="button" class="tw-guest-social" data-guest-login>
+                    <i class="fa-brands fa-facebook"></i> Continue with Facebook
+                </button>
+
+                <p class="tw-guest-auth-terms">
+                    You can continue browsing and book as a guest. Sign in only when you want to access member features or manage your account.
+                </p>
+            </div>
+
+            <div class="tw-guest-auth-side">
+                <div class="tw-guest-side-icon"><i class="fa-solid fa-suitcase-rolling"></i></div>
+                <h3>Your trips, all in one place</h3>
+                <p>Sign in to view your bookings, messages, notifications and travel activity.</p>
+                <div class="tw-guest-side-list">
+                    <span><i class="fa-solid fa-check"></i> Manage My Trip</span>
+                    <span><i class="fa-solid fa-check"></i> Send and receive messages</span>
+                    <span><i class="fa-solid fa-check"></i> Share travel moments</span>
+                </div>
+            </div>
+        </section>
+    </div>
+
 <script type="module" src="../../assets/js/customer/home.js"></script>
 <script type="module" src="../../assets/js/customer/customer-nav.js"></script>
+
+<script>
+(() => {
+    const modal = document.getElementById('guestAuthModal');
+    const toast = document.getElementById('guestSigninToast');
+    const accountName = document.getElementById('customerName');
+    const email = document.getElementById('guestSigninEmail');
+
+    const isGuest = () => {
+        const name = (accountName?.textContent || '').trim().toLowerCase();
+        return !name || name === 'traveler' || name === 'guest';
+    };
+
+    const openAuth = () => {
+        if (!isGuest()) return false;
+        modal.hidden = false;
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.classList.add('tw-guest-auth-open');
+        setTimeout(() => email?.focus(), 80);
+        return true;
+    };
+
+    const closeAuth = () => {
+        modal.hidden = true;
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('tw-guest-auth-open');
+    };
+
+    document.querySelectorAll('[data-open-guest-auth]').forEach(el => el.addEventListener('click', openAuth));
+    document.querySelectorAll('[data-close-guest-auth]').forEach(el => el.addEventListener('click', closeAuth));
+
+    document.getElementById('guestSigninToastClose')?.addEventListener('click', () => {
+        toast.hidden = true;
+        sessionStorage.setItem('twGuestToastClosed', '1');
+    });
+
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape' && !modal.hidden) closeAuth();
+    });
+
+    const protectedSelectors = [
+        '#memberMessageTrigger',
+        '.tw-account-mini',
+        '.tw-bell',
+        '#openPostComposer',
+        '#openPostPhoto',
+        '.tw-left-menu a[href="my-trip.html"]'
+    ];
+
+    document.addEventListener('click', e => {
+        const target = e.target.closest(protectedSelectors.join(','));
+        if (!target || !isGuest()) return;
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        openAuth();
+    }, true);
+
+    const goToLogin = () => {
+        const value = (email?.value || '').trim();
+        const url = new URL('../../index.html', window.location.href);
+        if (value) url.searchParams.set('email', value);
+        window.location.href = url.href;
+    };
+
+    document.getElementById('guestEmailContinue')?.addEventListener('click', goToLogin);
+    email?.addEventListener('keydown', e => { if (e.key === 'Enter') goToLogin(); });
+    document.querySelectorAll('[data-guest-login]').forEach(btn => btn.addEventListener('click', goToLogin));
+
+    const syncGuestUI = () => {
+        if (isGuest()) {
+            if (!sessionStorage.getItem('twGuestToastClosed')) toast.hidden = false;
+        } else {
+            toast.hidden = true;
+            closeAuth();
+        }
+    };
+
+    syncGuestUI();
+    if (accountName) new MutationObserver(syncGuestUI).observe(accountName, {childList:true, subtree:true, characterData:true});
+})();
+</script>
 
 </body>
 </html>

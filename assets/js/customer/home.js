@@ -261,12 +261,54 @@ const choosePostPhotos = document.getElementById("choosePostPhotos");
 const publishCustomerPostButton = document.getElementById("publishCustomerPost");
 const customerPostMessage = document.getElementById("customerPostMessage");
 const postAuthorName = document.getElementById("postAuthorName");
+const customerAccountLink = document.querySelector(".tw-account-mini");
 
 
 
 /* ==========================================================
    HELPERS
    ========================================================== */
+
+// =========================================================
+// GUEST ACCESS GUARD
+// =========================================================
+//
+// Public:
+// - Home
+// - Explore
+// - Tours
+// - Promos
+// - Package details
+// - Booking
+//
+// Login required from Home:
+// - Share a travel moment
+// - Messages
+// - Profile / Account
+//
+// =========================================================
+
+function requireCustomerLogin() {
+
+    const authenticatedUser =
+        currentUser ||
+        auth.currentUser;
+
+
+    if (authenticatedUser) {
+
+        return true;
+
+    }
+
+
+    window.location.href =
+        "../../login.html";
+
+
+    return false;
+
+}
 
 function normalizeText(
     value
@@ -1345,6 +1387,12 @@ function openCustomerPostModal(openFiles = false) {
     if (!customerPostModal) {
         return;
     }
+
+
+    if (!requireCustomerLogin()) {
+        return;
+    }
+
 
     if (postAuthorName) {
         postAuthorName.textContent =
@@ -2729,6 +2777,34 @@ openPostPhotoButton
     ?.addEventListener(
         "click",
         () => openCustomerPostModal(true)
+    );
+
+
+// =========================================================
+// PROFILE / ACCOUNT — LOGIN REQUIRED FOR GUEST
+// =========================================================
+
+customerAccountLink
+    ?.addEventListener(
+        "click",
+        event => {
+
+            if (
+                currentUser ||
+                auth.currentUser
+            ) {
+
+                return;
+
+            }
+
+
+            event.preventDefault();
+            event.stopPropagation();
+
+            requireCustomerLogin();
+
+        }
     );
 
 
@@ -5403,7 +5479,17 @@ function updateMemberMessengerBadges() {
 }
 
 function openMemberMessenger() {
-    if (!memberMessengerPanel) return;
+
+    if (!memberMessengerPanel) {
+        return;
+    }
+
+
+    if (!requireCustomerLogin()) {
+        return;
+    }
+
+
     memberMessengerPanel.hidden = false;
     memberMessengerPanel.setAttribute("aria-hidden", "false");
     memberMessageTrigger?.setAttribute("aria-expanded", "true");
