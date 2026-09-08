@@ -8,6 +8,8 @@ import {
 } from "./firebase-config.js";
 
 import {
+    FacebookAuthProvider,
+    signInWithPopup,
     signInWithEmailAndPassword,
     createUserWithEmailAndPassword,
     signOut,
@@ -36,6 +38,24 @@ export async function login(email, password) {
         auth,
         email,
         password
+    );
+}
+
+
+// =========================================================
+// FACEBOOK LOGIN
+// =========================================================
+
+export async function loginWithFacebook() {
+
+    const provider =
+        new FacebookAuthProvider();
+
+    provider.addScope("email");
+
+    return await signInWithPopup(
+        auth,
+        provider
     );
 }
 
@@ -96,16 +116,6 @@ export function getCurrentUser() {
 // =========================================================
 // CHANGE PASSWORD
 // =========================================================
-//
-// Flow:
-//
-// Current Password
-//        ↓
-// Re-authenticate Firebase User
-//        ↓
-// Update Password
-//
-// =========================================================
 
 export async function changePassword(
     currentPassword,
@@ -115,46 +125,29 @@ export async function changePassword(
     const user =
         auth.currentUser;
 
-
     if (!user) {
-
         throw new Error(
             "No authenticated user found."
         );
-
     }
 
-
     if (!user.email) {
-
         throw new Error(
             "This account does not have an email/password authentication method."
         );
-
     }
 
-
     if (!currentPassword) {
-
         throw new Error(
             "Current password is required."
         );
-
     }
 
-
     if (!newPassword) {
-
         throw new Error(
             "New password is required."
         );
-
     }
-
-
-    // -----------------------------------------------------
-    // Re-authenticate
-    // -----------------------------------------------------
 
     const credential =
         EmailAuthProvider.credential(
@@ -162,22 +155,15 @@ export async function changePassword(
             currentPassword
         );
 
-
     await reauthenticateWithCredential(
         user,
         credential
     );
 
-
-    // -----------------------------------------------------
-    // Update password
-    // -----------------------------------------------------
-
     await updatePassword(
         user,
         newPassword
     );
-
 
     return true;
 }
@@ -185,18 +171,6 @@ export async function changePassword(
 
 // =========================================================
 // CHANGE EMAIL
-// =========================================================
-//
-// Flow:
-//
-// Current Password
-//        ↓
-// Re-authenticate Firebase User
-//        ↓
-// New Email
-//        ↓
-// Update Firebase Email
-//
 // =========================================================
 
 export async function changeEmail(
@@ -207,91 +181,54 @@ export async function changeEmail(
     const user =
         auth.currentUser;
 
-
     if (!user) {
-
         throw new Error(
             "No authenticated user found."
         );
-
     }
 
-
     if (!user.email) {
-
         throw new Error(
             "This account does not have an email/password authentication method."
         );
-
     }
 
-
     if (!currentPassword) {
-
         throw new Error(
             "Current password is required."
         );
-
     }
 
-
     if (!newEmail) {
-
         throw new Error(
             "New email address is required."
         );
-
     }
-
-
-    // -----------------------------------------------------
-    // Normalize email
-    // -----------------------------------------------------
 
     const normalizedEmail =
         newEmail.trim().toLowerCase();
 
-
-    // -----------------------------------------------------
-    // Basic email validation
-    // -----------------------------------------------------
-
     const emailPattern =
         /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
 
     if (
         !emailPattern.test(
             normalizedEmail
         )
     ) {
-
         throw new Error(
             "Please enter a valid email address."
         );
-
     }
-
-
-    // -----------------------------------------------------
-    // Check if same email
-    // -----------------------------------------------------
 
     if (
         normalizedEmail ===
         user.email.toLowerCase()
     ) {
-
         throw new Error(
             "The new email address is the same as your current email address."
         );
-
     }
-
-
-    // -----------------------------------------------------
-    // Re-authenticate
-    // -----------------------------------------------------
 
     const credential =
         EmailAuthProvider.credential(
@@ -299,22 +236,15 @@ export async function changeEmail(
             currentPassword
         );
 
-
     await reauthenticateWithCredential(
         user,
         credential
     );
 
-
-    // -----------------------------------------------------
-    // Update Firebase Authentication Email
-    // -----------------------------------------------------
-
     await updateEmail(
         user,
         normalizedEmail
     );
-
 
     return {
         success: true,
@@ -332,34 +262,26 @@ export async function sendPasswordReset(
 ) {
 
     if (!email) {
-
         throw new Error(
             "Email address is required."
         );
-
     }
-
 
     const normalizedEmail =
         email.trim().toLowerCase();
 
-
     const emailPattern =
         /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
 
     if (
         !emailPattern.test(
             normalizedEmail
         )
     ) {
-
         throw new Error(
             "Please enter a valid email address."
         );
-
     }
-
 
     return await sendPasswordResetEmail(
         auth,

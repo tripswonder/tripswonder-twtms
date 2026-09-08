@@ -14,6 +14,10 @@ import {
 } from "../firebase/firebase-config.js";
 
 import {
+    loginWithFacebook
+} from "../firebase/firebase-auth.js";
+
+import {
     GoogleAuthProvider,
     onAuthStateChanged,
     signInWithEmailAndPassword,
@@ -1734,13 +1738,14 @@ function ensureSharedGuestAuthModal() {
                     <span>Continue with Google</span>
                 </button>
 
-                <a
+                <button
+                    type="button"
                     class="shared-guest-auth-social"
-                    href="../../login.html"
+                    id="sharedGuestFacebookSignIn"
                 >
                     <i class="fa-brands fa-facebook"></i>
-                    Continue with Facebook
-                </a>
+                    <span>Continue with Facebook</span>
+                </button>
 
                 <p class="shared-guest-auth-note">
                     You can continue browsing and booking as a guest.
@@ -1848,6 +1853,11 @@ const googleSignInButton =
         "#sharedGuestGoogleSignIn"
     );
 
+const facebookSignInButton =
+    modal.querySelector(
+        "#sharedGuestFacebookSignIn"
+    );
+
 
 function showSharedGuestAuthError(
     message = ""
@@ -1896,7 +1906,10 @@ passwordToggle?.addEventListener(
 );
 
 
-async function ensureCustomerProfileForGoogle(user) {
+async function ensureCustomerProfileForSocial(
+    user,
+    authProvider = "social"
+) {
 
     const profileReference =
         doc(
@@ -1944,7 +1957,7 @@ async function ensureCustomerProfileForGoogle(user) {
         status: "active",
         emailVerified:
             user.emailVerified === true,
-        authProvider: "google",
+        authProvider: String(authProvider || "social"),
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp()
     };
@@ -1964,7 +1977,8 @@ async function ensureCustomerProfileForGoogle(user) {
 async function routeSignedInUser(
     user,
     {
-        createCustomerIfMissing = false
+        createCustomerIfMissing = false,
+        authProvider = "email"
     } = {}
 ) {
 
@@ -1991,8 +2005,9 @@ async function routeSignedInUser(
         }
 
         profile =
-            await ensureCustomerProfileForGoogle(
-                user
+            await ensureCustomerProfileForSocial(
+                user,
+                authProvider
             );
 
     } else {
@@ -2236,7 +2251,8 @@ async function performSharedGuestGoogleSignIn() {
         await routeSignedInUser(
             userCredential.user,
             {
-                createCustomerIfMissing: true
+                createCustomerIfMissing: true,
+                authProvider: "google"
             }
         );
 
@@ -2322,9 +2338,140 @@ async function performSharedGuestGoogleSignIn() {
 }
 
 
+async function performSharedGuestFacebookSignIn() {
+
+    if (
+        !auth ||
+        !facebookSignInButton
+    ) {
+        return;
+    }
+
+    showSharedGuestAuthError("");
+
+    const originalButtonHTML =
+        facebookSignInButton.innerHTML;
+
+    facebookSignInButton.disabled =
+        true;
+
+    facebookSignInButton.innerHTML =
+        `
+            <i class="fa-solid fa-spinner fa-spin"></i>
+            <span>Connecting to Facebook...</span>
+        `;
+
+    try {
+
+        const userCredential =
+            await loginWithFacebook();
+
+        await routeSignedInUser(
+            userCredential.user,
+            {
+                createCustomerIfMissing: true,
+                authProvider: "facebook"
+            }
+        );
+
+    } catch (error) {
+
+        if (
+            error?.code ===
+            "auth/popup-closed-by-user" ||
+            error?.code ===
+            "auth/cancelled-popup-request"
+        ) {
+            return;
+        }
+
+        console.error(
+            "CUSTOMER FACEBOOK SIGN IN ERROR:",
+            error
+        );
+
+        let message =
+            "Unable to sign in with Facebook. Please try again.";
+
+        if (
+            error?.code ===
+            "auth/popup-blocked"
+        ) {
+            message =
+                "Facebook sign-in popup was blocked. Please allow popups and try again.";
+        }
+
+        if (
+            error?.code ===
+            "auth/unauthorized-domain"
+        ) {
+            message =
+                "This website domain is not authorized for Facebook sign-in yet.";
+        }
+
+        if (
+            error?.code ===
+            "auth/operation-not-allowed"
+        ) {
+            message =
+                "Facebook sign-in is not enabled yet.";
+        }
+
+        if (
+            error?.code ===
+            "auth/account-exists-with-different-credential"
+        ) {
+            message =
+                "An account already exists with this email using another sign-in method.";
+        }
+
+        if (
+            error?.code ===
+            "auth/network-request-failed"
+        ) {
+            message =
+                "Network error. Please check your connection and try again.";
+        }
+
+        if (
+            error?.message ===
+            "ACCOUNT_INACTIVE"
+        ) {
+            message =
+                "This account is currently inactive. Please contact Trips Wonder support.";
+        }
+
+        if (
+            error?.message ===
+            "INVALID_ACCOUNT_ROLE"
+        ) {
+            message =
+                "This account role is not configured correctly.";
+        }
+
+        showSharedGuestAuthError(
+            message
+        );
+
+    } finally {
+
+        facebookSignInButton.disabled =
+            false;
+
+        facebookSignInButton.innerHTML =
+            originalButtonHTML;
+    }
+}
+
+
 googleSignInButton?.addEventListener(
     "click",
     performSharedGuestGoogleSignIn
+);
+
+facebookSignInButton?.addEventListener(
+    "click",
+    performSharedGuestFacebookSignIn
 );
 
 
