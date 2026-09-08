@@ -14,8 +14,11 @@ import {
 } from "../firebase/firebase-config.js";
 
 import {
+    GoogleAuthProvider,
     onAuthStateChanged,
-    signInWithEmailAndPassword
+    signInWithEmailAndPassword,
+    signInWithPopup,
+    signOut
 } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
 
 import {
@@ -24,6 +27,8 @@ import {
     getDoc,
     onSnapshot,
     query,
+    serverTimestamp,
+    setDoc,
     where
 } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
@@ -1720,13 +1725,14 @@ function ensureSharedGuestAuthModal() {
                     <span>or</span>
                 </div>
 
-                <a
+                <button
+                    type="button"
                     class="shared-guest-auth-social google"
-                    href="../../login.html"
+                    id="sharedGuestGoogleSignIn"
                 >
                     <i class="fa-brands fa-google"></i>
-                    Continue with Google
-                </a>
+                    <span>Continue with Google</span>
+                </button>
 
                 <a
                     class="shared-guest-auth-social"
@@ -1837,6 +1843,11 @@ const authError =
         "#sharedGuestAuthError"
     );
 
+const googleSignInButton =
+    modal.querySelector(
+        "#sharedGuestGoogleSignIn"
+    );
+
 
 function showSharedGuestAuthError(
     message = ""
@@ -1883,6 +1894,165 @@ passwordToggle?.addEventListener(
         );
     }
 );
+
+
+async function ensureCustomerProfileForGoogle(user) {
+
+    const profileReference =
+        doc(
+            db,
+            "users",
+            user.uid
+        );
+
+    const profileSnapshot =
+        await getDoc(
+            profileReference
+        );
+
+    if (profileSnapshot.exists()) {
+        return profileSnapshot.data() || {};
+    }
+
+    const displayName =
+        String(
+            user.displayName ||
+            user.email?.split("@")[0] ||
+            "Trips Wonder Member"
+        ).trim();
+
+    const nameParts =
+        displayName
+            .split(/\s+/)
+            .filter(Boolean);
+
+    const firstName =
+        nameParts.shift() ||
+        displayName;
+
+    const lastName =
+        nameParts.join(" ");
+
+    const profile = {
+        uid: user.uid,
+        email: user.email || "",
+        firstName,
+        lastName,
+        displayName,
+        photoURL: user.photoURL || "",
+        role: "client",
+        status: "active",
+        emailVerified:
+            user.emailVerified === true,
+        authProvider: "google",
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+    };
+
+    await setDoc(
+        profileReference,
+        profile,
+        {
+            merge: true
+        }
+    );
+
+    return profile;
+}
+
+
+async function routeSignedInUser(
+    user,
+    {
+        createCustomerIfMissing = false
+    } = {}
+) {
+
+    const profileReference =
+        doc(
+            db,
+            "users",
+            user.uid
+        );
+
+    let profileSnapshot =
+        await getDoc(
+            profileReference
+        );
+
+    let profile;
+
+    if (!profileSnapshot.exists()) {
+
+        if (!createCustomerIfMissing) {
+            throw new Error(
+                "ACCOUNT_PROFILE_NOT_FOUND"
+            );
+        }
+
+        profile =
+            await ensureCustomerProfileForGoogle(
+                user
+            );
+
+    } else {
+
+        profile =
+            profileSnapshot.data() || {};
+    }
+
+    const role =
+        String(
+            profile.role ||
+            "client"
+        )
+        .trim()
+        .toLowerCase();
+
+    const status =
+        String(
+            profile.status ||
+            "active"
+        )
+        .trim()
+        .toLowerCase();
+
+    if (status !== "active") {
+
+        await signOut(auth);
+
+        throw new Error(
+            "ACCOUNT_INACTIVE"
+        );
+    }
+
+    if (
+        role === "owner" ||
+        role === "admin"
+    ) {
+
+        window.location.href =
+            "/pages/admin/dashboard.html";
+
+        return;
+    }
+
+    if (
+        role === "client" ||
+        role === "customer"
+    ) {
+
+        closeSharedGuestAuthModal();
+
+        return;
+    }
+
+    await signOut(auth);
+
+    throw new Error(
+        "INVALID_ACCOUNT_ROLE"
+    );
+}
 
 
 async function performSharedGuestSignIn() {
@@ -1942,79 +2112,15 @@ async function performSharedGuestSignIn() {
     try {
 
         const userCredential =
-    await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-    );
+            await signInWithEmailAndPassword(
+                auth,
+                email,
+                password
+            );
 
-const user =
-    userCredential.user;
-
-const profileSnapshot =
-    await getDoc(
-        doc(
-            db,
-            "users",
-            user.uid
-        )
-    );
-
-if (!profileSnapshot.exists()) {
-    throw new Error(
-        "Account profile was not found."
-    );
-}
-
-const profile =
-    profileSnapshot.data();
-
-const role =
-    String(
-        profile.role ||
-        "client"
-    )
-    .trim()
-    .toLowerCase();
-
-const status =
-    String(
-        profile.status ||
-        "active"
-    )
-    .trim()
-    .toLowerCase();
-
-if (status !== "active") {
-    throw new Error(
-        "ACCOUNT_INACTIVE"
-    );
-}
-
-if (
-    role === "owner" ||
-    role === "admin"
-) {
-
-    window.location.href =
-        "/pages/admin/dashboard.html";
-
-    return;
-}
-
-if (
-    role === "client" ||
-    role === "customer"
-) {
-
-    closeSharedGuestAuthModal();
-
-    return;
-}
-
-throw new Error(
-    "INVALID_ACCOUNT_ROLE"
-);
+        await routeSignedInUser(
+            userCredential.user
+        );
 
     } catch (error) {
 
@@ -2050,6 +2156,30 @@ throw new Error(
                 "Network error. Please check your connection and try again.";
         }
 
+        if (
+            error?.message ===
+            "ACCOUNT_PROFILE_NOT_FOUND"
+        ) {
+            message =
+                "Your account profile was not found. Please contact Trips Wonder support.";
+        }
+
+        if (
+            error?.message ===
+            "ACCOUNT_INACTIVE"
+        ) {
+            message =
+                "This account is currently inactive. Please contact Trips Wonder support.";
+        }
+
+        if (
+            error?.message ===
+            "INVALID_ACCOUNT_ROLE"
+        ) {
+            message =
+                "This account role is not configured correctly.";
+        }
+
         showSharedGuestAuthError(
             message
         );
@@ -2063,6 +2193,139 @@ throw new Error(
             originalButtonHTML;
     }
 }
+
+
+async function performSharedGuestGoogleSignIn() {
+
+    if (
+        !auth ||
+        !googleSignInButton
+    ) {
+        return;
+    }
+
+    showSharedGuestAuthError("");
+
+    const originalButtonHTML =
+        googleSignInButton.innerHTML;
+
+    googleSignInButton.disabled =
+        true;
+
+    googleSignInButton.innerHTML =
+        `
+            <i class="fa-solid fa-spinner fa-spin"></i>
+            <span>Connecting to Google...</span>
+        `;
+
+    try {
+
+        const provider =
+            new GoogleAuthProvider();
+
+        provider.setCustomParameters({
+            prompt: "select_account"
+        });
+
+        const userCredential =
+            await signInWithPopup(
+                auth,
+                provider
+            );
+
+        await routeSignedInUser(
+            userCredential.user,
+            {
+                createCustomerIfMissing: true
+            }
+        );
+
+    } catch (error) {
+
+        if (
+            error?.code ===
+            "auth/popup-closed-by-user" ||
+            error?.code ===
+            "auth/cancelled-popup-request"
+        ) {
+            return;
+        }
+
+        console.error(
+            "CUSTOMER GOOGLE SIGN IN ERROR:",
+            error
+        );
+
+        let message =
+            "Unable to sign in with Google. Please try again.";
+
+        if (
+            error?.code ===
+            "auth/popup-blocked"
+        ) {
+            message =
+                "Google sign-in popup was blocked. Please allow popups and try again.";
+        }
+
+        if (
+            error?.code ===
+            "auth/unauthorized-domain"
+        ) {
+            message =
+                "This website domain is not authorized for Google sign-in yet.";
+        }
+
+        if (
+            error?.code ===
+            "auth/account-exists-with-different-credential"
+        ) {
+            message =
+                "An account already exists with this email. Please sign in using your email and password first.";
+        }
+
+        if (
+            error?.code ===
+            "auth/network-request-failed"
+        ) {
+            message =
+                "Network error. Please check your connection and try again.";
+        }
+
+        if (
+            error?.message ===
+            "ACCOUNT_INACTIVE"
+        ) {
+            message =
+                "This account is currently inactive. Please contact Trips Wonder support.";
+        }
+
+        if (
+            error?.message ===
+            "INVALID_ACCOUNT_ROLE"
+        ) {
+            message =
+                "This account role is not configured correctly.";
+        }
+
+        showSharedGuestAuthError(
+            message
+        );
+
+    } finally {
+
+        googleSignInButton.disabled =
+            false;
+
+        googleSignInButton.innerHTML =
+            originalButtonHTML;
+    }
+}
+
+
+googleSignInButton?.addEventListener(
+    "click",
+    performSharedGuestGoogleSignIn
+);
 
 
 signInButton?.addEventListener(
