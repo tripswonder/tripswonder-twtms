@@ -14,7 +14,8 @@ import {
 } from "../firebase/firebase-config.js";
 
 import {
-    onAuthStateChanged
+    onAuthStateChanged,
+    signInWithEmailAndPassword
 } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
 
 import {
@@ -1246,6 +1247,83 @@ function ensureSharedGuestAuthModal() {
             box-shadow: 0 0 0 3px rgba(22, 113, 223, .10);
         }
 
+        .shared-guest-password-label {
+    margin-top: 14px;
+}
+
+.shared-guest-password-wrap {
+    position: relative;
+}
+
+.shared-guest-password-wrap .shared-guest-auth-email {
+    padding-right: 46px;
+}
+
+.shared-guest-password-toggle {
+    position: absolute;
+    top: 50%;
+    right: 8px;
+
+    width: 34px;
+    height: 34px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    transform: translateY(-50%);
+
+    color: #64748b;
+    background: transparent;
+
+    border: 0;
+    border-radius: 8px;
+
+    font-size: 14px;
+
+    cursor: pointer;
+}
+
+.shared-guest-password-toggle:hover {
+    background: #f1f5f9;
+}
+
+.shared-guest-auth-helper {
+    display: flex;
+    justify-content: flex-end;
+
+    margin-top: 7px;
+}
+
+.shared-guest-forgot-password {
+    color: #176de4;
+
+    text-decoration: none;
+
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.shared-guest-forgot-password:hover {
+    text-decoration: underline;
+}
+
+.shared-guest-auth-error {
+    margin: 9px 0 0;
+
+    color: #dc2626;
+
+    font-size: 11px;
+    line-height: 1.45;
+}
+
+.shared-guest-auth-primary:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
         .shared-guest-auth-primary,
         .shared-guest-auth-social {
             width: 100%;
@@ -1571,27 +1649,72 @@ function ensureSharedGuestAuthModal() {
                 </div>
 
                 <label
-                    class="shared-guest-auth-label"
-                    for="sharedGuestAuthEmail"
-                >
-                    Email address
-                </label>
+    class="shared-guest-auth-label"
+    for="sharedGuestAuthEmail"
+>
+    Email address
+</label>
 
-                <input
-                    class="shared-guest-auth-email"
-                    id="sharedGuestAuthEmail"
-                    type="email"
-                    placeholder="Please enter an email address"
-                    autocomplete="email"
-                >
+<input
+    class="shared-guest-auth-email"
+    id="sharedGuestAuthEmail"
+    type="email"
+    placeholder="Enter your email address"
+    autocomplete="email"
+>
 
-                <a
-                    class="shared-guest-auth-primary"
-                    id="sharedGuestAuthEmailContinue"
-                    href="../../login.html"
-                >
-                    Continue with email
-                </a>
+<label
+    class="shared-guest-auth-label shared-guest-password-label"
+    for="sharedGuestAuthPassword"
+>
+    Password
+</label>
+
+<div class="shared-guest-password-wrap">
+
+    <input
+        class="shared-guest-auth-email"
+        id="sharedGuestAuthPassword"
+        type="password"
+        placeholder="Enter your password"
+        autocomplete="current-password"
+    >
+
+    <button
+        type="button"
+        class="shared-guest-password-toggle"
+        id="sharedGuestPasswordToggle"
+        aria-label="Show password"
+    >
+        <i class="fa-regular fa-eye"></i>
+    </button>
+
+</div>
+
+<div class="shared-guest-auth-helper">
+
+    <a
+        href="../../login.html?forgot=1"
+        class="shared-guest-forgot-password"
+    >
+        Forgot password?
+    </a>
+
+</div>
+
+<button
+    type="button"
+    class="shared-guest-auth-primary"
+    id="sharedGuestAuthSignIn"
+>
+    Sign In
+</button>
+
+<p
+    class="shared-guest-auth-error"
+    id="sharedGuestAuthError"
+    hidden
+></p>
 
                 <div class="shared-guest-auth-separator">
                     <span>or</span>
@@ -1690,37 +1813,290 @@ function ensureSharedGuestAuthModal() {
 
 
     const emailInput =
-        modal.querySelector(
-            "#sharedGuestAuthEmail"
-        );
-
-    const emailContinue =
-        modal.querySelector(
-            "#sharedGuestAuthEmailContinue"
-        );
-
-
-    emailContinue?.addEventListener(
-        "click",
-        () => {
-
-            const email =
-                String(
-                    emailInput?.value ||
-                    ""
-                ).trim();
-
-            if (!email) {
-                return;
-            }
-
-            emailContinue.href =
-                `../../login.html?email=${encodeURIComponent(
-                    email
-                )}`;
-
-        }
+    modal.querySelector(
+        "#sharedGuestAuthEmail"
     );
+
+const passwordInput =
+    modal.querySelector(
+        "#sharedGuestAuthPassword"
+    );
+
+const signInButton =
+    modal.querySelector(
+        "#sharedGuestAuthSignIn"
+    );
+
+const passwordToggle =
+    modal.querySelector(
+        "#sharedGuestPasswordToggle"
+    );
+
+const authError =
+    modal.querySelector(
+        "#sharedGuestAuthError"
+    );
+
+
+function showSharedGuestAuthError(
+    message = ""
+) {
+
+    if (!authError) {
+        return;
+    }
+
+    authError.textContent =
+        String(message || "");
+
+    authError.hidden =
+        !message;
+}
+
+
+passwordToggle?.addEventListener(
+    "click",
+    () => {
+
+        if (!passwordInput) {
+            return;
+        }
+
+        const isVisible =
+            passwordInput.type === "text";
+
+        passwordInput.type =
+            isVisible
+                ? "password"
+                : "text";
+
+        passwordToggle.innerHTML =
+            isVisible
+                ? '<i class="fa-regular fa-eye"></i>'
+                : '<i class="fa-regular fa-eye-slash"></i>';
+
+        passwordToggle.setAttribute(
+            "aria-label",
+            isVisible
+                ? "Show password"
+                : "Hide password"
+        );
+    }
+);
+
+
+async function performSharedGuestSignIn() {
+
+    const email =
+        String(
+            emailInput?.value ||
+            ""
+        ).trim();
+
+    const password =
+        String(
+            passwordInput?.value ||
+            ""
+        );
+
+    showSharedGuestAuthError("");
+
+    if (!email) {
+
+        showSharedGuestAuthError(
+            "Please enter your email address."
+        );
+
+        emailInput?.focus();
+
+        return;
+    }
+
+    if (!password) {
+
+        showSharedGuestAuthError(
+            "Please enter your password."
+        );
+
+        passwordInput?.focus();
+
+        return;
+    }
+
+    if (!auth || !signInButton) {
+        return;
+    }
+
+    const originalButtonHTML =
+        signInButton.innerHTML;
+
+    signInButton.disabled =
+        true;
+
+    signInButton.innerHTML =
+        `
+            <i class="fa-solid fa-spinner fa-spin"></i>
+            <span>Signing in...</span>
+        `;
+
+    try {
+
+        const userCredential =
+    await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+    );
+
+const user =
+    userCredential.user;
+
+const profileSnapshot =
+    await getDoc(
+        doc(
+            db,
+            "users",
+            user.uid
+        )
+    );
+
+if (!profileSnapshot.exists()) {
+    throw new Error(
+        "Account profile was not found."
+    );
+}
+
+const profile =
+    profileSnapshot.data();
+
+const role =
+    String(
+        profile.role ||
+        "client"
+    )
+    .trim()
+    .toLowerCase();
+
+const status =
+    String(
+        profile.status ||
+        "active"
+    )
+    .trim()
+    .toLowerCase();
+
+if (status !== "active") {
+    throw new Error(
+        "ACCOUNT_INACTIVE"
+    );
+}
+
+if (
+    role === "owner" ||
+    role === "admin"
+) {
+
+    window.location.href =
+        "/pages/admin/dashboard.html";
+
+    return;
+}
+
+if (
+    role === "client" ||
+    role === "customer"
+) {
+
+    closeSharedGuestAuthModal();
+
+    return;
+}
+
+throw new Error(
+    "INVALID_ACCOUNT_ROLE"
+);
+
+    } catch (error) {
+
+        console.error(
+            "CUSTOMER SIGN IN ERROR:",
+            error
+        );
+
+        let message =
+            "Unable to sign in. Please check your email and password.";
+
+        if (
+            error?.code ===
+            "auth/invalid-credential"
+        ) {
+            message =
+                "Incorrect email or password.";
+        }
+
+        if (
+            error?.code ===
+            "auth/too-many-requests"
+        ) {
+            message =
+                "Too many attempts. Please try again later.";
+        }
+
+        if (
+            error?.code ===
+            "auth/network-request-failed"
+        ) {
+            message =
+                "Network error. Please check your connection and try again.";
+        }
+
+        showSharedGuestAuthError(
+            message
+        );
+
+    } finally {
+
+        signInButton.disabled =
+            false;
+
+        signInButton.innerHTML =
+            originalButtonHTML;
+    }
+}
+
+
+signInButton?.addEventListener(
+    "click",
+    performSharedGuestSignIn
+);
+
+
+passwordInput?.addEventListener(
+    "keydown",
+    event => {
+
+        if (event.key === "Enter") {
+
+            event.preventDefault();
+
+            performSharedGuestSignIn();
+        }
+    }
+);
+
+
+emailInput?.addEventListener(
+    "keydown",
+    event => {
+
+        if (event.key === "Enter") {
+
+            event.preventDefault();
+
+            passwordInput?.focus();
+        }
+    }
+);
 
 
     return modal;
@@ -1756,6 +2132,14 @@ function openSharedGuestAuthModal() {
         }
     );
 }
+
+/* ==========================================================
+   PUBLIC GUEST AUTH API
+========================================================== */
+
+window.openGuestAuthModal = function () {
+    openSharedGuestAuthModal();
+};
 
 
 function closeSharedGuestAuthModal() {

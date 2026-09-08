@@ -294,20 +294,20 @@ function requireCustomerLogin() {
         currentUser ||
         auth.currentUser;
 
-
     if (authenticatedUser) {
-
         return true;
-
     }
 
+    if (typeof window.openGuestAuthModal === "function") {
+        window.openGuestAuthModal();
+        return false;
+    }
 
-    window.location.href =
-        "../../login.html";
-
+    console.warn(
+        "Guest auth modal is not available."
+    );
 
     return false;
-
 }
 
 function normalizeText(
