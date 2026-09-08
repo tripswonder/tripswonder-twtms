@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="Manage your Trips Wonder account"
+    >
+
+    <title>Manage Account | Trips Wonder</title>
+
+    <!-- =========================================
+         SHARED STYLES
+    ========================================== -->
+
+    <link
+        rel="stylesheet"
+        href="../../assets/css/shared/variables.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="../../assets/css/shared/global.css"
+    >
+
+    <!-- =========================================
+         MANAGE ACCOUNT
+    ========================================== -->
+
+    <link
+        rel="stylesheet"
+        href="../../assets/css/customer/manage-account.css"
+    >
+
+    <!-- =========================================
+         FONT
+    ========================================== -->
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <!-- =========================================
+         ICONS
+    ========================================== -->
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+
+    <!-- =========================================
+         SHARED CUSTOMER NAV
+    ========================================== -->
+
+    <link
+        rel="stylesheet"
+        href="../../assets/css/customer/customer-nav.css"
+    >
+
+</head>
+
+<body>
+
+    <!-- =========================================
+         MANAGE ACCOUNT PAGE
+    ========================================== -->
+
+    <main class="manage-account-page">
+
+        <!-- =====================================
+             PAGE HEADER
+        ====================================== -->
+
+        <header class="manage-account-heading">
+
+            <a
+                href="account.html"
+                class="manage-account-back"
+                aria-label="Back to My Account"
+            >
+                <i class="fa-solid fa-arrow-left"></i>
+            </a>
+
+            <div class="manage-account-heading-copy">
+
+                <span class="manage-account-eyebrow">
+                    ACCOUNT SETTINGS
+                </span>
+
+                <h1>
+                    Manage Account
+                </h1>
+
+                <p>
+                    Manage your personal information,
+                    security, and account details.
+                </p>
+
+            </div>
+
+        </header>
+
+
+        <!-- =====================================
+             PROFILE OVERVIEW
+        ====================================== -->
+
+        <section class="manage-profile-card">
+
+            <div
+                class="manage-profile-avatar"
+                id="manageProfileAvatar"
+            >
+
+                <i class="fa-solid fa-user"></i>
+
+            </div>
+
+            <div class="manage-profile-details">
+
+                <h2 id="manageAccountName">
+                    Trips Wonder Member
+                </h2>
+
+                <p id="manageAccountEmail">
+                    —
+                </p>
+
+                <div class="manage-profile-badges">
+
+                    <span
+                        id="manageEmailStatus"
+                        class="manage-profile-badge"
+                    >
+                        <i class="fa-solid fa-circle-check"></i>
+
+                        <span>
+                            Checking account...
+                        </span>
+                    </span>
+
+                    <span class="manage-profile-badge member">
+
+                        <i class="fa-solid fa-suitcase-rolling"></i>
+
+                        <span>
+                            Trips Wonder Member
+                        </span>
+
+                    </span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================
+             ACCOUNT DETAILS
+        ====================================== -->
+
+        <section class="manage-account-section">
+
+            <div class="manage-section-heading">
+
+                <span>
+                    ACCOUNT
+                </span>
+
+                <h2>
+                    Account Details
+                </h2>
+
+                <p>
+                    Your main account and contact information.
+                </p>
+
+            </div>
+
+
+            <div class="manage-settings-card">
+
+                <!-- PERSONAL INFORMATION -->
+
+                <button
+                    type="button"
+                    class="manage-setting-item"
+                    data-manage-action="personal-information"
+                >
+
+                    <span class="manage-setting-icon">
+
+                        <i class="fa-regular fa-user"></i>
+
+                    </span>
+
+                    <span class="manage-setting-content">
+
+                        <strong>
+                            Personal Information
+                        </strong>
+
+                        <small>
+                            Name and personal details
+                        </small>
+
+                    </span>
+
+                    <i
+                        class="fa-solid fa-chevron-right manage-setting-arrow"
+                    ></i>
+
+                </button>
+
+
+                <!-- CONTACT DETAILS -->
+
+                <button
+                    type="button"
+                    class="manage-setting-item"
+                    data-manage-action="contact-details"
+                >
+
+                    <span class="manage-setting-icon">
+
+                        <i class="fa-regular fa-address-card"></i>
+
+                    </span>
+
+                    <span class="manage-setting-content">
+
+                        <strong>
+                            Contact Details
+                        </strong>
+
+                        <small>
+                            Email address and mobile number
+                        </small>
+
+                    </span>
+
+                    <i
+                        class="fa-solid fa-chevron-right manage-setting-arrow"
+                    ></i>
+
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================
+             SECURITY
+        ====================================== -->
+
+        <section class="manage-account-section">
+
+            <div class="manage-section-heading">
+
+                <span>
+                    SECURITY
+                </span>
+
+                <h2>
+                    Sign-In & Security
+                </h2>
+
+                <p>
+                    Manage how you access your Trips Wonder account.
+                </p>
+
+            </div>
+
+
+            <div class="manage-settings-card">
+
+                <!-- PASSWORD / SECURITY -->
+
+                <button
+                    type="button"
+                    class="manage-setting-item"
+                    data-manage-action="security"
+                >
+
+                    <span class="manage-setting-icon">
+
+                        <i class="fa-solid fa-shield-halved"></i>
+
+                    </span>
+
+                    <span class="manage-setting-content">
+
+                        <strong>
+                            Password & Security
+                        </strong>
+
+                        <small id="manageSecurityDescription">
+                            Manage your sign-in security
+                        </small>
+
+                    </span>
+
+                    <i
+                        class="fa-solid fa-chevron-right manage-setting-arrow"
+                    ></i>
+
+                </button>
+
+
+                <!-- CONNECTED ACCOUNT -->
+
+                <button
+                    type="button"
+                    class="manage-setting-item"
+                    data-manage-action="connected-accounts"
+                >
+
+                    <span class="manage-setting-icon">
+
+                        <i class="fa-solid fa-link"></i>
+
+                    </span>
+
+                    <span class="manage-setting-content">
+
+                        <strong>
+                            Connected Accounts
+                        </strong>
+
+                        <small id="manageConnectedProvider">
+                            Checking sign-in method...
+                        </small>
+
+                    </span>
+
+                    <i
+                        class="fa-solid fa-chevron-right manage-setting-arrow"
+                    ></i>
+
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================
+             MORE SETTINGS
+        ====================================== -->
+
+        <section class="manage-account-section">
+
+            <div class="manage-section-heading">
+
+                <span>
+                    MORE
+                </span>
+
+                <h2>
+                    More Settings
+                </h2>
+
+                <p>
+                    Additional account preferences are kept here
+                    to keep your main profile clean.
+                </p>
+
+            </div>
+
+
+            <details class="manage-more-settings">
+
+                <summary>
+
+                    <span class="manage-more-left">
+
+                        <span class="manage-setting-icon">
+
+                            <i class="fa-solid fa-sliders"></i>
+
+                        </span>
+
+                        <span class="manage-setting-content">
+
+                            <strong>
+                                Additional Settings
+                            </strong>
+
+                            <small>
+                                Travel, privacy, and account options
+                            </small>
+
+                        </span>
+
+                    </span>
+
+                    <i class="fa-solid fa-chevron-down"></i>
+
+                </summary>
+
+
+                <div class="manage-more-content">
+
+                    <!-- PICKUP LOCATION -->
+
+                    <button
+                        type="button"
+                        class="manage-sub-setting"
+                        data-manage-action="pickup-location"
+                    >
+
+                        <span>
+
+                            <i class="fa-solid fa-location-dot"></i>
+
+                            Preferred Pickup Location
+
+                        </span>
+
+                        <i class="fa-solid fa-chevron-right"></i>
+
+                    </button>
+
+
+                    <!-- TRAVEL PREFERENCES -->
+
+                    <button
+                        type="button"
+                        class="manage-sub-setting"
+                        data-manage-action="travel-preferences"
+                    >
+
+                        <span>
+
+                            <i class="fa-solid fa-plane"></i>
+
+                            Travel Preferences
+
+                        </span>
+
+                        <i class="fa-solid fa-chevron-right"></i>
+
+                    </button>
+
+
+                    <!-- PRIVACY -->
+
+                    <button
+                        type="button"
+                        class="manage-sub-setting"
+                        data-manage-action="privacy"
+                    >
+
+                        <span>
+
+                            <i class="fa-solid fa-lock"></i>
+
+                            Data & Privacy
+
+                        </span>
+
+                        <i class="fa-solid fa-chevron-right"></i>
+
+                    </button>
+
+                </div>
+
+            </details>
+
+        </section>
+
+
+        <!-- =====================================
+             ACCOUNT STATUS
+        ====================================== -->
+
+        <section class="manage-account-section">
+
+            <div class="manage-section-heading">
+
+                <span>
+                    STATUS
+                </span>
+
+                <h2>
+                    Account Status
+                </h2>
+
+            </div>
+
+
+            <div class="manage-status-card">
+
+                <div class="manage-status-icon">
+
+                    <i class="fa-solid fa-circle-check"></i>
+
+                </div>
+
+                <div class="manage-status-copy">
+
+                    <strong>
+                        Active Trips Wonder Account
+                    </strong>
+
+                    <p>
+                        Your account is currently active
+                        and ready for bookings.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================
+             DANGER ZONE
+        ====================================== -->
+
+        <section class="manage-danger-section">
+
+            <details class="manage-danger-details">
+
+                <summary>
+
+                    <span>
+
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+
+                        Account Options
+
+                    </span>
+
+                    <i class="fa-solid fa-chevron-down"></i>
+
+                </summary>
+
+
+                <div class="manage-danger-content">
+
+                    <p>
+                        Account deletion and other permanent
+                        account actions are available here.
+                    </p>
+
+                    <button
+                        type="button"
+                        class="manage-delete-account"
+                        data-manage-action="delete-account"
+                    >
+
+                        <i class="fa-regular fa-trash-can"></i>
+
+                        Delete Account
+
+                    </button>
+
+                </div>
+
+            </details>
+
+        </section>
+
+    </main>
+
+
+    <!-- =========================================
+         SHARED CUSTOMER NAV HOST
+    ========================================== -->
+
+    <div id="customerBottomNav"></div>
+
+
+    <!-- =========================================
+         SCRIPTS
+    ========================================== -->
+
+    <script
+        type="module"
+        src="../../assets/js/customer/manage-account.js"
+    ></script>
+
+    <script
+        type="module"
+        src="../../assets/js/customer/customer-nav.js"
+    ></script>
+
+</body>
+
+</html>
