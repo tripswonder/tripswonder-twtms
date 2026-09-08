@@ -382,42 +382,35 @@ form.addEventListener(
 
 
             // ========================================
-            // CLIENT EMAIL VERIFICATION
-            // ========================================
+// CLIENT EMAIL VERIFICATION STATUS
+// ========================================
 
-            /*
-             * IMPORTANT:
-             *
-             * Owner/Admin accounts continue normally.
-             *
-             * Only customer/client accounts are required
-             * to verify their email before entering the
-             * protected customer website.
-             */
+/*
+ * Email verification is NOT required
+ * before the client can sign in.
+ *
+ * Unverified clients may access their account
+ * and verify their email later from Profile.
+ */
 
-            if (
-                role === "client" &&
-                user.emailVerified !== true
-            ) {
+if (
+    role === "client" &&
+    user.emailVerified !== true
+) {
 
-                console.warn(
-                    "LOGIN BLOCKED: EMAIL NOT VERIFIED"
-                );
+    console.log(
+        "Client logged in with unverified email."
+    );
 
+} else if (
+    role === "client"
+) {
 
-                await signOut(
-                    auth
-                );
+    console.log(
+        "Client email is verified."
+    );
 
-
-                alert(
-                    "Please verify your email first. Open the verification email from Trips Wonder, click the verification link, then sign in again."
-                );
-
-
-                return;
-
-            }
+}
 
 
             // ========================================

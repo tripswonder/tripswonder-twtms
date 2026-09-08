@@ -20,6 +20,7 @@ import {
 import {
     collection,
     doc,
+    getDoc,
     onSnapshot,
     query,
     where
@@ -748,38 +749,74 @@ function applyCustomerBranding(
 }
 
 
-function subscribeCustomerBranding() {
+async function subscribeCustomerBranding() {
 
-    state.unsubscribeBranding?.();
+    if (!db) {
+
+        console.warn(
+            "CUSTOMER NAV: Firestore DB is unavailable."
+        );
+
+        applyCustomerBranding();
+
+        return;
+    }
 
 
-    state.unsubscribeBranding =
-        onSnapshot(
+    if (state?.unsubscribeBranding) {
+
+        state.unsubscribeBranding();
+
+        state.unsubscribeBranding =
+            null;
+    }
+
+
+    try {
+
+        const settingsReference =
             doc(
                 db,
                 "systemSettings",
                 "general"
-            ),
+            );
 
-            snapshot => {
 
-                applyCustomerBranding(
-                    snapshot.exists()
-                        ? snapshot.data() || {}
-                        : {}
-                );
-            },
+        const snapshot =
+            await getDoc(
+                settingsReference
+            );
 
-            error => {
 
-                console.warn(
-                    "CUSTOMER NAV BRANDING ERROR:",
-                    error
-                );
+        if (!snapshot.exists()) {
 
-                applyCustomerBranding();
-            }
+            applyCustomerBranding();
+
+            return;
+        }
+
+
+        applyCustomerBranding(
+            snapshot.data() || {}
         );
+
+
+    } catch (error) {
+
+        console.warn(
+            "CUSTOMER NAV BRANDING LOAD ERROR:",
+            error
+        );
+
+
+        /*
+         * Branding failure must never break
+         * customer navigation.
+         */
+        applyCustomerBranding();
+
+    }
+
 }
 
 
@@ -1316,35 +1353,157 @@ function ensureSharedGuestAuthModal() {
             color: #16a34a;
         }
 
-        @media (max-width: 760px) {
-            .shared-guest-auth-modal {
-                padding: 12px;
-                align-items: flex-end;
-            }
+      @media (max-width: 760px) {
 
-            .shared-guest-auth-card {
-                width: 100%;
-                max-height: 92vh;
-                grid-template-columns: 1fr;
-                border-radius: 20px 20px 0 0;
-            }
+    .shared-guest-auth-modal {
+        padding:
+            18px
+            14px
+            calc(86px + env(safe-area-inset-bottom));
 
-            .shared-guest-auth-left {
-                padding: 38px 22px 26px;
-            }
+        align-items: center;
+        justify-content: center;
+    }
 
-            .shared-guest-auth-right {
-                display: none;
-            }
+    .shared-guest-auth-card {
+        width: min(100%, 360px);
 
-            .shared-guest-auth-title {
-                font-size: 25px;
-            }
+        min-height: 0;
+        max-height: calc(
+            100dvh - 130px - env(safe-area-inset-bottom)
+        );
 
-            .shared-guest-auth-brand {
-                margin-bottom: 20px;
-            }
-        }
+        display: block;
+
+        overflow-x: hidden;
+        overflow-y: auto;
+
+        background: #ffffff;
+
+        border: 1px solid rgba(226, 232, 240, 0.95);
+        border-radius: 22px;
+
+        box-shadow:
+            0 22px 60px rgba(15, 23, 42, 0.28);
+    }
+
+    .shared-guest-auth-close {
+        top: 10px;
+        right: 10px;
+
+        width: 30px;
+        height: 30px;
+
+        color: #475569;
+        background: #f3f6fa;
+
+        font-size: 14px;
+    }
+
+    .shared-guest-auth-left {
+        padding:
+            22px
+            16px
+            17px;
+    }
+
+    .shared-guest-auth-right {
+        display: none;
+    }
+
+    .shared-guest-auth-brand {
+        gap: 7px;
+
+        margin-bottom: 12px;
+
+        font-size: 10px;
+    }
+
+    .shared-guest-auth-brand img {
+        width: 26px;
+        height: 26px;
+    }
+
+    .shared-guest-auth-title {
+        margin: 0;
+
+        font-size: 18px;
+        line-height: 1.25;
+    }
+
+    .shared-guest-auth-benefits {
+        gap: 6px 11px;
+
+        margin:
+            9px
+            0
+            15px;
+
+        font-size: 7.5px;
+    }
+
+    .shared-guest-auth-benefits span {
+        gap: 4px;
+    }
+
+    .shared-guest-auth-label {
+        margin-bottom: 5px;
+
+        font-size: 8.5px;
+    }
+
+    .shared-guest-auth-email {
+        height: 42px;
+
+        padding: 0 12px;
+
+        border-radius: 9px;
+
+        font-size: 10px;
+    }
+
+    .shared-guest-auth-primary,
+    .shared-guest-auth-social {
+        height: 40px;
+
+        gap: 7px;
+
+        margin-top: 8px;
+
+        padding: 0 12px;
+
+        border-radius: 9px;
+
+        font-size: 9.5px;
+    }
+
+    .shared-guest-auth-primary {
+        box-shadow:
+            0 4px 10px rgba(23, 109, 228, 0.14);
+    }
+
+    .shared-guest-auth-separator {
+        gap: 9px;
+
+        margin:
+            11px
+            0
+            1px;
+
+        font-size: 7.5px;
+    }
+
+    .shared-guest-auth-note {
+        margin:
+            11px
+            3px
+            0;
+
+        font-size: 7px;
+        line-height: 1.5;
+    }
+
+}
     `;
 
 

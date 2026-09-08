@@ -90,16 +90,40 @@
             </h2>
 
             <p id="accountEmail">
-                —
-            </p>
+    —
+</p>
 
-            <span class="account-member">
+<div class="account-email-verification">
 
-                <i class="fa-solid fa-circle-check"></i>
+    <span
+        id="emailVerificationStatus"
+        class="email-verification-status"
+    >
+        Checking email status...
+    </span>
 
-                Trips Wonder Member
+    <button
+        type="button"
+        id="verifyEmailButton"
+        class="verify-email-button"
+        hidden
+    >
+        <i class="fa-regular fa-envelope"></i>
 
-            </span>
+        <span>
+            Verify Email
+        </span>
+    </button>
+
+</div>
+
+<span class="account-member">
+
+    <i class="fa-solid fa-circle-check"></i>
+
+    Trips Wonder Member
+
+</span>
 
         </div>
 
