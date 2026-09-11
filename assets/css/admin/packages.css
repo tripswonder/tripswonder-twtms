@@ -3356,3 +3356,463 @@
             gap:5px;
         }
     }
+
+
+/* =========================================================
+   ACCOMMODATION BUILDER UPGRADE
+   ========================================================= */
+
+.accommodation-builder-tip,
+.schedule-availability-tip {
+    margin-bottom: 18px;
+}
+
+.accommodation-builder-head,
+.schedule-availability-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin: 18px 0 14px;
+    padding: 14px 16px;
+    background: #f8fbff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+}
+
+.accommodation-builder-head strong,
+.schedule-availability-toolbar strong {
+    display: block;
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.accommodation-builder-head small,
+.schedule-availability-toolbar small {
+    display: block;
+    margin-top: 3px;
+    color: var(--muted);
+    font-size: 10px;
+    line-height: 1.5;
+}
+
+#accommodationList {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.accommodation-empty-helper,
+.travel-schedule-empty {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    margin: 12px 0 16px;
+    background: #fbfcfe;
+    border: 1px dashed #cbd7e6;
+    border-radius: 12px;
+    color: var(--muted);
+}
+
+.accommodation-empty-helper i,
+.travel-schedule-empty i {
+    width: 38px;
+    height: 38px;
+    flex: 0 0 38px;
+    display: grid;
+    place-items: center;
+    background: var(--primary-soft);
+    color: var(--primary);
+    border-radius: 10px;
+    font-size: 15px;
+}
+
+.accommodation-empty-helper strong,
+.travel-schedule-empty strong {
+    display: block;
+    color: var(--text);
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.accommodation-empty-helper span,
+.travel-schedule-empty span {
+    display: block;
+    margin-top: 3px;
+    color: var(--muted);
+    font-size: 9px;
+    line-height: 1.5;
+}
+
+.accommodation-policy-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-top: 14px;
+    padding: 12px 14px;
+    background: #fffaf0;
+    border: 1px solid #f1dfb8;
+    border-radius: 10px;
+}
+
+.accommodation-policy-note i {
+    margin-top: 2px;
+    color: var(--warning);
+}
+
+.accommodation-policy-note strong {
+    display: block;
+    color: var(--text);
+    font-size: 10px;
+}
+
+.accommodation-policy-note span {
+    display: block;
+    margin-top: 3px;
+    color: #7e6a45;
+    font-size: 9px;
+    line-height: 1.55;
+}
+
+#addAccommodationTop {
+    flex: 0 0 auto;
+}
+
+/* Support both old and upgraded accommodation cards rendered by JS. */
+.accommodation-card,
+.accommodation-item,
+.package-accommodation-card {
+    position: relative;
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: 0 5px 15px rgba(20,55,95,.05);
+}
+
+.accommodation-card-header,
+.accommodation-item-header,
+.package-accommodation-card-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 16px;
+    background: #fbfcfe;
+    border-bottom: 1px solid var(--border);
+}
+
+.accommodation-card-body,
+.accommodation-item-body,
+.package-accommodation-card-body {
+    padding: 16px;
+}
+
+.accommodation-card input,
+.accommodation-card select,
+.accommodation-card textarea,
+.accommodation-item input,
+.accommodation-item select,
+.accommodation-item textarea,
+.package-accommodation-card input,
+.package-accommodation-card select,
+.package-accommodation-card textarea {
+    max-width: 100%;
+}
+
+/* =========================================================
+   TRAVEL SCHEDULE AVAILABILITY
+   ========================================================= */
+
+#packageSectionScheduleAvailability {
+    scroll-margin-top: 20px;
+}
+
+.travel-schedule-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.travel-schedule-card {
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+}
+
+.travel-schedule-card-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 15px 16px;
+    background: #f8fbff;
+    border-bottom: 1px solid var(--border);
+}
+
+.travel-schedule-label {
+    display: block;
+    margin-bottom: 3px;
+    color: var(--primary);
+    font-size: 8px;
+    font-weight: 800;
+    letter-spacing: .9px;
+}
+
+.travel-schedule-title {
+    display: block;
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.travel-schedule-remove {
+    width: 34px;
+    height: 34px;
+    flex: 0 0 34px;
+    display: grid;
+    place-items: center;
+    background: #fff;
+    color: #8ba0b9;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    transition: .18s ease;
+}
+
+.travel-schedule-remove:hover {
+    background: #fff5f5;
+    color: #d84b4b;
+    border-color: #f0caca;
+}
+
+.travel-schedule-card > .form-grid {
+    padding: 16px;
+}
+
+.schedule-accommodation-inventory {
+    margin: 0 16px 16px;
+    padding: 14px;
+    background: #fbfcfe;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+}
+
+.schedule-accommodation-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.schedule-accommodation-head strong {
+    display: block;
+    color: var(--text);
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.schedule-accommodation-head small {
+    display: block;
+    margin-top: 3px;
+    color: var(--muted);
+    font-size: 9px;
+    line-height: 1.45;
+}
+
+.schedule-accommodation-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.schedule-accommodation-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 105px 120px;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 11px;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+}
+
+.schedule-accommodation-name {
+    min-width: 0;
+}
+
+.schedule-accommodation-name strong {
+    display: block;
+    overflow: hidden;
+    color: var(--text);
+    font-size: 10px;
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.schedule-accommodation-name span {
+    display: block;
+    margin-top: 2px;
+    color: var(--muted);
+    font-size: 8px;
+}
+
+.schedule-accommodation-row input,
+.schedule-accommodation-row select {
+    width: 100%;
+    height: 36px;
+    padding: 0 9px;
+    background: #fff;
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    outline: none;
+    font-size: 9px;
+}
+
+.schedule-accommodation-row input:focus,
+.schedule-accommodation-row select:focus {
+    border-color: #9cbbe1;
+    box-shadow: 0 0 0 3px rgba(21,87,166,.07);
+}
+
+.schedule-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    min-height: 24px;
+    padding: 0 8px;
+    border-radius: 999px;
+    font-size: 8px;
+    font-weight: 700;
+}
+
+.schedule-status-badge.available {
+    background: var(--success-soft);
+    color: var(--success);
+}
+
+.schedule-status-badge.limited {
+    background: var(--warning-soft);
+    color: var(--warning);
+}
+
+.schedule-status-badge.full,
+.schedule-status-badge.closed {
+    background: #fff0f0;
+    color: #c84b4b;
+}
+
+/* =========================================================
+   PACKAGE BUILDER NAV — EXTRA SECTION SUPPORT
+   ========================================================= */
+
+.package-builder-nav {
+    scrollbar-width: thin;
+}
+
+.package-builder-nav-item {
+    min-width: max-content;
+}
+
+/* =========================================================
+   RESPONSIVE — ACCOMMODATION / SCHEDULE
+   ========================================================= */
+
+@media (max-width: 900px) {
+    .accommodation-builder-head,
+    .schedule-availability-toolbar {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    #addAccommodationTop,
+    #addTravelSchedule {
+        width: 100%;
+    }
+
+    .schedule-accommodation-row {
+        grid-template-columns: minmax(0, 1fr) 95px 105px;
+    }
+}
+
+@media (max-width: 700px) {
+    .travel-schedule-card > .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .schedule-accommodation-inventory {
+        margin: 0 12px 12px;
+        padding: 12px;
+    }
+
+    .schedule-accommodation-row {
+        grid-template-columns: 1fr;
+    }
+
+    .schedule-accommodation-name strong {
+        white-space: normal;
+    }
+}
+
+
+
+/* =========================================================
+   REQUESTED TRAVEL DATE SETTINGS
+   ========================================================= */
+
+.requested-date-settings-card {
+    position: relative;
+}
+
+.requested-date-admin-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px 14px;
+    background: #f8fbff;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--muted);
+    font-size: 9px;
+    line-height: 1.55;
+}
+
+.requested-date-admin-note i {
+    margin-top: 2px;
+    color: var(--primary);
+}
+
+.requested-date-admin-note strong {
+    color: var(--text);
+}
+
+.input-suffix-wrap {
+    position: relative;
+}
+
+.input-suffix-wrap input {
+    width: 100%;
+    padding-right: 48px !important;
+}
+
+.input-suffix {
+    position: absolute;
+    top: 50%;
+    right: 12px;
+    transform: translateY(-50%);
+    color: var(--muted);
+    font-size: 9px;
+    font-weight: 700;
+    pointer-events: none;
+}
+
+#requestedTravelDateFields.rule-disabled {
+    opacity: .48;
+    pointer-events: none;
+}

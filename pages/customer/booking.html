@@ -1,209 +1,690 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Your Tour | Trips Wonder</title>
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
-    <title>
-        Book Your Tour | Trips Wonder
-    </title>
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 
-
-    <!-- GOOGLE FONT -->
-
-    <link
-        rel="preconnect"
-        href="https://fonts.googleapis.com">
-
-    <link
-        rel="preconnect"
-        href="https://fonts.gstatic.com"
-        crossorigin>
-
-    <link
-        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
-        rel="stylesheet">
-
-
-    <!-- FONT AWESOME -->
-
-    <link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
-
-
-    <!-- PAGE CSS -->
-
-    <link
-        rel="stylesheet"
-        href="../../assets/css/customer/booking.css">
-
+    <link rel="stylesheet" href="../../assets/css/customer/booking.css">
 </head>
-
 
 <body>
 
+<header class="booking-header">
+    <div class="booking-header-inner">
+        <a href="home.html" class="back-button" aria-label="Back to home">
+            <i class="fa-solid fa-arrow-left"></i>
+        </a>
 
-    <!-- =====================================================
-         HEADER
-    ====================================================== -->
-
-    <header class="booking-header">
-
-        <div class="booking-header-inner">
-
-            <a
-                href="home.html"
-                class="back-button">
-
-                <i class="fa-solid fa-arrow-left"></i>
-
-            </a>
-
-
-            <div class="booking-brand">
-
-                <strong>
-                    Trips Wonder
-                </strong>
-
-                <span>
-                    Tour Booking
-                </span>
-
-            </div>
-
-
-            <div class="header-spacer"></div>
-
+        <div class="booking-brand">
+            <strong>Trips Wonder</strong>
+            <span>Tour Booking</span>
         </div>
 
-    </header>
+        <div class="header-spacer"></div>
+    </div>
+</header>
 
+<main class="booking-main">
+    <div class="booking-container">
 
-    <!-- =====================================================
-         MAIN
-    ====================================================== -->
+        <!-- =====================================================
+             PACKAGE DETAILS
+        ====================================================== -->
+        <section class="package-details-card" id="selectedPackageCard">
 
-    <main class="booking-main">
+            <div class="package-loading" id="packageLoading">
+                <i class="fa-solid fa-spinner fa-spin"></i>
+                <span>Loading selected package...</span>
+            </div>
 
-        <div class="booking-container">
+            <div class="package-details-content hidden" id="packageContent">
 
+                <div class="package-cover">
+                    <img id="packageImage" src="" alt="Tour Package">
 
-            <!-- =================================================
-                 PAGE INTRO
-            ================================================== -->
+                    <div class="package-cover-overlay"></div>
 
-
-
-            <!-- =================================================
-                 SELECTED PACKAGE
-            ================================================== -->
-
-            <section
-                class="selected-package-card"
-                id="selectedPackageCard">
-
-                <div
-                    class="package-loading"
-                    id="packageLoading">
-
-                    <i class="fa-solid fa-spinner fa-spin"></i>
-
-                    Loading selected package...
-
-                </div>
-
-
-                <div
-                    class="package-content hidden"
-                    id="packageContent">
-
-                    <div class="package-image">
-
-                        <img
-                            id="packageImage"
-                            src=""
-                            alt="Tour Package">
-
-                    </div>
-
-
-                    <div class="package-info">
-
-                        <span class="package-label">
-                            SELECTED PACKAGE
+                    <div class="package-cover-badges">
+                        <span class="package-selected-badge">
+                            <i class="fa-solid fa-check"></i>
+                            Selected Package
                         </span>
 
-                        <h2 id="packageName">
-                            —
-                        </h2>
+                        <span class="package-status-badge" id="packageStatus">
+                            Available
+                        </span>
+                    </div>
+                </div>
+
+                <div class="package-details-body">
+
+                    <div class="package-details-main">
+                        <span class="package-eyebrow">YOUR SELECTED TOUR</span>
+
+                        <h1 id="packageName">—</h1>
 
                         <div class="package-meta">
-
                             <span>
-
                                 <i class="fa-solid fa-location-dot"></i>
-
-                                <span id="packageLocation">
-                                    —
-                                </span>
-
+                                <span id="packageLocation">—</span>
                             </span>
-
 
                             <span>
-
                                 <i class="fa-regular fa-clock"></i>
-
-                                <span id="packageDuration">
-                                    —
-                                </span>
-
+                                <span id="packageDuration">—</span>
                             </span>
+                        </div>
 
+                        <div class="package-highlights" id="packageHighlights">
+                            <span>
+                                <i class="fa-solid fa-van-shuttle"></i>
+                                Tour package
+                            </span>
+                            <span>
+                                <i class="fa-solid fa-user-group"></i>
+                                Joiners / Group
+                            </span>
+                            <span>
+                                <i class="fa-solid fa-shield-heart"></i>
+                                Trips Wonder
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="package-price-panel">
+                        <span>Package Rate</span>
+                        <strong id="packagePrice">₱0</strong>
+                        <small>per person</small>
+                    </div>
+
+                </div>
+
+                <div class="package-quick-details">
+                    <button type="button" class="package-detail-link" id="viewPackageDetailsButton">
+                        <i class="fa-solid fa-circle-info"></i>
+                        View Package Details
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="package-error hidden" id="packageError">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <strong>Package could not be loaded.</strong>
+                <a href="home.html">Choose another package</a>
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             BOOKING PROGRESS
+        ====================================================== -->
+        <nav class="booking-progress" aria-label="Booking progress">
+            <div class="progress-item active" data-step="1">
+                <span>1</span>
+                <small>Schedule</small>
+            </div>
+            <div class="progress-line"></div>
+            <div class="progress-item" data-step="2">
+                <span>2</span>
+                <small>Details</small>
+            </div>
+            <div class="progress-line"></div>
+            <div class="progress-item" data-step="3">
+                <span>3</span>
+                <small>Stay</small>
+            </div>
+            <div class="progress-line"></div>
+            <div class="progress-item" data-step="4">
+                <span>4</span>
+                <small>Payment</small>
+            </div>
+        </nav>
+
+
+        <form id="clientBookingForm" class="booking-form" novalidate>
+
+            <!-- =================================================
+                 01 SELECT TRAVEL SCHEDULE
+            ================================================== -->
+            <section class="form-card booking-section" id="scheduleSection">
+
+                <div class="form-card-heading">
+                    <span class="section-number">01</span>
+                    <div>
+                        <h2>Select Travel Date</h2>
+                        <p>Choose an available Trips Wonder tour schedule.</p>
+                    </div>
+                </div>
+
+                <div class="schedule-state" id="scheduleLoading">
+                    <i class="fa-solid fa-calendar-days"></i>
+                    <span>Available schedules will appear here.</span>
+                </div>
+
+                <div class="travel-calendar-shell" id="travelCalendarShell">
+
+                    <div class="calendar-card" id="travelCalendarCard">
+
+                        <div class="calendar-card-head">
+                            <div>
+                                <strong>Select from Calendar</strong>
+                                <small>Choose an available tour start date.</small>
+                            </div>
+
+                            <div class="calendar-month-nav">
+                                <button type="button" id="calendarPrevMonth" aria-label="Previous month">
+                                    <i class="fa-solid fa-chevron-left"></i>
+                                </button>
+
+                                <strong id="calendarMonthLabel">Month Year</strong>
+
+                                <button type="button" id="calendarNextMonth" aria-label="Next month">
+                                    <i class="fa-solid fa-chevron-right"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="calendar-weekdays" aria-hidden="true">
+                            <span>Sun</span>
+                            <span>Mon</span>
+                            <span>Tue</span>
+                            <span>Wed</span>
+                            <span>Thu</span>
+                            <span>Fri</span>
+                            <span>Sat</span>
+                        </div>
+
+                        <div class="calendar-grid" id="travelCalendarGrid"></div>
+
+                        <div class="calendar-legend">
+                            <span><i class="legend-dot available"></i>Available</span>
+                            <span><i class="legend-dot limited"></i>Limited</span>
+                            <span><i class="legend-dot full"></i>Fully Booked</span>
+                            <span><i class="legend-dot closed"></i>Unavailable</span>
+                        </div>
+
+                    </div>
+
+                    <div class="calendar-side">
+
+
+                        <div class="quick-schedule-wrap">
+                            <div class="quick-schedule-head">
+                                <div class="quick-title-wrap">
+                                    <span class="quick-title-icon">
+                                        <i class="fa-solid fa-bolt"></i>
+                                    </span>
+                                    <div>
+                                        <strong>Quick Select Dates</strong>
+                                        <small>Next available schedules</small>
+                                    </div>
+                                </div>
+
+                                <button
+                                    type="button"
+                                    class="quick-view-more"
+                                    id="quickViewMoreButton">
+                                    <i class="fa-regular fa-calendar"></i>
+                                    <span>View More</span>
+                                </button>
+                            </div>
+
+                            <div class="quick-schedule-list schedule-list" id="travelScheduleList"></div>
                         </div>
 
 
-                        <div class="package-price">
+                        <div class="selected-schedule-card" id="selectedScheduleCard">
+                            <div class="selected-schedule-empty">
+                                <i class="fa-regular fa-calendar-check"></i>
+                                <div>
+                                    <strong>Select a travel date</strong>
+                                    <small>Available tour dates are highlighted on the calendar.</small>
+                                </div>
+                            </div>
+                        </div>
 
-                            <span>
-                                Package Rate
+                        <div class="requested-date-option hidden" id="requestedDateOption">
+                                            
+                        
+                                            <button type="button"
+                                                    class="requested-date-toggle-button"
+                                                    id="requestAnotherDateButton">
+                                                <span class="requested-date-toggle-icon">
+                                                    <i class="fa-regular fa-calendar-plus"></i>
+                                                </span>
+                                                <span class="requested-date-toggle-copy">
+                                                    <strong>Request Another Travel Date</strong>
+                                                    <small id="requestedDateMinimumText">
+                                                        Custom dates are subject to availability.
+                                                    </small>
+                                                </span>
+                                                <i class="fa-solid fa-chevron-down requested-date-chevron"></i>
+                                            </button>
+                        
+                                            <div class="requested-date-panel" id="requestedDatePanel">
+                                                <div class="requested-date-notice">
+                                                    <i class="fa-solid fa-circle-info"></i>
+                                                    <div>
+                                                        <strong id="requestedDateRequirementTitle">Minimum headcount required</strong>
+                                                        <span id="requestedDateRequirementText">
+                                                            Enter your total number of pax below to check eligibility.
+                                                        </span>
+                                                    </div>
+                                                </div>
+                        
+                                                <div class="form-grid requested-date-grid">
+                                                    <div class="form-field">
+                                                        <label for="requestedTravelDate">Preferred Travel Date *</label>
+                                                        <input type="date" id="requestedTravelDate">
+                                                    </div>
+                        
+                                                    <div class="form-field">
+                                                        <label>Request Status</label>
+                                                        <div class="requested-date-status" id="requestedDateStatus">
+                                                            For Availability Check
+                                                        </div>
+                                                    </div>
+                                                </div>
+                        
+                                                <small class="requested-date-help">
+                                                    No payment is required yet. Trips Wonder will review the requested date first before payment.
+                                                </small>
+                                            </div>
+                                        </div>
+                    </div>
+
+                </div>
+
+                
+
+                <!-- JS compatibility / canonical selected schedule value -->
+                <input type="hidden" id="travelDate" value="">
+                <input type="hidden" id="selectedScheduleId" value="">
+
+            </section>
+
+
+            <!-- =================================================
+                 02 GUEST / CLIENT DETAILS
+            ================================================== -->
+            <section class="form-card booking-section" id="guestDetailsSection">
+
+                <div class="form-card-heading">
+                    <span class="section-number">02</span>
+                    <div>
+                        <h2>Guest & Client Details</h2>
+                        <p>Enter the lead guest and travel information.</p>
+                    </div>
+                </div>
+
+                <div class="form-grid">
+
+                    <div class="form-field full">
+                        <label for="customerName">Full Name *</label>
+                        <input type="text"
+                               id="customerName"
+                               placeholder="Enter your full name"
+                               autocomplete="name"
+                               required>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="customerContact">Contact Number *</label>
+                        <input type="tel"
+                               id="customerContact"
+                               placeholder="09XXXXXXXXX"
+                               autocomplete="tel"
+                               required>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="customerEmail">Email Address *</label>
+                        <input type="email"
+                               id="customerEmail"
+                               placeholder="your@email.com"
+                               autocomplete="email"
+                               required>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="customerFacebook">Facebook Name</label>
+                        <input type="text"
+                               id="customerFacebook"
+                               placeholder="Facebook name">
+                    </div>
+
+                    <div class="form-field">
+                        <label for="numberOfGuests">Total Number of Pax *</label>
+                        <input type="number"
+                               id="numberOfGuests"
+                               min="1"
+                               value="1"
+                               required>
+                        <small class="field-help">
+                            Include adults and children in the total headcount.
+                        </small>
+                    </div>
+
+                    <div class="form-field full children-question-field" id="childrenQuestionField">
+                        <label>
+                            Do you have children joining the trip?
+                        </label>
+
+                        <div class="children-choice-group" role="radiogroup" aria-label="Children joining the trip">
+                            <label class="children-choice active" id="childrenChoiceNo">
+                                <input
+                                    type="radio"
+                                    name="hasChildren"
+                                    value="no"
+                                    checked>
+                                <span>No</span>
+                            </label>
+
+                            <label class="children-choice" id="childrenChoiceYes">
+                                <input
+                                    type="radio"
+                                    name="hasChildren"
+                                    value="yes">
+                                <span>Yes</span>
+                            </label>
+                        </div>
+
+                        <small class="field-help">
+                            Select Yes only if children aged 0–8 are included in this booking.
+                        </small>
+                    </div>
+
+                    <div class="form-field hidden" id="childrenFreeField">
+                        <label for="children0To3" id="childrenFreeLabel">
+                            Children 0–3 yrs
+                        </label>
+                        <input type="number" id="children0To3" min="0" value="0">
+                        <small class="field-help">
+                            FREE package • lap seat in van • share bed
+                        </small>
+                    </div>
+
+                    <div class="form-field hidden" id="childrenDiscountField">
+                        <label for="children4To8" id="childrenDiscountLabel">
+                            Children 4–8 yrs
+                        </label>
+                        <input type="number" id="children4To8" min="0" value="0">
+                        <small class="field-help" id="childrenDiscountHelp">
+                            Discounted child rate
+                        </small>
+                    </div>
+
+                    <div class="form-field full">
+                        <label for="pickupPoint">Pick-up Location *</label>
+                        <select id="pickupPoint" required>
+                            <option value="">Select pick-up location</option>
+                            <option value="Pasay - Uniqlo">Pasay – Uniqlo</option>
+                            <option value="Greenfield Shaw">Greenfield Shaw</option>
+                            <option value="Quezon Ave / Centris">Quezon Ave / Centris</option>
+                            <option value="Other / Along the Way">Other / Along the Way</option>
+                        </select>
+                    </div>
+
+                    <div class="form-field full hidden" id="otherPickupField">
+                        <label for="otherPickup">Requested Pick-up Location</label>
+                        <input type="text"
+                               id="otherPickup"
+                               placeholder="Enter requested pick-up location">
+                    </div>
+
+                    <div class="form-field full">
+                        <label for="specialRequest">Special Request</label>
+                        <textarea id="specialRequest"
+                                  rows="3"
+                                  placeholder="Optional requests or notes..."></textarea>
+                    </div>
+
+                </div>
+            </section>
+
+
+            <!-- =================================================
+                 03 ACCOMMODATION
+            ================================================== -->
+            <section class="form-card booking-section" id="accommodationSection">
+
+                <div class="form-card-heading">
+                    <span class="section-number">03</span>
+                    <div>
+                        <h2>Choose Accommodation</h2>
+                        <p>
+                            Select the accommodation available for your chosen travel schedule.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="accommodation-toolbar">
+                    <div class="accommodation-tabs" id="accommodationTabs">
+                        <button type="button" class="active" data-filter="all">All</button>
+                        <button type="button" data-filter="included">Included</button>
+                        <button type="button" data-filter="upgrade">Room Upgrade</button>
+                    </div>
+                </div>
+
+                <div class="accommodation-state" id="accommodationLoadingState">
+                    <i class="fa-solid fa-bed"></i>
+                    <strong>Select a travel schedule first</strong>
+                    <span>Accommodation availability depends on your selected date.</span>
+                </div>
+
+                <div class="accommodation-grid" id="accommodationList"></div>
+
+                <!-- Keeps the existing JS contract while cards become the visible UI -->
+                <input type="hidden" id="accommodation" value="">
+                <input type="hidden" id="selectedAccommodationId" value="">
+
+                <div class="selected-accommodation-summary hidden" id="selectedAccommodationSummary">
+                    <div>
+                        <span>SELECTED ACCOMMODATION</span>
+                        <strong id="selectedAccommodationName">—</strong>
+                    </div>
+                    <strong id="selectedAccommodationPrice">Included</strong>
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 04 PAYMENT SUMMARY
+            ================================================== -->
+            <section class="form-card booking-section" id="paymentSummarySection">
+
+                <div class="form-card-heading payment-summary-heading">
+                    <span class="section-number">04</span>
+                    <div>
+                        <h2>Payment Summary</h2>
+                        <p>Review your booking amount before proceeding to payment.</p>
+                    </div>
+                </div>
+
+                <div class="payment-summary-layout">
+
+                    <!-- LEFT: BOOKING BREAKDOWN -->
+                    <div class="payment-breakdown-card">
+
+                        <div class="payment-block-title">
+                            <span class="payment-block-icon">
+                                <i class="fa-solid fa-receipt"></i>
                             </span>
 
-                            <strong id="packagePrice">
-                                ₱0
-                            </strong>
+                            <div>
+                                <strong>Booking Breakdown</strong>
+                                <small>Your selected package and add-ons</small>
+                            </div>
+                        </div>
 
-                            <small>
-                                per person
-                            </small>
+                        <div class="booking-summary compact-summary">
+
+                            <div class="summary-row">
+                                <span>Package Rate</span>
+                                <strong id="summaryPackageRate">₱0</strong>
+                            </div>
+
+                            <div class="summary-row">
+                                <span>Number of Pax</span>
+                                <strong id="summaryPax">1</strong>
+                            </div>
+
+                            <div class="summary-row subtotal-row">
+                                <span>Package Subtotal</span>
+                                <strong id="summarySubtotal">₱0</strong>
+                            </div>
+
+                            <div class="summary-row hidden" id="summaryChildFreeRow">
+                                <span>Children 0–3 (FREE)</span>
+                                <strong id="summaryChildFree">0 pax</strong>
+                            </div>
+
+                            <div class="summary-row hidden" id="summaryChildDiscountRow">
+                                <span>Kids Discount (4–8 yrs)</span>
+                                <strong id="summaryChildDiscount">-₱0</strong>
+                            </div>
+
+                            <div class="summary-row hidden" id="summaryExclusiveRow">
+                                <span>Exclusive Tour Benefit</span>
+                                <strong id="summaryExclusiveDiscount">-₱0</strong>
+                            </div>
+
+                            <div class="summary-row">
+                                <span>Accommodation</span>
+                                <strong id="summaryAccommodation">Included</strong>
+                            </div>
+
+                            <div class="summary-row hidden" id="summaryAccommodationUpgradeRow">
+                                <span>Accommodation Upgrade</span>
+                                <strong id="summaryAccommodationUpgrade">+₱0</strong>
+                            </div>
+
+                            <button type="button"
+                                    class="summary-action-row"
+                                    id="openDiscountButton">
+                                <span class="summary-action-label">
+                                    <i class="fa-solid fa-ticket"></i>
+                                    Tripswonder Discount
+                                </span>
+
+                                <span class="summary-action-value">
+                                    <strong id="selectedDiscountLabel">Select</strong>
+                                    <i class="fa-solid fa-chevron-right"></i>
+                                </span>
+                            </button>
+
+                            <!-- Legacy promo values retained for current JS compatibility -->
+                            <div class="hidden" aria-hidden="true">
+                                <input type="text" id="bookingPromoCode" tabindex="-1">
+                                <button type="button" id="applyPromoButton" tabindex="-1">Apply</button>
+                                <div id="promoBookingMessage"></div>
+                            </div>
+
+                            <div class="summary-row promo-discount-row hidden" id="summaryPromoRow">
+                                <span>Tripswonder Discount</span>
+                                <strong id="summaryPromoDiscount">-₱0</strong>
+                            </div>
+
+                        </div>
+
+                        <!-- Referral stays separate because it does not reduce booking total -->
+                        <div class="referral-box compact-referral-box">
+
+                            <div class="referral-heading">
+                                <div>
+                                    <span class="referral-mini-icon">
+                                        <i class="fa-solid fa-user-group"></i>
+                                    </span>
+
+                                    <div class="referral-heading-copy">
+                                        <span>Referral Code</span>
+                                        <small>Optional • does not reduce your total</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="referral-input-row">
+                                <input type="text"
+                                       id="referralCode"
+                                       placeholder="Enter referral code"
+                                       autocomplete="off"
+                                       maxlength="40">
+
+                                <button type="button" id="applyReferralButton">
+                                    Apply
+                                </button>
+                            </div>
+
+                            <div class="referral-message hidden" id="referralMessage"></div>
 
                         </div>
 
                     </div>
 
-                </div>
 
+                    <!-- RIGHT: TOTAL / DEPOSIT -->
+                    <div class="payment-total-card">
 
-                <div
-                    class="package-error hidden"
-                    id="packageError">
+                        <div class="payment-total-head">
+                            <span>Booking Total</span>
+                            <small>Final amount for this booking</small>
+                        </div>
 
-                    <i class="fa-solid fa-triangle-exclamation"></i>
+                        <strong class="payment-total-amount" id="summaryTotal">₱0</strong>
 
-                    <strong>
-                        Package could not be loaded.
-                    </strong>
+                        <div class="payment-total-divider"></div>
 
-                    <a href="home.html">
-                        Choose another package
-                    </a>
+                        <div class="payment-money-grid">
+
+                            <div class="payment-money-item deposit-row">
+                                <span class="payment-money-icon">
+                                    <i class="fa-solid fa-wallet"></i>
+                                </span>
+
+                                <div>
+                                    <small>Initial Deposit Required</small>
+                                    <strong id="requiredDeposit">₱500</strong>
+                                </div>
+                            </div>
+
+                            <div class="payment-money-item balance-row">
+                                <span class="payment-money-icon">
+                                    <i class="fa-solid fa-coins"></i>
+                                </span>
+
+                                <div>
+                                    <small>Remaining Balance</small>
+                                    <strong id="summaryRemainingBalance">₱0</strong>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <small class="deposit-breakdown" id="depositBreakdown">
+                            ₱500 × 1 pax
+                        </small>
+
+                        <div class="payment-summary-note">
+                            <i class="fa-solid fa-circle-info"></i>
+
+                            <span>
+                                Your initial deposit is deducted from the total booking amount.
+                                Remaining balance will be settled based on Trips Wonder payment instructions.
+                            </span>
+                        </div>
+
+                    </div>
 
                 </div>
 
@@ -211,803 +692,472 @@
 
 
             <!-- =================================================
-                 BOOKING FORM
+                 05 PAYMENT METHOD
             ================================================== -->
+            <div class="requested-date-payment-note hidden" id="requestedDatePaymentNote">
+                <i class="fa-solid fa-calendar-check"></i>
+                <div>
+                    <strong>Date request only — no payment required yet</strong>
+                    <span>
+                        Your preferred date will be reviewed by Trips Wonder first.
+                        Payment will be requested only after availability is approved.
+                    </span>
+                </div>
+            </div>
 
-            <form
-                id="clientBookingForm"
-                class="booking-form">
+            <section class="form-card booking-section payment-card" id="paymentMethodSection">
 
+                <div class="form-card-heading">
+                    <span class="section-number">05</span>
+                    <div>
+                        <h2>Payment Method</h2>
+                        <p>Select how you want to pay your initial deposit.</p>
+                    </div>
+                </div>
 
-                <!-- =============================================
-                     CUSTOMER INFORMATION
-                ============================================== -->
+                <div class="payment-methods">
 
-                <section class="form-card">
+                    <label class="payment-option payment-option-primary">
+                        <input type="radio"
+                               name="paymentMethod"
+                               value="gcash"
+                               required>
 
-                    <div class="form-card-heading">
-
-                        <span class="section-number">
-                            01
+                        <span class="payment-option-content">
+                            <span class="payment-logo-icon gcash">
+                                <i class="fa-solid fa-mobile-screen-button"></i>
+                            </span>
+                            <strong>GCash</strong>
+                            <small>Pay using QR or account number</small>
                         </span>
-
-                        <div>
-
-                            <h2>
-                                Customer Information
-                            </h2>
-
-                            <p>
-                                Tell us who is making this booking.
-                            </p>
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="form-grid">
-
-
-                        <div class="form-field full">
-
-                            <label for="customerName">
-                                Full Name *
-                            </label>
-
-                            <input
-                                type="text"
-                                id="customerName"
-                                placeholder="Enter your full name"
-                                autocomplete="name"
-                                required>
-
-                        </div>
-
-
-                        <div class="form-field">
-
-                            <label for="customerContact">
-                                Contact Number *
-                            </label>
-
-                            <input
-                                type="tel"
-                                id="customerContact"
-                                placeholder="09XXXXXXXXX"
-                                autocomplete="tel"
-                                required>
-
-                        </div>
-
-
-                        <div class="form-field">
-
-                            <label for="customerEmail">
-                                Email Address *
-                            </label>
-
-                            <input
-                                type="email"
-                                id="customerEmail"
-                                placeholder="your@email.com"
-                                autocomplete="email"
-                                required>
-
-                        </div>
-
-
-                        <div class="form-field full">
-
-                            <label for="customerFacebook">
-                                Facebook Name
-                            </label>
-
-                            <input
-                                type="text"
-                                id="customerFacebook"
-                                placeholder="Facebook name">
-
-                        </div>
-
-
-                    </div>
-
-                </section>
-
-
-                <!-- =============================================
-                     TRAVEL DETAILS
-                ============================================== -->
-
-                <section class="form-card">
-
-                    <div class="form-card-heading">
-
-                        <span class="section-number">
-                            02
-                        </span>
-
-                        <div>
-
-                            <h2>
-                                Travel Details
-                            </h2>
-
-                            <p>
-                                Select your preferred travel details.
-                            </p>
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="form-grid">
-
-
-                        <div class="form-field">
-
-                            <label for="travelDate">
-                                Travel Date *
-                            </label>
-
-                            <input
-                                type="date"
-                                id="travelDate"
-                                required>
-
-                        </div>
-
-
-                        <div class="form-field">
-
-                            <label for="numberOfGuests">
-                                Total Number of Pax *
-                            </label>
-
-                            <input
-                                type="number"
-                                id="numberOfGuests"
-                                min="1"
-                                value="1"
-                                required>
-
-                            <small class="field-help">
-                                Include adults and children in the total headcount.
-                            </small>
-
-                        </div>
-
-
-                        <div
-                            class="form-field hidden"
-                            id="childrenFreeField">
-
-                            <label
-                                for="children0To3"
-                                id="childrenFreeLabel">
-                                Children 0–3 yrs
-                            </label>
-
-                            <input
-                                type="number"
-                                id="children0To3"
-                                min="0"
-                                value="0">
-
-                            <small class="field-help">
-                                FREE package • lap seat in van • share bed
-                            </small>
-
-                        </div>
-
-
-                        <div
-                            class="form-field hidden"
-                            id="childrenDiscountField">
-
-                            <label
-                                for="children4To8"
-                                id="childrenDiscountLabel">
-                                Children 4–8 yrs
-                            </label>
-
-                            <input
-                                type="number"
-                                id="children4To8"
-                                min="0"
-                                value="0">
-
-                            <small
-                                class="field-help"
-                                id="childrenDiscountHelp">
-                                Discounted child rate
-                            </small>
-
-                        </div>
-
-
-                        <div class="form-field full">
-
-                            <label for="pickupPoint">
-                                Pick-up Location *
-                            </label>
-
-                            <select
-                                id="pickupPoint"
-                                required>
-
-                                <option value="">
-                                    Select pick-up location
-                                </option>
-
-                                <option value="Pasay - Uniqlo">
-                                    Pasay – Uniqlo
-                                </option>
-
-                                <option value="Greenfield Shaw">
-                                    Greenfield Shaw
-                                </option>
-
-                                <option value="Quezon Ave / Centris">
-                                    Quezon Ave / Centris
-                                </option>
-
-                                <option value="Other / Along the Way">
-                                    Other / Along the Way
-                                </option>
-
-                            </select>
-
-                        </div>
-
-
-                        <div
-                            class="form-field full hidden"
-                            id="otherPickupField">
-
-                            <label for="otherPickup">
-                                Requested Pick-up Location
-                            </label>
-
-                            <input
-                                type="text"
-                                id="otherPickup"
-                                placeholder="Enter requested pick-up location">
-
-                        </div>
-
-
-                        <div class="form-field full">
-                            <label for="accommodation">Included Accommodation</label>
-                            <input type="text" id="accommodation"
-                                value="Loading included accommodation..." readonly>
-                            <small class="field-help">
-                                Included in your package. Optional upgrades will be available after you submit your booking.
-                            </small>
-                        </div>
-
-
-                        <div class="form-field full">
-
-                            <label for="specialRequest">
-                                Special Request
-                            </label>
-
-                            <textarea
-                                id="specialRequest"
-                                rows="3"
-                                placeholder="Optional requests or notes..."></textarea>
-
-                        </div>
-
-
-                    </div>
-
-                </section>
-
-
-                <!-- =============================================
-                     BOOKING SUMMARY
-                ============================================== -->
-
-                <section class="form-card">
-
-                    <div class="form-card-heading">
-
-                        <span class="section-number">
-                            03
-                        </span>
-
-                        <div>
-
-                            <h2>
-                                Booking Summary
-                            </h2>
-
-                            <p>
-                                Review the estimated booking amount.
-                            </p>
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="booking-summary">
-
-
-                        <div class="summary-row">
-
-                            <span>
-                                Package Rate
-                            </span>
-
-                            <strong id="summaryPackageRate">
-                                ₱0
-                            </strong>
-
-                        </div>
-
-
-                        <div class="summary-row">
-
-                            <span>
-                                Number of Pax
-                            </span>
-
-                            <strong id="summaryPax">
-                                1
-                            </strong>
-
-                        </div>
-
-
-                        <div class="summary-row">
-
-                            <span>
-                                Package Subtotal
-                            </span>
-
-                            <strong id="summarySubtotal">
-                                ₱0
-                            </strong>
-
-                        </div>
-
-
-                        <div
-                            class="summary-row hidden"
-                            id="summaryChildFreeRow">
-
-                            <span>
-                                Children 0–3 (FREE)
-                            </span>
-
-                            <strong id="summaryChildFree">
-                                0 pax
-                            </strong>
-
-                        </div>
-
-
-                        <div
-                            class="summary-row hidden"
-                            id="summaryChildDiscountRow">
-
-                            <span>
-                                Kids Discount (4–8 yrs)
-                            </span>
-
-                            <strong id="summaryChildDiscount">
-                                -₱0
-                            </strong>
-
-                        </div>
-
-
-                        <div
-                            class="summary-row hidden"
-                            id="summaryExclusiveRow">
-
-                            <span>
-                                Exclusive Tour Benefit
-                            </span>
-
-                            <strong id="summaryExclusiveDiscount">
-                                -₱0
-                            </strong>
-
-                        </div>
-
-
-                        <div class="summary-row">
-
-                            <span>
-                                Accommodation
-                            </span>
-
-                            <strong id="summaryAccommodation">
-                                Included
-                            </strong>
-
-                        </div>
-
-
-                        <div class="promo-booking-box">
-
-                            <label for="bookingPromoCode">
-                                Promo Code
-                            </label>
-
-                            <div class="promo-booking-input-row">
-
-                                <input
-                                    type="text"
-                                    id="bookingPromoCode"
-                                    placeholder="Enter promo code"
-                                    autocomplete="off"
-                                    maxlength="40">
-
-                                <button
-                                    type="button"
-                                    id="applyPromoButton">
-
-                                    Apply
-
-                                </button>
-
-                            </div>
-
-                            <div
-                                class="promo-booking-message hidden"
-                                id="promoBookingMessage">
-                            </div>
-
-                        </div>
-
-
-                        <div
-                            class="summary-row promo-discount-row hidden"
-                            id="summaryPromoRow">
-
-                            <span>
-                                Promo Discount
-                            </span>
-
-                            <strong id="summaryPromoDiscount">
-                                -₱0
-                            </strong>
-
-                        </div>
-
-
-                        <div class="summary-row total">
-
-                            <span>
-                                Estimated Total
-                            </span>
-
-                            <strong id="summaryTotal">
-                                ₱0
-                            </strong>
-
-                        </div>
-
-                    </div>
-
-                </section>
-
-
-                <!-- =============================================
-                     INITIAL DEPOSIT
-                ============================================== -->
-
-                <section class="form-card payment-card">
-
-                    <div class="form-card-heading">
-
-                        <span class="section-number">
-                            04
-                        </span>
-
-                        <div>
-
-                            <h2>
-                                Initial Deposit
-                            </h2>
-
-                            <p>
-                                Payment must be sent before submitting
-                                your booking request.
-                            </p>
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="deposit-summary">
-
-                        <span>
-                            Required Initial Deposit
-                        </span>
-
-                        <strong id="requiredDeposit">
-                            ₱500
-                        </strong>
-
-                        <small id="depositBreakdown">
-                            ₱500 × 1 pax
-                        </small>
-
-                    </div>
-
-
-                    <!-- PAYMENT METHOD -->
-
-                    <div class="form-field full">
-
-                        <label>
-                            Payment Method *
-                        </label>
-
-
-                        <div class="payment-methods">
-
-
-                            <label class="payment-option">
-
-                                <input
-                                    type="radio"
-                                    name="paymentMethod"
-                                    value="gcash"
-                                    required>
-
-                                <span class="payment-option-content">
-
-                                    <i class="fa-solid fa-mobile-screen-button"></i>
-
-                                    <strong>
-                                        GCash
-                                    </strong>
-
-                                </span>
-
-                            </label>
-
-
-                            <label class="payment-option">
-
-                                <input
-                                    type="radio"
-                                    name="paymentMethod"
-                                    value="bank"
-                                    required>
-
-                                <span class="payment-option-content">
-
-                                    <i class="fa-solid fa-building-columns"></i>
-
-                                    <strong>
-                                        Bank Transfer
-                                    </strong>
-
-                                </span>
-
-                            </label>
-
-
-                        </div>
-
-                    </div>
-
-
-                    <!-- PAYMENT INSTRUCTIONS -->
-
-                    <div
-                        class="payment-instructions hidden"
-                        id="paymentInstructions">
-
-                        <div id="paymentInstructionsContent">
-                        </div>
-
-                    </div>
-
-
-                    <!-- REFERENCE -->
-
-                    <div class="form-field full">
-
-                        <label for="paymentReference">
-                            Payment Reference Number *
-                        </label>
-
-                        <input
-                            type="text"
-                            id="paymentReference"
-                            placeholder="Enter your payment reference number"
-                            autocomplete="off"
-                            required>
-
-                        <small class="field-help">
-                            Your payment will still be verified by our admin.
-                        </small>
-
-                    </div>
-
-                </section>
-
-
-                <!-- =============================================
-                     AGREEMENT
-                ============================================== -->
-
-                <section class="form-card agreement-card">
-
-                    <label class="agreement-check">
-
-                        <input
-                            type="checkbox"
-                            id="bookingAgreement"
-                            required>
-
-                        <span>
-                            I confirm that the information provided is correct
-                            and understand that my booking will only be confirmed
-                            after Trips Wonder verifies my payment.
-                        </span>
-
                     </label>
 
-                </section>
+                    <label class="payment-option">
+                        <input type="radio"
+                               name="paymentMethod"
+                               value="bank"
+                               required>
+
+                        <span class="payment-option-content">
+                            <span class="payment-logo-icon">
+                                <i class="fa-solid fa-building-columns"></i>
+                            </span>
+                            <strong>Bank Transfer</strong>
+                            <small>Transfer to our bank account</small>
+                        </span>
+                    </label>
+
+                </div>
+
+                <!-- Existing JS fallback container -->
+                <div class="payment-instructions hidden" id="paymentInstructions">
+                    <div id="paymentInstructionsContent"></div>
+                </div>
+
+                <!-- Reference remains in the document for JS/form compatibility.
+                     New JS will show it inside the appropriate payment modal. -->
+                <div class="form-field full payment-reference-fallback hidden"
+                     id="paymentReferenceField">
+                    <label for="paymentReference">Payment Reference Number *</label>
+                    <input type="text"
+                           id="paymentReference"
+                           placeholder="Enter your payment reference number"
+                           autocomplete="off">
+                    <small class="field-help">
+                        Your payment will still be verified by our admin.
+                    </small>
+                </div>
+
+            </section>
 
 
-                <!-- =============================================
-                     SUBMIT
-                ============================================== -->
+            <!-- =================================================
+                 AGREEMENT / SUBMIT
+            ================================================== -->
+            <section class="form-card agreement-card">
+                <label class="agreement-check">
+                    <input type="checkbox" id="bookingAgreement" required>
+                    <span id="bookingAgreementText">
+                        I confirm that the information provided is correct and understand
+                        that my booking will only be confirmed after Trips Wonder verifies
+                        my payment.
+                    </span>
+                </label>
+            </section>
 
-                <div class="booking-submit-area">
-
-                    <button
-                        type="submit"
+            <div class="booking-submit-area">
+                <button type="submit"
                         class="submit-booking-button"
                         id="submitBookingButton">
+                    <span>Proceed to Payment</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
 
-                        <i class="fa-solid fa-paper-plane"></i>
-
-                        Submit Booking Request
-
-                    </button>
-
-
-                    <p>
-                        Payment reference is required before your
-                        booking request can be submitted.
-                    </p>
-
-                </div>
-
-
-            </form>
-
-        </div>
-
-    </main>
-
-
-    <!-- =====================================================
-         SUCCESS MODAL
-    ====================================================== -->
-
-    <div
-        class="success-modal"
-        id="bookingSuccessModal"
-        aria-hidden="true">
-
-        <div class="success-modal-backdrop">
-        </div>
-
-
-        <div class="success-modal-panel">
-
-            <div class="success-icon">
-
-                <i class="fa-solid fa-check"></i>
-
+                <p>
+                    Your booking details will be locked once the booking request is submitted.
+                </p>
             </div>
 
+        </form>
 
-            <h2>
-                Booking Request Received
-            </h2>
-
-
-            <p>
-                Thank you! Your booking details and payment
-                reference have been submitted for verification.
-            </p>
+    </div>
+</main>
 
 
-            <div class="success-reference">
+<!-- =========================================================
+     PACKAGE DETAILS MODAL
+========================================================= -->
+<div class="booking-modal" id="packageDetailsModal" aria-hidden="true">
+    <div class="booking-modal-backdrop" data-close-modal="packageDetailsModal"></div>
 
-                <span>
-                    Booking Number
-                </span>
+    <div class="booking-modal-panel package-modal-panel">
+        <div class="modal-header">
+            <div>
+                <span>TOUR INFORMATION</span>
+                <h2 id="packageDetailsModalTitle">Package Details</h2>
+            </div>
+            <button type="button"
+                    class="modal-close"
+                    data-close-modal="packageDetailsModal"
+                    aria-label="Close">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
 
-                <strong id="bookingRequestReference">
-                    —
-                </strong>
+        <div class="package-detail-modal-content" id="packageDetailsModalContent">
+            <div class="modal-empty-state">
+                <i class="fa-solid fa-map-location-dot"></i>
+                <span>Package information will appear here.</span>
+            </div>
+        </div>
+    </div>
+</div>
 
+
+<!-- =========================================================
+     ACCOMMODATION PHOTO GALLERY
+========================================================= -->
+<div class="booking-modal" id="accommodationGalleryModal" aria-hidden="true">
+    <div class="booking-modal-backdrop" data-close-modal="accommodationGalleryModal"></div>
+
+    <div class="booking-modal-panel gallery-modal-panel">
+
+        <div class="modal-header">
+            <div>
+                <span>ACCOMMODATION</span>
+                <h2 id="galleryAccommodationName">Room Photos</h2>
             </div>
 
+            <button type="button"
+                    class="modal-close"
+                    data-close-modal="accommodationGalleryModal"
+                    aria-label="Close">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
 
-            <small>
-                Your booking is already saved. You may now enhance
-                this same booking with an optional accommodation upgrade.
-            </small>
+        <div class="gallery-main">
+            <button type="button"
+                    class="gallery-nav gallery-prev"
+                    id="galleryPrevButton"
+                    aria-label="Previous photo">
+                <i class="fa-solid fa-chevron-left"></i>
+            </button>
 
-            <div class="post-booking-addons hidden" id="postBookingAddons">
-                <div class="post-booking-current">
-                    <span class="post-booking-current-label">CURRENT ACCOMMODATION</span>
-                    <div class="post-booking-current-row">
-                        <div>
-                            <strong id="currentIncludedAccommodation">Package Included Accommodation</strong>
-                            <small>Already included in your booking</small>
-                        </div>
-                        <span class="included-badge"><i class="fa-solid fa-check"></i> Included</span>
-                    </div>
+            <img id="galleryMainImage" src="" alt="Accommodation">
+
+            <button type="button"
+                    class="gallery-nav gallery-next"
+                    id="galleryNextButton"
+                    aria-label="Next photo">
+                <i class="fa-solid fa-chevron-right"></i>
+            </button>
+        </div>
+
+        <div class="gallery-counter" id="galleryCounter">1 / 1</div>
+        <div class="gallery-thumbnails" id="galleryThumbnails"></div>
+
+        <small class="gallery-note" id="galleryNote">
+            Sample photos only. Actual room may vary.
+        </small>
+    </div>
+</div>
+
+
+<!-- =========================================================
+     TRIPSWONDER DISCOUNT MODAL
+========================================================= -->
+<div class="booking-modal" id="discountModal" aria-hidden="true">
+    <div class="booking-modal-backdrop" data-close-modal="discountModal"></div>
+
+    <div class="booking-modal-panel discount-modal-panel">
+
+        <div class="modal-header">
+            <div>
+                <span>SAVE ON YOUR TRIP</span>
+                <h2>Tripswonder Discount</h2>
+            </div>
+
+            <button type="button"
+                    class="modal-close"
+                    data-close-modal="discountModal"
+                    aria-label="Close">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <p class="modal-description">
+            Choose one eligible Trips Wonder promo for this booking.
+        </p>
+
+        <div class="discount-list" id="discountList">
+            <div class="modal-empty-state" id="discountEmptyState">
+                <i class="fa-solid fa-ticket"></i>
+                <strong>No eligible discount yet</strong>
+                <span>Available promos for this booking will appear here.</span>
+            </div>
+        </div>
+
+        <button type="button"
+                class="modal-primary-button"
+                id="confirmDiscountButton"
+                disabled>
+            Apply Discount
+        </button>
+    </div>
+</div>
+
+
+<!-- =========================================================
+     GCASH PAYMENT MODAL
+========================================================= -->
+<div class="booking-modal payment-modal" id="gcashPaymentModal" aria-hidden="true">
+    <div class="booking-modal-backdrop" data-close-modal="gcashPaymentModal"></div>
+
+    <div class="booking-modal-panel gcash-modal-panel">
+
+        <div class="modal-header">
+            <div>
+                <span>INITIAL DEPOSIT</span>
+                <h2>Pay with GCash</h2>
+            </div>
+
+            <button type="button"
+                    class="modal-close"
+                    data-close-modal="gcashPaymentModal"
+                    aria-label="Close">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div class="gcash-payment-layout">
+
+            <div class="gcash-qr-card">
+                <div class="gcash-qr-wrap">
+                    <img id="gcashQrImage"
+                         src=""
+                         alt="Trips Wonder GCash QR Code">
                 </div>
 
-                <div class="post-booking-addons-heading">
-                    <span>OPTIONAL UPGRADE</span>
-                    <h3>Want to upgrade your stay?</h3>
-                    <p>
-                        Optional only. Your current accommodation is already included in your package.
-                        Select one room below only if you want to upgrade.
-                    </p>
-                </div>
+                <button type="button"
+                        class="download-qr-button"
+                        id="downloadGcashQrButton">
+                    <i class="fa-solid fa-download"></i>
+                    Download QR Code
+                </button>
+            </div>
 
-                <div class="post-booking-addon-list" id="postBookingAddonList"></div>
+            <div class="gcash-payment-details">
 
-                <div class="post-booking-selected-summary hidden" id="postBookingSelectedSummary">
+                <div class="gcash-account-card">
                     <div>
-                        <span>SELECTED UPGRADE</span>
-                        <strong id="selectedAddonName">—</strong>
+                        <span>Account Name</span>
+                        <strong id="gcashAccountName">Trips Wonder</strong>
                     </div>
-                    <div class="post-booking-selected-pricing">
-                        <span id="selectedAddonAmount">+₱0</span>
-                        <small id="selectedAddonNewTotal">New total: ₱0</small>
+
+                    <div>
+                        <span>GCash Number</span>
+                        <strong id="gcashAccountNumber">—</strong>
                     </div>
                 </div>
 
-                <div class="post-booking-addon-message hidden" id="postBookingAddonMessage"></div>
+                <div class="gcash-amount-card">
+                    <span>Initial Deposit Required</span>
+                    <strong id="gcashDepositAmount">₱0</strong>
+                    <small id="gcashDepositBreakdown">—</small>
+                </div>
+
+                <div class="gcash-reference-field">
+                    <label for="gcashReferenceInput">
+                        GCash Reference Number *
+                    </label>
+                    <input type="text"
+                           id="gcashReferenceInput"
+                           placeholder="Enter GCash reference number"
+                           inputmode="numeric"
+                           autocomplete="off">
+                </div>
+
+                <div class="payment-receipt-reminder">
+                    <i class="fa-solid fa-circle-info"></i>
+                    <span>
+                        Please keep your initial deposit receipt until your payment
+                        has been verified.
+                    </span>
+                </div>
+
+                <button type="button"
+                        class="modal-primary-button"
+                        id="confirmGcashPaymentButton">
+                    Submit Payment Reference
+                </button>
+
             </div>
-
-            <button type="button" class="success-primary-action hidden" id="addSelectedAddonButton">
-                <i class="fa-solid fa-plus"></i> Add Upgrade to Booking
-            </button>
-
-            <button type="button" class="success-secondary-action" id="successDoneButton">
-                <i class="fa-solid fa-bed"></i> Keep Included Accommodation
-            </button>
-
         </div>
 
     </div>
+</div>
 
 
-    <!-- =====================================================
-         SCRIPT
-    ====================================================== -->
+<!-- =========================================================
+     BANK PAYMENT MODAL
+========================================================= -->
+<div class="booking-modal payment-modal" id="bankPaymentModal" aria-hidden="true">
+    <div class="booking-modal-backdrop" data-close-modal="bankPaymentModal"></div>
 
-    <script
-        type="module"
-        src="../../assets/js/customer/booking.js">
-    </script>
+    <div class="booking-modal-panel payment-method-modal-panel">
 
+        <div class="modal-header">
+            <div>
+                <span>INITIAL DEPOSIT</span>
+                <h2>Bank Transfer</h2>
+            </div>
+
+            <button type="button"
+                    class="modal-close"
+                    data-close-modal="bankPaymentModal"
+                    aria-label="Close">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div class="bank-details-card">
+            <div>
+                <span>Bank</span>
+                <strong id="bankName">—</strong>
+            </div>
+            <div>
+                <span>Account Name</span>
+                <strong id="bankAccountName">—</strong>
+            </div>
+            <div>
+                <span>Account Number</span>
+                <strong id="bankAccountNumber">—</strong>
+            </div>
+        </div>
+
+        <div class="gcash-amount-card">
+            <span>Initial Deposit Required</span>
+            <strong id="bankDepositAmount">₱0</strong>
+        </div>
+
+        <div class="gcash-reference-field">
+            <label for="bankReferenceInput">Payment Reference Number *</label>
+            <input type="text"
+                   id="bankReferenceInput"
+                   placeholder="Enter payment reference number"
+                   autocomplete="off">
+        </div>
+
+        <div class="payment-receipt-reminder">
+            <i class="fa-solid fa-circle-info"></i>
+            <span>
+                Please keep your initial deposit receipt until your payment
+                has been verified.
+            </span>
+        </div>
+
+        <button type="button"
+                class="modal-primary-button"
+                id="confirmBankPaymentButton">
+            Submit Payment Reference
+        </button>
+
+    </div>
+</div>
+
+
+<!-- =========================================================
+     PAYMENT SUBMITTED / FOR VERIFICATION
+========================================================= -->
+<div class="success-modal" id="bookingSuccessModal" aria-hidden="true">
+    <div class="success-modal-backdrop"></div>
+
+    <div class="success-modal-panel">
+
+        <div class="verification-icon">
+            <i class="fa-solid fa-clock"></i>
+        </div>
+
+        <span class="verification-status" id="successStatusLabel">FOR PAYMENT VERIFICATION</span>
+
+        <h2 id="successTitle">Booking Request Received</h2>
+
+        <p id="successMessage">
+            Your booking details and payment reference have been submitted.
+            Our admin will verify your payment before your booking becomes confirmed.
+        </p>
+
+        <div class="success-reference">
+            <span>Booking Number</span>
+            <strong id="bookingRequestReference">—</strong>
+        </div>
+
+        <div class="verification-summary">
+            <div>
+                <span>Payment Status</span>
+                <strong id="successPaymentStatus">For Verification</strong>
+            </div>
+            <div>
+                <span>Booking Status</span>
+                <strong id="successBookingStatus">Pending Confirmation</strong>
+            </div>
+        </div>
+
+        <small>
+            You can keep your booking number for reference.
+        </small>
+
+        <!-- Legacy post-booking elements are retained but hidden.
+             Accommodation upgrades are now selected before payment. -->
+        <div class="hidden" id="postBookingAddons">
+            <div id="currentIncludedAccommodation"></div>
+            <div id="postBookingAddonList"></div>
+            <div id="postBookingSelectedSummary">
+                <span id="selectedAddonName"></span>
+                <span id="selectedAddonAmount"></span>
+                <span id="selectedAddonNewTotal"></span>
+            </div>
+            <div id="postBookingAddonMessage"></div>
+        </div>
+
+        <button type="button"
+                class="hidden"
+                id="addSelectedAddonButton">
+            Add Upgrade to Booking
+        </button>
+
+        <button type="button"
+                class="success-primary-action"
+                id="successDoneButton">
+            Done
+        </button>
+
+    </div>
+</div>
+
+
+<script type="module" src="../../assets/js/customer/booking.js"></script>
 
 </body>
-
 </html>

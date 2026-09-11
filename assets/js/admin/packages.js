@@ -247,6 +247,40 @@ const addPickupLocation =
                 "addAccommodation"
             );
 
+        const addAccommodationTop =
+            document.getElementById(
+                "addAccommodationTop"
+            );
+
+        const accommodationEmptyHelper =
+            document.getElementById(
+                "accommodationEmptyHelper"
+            );
+
+        // ======================================================
+        // TRAVEL SCHEDULE AVAILABILITY
+        // ======================================================
+
+        const addTravelSchedule =
+            document.getElementById(
+                "addTravelSchedule"
+            );
+
+        const travelScheduleList =
+            document.getElementById(
+                "travelScheduleList"
+            );
+
+        const travelScheduleEmpty =
+            document.getElementById(
+                "travelScheduleEmpty"
+            );
+
+        const travelScheduleTemplate =
+            document.getElementById(
+                "travelScheduleTemplate"
+            );
+
 
 
 // ======================================================
@@ -594,6 +628,20 @@ addPickupLocation?.addEventListener(
                     !day0IsEnabled
                 );
 
+            const requestedDateEnabled =
+                document.getElementById(
+                    "requestedTravelDateEnabled"
+                )?.checked === true;
+
+            document
+                .getElementById(
+                    "requestedTravelDateFields"
+                )
+                ?.classList.toggle(
+                    "rule-disabled",
+                    !requestedDateEnabled
+                );
+
             updateRegularSchedulePreview();
         }
 
@@ -667,6 +715,15 @@ addPickupLocation?.addEventListener(
         document
             .getElementById(
                 "day0Enabled"
+            )
+            ?.addEventListener(
+                "change",
+                updateScheduleSettingsVisibility
+            );
+
+        document
+            .getElementById(
+                "requestedTravelDateEnabled"
             )
             ?.addEventListener(
                 "change",
@@ -857,8 +914,19 @@ addPickupLocation?.addEventListener(
                                         day0Offset: -1,
                                         pickupStartTime: "",
                                         pickupEndTime: "",
-                                        departureNote: ""
+                                        departureNote: "",
+                                        requestedTravelDateEnabled: false,
+                                        requestedTravelDateMinPax: 10
                                     },
+
+                                schedules:
+                                    Array.isArray(data.schedules)
+                                        ? data.schedules
+                                        : (
+                                            Array.isArray(data.travelSchedules)
+                                                ? data.travelSchedules
+                                                : []
+                                        ),
 
                                 createdAt:
                                     data.createdAt ||
@@ -1870,6 +1938,20 @@ addPickupLocation?.addEventListener(
                 ""
             );
 
+            const requestedTravelDateEnabled =
+                document.getElementById(
+                    "requestedTravelDateEnabled"
+                );
+
+            if (requestedTravelDateEnabled) {
+                requestedTravelDateEnabled.checked = false;
+            }
+
+            setInputValue(
+                "requestedTravelDateMinPax",
+                10
+            );
+
             updateScheduleSettingsVisibility();
 
 
@@ -1980,6 +2062,14 @@ if (
 
             accommodationCount =
                 0;
+
+            syncAccommodationEmptyState();
+
+            if (travelScheduleList) {
+                travelScheduleList.innerHTML = "";
+            }
+
+            syncTravelScheduleEmptyState();
 
 
             // ==============================================
@@ -2301,7 +2391,9 @@ if (
                 JSON.stringify(existingGallery);
             card.dataset.accommodationId =
                 accommodation.id ||
-                "";
+                `acc_${Date.now()}_${Math.random()
+                    .toString(36)
+                    .slice(2, 8)}`;
 
             const amenitiesValue =
                 Array.isArray(accommodation.amenities)
@@ -2602,6 +2694,9 @@ if (
             `;
 
             accommodationList.appendChild(card);
+
+            syncAccommodationEmptyState();
+            refreshTravelScheduleAccommodationInventories();
 
             updateAccommodationCompactSummary(card);
             setAccommodationCardExpanded(card, false);
@@ -3175,6 +3270,1026 @@ if (
 
                 accommodationCount =
                     remainingCards.length;
+
+                syncAccommodationEmptyState();
+                refreshTravelScheduleAccommodationInventories();
+
+            }
+        );
+
+
+        // ======================================================
+        // ACCOMMODATION EMPTY STATE
+        // ======================================================
+
+        function syncAccommodationEmptyState() {
+
+            if (!accommodationEmptyHelper) {
+                return;
+            }
+
+            const count =
+                accommodationList
+                    ?.querySelectorAll(
+                        ".accommodation-card"
+                    ).length || 0;
+
+            accommodationEmptyHelper.style.display =
+                count > 0
+                    ? "none"
+                    : "flex";
+
+        }
+
+
+        // ======================================================
+        // TRAVEL SCHEDULE HELPERS
+        // ======================================================
+
+        function createTravelScheduleId() {
+
+            return `schedule_${Date.now()}_${Math.random()
+                .toString(36)
+                .slice(2, 8)}`;
+
+        }
+
+
+        function formatTravelScheduleTitle(
+            startDate,
+            endDate
+        ) {
+
+            if (!startDate) {
+                return "New Schedule";
+            }
+
+            const formatDate =
+                value => {
+
+                    if (!value) {
+                        return "";
+                    }
+
+                    const date =
+                        new Date(
+                            `${value}T00:00:00`
+                        );
+
+                    if (
+                        Number.isNaN(
+                            date.getTime()
+                        )
+                    ) {
+                        return value;
+                    }
+
+                    return date.toLocaleDateString(
+                        "en-PH",
+                        {
+                            month: "short",
+                            day: "numeric",
+                            year: "numeric"
+                        }
+                    );
+
+                };
+
+            const start =
+                formatDate(startDate);
+
+            const end =
+                formatDate(endDate);
+
+            return end && end !== start
+                ? `${start} – ${end}`
+                : start;
+
+        }
+
+
+        function getAccommodationCardsForSchedule() {
+
+            if (!accommodationList) {
+                return [];
+            }
+
+            return Array.from(
+                accommodationList.querySelectorAll(
+                    ".accommodation-card"
+                )
+            );
+
+        }
+
+
+        function getAccommodationCardSnapshot(
+            card
+        ) {
+
+            const id =
+                card.dataset.accommodationId ||
+                createTravelScheduleId()
+                    .replace(
+                        "schedule_",
+                        "acc_"
+                    );
+
+            card.dataset.accommodationId =
+                id;
+
+            const resortName =
+                card.querySelector(
+                    ".accommodation-resort-name"
+                )?.value?.trim() ||
+                "";
+
+            const name =
+                card.querySelector(
+                    ".accommodation-name"
+                )?.value?.trim() ||
+                "Unnamed Accommodation";
+
+            const defaultUnits =
+                Math.max(
+                    0,
+                    Number(
+                        card.querySelector(
+                            ".accommodation-default-units"
+                        )?.value
+                    ) || 0
+                );
+
+            const active =
+                (
+                    card.querySelector(
+                        ".accommodation-status"
+                    )?.value ||
+                    "active"
+                ) === "active";
+
+            return {
+                id,
+                resortName,
+                name,
+                defaultUnits,
+                active
+            };
+
+        }
+
+
+        function readScheduleInventoryFromCard(
+            scheduleCard
+        ) {
+
+            const inventory = {};
+
+            scheduleCard
+                .querySelectorAll(
+                    ".schedule-accommodation-row"
+                )
+                .forEach(
+                    row => {
+
+                        const accommodationId =
+                            row.dataset.accommodationId ||
+                            "";
+
+                        if (!accommodationId) {
+                            return;
+                        }
+
+                        inventory[
+                            accommodationId
+                        ] = {
+
+                            available:
+                                row.querySelector(
+                                    ".schedule-accommodation-status"
+                                )?.value !== "unavailable",
+
+                            remaining:
+                                Math.max(
+                                    0,
+                                    Number(
+                                        row.querySelector(
+                                            ".schedule-accommodation-units"
+                                        )?.value
+                                    ) || 0
+                                )
+
+                        };
+
+                    }
+                );
+
+            return inventory;
+
+        }
+
+
+        function renderScheduleAccommodationInventory(
+            scheduleCard,
+            sourceInventory = null
+        ) {
+
+            const container =
+                scheduleCard.querySelector(
+                    "[data-schedule-accommodations]"
+                );
+
+            if (!container) {
+                return;
+            }
+
+            const preserved =
+                sourceInventory ||
+                readScheduleInventoryFromCard(
+                    scheduleCard
+                );
+
+            const accommodations =
+                getAccommodationCardsForSchedule()
+                    .map(
+                        getAccommodationCardSnapshot
+                    );
+
+            if (
+                accommodations.length === 0
+            ) {
+
+                container.innerHTML = `
+                    <div class="travel-schedule-empty">
+                        <i class="fa-solid fa-bed"></i>
+                        <div>
+                            <strong>No accommodation options yet</strong>
+                            <span>
+                                Add an accommodation above first.
+                            </span>
+                        </div>
+                    </div>
+                `;
+
+                return;
+            }
+
+            container.innerHTML =
+                accommodations
+                    .map(
+                        accommodation => {
+
+                            const saved =
+                                preserved[
+                                    accommodation.id
+                                ] ||
+                                {};
+
+                            const available =
+                                saved.available !== false &&
+                                accommodation.active;
+
+                            const remaining =
+                                Number.isFinite(
+                                    Number(
+                                        saved.remaining
+                                    )
+                                )
+                                    ? Math.max(
+                                        0,
+                                        Number(
+                                            saved.remaining
+                                        )
+                                    )
+                                    : accommodation
+                                        .defaultUnits;
+
+                            return `
+                                <div
+                                    class="schedule-accommodation-row"
+                                    data-accommodation-id="${escapeHtml(
+                                        accommodation.id
+                                    )}"
+                                >
+
+                                    <div class="schedule-accommodation-name">
+
+                                        <strong>
+                                            ${escapeHtml(
+                                                accommodation.name
+                                            )}
+                                        </strong>
+
+                                        <span>
+                                            ${escapeHtml(
+                                                accommodation.resortName ||
+                                                "Resort not set"
+                                            )}
+                                        </span>
+
+                                    </div>
+
+                                    <select
+                                        class="schedule-accommodation-status"
+                                        aria-label="Accommodation availability"
+                                    >
+                                        <option
+                                            value="available"
+                                            ${available ? "selected" : ""}
+                                        >
+                                            Available
+                                        </option>
+                                        <option
+                                            value="unavailable"
+                                            ${!available ? "selected" : ""}
+                                        >
+                                            Unavailable
+                                        </option>
+                                    </select>
+
+                                    <input
+                                        type="number"
+                                        class="schedule-accommodation-units"
+                                        min="0"
+                                        step="1"
+                                        value="${escapeHtml(
+                                            remaining
+                                        )}"
+                                        aria-label="Available accommodation units"
+                                    >
+
+                                </div>
+                            `;
+
+                        }
+                    )
+                    .join("");
+
+        }
+
+
+        function refreshTravelScheduleAccommodationInventories() {
+
+            if (!travelScheduleList) {
+                return;
+            }
+
+            travelScheduleList
+                .querySelectorAll(
+                    ".travel-schedule-card"
+                )
+                .forEach(
+                    scheduleCard => {
+
+                        const existing =
+                            readScheduleInventoryFromCard(
+                                scheduleCard
+                            );
+
+                        renderScheduleAccommodationInventory(
+                            scheduleCard,
+                            existing
+                        );
+
+                    }
+                );
+
+        }
+
+
+        function syncTravelScheduleEmptyState() {
+
+            if (!travelScheduleEmpty) {
+                return;
+            }
+
+            const count =
+                travelScheduleList
+                    ?.querySelectorAll(
+                        ".travel-schedule-card"
+                    ).length || 0;
+
+            travelScheduleEmpty.style.display =
+                count > 0
+                    ? "none"
+                    : "flex";
+
+        }
+
+
+        function updateTravelScheduleCardTitle(
+            card
+        ) {
+
+            const startDate =
+                card.querySelector(
+                    ".travel-schedule-start-date"
+                )?.value ||
+                "";
+
+            const endDate =
+                card.querySelector(
+                    ".travel-schedule-end-date"
+                )?.value ||
+                "";
+
+            const title =
+                card.querySelector(
+                    ".travel-schedule-title"
+                );
+
+            if (title) {
+
+                title.textContent =
+                    formatTravelScheduleTitle(
+                        startDate,
+                        endDate
+                    );
+
+            }
+
+        }
+
+
+        function normalizeScheduleInventory(
+            schedule = {}
+        ) {
+
+            const inventory = {};
+
+            const source =
+                schedule.accommodationAvailability ||
+                schedule.accommodationInventory ||
+                schedule.accommodations ||
+                {};
+
+            if (
+                Array.isArray(source)
+            ) {
+
+                source.forEach(
+                    item => {
+
+                        const id =
+                            item?.accommodationId ||
+                            item?.id ||
+                            "";
+
+                        if (!id) {
+                            return;
+                        }
+
+                        inventory[id] = {
+                            available:
+                                item.available !== false &&
+                                item.status !== "unavailable",
+                            remaining:
+                                Math.max(
+                                    0,
+                                    Number(
+                                        item.remaining ??
+                                        item.availableUnits ??
+                                        item.units ??
+                                        0
+                                    ) || 0
+                                )
+                        };
+
+                    }
+                );
+
+                return inventory;
+
+            }
+
+            if (
+                source &&
+                typeof source === "object"
+            ) {
+
+                Object.entries(source)
+                    .forEach(
+                        ([id, value]) => {
+
+                            if (
+                                value &&
+                                typeof value === "object"
+                            ) {
+
+                                inventory[id] = {
+                                    available:
+                                        value.available !== false &&
+                                        value.status !== "unavailable",
+                                    remaining:
+                                        Math.max(
+                                            0,
+                                            Number(
+                                                value.remaining ??
+                                                value.availableUnits ??
+                                                value.units ??
+                                                0
+                                            ) || 0
+                                        )
+                                };
+
+                            }
+
+                        }
+                    );
+
+            }
+
+            return inventory;
+
+        }
+
+
+        function addTravelScheduleCard(
+            schedule = {}
+        ) {
+
+            if (
+                !travelScheduleList ||
+                !travelScheduleTemplate
+            ) {
+                return;
+            }
+
+            const fragment =
+                travelScheduleTemplate
+                    .content
+                    .cloneNode(true);
+
+            const card =
+                fragment.querySelector(
+                    ".travel-schedule-card"
+                );
+
+            if (!card) {
+                return;
+            }
+
+            const scheduleId =
+                schedule.id ||
+                schedule.scheduleId ||
+                createTravelScheduleId();
+
+            card.dataset.scheduleId =
+                scheduleId;
+
+            const startInput =
+                card.querySelector(
+                    ".travel-schedule-start-date"
+                );
+
+            const endInput =
+                card.querySelector(
+                    ".travel-schedule-end-date"
+                );
+
+            const statusSelect =
+                card.querySelector(
+                    ".travel-schedule-status"
+                );
+
+            const totalSlotsInput =
+                card.querySelector(
+                    ".travel-schedule-total-slots"
+                );
+
+            const availableSlotsInput =
+                card.querySelector(
+                    ".travel-schedule-available-slots"
+                );
+
+            const visibilitySelect =
+                card.querySelector(
+                    ".travel-schedule-visibility"
+                );
+
+            const noteInput =
+                card.querySelector(
+                    ".travel-schedule-note"
+                );
+
+            const startDate =
+                schedule.startDate ||
+                schedule.date ||
+                "";
+
+            const endDate =
+                schedule.endDate ||
+                "";
+
+            if (startInput) {
+                startInput.value =
+                    String(startDate)
+                        .slice(0, 10);
+            }
+
+            if (endInput) {
+                endInput.value =
+                    String(endDate)
+                        .slice(0, 10);
+            }
+
+            if (statusSelect) {
+                statusSelect.value =
+                    schedule.status ||
+                    (
+                        Number(
+                            schedule.slotsRemaining ??
+                            schedule.availableSlots
+                        ) === 0
+                            ? "full"
+                            : "available"
+                    );
+            }
+
+            if (totalSlotsInput) {
+                totalSlotsInput.value =
+                    Math.max(
+                        0,
+                        Number(
+                            schedule.capacity ??
+                            schedule.totalSlots ??
+                            schedule.slots ??
+                            0
+                        ) || 0
+                    );
+            }
+
+            if (availableSlotsInput) {
+                availableSlotsInput.value =
+                    Math.max(
+                        0,
+                        Number(
+                            schedule.slotsRemaining ??
+                            schedule.availableSlots ??
+                            schedule.slots ??
+                            0
+                        ) || 0
+                    );
+            }
+
+            if (visibilitySelect) {
+                visibilitySelect.value =
+                    schedule.visibility ||
+                    (
+                        schedule.hidden === true
+                            ? "hidden"
+                            : "published"
+                    );
+            }
+
+            if (noteInput) {
+                noteInput.value =
+                    schedule.note ||
+                    schedule.scheduleNote ||
+                    "";
+            }
+
+            travelScheduleList.appendChild(
+                card
+            );
+
+            renderScheduleAccommodationInventory(
+                card,
+                normalizeScheduleInventory(
+                    schedule
+                )
+            );
+
+            updateTravelScheduleCardTitle(
+                card
+            );
+
+            syncTravelScheduleEmptyState();
+
+        }
+
+
+        function populateTravelSchedules(
+            schedules = []
+        ) {
+
+            if (!travelScheduleList) {
+                return;
+            }
+
+            travelScheduleList.innerHTML =
+                "";
+
+            const normalized =
+                Array.isArray(schedules)
+                    ? schedules
+                    : [];
+
+            normalized.forEach(
+                schedule => {
+
+                    addTravelScheduleCard(
+                        schedule
+                    );
+
+                }
+            );
+
+            syncTravelScheduleEmptyState();
+
+        }
+
+
+        function collectTravelSchedules() {
+
+            if (!travelScheduleList) {
+                return [];
+            }
+
+            return Array.from(
+                travelScheduleList.querySelectorAll(
+                    ".travel-schedule-card"
+                )
+            )
+                .map(
+                    card => {
+
+                        const id =
+                            card.dataset.scheduleId ||
+                            createTravelScheduleId();
+
+                        card.dataset.scheduleId =
+                            id;
+
+                        const startDate =
+                            card.querySelector(
+                                ".travel-schedule-start-date"
+                            )?.value ||
+                            "";
+
+                        const endDate =
+                            card.querySelector(
+                                ".travel-schedule-end-date"
+                            )?.value ||
+                            startDate;
+
+                        const status =
+                            card.querySelector(
+                                ".travel-schedule-status"
+                            )?.value ||
+                            "available";
+
+                        const totalSlots =
+                            Math.max(
+                                0,
+                                Number(
+                                    card.querySelector(
+                                        ".travel-schedule-total-slots"
+                                    )?.value
+                                ) || 0
+                            );
+
+                        const availableSlots =
+                            Math.max(
+                                0,
+                                Number(
+                                    card.querySelector(
+                                        ".travel-schedule-available-slots"
+                                    )?.value
+                                ) || 0
+                            );
+
+                        const visibility =
+                            card.querySelector(
+                                ".travel-schedule-visibility"
+                            )?.value ||
+                            "published";
+
+                        const note =
+                            card.querySelector(
+                                ".travel-schedule-note"
+                            )?.value?.trim() ||
+                            "";
+
+                        const accommodationAvailability =
+                            readScheduleInventoryFromCard(
+                                card
+                            );
+
+                        return {
+
+                            id,
+
+                            scheduleId:
+                                id,
+
+                            startDate,
+
+                            endDate,
+
+                            status:
+                                status === "available" &&
+                                totalSlots > 0 &&
+                                availableSlots === 0
+                                    ? "full"
+                                    : status,
+
+                            capacity:
+                                totalSlots,
+
+                            totalSlots,
+
+                            slots:
+                                availableSlots,
+
+                            slotsRemaining:
+                                availableSlots,
+
+                            availableSlots,
+
+                            visibility,
+
+                            hidden:
+                                visibility === "hidden",
+
+                            note,
+
+                            accommodationAvailability
+
+                        };
+
+                    }
+                )
+                .filter(
+                    schedule =>
+                        Boolean(
+                            schedule.startDate
+                        )
+                )
+                .sort(
+                    (a, b) =>
+                        String(a.startDate)
+                            .localeCompare(
+                                String(b.startDate)
+                            )
+                );
+
+        }
+
+
+        function buildAccommodationScheduleAvailability(
+            schedules,
+            accommodationId
+        ) {
+
+            const result = {};
+
+            schedules.forEach(
+                schedule => {
+
+                    const item =
+                        schedule
+                            .accommodationAvailability?.[
+                                accommodationId
+                            ];
+
+                    if (!item) {
+                        return;
+                    }
+
+                    result[
+                        schedule.id
+                    ] = {
+                        available:
+                            item.available !== false,
+                        remaining:
+                            Math.max(
+                                0,
+                                Number(
+                                    item.remaining
+                                ) || 0
+                            )
+                    };
+
+                }
+            );
+
+            return result;
+
+        }
+
+
+        // ======================================================
+        // TRAVEL SCHEDULE EVENTS
+        // ======================================================
+
+        addTravelSchedule?.addEventListener(
+            "click",
+            event => {
+
+                event.preventDefault();
+
+                addTravelScheduleCard();
+
+            }
+        );
+
+
+        travelScheduleList?.addEventListener(
+            "click",
+            event => {
+
+                const removeButton =
+                    event.target.closest(
+                        ".travel-schedule-remove"
+                    );
+
+                if (!removeButton) {
+                    return;
+                }
+
+                const card =
+                    removeButton.closest(
+                        ".travel-schedule-card"
+                    );
+
+                card?.remove();
+
+                syncTravelScheduleEmptyState();
+
+            }
+        );
+
+
+        travelScheduleList?.addEventListener(
+            "input",
+            event => {
+
+                const card =
+                    event.target.closest(
+                        ".travel-schedule-card"
+                    );
+
+                if (card) {
+                    updateTravelScheduleCardTitle(
+                        card
+                    );
+                }
+
+            }
+        );
+
+
+        travelScheduleList?.addEventListener(
+            "change",
+            event => {
+
+                const card =
+                    event.target.closest(
+                        ".travel-schedule-card"
+                    );
+
+                if (card) {
+                    updateTravelScheduleCardTitle(
+                        card
+                    );
+                }
+
+            }
+        );
+
+
+        accommodationList?.addEventListener(
+            "input",
+            event => {
+
+                if (
+                    event.target.matches(
+                        ".accommodation-name, .accommodation-resort-name, .accommodation-default-units"
+                    )
+                ) {
+
+                    refreshTravelScheduleAccommodationInventories();
+
+                }
+
+            }
+        );
+
+
+        accommodationList?.addEventListener(
+            "change",
+            event => {
+
+                if (
+                    event.target.matches(
+                        ".accommodation-status"
+                    )
+                ) {
+
+                    refreshTravelScheduleAccommodationInventories();
+
+                }
 
             }
         );
@@ -3806,6 +4921,26 @@ if (
                 scheduleSettings.departureNote || ""
             );
 
+            const requestedTravelDateEnabled =
+                document.getElementById(
+                    "requestedTravelDateEnabled"
+                );
+
+            if (requestedTravelDateEnabled) {
+                requestedTravelDateEnabled.checked =
+                    scheduleSettings.requestedTravelDateEnabled === true;
+            }
+
+            setInputValue(
+                "requestedTravelDateMinPax",
+                Math.max(
+                    1,
+                    Number(
+                        scheduleSettings.requestedTravelDateMinPax
+                    ) || 10
+                )
+            );
+
             updateScheduleSettingsVisibility();
 
 
@@ -3969,6 +5104,14 @@ if (
                 );
 
             }
+
+            syncAccommodationEmptyState();
+
+            populateTravelSchedules(
+                packageItem.schedules ||
+                packageItem.travelSchedules ||
+                []
+            );
 
 
             renderPackageGallery();
@@ -4296,6 +5439,16 @@ if (
 
                 event.preventDefault();
 
+                addAccommodationCard();
+
+            }
+        );
+
+        addAccommodationTop?.addEventListener(
+            "click",
+            event => {
+
+                event.preventDefault();
 
                 addAccommodationCard();
 
@@ -5386,6 +6539,20 @@ function collectPickupLocations() {
                         departureNote:
                             getInputValue(
                                 "departureNote"
+                            ),
+
+                        requestedTravelDateEnabled:
+                            document.getElementById(
+                                "requestedTravelDateEnabled"
+                            )?.checked === true,
+
+                        requestedTravelDateMinPax:
+                            Math.max(
+                                1,
+                                getNumberInputValue(
+                                    "requestedTravelDateMinPax",
+                                    10
+                                )
                             )
 
                     },
@@ -5401,6 +6568,9 @@ function collectPickupLocations() {
 
                     accommodations:
                         [],
+
+                    schedules:
+                        collectTravelSchedules(),
 
                     itinerary:
                         collectItinerary()
@@ -5963,6 +7133,45 @@ function collectPickupLocations() {
 
                                 gallery,
 
+                                scheduleAvailability:
+                                    buildAccommodationScheduleAvailability(
+                                        packageData.schedules,
+                                        card.dataset.accommodationId
+                                    ),
+
+                                availability:
+                                    packageData.schedules.map(
+                                        schedule => {
+
+                                            const item =
+                                                schedule
+                                                    .accommodationAvailability?.[
+                                                        card.dataset.accommodationId
+                                                    ] ||
+                                                {
+                                                    available:
+                                                        status === "active",
+                                                    remaining:
+                                                        defaultAvailableUnits
+                                                };
+
+                                            return {
+                                                scheduleId:
+                                                    schedule.id,
+                                                available:
+                                                    item.available !== false,
+                                                remaining:
+                                                    Math.max(
+                                                        0,
+                                                        Number(
+                                                            item.remaining
+                                                        ) || 0
+                                                    )
+                                            };
+
+                                        }
+                                    ),
+
                                 active:
                                     status === "active",
 
@@ -5989,6 +7198,14 @@ function collectPickupLocations() {
                             accommodations:
                                 packageData
                                     .accommodations,
+
+                            schedules:
+                                packageData
+                                    .schedules,
+
+                            travelSchedules:
+                                packageData
+                                    .schedules,
 
                             image:
                                 uploadedGallery?.[0]
@@ -6116,6 +7333,9 @@ function collectPickupLocations() {
         // ======================================================
         // INITIAL LOAD
         // ======================================================
+
+        syncAccommodationEmptyState();
+        syncTravelScheduleEmptyState();
 
         loadPackages();
 

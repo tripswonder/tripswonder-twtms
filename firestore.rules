@@ -330,8 +330,13 @@ service cloud.firestore {
 
     match /packages/{packageId} {
 
-      // Existing package behavior preserved.
-      allow read, write: if true;
+      // Public package catalog.
+      allow read: if true;
+
+      // Only Owner/Admin can manage package records.
+      allow create, update: if isOwnerOrAdmin();
+
+      allow delete: if isOwner();
 
       // Customer engagement on package feed posts.
       match /likes/{userId} {
@@ -371,11 +376,18 @@ service cloud.firestore {
 
     match /bookings/{bookingId} {
 
+      // Guest/customer booking page may create a booking request.
       allow create: if true;
 
-      allow read: if true;
+      // Owner/Admin can read all bookings.
+      // Signed-in customers can read only bookings linked to their UID.
+      allow read: if isOwnerOrAdmin()
+                  || (
+                    isSignedIn()
+                    && resource.data.customerUid == request.auth.uid
+                  );
 
-      // Owner/Admin can edit booking payment information.
+      // Owner/Admin can edit booking/payment information.
       allow update: if isOwnerOrAdmin();
 
       allow delete: if isOwner();
@@ -388,7 +400,13 @@ service cloud.firestore {
 
     match /customers/{customerId} {
 
-      allow read: if isOwnerOrAdmin();
+      // Owner/Admin can read every customer.
+      // A signed-in customer may read only their own profile document.
+      allow read: if isOwnerOrAdmin()
+                  || (
+                    isSignedIn()
+                    && request.auth.uid == customerId
+                  );
 
       allow create: if isOwnerOrAdmin();
 
@@ -443,13 +461,43 @@ service cloud.firestore {
       // Owner/Admin can read all promo records.
       allow read: if isOwnerOrAdmin();
 
-      // Signed-in customers can read active promos.
-      allow read: if isSignedIn()
-                  && resource.data.status == "active";
+      // Booking supports guest mode, so active public promos
+      // may be read by the customer booking page.
+      allow read: if resource.data.status == "active";
 
       allow create: if isOwnerOrAdmin();
 
       allow update: if isOwnerOrAdmin();
+
+      allow delete: if isOwner();
+    }
+
+
+    // =====================================================
+    // TOUR SCHEDULES
+    // =====================================================
+
+    match /tourSchedules/{scheduleId} {
+
+      // Public booking page needs schedule availability.
+      allow read: if true;
+
+      allow create, update: if isOwnerOrAdmin();
+
+      allow delete: if isOwner();
+    }
+
+
+    // =====================================================
+    // REFERRAL CODES
+    // =====================================================
+
+    match /referralCodes/{referralId} {
+
+      // Public booking page may validate only active referral codes.
+      allow read: if resource.data.status == "active";
+
+      allow create, update: if isOwnerOrAdmin();
 
       allow delete: if isOwner();
     }

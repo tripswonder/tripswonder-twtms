@@ -1,42 +1,35 @@
-/* =========================================================
-   TRIPS WONDER
-   CLIENT BOOKING PAGE
-   assets/js/client/booking.js
-
-   FLOW:
-   1. Read package ID from URL
-   2. Load actual package from Firestore
-   3. Calculate package total
-   4. Calculate initial deposit
-   5. Require GCash / Bank Transfer
-   6. Require payment reference
-   7. Check duplicate payment reference
-   8. Save booking request to Firestore
-   9. Admin verifies payment later
-   ========================================================= */
-
 "use strict";
 
-
 /* =========================================================
-   FIREBASE
+   TRIPS WONDER
+   CUSTOMER BOOKING PAGE
+   FINAL BOOKING FLOW
+   assets/js/customer/booking.js
+
+   Destination / Package
+   -> Travel Schedule
+   -> Guest Details
+   -> Accommodation
+   -> Payment Summary
+   -> Tripswonder Discount
+   -> Referral Code
+   -> Payment Method
+   -> Payment Reference
+   -> For Verification
    ========================================================= */
 
 import {
     auth,
-    db,
-    functions
+    db
 } from "../firebase/firebase-config.js";
-
 
 import {
     collection,
     doc,
     getDoc,
     getDocs,
+    query,
     setDoc,
-    updateDoc,
-    query,  
     where
 } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
@@ -44,5523 +37,4969 @@ import {
     onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
 
-import {
-    httpsCallable
-} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-functions.js";
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    /* =====================================================
+       CONFIG
+       ===================================================== */
+
+    const DEPOSIT_PER_PAX = 500;
+
+    /*
+     * Replace qrImage with the final Trips Wonder GCash QR image URL
+     * when available in your website/Firebase data.
+     */
+    const PAYMENT_DETAILS = {
+        gcash: {
+            label: "GCash",
+            accountName: "Eric Ramirez",
+            accountNumber: "0952 478 8316",
+            qrImage: ""
+        },
+
+        bank: {
+            label: "Bank Transfer",
+            bankName: "Maribank",
+            accountName: "Eric Ramirez",
+            accountNumber: "1260 9823 206"
+        }
+    };
 
 
-/* =========================================================
-   DOM READY
-   ========================================================= */
+    /* =====================================================
+       STATE
+       ===================================================== */
 
-document.addEventListener(
-    "DOMContentLoaded",
-    () => {
+    let selectedPackage = null;
+    let selectedSchedule = null;
+    let selectedAccommodation = null;
+    let isRequestedDateMode = true;
+    let loadedScheduleItems = [];
+    let calendarCursor = new Date();
+
+    let availablePromos = [];
+    let pendingPromo = null;
+    let appliedPromo = null;
+
+    let appliedReferral = null;
+
+    let currentCustomer = null;
+    let currentCustomerProfile = null;
+
+    let galleryPhotos = [];
+    let galleryIndex = 0;
+
+    let isSubmitting = false;
 
 
-        /* =====================================================
-           CONFIG
-           ===================================================== */
+    /* =====================================================
+       DOM
+       ===================================================== */
 
-        const DEPOSIT_PER_PAX = 500;
+    const $ = id => document.getElementById(id);
+
+    const packageLoading = $("packageLoading");
+    const packageContent = $("packageContent");
+    const packageError = $("packageError");
+    const packageImage = $("packageImage");
+    const packageName = $("packageName");
+    const packageLocation = $("packageLocation");
+    const packageDuration = $("packageDuration");
+    const packagePrice = $("packagePrice");
+    const packageStatus = $("packageStatus");
+    const packageHighlights = $("packageHighlights");
+
+    const viewPackageDetailsButton = $("viewPackageDetailsButton");
+    const packageDetailsModal = $("packageDetailsModal");
+    const packageDetailsModalTitle = $("packageDetailsModalTitle");
+    const packageDetailsModalContent = $("packageDetailsModalContent");
+
+    const clientBookingForm = $("clientBookingForm");
+
+    const travelDate = $("travelDate");
+    const selectedScheduleId = $("selectedScheduleId");
+    const travelScheduleList = $("travelScheduleList");
+    const scheduleLoading = $("scheduleLoading");
+    const travelCalendarGrid = $("travelCalendarGrid");
+    const travelCalendarCard = $("travelCalendarCard");
+    const calendarMonthLabel = $("calendarMonthLabel");
+    const calendarPrevMonth = $("calendarPrevMonth");
+    const calendarNextMonth = $("calendarNextMonth");
+    const selectedScheduleCard = $("selectedScheduleCard");
+    const quickViewMoreButton = $("quickViewMoreButton");
+    const calendarPackageImage = $("calendarPackageImage");
+    const calendarPackageName = $("calendarPackageName");
+    const calendarPackageLocation = $("calendarPackageLocation");
+    const calendarPackagePrice = $("calendarPackagePrice");
+
+    const requestedDateOption = $("requestedDateOption");
+    const requestAnotherDateButton = $("requestAnotherDateButton");
+    const requestedDatePanel = $("requestedDatePanel");
+    const requestedTravelDate = $("requestedTravelDate");
+    const requestedDateMinimumText = $("requestedDateMinimumText");
+    const requestedDateRequirementTitle = $("requestedDateRequirementTitle");
+    const requestedDateRequirementText = $("requestedDateRequirementText");
+    const requestedDatePaymentNote = $("requestedDatePaymentNote");
+    const bookingAgreementText = $("bookingAgreementText");
+
+    const customerName = $("customerName");
+    const customerContact = $("customerContact");
+    const customerEmail = $("customerEmail");
+    const customerFacebook = $("customerFacebook");
+    const numberOfGuests = $("numberOfGuests");
+
+    const children0To3 = $("children0To3");
+    const children4To8 = $("children4To8");
+    const childrenFreeField = $("childrenFreeField");
+    const childrenDiscountField = $("childrenDiscountField");
+    const childrenFreeLabel = $("childrenFreeLabel");
+    const childrenDiscountLabel = $("childrenDiscountLabel");
+    const childrenDiscountHelp = $("childrenDiscountHelp");
+    const hasChildrenInputs =
+        document.querySelectorAll('input[name="hasChildren"]');
+    const childrenChoiceNo = $("childrenChoiceNo");
+    const childrenChoiceYes = $("childrenChoiceYes");
+
+    const pickupPoint = $("pickupPoint");
+    const otherPickupField = $("otherPickupField");
+    const otherPickup = $("otherPickup");
+    const specialRequest = $("specialRequest");
+
+    const accommodation = $("accommodation");
+    const selectedAccommodationId = $("selectedAccommodationId");
+    const accommodationList = $("accommodationList");
+    const accommodationLoadingState = $("accommodationLoadingState");
+    const accommodationTabs = $("accommodationTabs");
+    const selectedAccommodationSummary = $("selectedAccommodationSummary");
+    const selectedAccommodationName = $("selectedAccommodationName");
+    const selectedAccommodationPrice = $("selectedAccommodationPrice");
+
+    const accommodationGalleryModal = $("accommodationGalleryModal");
+    const galleryAccommodationName = $("galleryAccommodationName");
+    const galleryMainImage = $("galleryMainImage");
+    const galleryCounter = $("galleryCounter");
+    const galleryThumbnails = $("galleryThumbnails");
+    const galleryPrevButton = $("galleryPrevButton");
+    const galleryNextButton = $("galleryNextButton");
+
+    const summaryPackageRate = $("summaryPackageRate");
+    const summaryPax = $("summaryPax");
+    const summarySubtotal = $("summarySubtotal");
+    const summaryAccommodation = $("summaryAccommodation");
+    const summaryAccommodationUpgradeRow = $("summaryAccommodationUpgradeRow");
+    const summaryAccommodationUpgrade = $("summaryAccommodationUpgrade");
+
+    const summaryChildFreeRow = $("summaryChildFreeRow");
+    const summaryChildFree = $("summaryChildFree");
+    const summaryChildDiscountRow = $("summaryChildDiscountRow");
+    const summaryChildDiscount = $("summaryChildDiscount");
+    const summaryExclusiveRow = $("summaryExclusiveRow");
+    const summaryExclusiveDiscount = $("summaryExclusiveDiscount");
+
+    const summaryPromoRow = $("summaryPromoRow");
+    const summaryPromoDiscount = $("summaryPromoDiscount");
+    const summaryTotal = $("summaryTotal");
+    const requiredDeposit = $("requiredDeposit");
+    const depositBreakdown = $("depositBreakdown");
+    const summaryRemainingBalance = $("summaryRemainingBalance");
+
+    /*
+     * Legacy hidden elements retained in HTML so old promo behavior
+     * does not cause missing-DOM errors while the new selector is used.
+     */
+    const bookingPromoCode = $("bookingPromoCode");
+    const applyPromoButton = $("applyPromoButton");
+    const promoBookingMessage = $("promoBookingMessage");
+
+    const openDiscountButton = $("openDiscountButton");
+    const selectedDiscountLabel = $("selectedDiscountLabel");
+    const discountModal = $("discountModal");
+    const discountList = $("discountList");
+    const discountEmptyState = $("discountEmptyState");
+    const confirmDiscountButton = $("confirmDiscountButton");
+
+    const referralCode = $("referralCode");
+    const applyReferralButton = $("applyReferralButton");
+    const referralMessage = $("referralMessage");
+
+    const paymentMethodInputs =
+        document.querySelectorAll('input[name="paymentMethod"]');
+
+    const paymentInstructions = $("paymentInstructions");
+    const paymentInstructionsContent = $("paymentInstructionsContent");
+    const paymentReference = $("paymentReference");
+
+    const gcashPaymentModal = $("gcashPaymentModal");
+    const gcashQrImage = $("gcashQrImage");
+    const downloadGcashQrButton = $("downloadGcashQrButton");
+    const gcashAccountName = $("gcashAccountName");
+    const gcashAccountNumber = $("gcashAccountNumber");
+    const gcashDepositAmount = $("gcashDepositAmount");
+    const gcashDepositBreakdown = $("gcashDepositBreakdown");
+    const gcashReferenceInput = $("gcashReferenceInput");
+    const confirmGcashPaymentButton = $("confirmGcashPaymentButton");
+
+    const bankPaymentModal = $("bankPaymentModal");
+    const bankName = $("bankName");
+    const bankAccountName = $("bankAccountName");
+    const bankAccountNumber = $("bankAccountNumber");
+    const bankDepositAmount = $("bankDepositAmount");
+    const bankReferenceInput = $("bankReferenceInput");
+    const confirmBankPaymentButton = $("confirmBankPaymentButton");
+
+    const bookingAgreement = $("bookingAgreement");
+    const submitBookingButton = $("submitBookingButton");
+
+    const bookingSuccessModal = $("bookingSuccessModal");
+    const bookingRequestReference = $("bookingRequestReference");
+    const successStatusLabel = $("successStatusLabel");
+    const successTitle = $("successTitle");
+    const successMessage = $("successMessage");
+    const successPaymentStatus = $("successPaymentStatus");
+    const successBookingStatus = $("successBookingStatus");
+    const successDoneButton = $("successDoneButton");
 
 
-        /*
-         * TEMPORARY PAYMENT DETAILS
-         *
-         * Replace these later with your actual
-         * Trips Wonder payment information.
-         */
+    /* =====================================================
+       HELPERS
+       ===================================================== */
 
-        const PAYMENT_DETAILS = {
-
-    gcash: {
-        label: "GCash",
-        accountName: "Eric Ramirez",
-        accountNumber: "0952 478 8316"
-    },
-
-    bank: {
-        label: "Bank Transfer",
-        bankName: "Maribank",
-        accountName: "Eric Ramirez",
-        accountNumber: "1260 9823 206"
+    function normalizeText(value) {
+        return String(value ?? "").trim();
     }
 
-};
-
-
-        /* =====================================================
-           STATE
-           ===================================================== */
-
-        let selectedPackage =
-            null;
-
-
-        let selectedAccommodation =
-            null;
-
-        let submittedBooking = null;
-        let selectedPostBookingAddon = null;
-
-
-        let isSubmitting =
-            false;
-
-        let appliedPromo =
-            null;
-
-        let currentCustomer =
-    null;
-
-let currentCustomerProfile =
-    null;
-
-
-        /* =====================================================
-           ELEMENTS
-           ===================================================== */
-
-        const packageLoading =
-            document.getElementById(
-                "packageLoading"
-            );
-
-
-        const packageContent =
-            document.getElementById(
-                "packageContent"
-            );
-
-
-        const packageError =
-            document.getElementById(
-                "packageError"
-            );
-
-
-        const packageImage =
-            document.getElementById(
-                "packageImage"
-            );
-
-
-        const packageName =
-            document.getElementById(
-                "packageName"
-            );
-
-
-        const packageLocation =
-            document.getElementById(
-                "packageLocation"
-            );
-
-
-        const packageDuration =
-            document.getElementById(
-                "packageDuration"
-            );
-
-
-        const packagePrice =
-            document.getElementById(
-                "packagePrice"
-            );
-
-
-        /* =====================================================
-           FORM
-           ===================================================== */
-
-        const clientBookingForm =
-            document.getElementById(
-                "clientBookingForm"
-            );
-
-
-        const customerName =
-            document.getElementById(
-                "customerName"
-            );
-
-
-        const customerContact =
-            document.getElementById(
-                "customerContact"
-            );
-
-
-        const customerEmail =
-            document.getElementById(
-                "customerEmail"
-            );
-
-
-        const customerFacebook =
-            document.getElementById(
-                "customerFacebook"
-            );
-
-
-        const travelDate =
-            document.getElementById(
-                "travelDate"
-            );
-
-
-        const numberOfGuests =
-            document.getElementById(
-                "numberOfGuests"
-            );
-
-
-        const children0To3 =
-            document.getElementById(
-                "children0To3"
-            );
-
-
-        const children4To8 =
-            document.getElementById(
-                "children4To8"
-            );
-
-
-        const childrenFreeField =
-            document.getElementById(
-                "childrenFreeField"
-            );
-
-
-        const childrenDiscountField =
-            document.getElementById(
-                "childrenDiscountField"
-            );
-
-
-        const childrenFreeLabel =
-            document.getElementById(
-                "childrenFreeLabel"
-            );
-
-
-        const childrenDiscountLabel =
-            document.getElementById(
-                "childrenDiscountLabel"
-            );
-
-
-        const childrenDiscountHelp =
-            document.getElementById(
-                "childrenDiscountHelp"
-            );
-
-
-        const pickupPoint =
-            document.getElementById(
-                "pickupPoint"
-            );
-
-
-        const otherPickupField =
-            document.getElementById(
-                "otherPickupField"
-            );
-
-
-        const otherPickup =
-            document.getElementById(
-                "otherPickup"
-            );
-
-
-        const accommodation =
-            document.getElementById(
-                "accommodation"
-            );
-
-
-        const specialRequest =
-            document.getElementById(
-                "specialRequest"
-            );
-
-
-        /* =====================================================
-           SUMMARY
-           ===================================================== */
-
-        const summaryPackageRate =
-            document.getElementById(
-                "summaryPackageRate"
-            );
-
-
-        const summaryPax =
-            document.getElementById(
-                "summaryPax"
-            );
-
-
-        const summarySubtotal =
-            document.getElementById(
-                "summarySubtotal"
-            );
-
-
-        const summaryAccommodation =
-            document.getElementById(
-                "summaryAccommodation"
-            );
-
-
-        const summaryChildFreeRow =
-            document.getElementById(
-                "summaryChildFreeRow"
-            );
-
-
-        const summaryChildFree =
-            document.getElementById(
-                "summaryChildFree"
-            );
-
-
-        const summaryChildDiscountRow =
-            document.getElementById(
-                "summaryChildDiscountRow"
-            );
-
-
-        const summaryChildDiscount =
-            document.getElementById(
-                "summaryChildDiscount"
-            );
-
-
-        const summaryExclusiveRow =
-            document.getElementById(
-                "summaryExclusiveRow"
-            );
-
-
-        const summaryExclusiveDiscount =
-            document.getElementById(
-                "summaryExclusiveDiscount"
-            );
-
-
-        const summaryTotal =
-            document.getElementById(
-                "summaryTotal"
-            );
-
-
-        const bookingPromoCode =
-            document.getElementById(
-                "bookingPromoCode"
-            );
-
-
-        const applyPromoButton =
-            document.getElementById(
-                "applyPromoButton"
-            );
-
-
-        const promoBookingMessage =
-            document.getElementById(
-                "promoBookingMessage"
-            );
-
-
-        const summaryPromoRow =
-            document.getElementById(
-                "summaryPromoRow"
-            );
-
-
-        const summaryPromoDiscount =
-            document.getElementById(
-                "summaryPromoDiscount"
-            );
-
-
-        const requiredDeposit =
-            document.getElementById(
-                "requiredDeposit"
-            );
-
-
-        const depositBreakdown =
-            document.getElementById(
-                "depositBreakdown"
-            );
-
-
-        /* =====================================================
-           PAYMENT
-           ===================================================== */
-
-        const paymentMethodInputs =
-            document.querySelectorAll(
-                'input[name="paymentMethod"]'
-            );
-
-
-        const paymentInstructions =
-            document.getElementById(
-                "paymentInstructions"
-            );
-
-
-        const paymentInstructionsContent =
-            document.getElementById(
-                "paymentInstructionsContent"
-            );
-
-
-        const paymentReference =
-            document.getElementById(
-                "paymentReference"
-            );
-
-
-        const bookingAgreement =
-            document.getElementById(
-                "bookingAgreement"
-            );
-
-
-        const submitBookingButton =
-            document.getElementById(
-                "submitBookingButton"
-            );
-
-
-        /* =====================================================
-           SUCCESS
-           ===================================================== */
-
-        const bookingSuccessModal =
-            document.getElementById(
-                "bookingSuccessModal"
-            );
-
-
-        const bookingRequestReference =
-            document.getElementById(
-                "bookingRequestReference"
-            );
-
-
-        const successDoneButton =
-            document.getElementById(
-                "successDoneButton"
-            );
-
-        const postBookingAddons = document.getElementById("postBookingAddons");
-        const postBookingAddonList = document.getElementById("postBookingAddonList");
-        const postBookingAddonMessage = document.getElementById("postBookingAddonMessage");
-        const addSelectedAddonButton = document.getElementById("addSelectedAddonButton");
-        const currentIncludedAccommodation = document.getElementById("currentIncludedAccommodation");
-        const postBookingSelectedSummary = document.getElementById("postBookingSelectedSummary");
-        const selectedAddonName = document.getElementById("selectedAddonName");
-        const selectedAddonAmount = document.getElementById("selectedAddonAmount");
-        const selectedAddonNewTotal = document.getElementById("selectedAddonNewTotal");
-
-
-        /* =====================================================
-           HELPERS
-           ===================================================== */
-
-        function normalizeText(
-            value
-        ) {
-
-            return String(
-                value ?? ""
-            )
-                .trim();
-
+    function normalizeLower(value) {
+        return normalizeText(value).toLowerCase();
+    }
+
+    function normalizeNumber(value) {
+        const number = Number(
+            String(value ?? "")
+                .replace(/,/g, "")
+                .replace(/[^0-9.-]/g, "")
+        );
+
+        return Number.isFinite(number) ? number : 0;
+    }
+
+    function formatMoney(value) {
+        return normalizeNumber(value).toLocaleString("en-PH", {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 2
+        });
+    }
+
+    function escapeHtml(value) {
+        return normalizeText(value)
+            .replaceAll("&", "&amp;")
+            .replaceAll("<", "&lt;")
+            .replaceAll(">", "&gt;")
+            .replaceAll('"', "&quot;")
+            .replaceAll("'", "&#039;");
+    }
+
+    function normalizeDateValue(value) {
+        if (!value) return "";
+
+        if (typeof value === "string") {
+            const match = value.match(/^\d{4}-\d{2}-\d{2}/);
+            if (match) return match[0];
         }
 
-
-        function normalizeLower(
-            value
-        ) {
-
-            return normalizeText(
-                value
-            ).toLowerCase();
-
+        if (value?.toDate instanceof Function) {
+            const date = value.toDate();
+            return toDateInputValue(date);
         }
 
+        const date = new Date(value);
 
-        function normalizeNumber(
-            value
-        ) {
+        return Number.isNaN(date.getTime())
+            ? ""
+            : toDateInputValue(date);
+    }
 
-            const cleaned =
-                String(
-                    value ?? ""
-                )
-                    .replace(
-                        /,/g,
-                        ""
-                    )
-                    .replace(
-                        /[^0-9.-]/g,
-                        ""
-                    );
+    function toDateInputValue(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
 
+        return `${year}-${month}-${day}`;
+    }
 
-            const number =
-                Number(
-                    cleaned
-                );
+    function formatTravelDate(value) {
+        const normalized = normalizeDateValue(value);
 
+        if (!normalized) return "Schedule";
 
-            return Number.isFinite(
-                number
-            )
-                ? number
-                : 0;
+        const date = new Date(`${normalized}T00:00:00`);
 
+        return date.toLocaleDateString("en-PH", {
+            month: "short",
+            day: "numeric",
+            year: "numeric"
+        });
+    }
+
+    function calculateTravelEndDate(startDate, duration) {
+        if (!startDate) return "";
+
+        const match = normalizeText(duration).match(/(\d+)\s*D/i);
+
+        if (!match) return startDate;
+
+        const days = Number(match[1]);
+
+        if (!Number.isFinite(days) || days <= 1) {
+            return startDate;
         }
 
+        const date = new Date(`${startDate}T00:00:00`);
+        date.setDate(date.getDate() + days - 1);
 
-        function formatMoney(
-            value
-        ) {
+        return toDateInputValue(date);
+    }
 
-            return normalizeNumber(
-                value
-            ).toLocaleString(
-                "en-PH",
-                {
-                    minimumFractionDigits:
-                        0,
+    function getBookingNights() {
+        const duration = normalizeText(selectedPackage?.duration);
 
-                    maximumFractionDigits:
-                        2
-                }
-            );
-
+        const exact = duration.match(/(\d+)\s*D\s*(\d+)\s*N/i);
+        if (exact) {
+            return Math.max(1, Number(exact[2]) || 1);
         }
 
+        const days = duration.match(/(\d+)\s*D/i);
 
-        function getSelectedPaymentMethod() {
+        return days
+            ? Math.max(1, (Number(days[1]) || 1) - 1)
+            : 1;
+    }
 
-            const checked =
-                document.querySelector(
-                    'input[name="paymentMethod"]:checked'
-                );
+    function getSelectedPaymentMethod() {
+        const checked =
+            document.querySelector('input[name="paymentMethod"]:checked');
+
+        return checked ? checked.value : "";
+    }
+
+    function getPax() {
+        const pax = parseInt(numberOfGuests?.value, 10);
+
+        return Number.isFinite(pax) && pax > 0 ? pax : 1;
+    }
+
+    function getChildCount(element) {
+        const value = parseInt(element?.value, 10);
+
+        return Number.isFinite(value) && value > 0 ? value : 0;
+    }
+
+    function setModalState(modal, show) {
+        if (!modal) return;
+
+        modal.classList.toggle("show", show);
+        modal.setAttribute("aria-hidden", show ? "false" : "true");
+
+        const anyOpen =
+            document.querySelector(".booking-modal.show, .success-modal.show");
+
+        document.body.classList.toggle("modal-open", Boolean(anyOpen));
+    }
+
+    function closeAllBookingModals() {
+        document
+            .querySelectorAll(".booking-modal.show")
+            .forEach(modal => {
+                modal.classList.remove("show");
+                modal.setAttribute("aria-hidden", "true");
+            });
+
+        document.body.classList.remove("modal-open");
+    }
 
 
-            return checked
-                ? checked.value
-                : "";
+    /* =====================================================
+       CUSTOMER PROFILE
+       ===================================================== */
 
-        }
+    async function loadCustomerProfile(user) {
+        if (!user?.uid) return false;
 
+        currentCustomer = user;
 
-        function getPax() {
+        /*
+         * Always use Firebase Auth as a fallback.
+         * This means name/email can still autofill even when the
+         * customer profile document has not been completed yet.
+         */
+        const applyAuthFallback = () => {
+            const authName =
+                normalizeText(user.displayName);
 
-            const pax =
-                parseInt(
-                    numberOfGuests?.value,
-                    10
-                );
-
+            const authEmail =
+                normalizeLower(user.email || "");
 
             if (
-                !Number.isFinite(
-                    pax
-                ) ||
-                pax < 1
+                customerName &&
+                !normalizeText(customerName.value) &&
+                authName
             ) {
-
-                return 1;
-
+                customerName.value = authName;
             }
 
+            if (
+                customerEmail &&
+                !normalizeText(customerEmail.value) &&
+                authEmail
+            ) {
+                customerEmail.value = authEmail;
+            }
 
-            return pax;
+            if (
+                customerEmail &&
+                normalizeText(customerEmail.value)
+            ) {
+                customerEmail.readOnly = true;
+            }
+        };
 
-        }
+        applyAuthFallback();
 
-
-
-        function getChildCount(
-            element
-        ) {
-
-            const value =
-                parseInt(
-                    element?.value,
-                    10
-                );
-
-            return Number.isFinite(value) && value > 0
-                ? value
-                : 0;
-
-        }
-
-
-
-        function getPackagePassengerPricing() {
-
-            const config =
-                selectedPackage?.passengerPricing ||
-                {};
-
-            return {
-
-                enabled:
-                    config.kidsPricingEnabled === true,
-
-                childFreeMaxAge:
-                    Math.max(
-                        0,
-                        normalizeNumber(
-                            config.childFreeMaxAge ?? 3
-                        )
-                    ),
-
-                childDiscountMinAge:
-                    Math.max(
-                        0,
-                        normalizeNumber(
-                            config.childDiscountMinAge ?? 4
-                        )
-                    ),
-
-                childDiscountMaxAge:
-                    Math.max(
-                        0,
-                        normalizeNumber(
-                            config.childDiscountMaxAge ?? 8
-                        )
-                    ),
-
-                childDiscountAmount:
-                    Math.max(
-                        0,
-                        normalizeNumber(
-                            config.childDiscountAmount ?? 500
-                        )
+        try {
+            const customerSnapshot =
+                await getDoc(
+                    doc(
+                        db,
+                        "customers",
+                        user.uid
                     )
-
-            };
-
-        }
-
-
-        function getPackageExclusiveTour() {
-
-            const config =
-                selectedPackage?.exclusiveTour ||
-                {};
-
-            return {
-
-                enabled:
-                    config.enabled === true,
-
-                minimumPayingPax:
-                    Math.max(
-                        1,
-                        normalizeNumber(
-                            config.minimumPayingPax ?? 12
-                        )
-                    ),
-
-                freeStartsAt:
-                    Math.max(
-                        1,
-                        normalizeNumber(
-                            config.freeStartsAt ?? 13
-                        )
-                    ),
-
-                freePax:
-                    Math.max(
-                        0,
-                        normalizeNumber(
-                            config.freePax ?? 1
-                        )
-                    ),
-
-                maxFreePax:
-                    Math.max(
-                        0,
-                        normalizeNumber(
-                            config.maxFreePax ?? 1
-                        )
-                    )
-
-            };
-
-        }
-
-
-        function getPassengerBreakdown() {
-
-            const totalPax =
-                getPax();
-
-            const enteredChild0To3 =
-                getChildCount(
-                    children0To3
                 );
 
-            const enteredChild4To8 =
-                getChildCount(
-                    children4To8
+            if (!customerSnapshot.exists()) {
+                return false;
+            }
+
+            const profile =
+                customerSnapshot.data() || {};
+
+            currentCustomerProfile = profile;
+
+            const fullName =
+                normalizeText(profile.fullName) ||
+                normalizeText(profile.name) ||
+                normalizeText(profile.displayName) ||
+                normalizeText(user.displayName);
+
+            const contactNumber =
+                normalizeText(profile.phone) ||
+                normalizeText(profile.contactNumber) ||
+                normalizeText(profile.contact) ||
+                normalizeText(profile.mobileNumber) ||
+                normalizeText(profile.mobile);
+
+            const facebookName =
+                normalizeText(profile.facebookName) ||
+                normalizeText(profile.facebook) ||
+                normalizeText(profile.fbName);
+
+            const emailAddress =
+                normalizeLower(
+                    profile.email ||
+                    user.email ||
+                    ""
                 );
 
-            const childTotal =
-                enteredChild0To3 +
-                enteredChild4To8;
+            const preferredPickup =
+                normalizeText(profile.preferredPickup) ||
+                normalizeText(profile.pickupPoint) ||
+                normalizeText(profile.pickupLocation) ||
+                normalizeText(profile.defaultPickup);
 
-            const regularPax =
-                Math.max(
-                    0,
-                    totalPax -
-                    childTotal
-                );
+            if (customerName && fullName) {
+                customerName.value =
+                    fullName;
+            }
 
+            if (
+                customerContact &&
+                contactNumber
+            ) {
+                customerContact.value =
+                    contactNumber;
+            }
 
-            const passengerPricing =
-                getPackagePassengerPricing();
+            if (
+                customerFacebook &&
+                facebookName
+            ) {
+                customerFacebook.value =
+                    facebookName;
+            }
 
-            const exclusiveConfig =
-                getPackageExclusiveTour();
+            if (customerEmail) {
+                customerEmail.value =
+                    emailAddress;
 
+                if (emailAddress) {
+                    customerEmail.readOnly =
+                        true;
+                }
+            }
 
             /*
-             * When Kids Discount is OFF:
-             * all travelers pay the regular package rate.
-             *
-             * When ON:
-             * the existing customer inputs represent the configured
-             * FREE-child and discounted-child groups.
+             * Pick-up point is also preselected only when the saved
+             * profile value exactly matches one of this package's
+             * available select options. Otherwise we leave it blank
+             * so the client can choose the correct location.
              */
-            const freeChildPax =
-                passengerPricing.enabled
-                    ? enteredChild0To3
-                    : 0;
+            if (
+                pickupPoint &&
+                preferredPickup
+            ) {
+                const matchingOption =
+                    Array.from(
+                        pickupPoint.options
+                    ).find(
+                        option =>
+                            normalizeLower(
+                                option.value
+                            ) ===
+                            normalizeLower(
+                                preferredPickup
+                            ) ||
+                            normalizeLower(
+                                option.textContent
+                            ) ===
+                            normalizeLower(
+                                preferredPickup
+                            )
+                    );
 
-            const discountedChildPax =
-                passengerPricing.enabled
-                    ? enteredChild4To8
-                    : 0;
+                if (matchingOption) {
+                    pickupPoint.value =
+                        matchingOption.value;
+
+                    pickupPoint.dispatchEvent(
+                        new Event(
+                            "change",
+                            {
+                                bubbles: true
+                            }
+                        )
+                    );
+                }
+            }
+
+            return true;
+
+        } catch (error) {
+            console.error(
+                "LOAD CUSTOMER PROFILE ERROR:",
+                error
+            );
+
+            applyAuthFallback();
+            return false;
+        }
+    }
 
 
-            const payingPaxBeforeExclusive =
-                passengerPricing.enabled
-                    ? regularPax +
-                        discountedChildPax
-                    : totalPax;
+    /* =====================================================
+       PACKAGE
+       ===================================================== */
 
+    async function loadSelectedPackage() {
+        const params = new URLSearchParams(window.location.search);
+        const packageId = params.get("package");
 
-            const isExclusive =
-                exclusiveConfig.enabled &&
-                payingPaxBeforeExclusive >=
-                    exclusiveConfig.minimumPayingPax;
-
-
-            const exclusiveFreePax =
-                exclusiveConfig.enabled &&
-                payingPaxBeforeExclusive >=
-                    exclusiveConfig.freeStartsAt
-
-                    ? Math.min(
-                        exclusiveConfig.freePax,
-                        exclusiveConfig.maxFreePax,
-                        payingPaxBeforeExclusive
-                    )
-
-                    : 0;
-
-
-            const payablePax =
-                Math.max(
-                    0,
-                    payingPaxBeforeExclusive -
-                    exclusiveFreePax
-                );
-
-
-            return {
-
-                totalPax,
-
-                child0To3:
-                    enteredChild0To3,
-
-                child4To8:
-                    enteredChild4To8,
-
-                childTotal,
-
-                regularPax,
-
-                kidsPricingEnabled:
-                    passengerPricing.enabled,
-
-                freeChildPax,
-
-                discountedChildPax,
-
-                childDiscountPerPax:
-                    passengerPricing.childDiscountAmount,
-
-                payingPaxBeforeExclusive,
-
-                exclusiveTourEnabled:
-                    exclusiveConfig.enabled,
-
-                isExclusive,
-
-                exclusiveFreePax,
-
-                payablePax,
-
-                passengerPricing,
-
-                exclusiveConfig
-
-            };
-
+        if (!packageId) {
+            showPackageError();
+            return;
         }
 
+        try {
+            const packageSnapshot =
+                await getDoc(doc(db, "packages", packageId));
 
-        /* =====================================================
-           REQUEST REFERENCE
-           ===================================================== */
+            if (!packageSnapshot.exists()) {
+                showPackageError();
+                return;
+            }
 
-        function generateBookingNumber(
-    documentId
-) {
+            const data = packageSnapshot.data() || {};
+            const status = normalizeLower(data.status || "active");
 
-    const year =
-        new Date().getFullYear();
+            if (status !== "active") {
+                showPackageError();
+                return;
+            }
+
+            selectedPackage = {
+                id: packageSnapshot.id,
+                ...data,
+                name: normalizeText(data.name),
+                location: normalizeText(data.location),
+                duration: normalizeText(data.duration),
+                description: normalizeText(data.description),
+                category: normalizeText(data.category),
+                price: normalizeNumber(data.price),
+                status,
+                gallery: Array.isArray(data.gallery) ? data.gallery : [],
+                accommodations:
+                    Array.isArray(data.accommodations)
+                        ? data.accommodations
+                        : [],
+                pickupLocations:
+                    Array.isArray(data.pickupLocations)
+                        ? data.pickupLocations
+                        : [],
+                passengerPricing:
+                    data.passengerPricing &&
+                    typeof data.passengerPricing === "object"
+                        ? data.passengerPricing
+                        : {},
+                exclusiveTour:
+                    data.exclusiveTour &&
+                    typeof data.exclusiveTour === "object"
+                        ? data.exclusiveTour
+                        : {},
+
+                scheduleSettings:
+                    data.scheduleSettings &&
+                    typeof data.scheduleSettings === "object"
+                        ? data.scheduleSettings
+                        : {}
+            };
+
+            renderSelectedPackage();
+            syncPassengerPricingForm();
+            populatePickupLocations();
+
+            await loadSchedules();
+            await loadEligiblePromos();
+
+            syncRequestedDateEligibility();
+            syncMobileCalendarUI();
+            syncChildrenFieldsVisibility();
+            updateBookingSummary();
+
+        } catch (error) {
+            console.error("LOAD SELECTED PACKAGE ERROR:", error);
+            showPackageError();
+        }
+    }
+
+    function showPackageError() {
+        packageLoading?.classList.add("hidden");
+        packageContent?.classList.add("hidden");
+        packageError?.classList.remove("hidden");
+
+        if (submitBookingButton) {
+            submitBookingButton.disabled = true;
+        }
+    }
+
+    function firstPhotoUrl(items) {
+        if (!Array.isArray(items)) return "";
+
+        for (const item of items) {
+            const url =
+                typeof item === "string"
+                    ? item
+                    : item?.url || item?.src || item?.imageUrl || "";
+
+            if (normalizeText(url)) return normalizeText(url);
+        }
+
+        return "";
+    }
+
+    function renderSelectedPackage() {
+        if (!selectedPackage) return;
+
+        packageLoading?.classList.add("hidden");
+        packageError?.classList.add("hidden");
+        packageContent?.classList.remove("hidden");
+
+        const image =
+            firstPhotoUrl(selectedPackage.gallery) ||
+            normalizeText(selectedPackage.imageUrl) ||
+            normalizeText(selectedPackage.photo);
+
+        if (packageImage) {
+            if (image) {
+                packageImage.src = image;
+                packageImage.style.display = "block";
+            } else {
+                packageImage.removeAttribute("src");
+                packageImage.style.display = "none";
+            }
+        }
+
+        if (packageName) {
+            packageName.textContent =
+                selectedPackage.name || "Tour Package";
+        }
+
+        if (packageLocation) {
+            packageLocation.textContent =
+                selectedPackage.location || "Philippines";
+        }
+
+        if (packageDuration) {
+            packageDuration.textContent =
+                selectedPackage.duration || "—";
+        }
+
+        if (packagePrice) {
+            packagePrice.textContent =
+                `₱${formatMoney(selectedPackage.price)}`;
+        }
+
+        if (packageStatus) {
+            packageStatus.textContent = "Available";
+        }
+
+        if (calendarPackageImage) {
+            if (image) {
+                calendarPackageImage.src = image;
+                calendarPackageImage.style.display = "block";
+            } else {
+                calendarPackageImage.removeAttribute("src");
+                calendarPackageImage.style.display = "none";
+            }
+        }
+
+        if (calendarPackageName) {
+            calendarPackageName.textContent =
+                selectedPackage.name || "Tour Package";
+        }
+
+        if (calendarPackageLocation) {
+            calendarPackageLocation.textContent =
+                selectedPackage.location || "Philippines";
+        }
+
+        if (calendarPackagePrice) {
+            calendarPackagePrice.textContent =
+                `₱${formatMoney(selectedPackage.price)}`;
+        }
+
+        if (packageHighlights) {
+            const highlights = [];
+
+            if (selectedPackage.category) {
+                highlights.push(`
+                    <span>
+                        <i class="fa-solid fa-map"></i>
+                        ${escapeHtml(selectedPackage.category)}
+                    </span>
+                `);
+            }
+
+            highlights.push(`
+                <span>
+                    <i class="fa-solid fa-user-group"></i>
+                    Joiners / Group
+                </span>
+            `);
+
+            highlights.push(`
+                <span>
+                    <i class="fa-solid fa-shield-heart"></i>
+                    Trips Wonder
+                </span>
+            `);
+
+            packageHighlights.innerHTML = highlights.join("");
+        }
+
+        renderPackageDetailsModal();
+    }
+
+    function renderPackageDetailsModal() {
+        if (!selectedPackage || !packageDetailsModalContent) return;
+
+        if (packageDetailsModalTitle) {
+            packageDetailsModalTitle.textContent =
+                selectedPackage.name || "Package Details";
+        }
+
+        const inclusions =
+            Array.isArray(selectedPackage.inclusions)
+                ? selectedPackage.inclusions
+                : [];
+
+        const exclusions =
+            Array.isArray(selectedPackage.exclusions)
+                ? selectedPackage.exclusions
+                : [];
+
+        const itinerary =
+            Array.isArray(selectedPackage.itinerary)
+                ? selectedPackage.itinerary
+                : [];
+
+        const listHtml = items =>
+            items.length
+                ? `<ul>${items.map(item =>
+                    `<li>${escapeHtml(
+                        typeof item === "string"
+                            ? item
+                            : item?.name || item?.title || item?.text
+                    )}</li>`
+                ).join("")}</ul>`
+                : `<p>Information will be shown when available.</p>`;
+
+        packageDetailsModalContent.innerHTML = `
+            <section class="package-detail-section">
+                <h3>About this package</h3>
+                <p>
+                    ${escapeHtml(
+                        selectedPackage.description ||
+                        `${selectedPackage.name || "This tour"} by Trips Wonder Travel and Tours.`
+                    )}
+                </p>
+            </section>
+
+            <section class="package-detail-section">
+                <h3>Package Inclusions</h3>
+                ${listHtml(inclusions)}
+            </section>
+
+            <section class="package-detail-section">
+                <h3>Package Exclusions</h3>
+                ${listHtml(exclusions)}
+            </section>
+
+            <section class="package-detail-section">
+                <h3>Itinerary</h3>
+                ${listHtml(itinerary)}
+            </section>
+        `;
+    }
 
 
-    const uniqueCode =
-        String(documentId)
-            .replace(
-                /[^a-zA-Z0-9]/g,
-                ""
-            )
-            .substring(
+    /* =====================================================
+       PASSENGER PRICING
+       ===================================================== */
+
+    function getPackagePassengerPricing() {
+        const config = selectedPackage?.passengerPricing || {};
+
+        return {
+            enabled: config.kidsPricingEnabled === true,
+
+            childFreeMaxAge:
+                Math.max(0, normalizeNumber(config.childFreeMaxAge ?? 3)),
+
+            childDiscountMinAge:
+                Math.max(0, normalizeNumber(config.childDiscountMinAge ?? 4)),
+
+            childDiscountMaxAge:
+                Math.max(0, normalizeNumber(config.childDiscountMaxAge ?? 8)),
+
+            childDiscountAmount:
+                Math.max(0, normalizeNumber(config.childDiscountAmount ?? 500))
+        };
+    }
+
+    function getPackageExclusiveTour() {
+        const config = selectedPackage?.exclusiveTour || {};
+
+        return {
+            enabled: config.enabled === true,
+
+            minimumPayingPax:
+                Math.max(1, normalizeNumber(config.minimumPayingPax ?? 12)),
+
+            freeStartsAt:
+                Math.max(1, normalizeNumber(config.freeStartsAt ?? 13)),
+
+            freePax:
+                Math.max(0, normalizeNumber(config.freePax ?? 1)),
+
+            maxFreePax:
+                Math.max(0, normalizeNumber(config.maxFreePax ?? 1))
+        };
+    }
+
+    function hasChildrenSelected() {
+        return (
+            document.querySelector(
+                'input[name="hasChildren"]:checked'
+            )?.value === "yes"
+        );
+    }
+
+    function syncChildrenChoiceUI() {
+        const hasChildren =
+            hasChildrenSelected();
+
+        childrenChoiceNo
+            ?.classList.toggle(
+                "active",
+                !hasChildren
+            );
+
+        childrenChoiceYes
+            ?.classList.toggle(
+                "active",
+                hasChildren
+            );
+    }
+
+    function syncChildrenFieldsVisibility() {
+        const config =
+            getPackagePassengerPricing();
+
+        const showChildrenFields =
+            config.enabled &&
+            hasChildrenSelected();
+
+        childrenFreeField
+            ?.classList.toggle(
+                "hidden",
+                !showChildrenFields
+            );
+
+        childrenDiscountField
+            ?.classList.toggle(
+                "hidden",
+                !showChildrenFields
+            );
+
+        if (!showChildrenFields) {
+            if (children0To3) {
+                children0To3.value = "0";
+            }
+
+            if (children4To8) {
+                children4To8.value = "0";
+            }
+        }
+
+        syncChildrenChoiceUI();
+    }
+
+    function syncPassengerPricingForm() {
+        const config = getPackagePassengerPricing();
+
+        if (!config.enabled) {
+            childrenFreeField?.classList.add("hidden");
+            childrenDiscountField?.classList.add("hidden");
+
+            if (children0To3) children0To3.value = "0";
+            if (children4To8) children4To8.value = "0";
+
+            syncChildrenChoiceUI();
+            return;
+        }
+
+        syncChildrenFieldsVisibility();
+
+        if (childrenFreeLabel) {
+            childrenFreeLabel.textContent =
+                `Children 0–${config.childFreeMaxAge} yrs`;
+        }
+
+        if (childrenDiscountLabel) {
+            childrenDiscountLabel.textContent =
+                `Children ${config.childDiscountMinAge}–${config.childDiscountMaxAge} yrs`;
+        }
+
+        if (childrenDiscountHelp) {
+            childrenDiscountHelp.textContent =
+                `₱${formatMoney(config.childDiscountAmount)} discount per child`;
+        }
+    }
+
+    function getPassengerBreakdown() {
+        const totalPax = getPax();
+        const child0To3 = getChildCount(children0To3);
+        const child4To8 = getChildCount(children4To8);
+        const childTotal = child0To3 + child4To8;
+
+        const regularPax = Math.max(0, totalPax - childTotal);
+
+        const passengerPricing = getPackagePassengerPricing();
+        const exclusiveConfig = getPackageExclusiveTour();
+
+        const freeChildPax =
+            passengerPricing.enabled ? child0To3 : 0;
+
+        const discountedChildPax =
+            passengerPricing.enabled ? child4To8 : 0;
+
+        const payingPaxBeforeExclusive =
+            passengerPricing.enabled
+                ? regularPax + discountedChildPax
+                : totalPax;
+
+        const isExclusive =
+            exclusiveConfig.enabled &&
+            payingPaxBeforeExclusive >=
+                exclusiveConfig.minimumPayingPax;
+
+        const exclusiveFreePax =
+            exclusiveConfig.enabled &&
+            payingPaxBeforeExclusive >= exclusiveConfig.freeStartsAt
+
+                ? Math.min(
+                    exclusiveConfig.freePax,
+                    exclusiveConfig.maxFreePax,
+                    payingPaxBeforeExclusive
+                )
+
+                : 0;
+
+        const payablePax =
+            Math.max(
                 0,
-                6
-            )
-            .toUpperCase();
+                payingPaxBeforeExclusive - exclusiveFreePax
+            );
+
+        return {
+            totalPax,
+            child0To3,
+            child4To8,
+            childTotal,
+            regularPax,
+            kidsPricingEnabled: passengerPricing.enabled,
+            freeChildPax,
+            discountedChildPax,
+            childDiscountPerPax: passengerPricing.childDiscountAmount,
+            payingPaxBeforeExclusive,
+            exclusiveTourEnabled: exclusiveConfig.enabled,
+            isExclusive,
+            exclusiveFreePax,
+            payablePax,
+            passengerPricing,
+            exclusiveConfig
+        };
+    }
 
 
-    return `TW-${year}-${uniqueCode}`;
+    /* =====================================================
+       SCHEDULES
+       ===================================================== */
 
-}
+    function getRequestedDateConfig() {
+        const settings = selectedPackage?.scheduleSettings || {};
+        return {
+            enabled: settings.requestedTravelDateEnabled === true,
+            minPax: Math.max(1, normalizeNumber(settings.requestedTravelDateMinPax) || 10)
+        };
+    }
 
+    function getRegularScheduleConfig() {
+        const settings = selectedPackage?.scheduleSettings || {};
+        const durationMatch = String(selectedPackage?.duration || "").match(/\d+/);
+        return {
+            enabled: settings.enabled === true,
+            startDay: Math.min(6, Math.max(0, normalizeNumber(settings.startDay))),
+            durationDays: Math.max(1, normalizeNumber(settings.durationDays) || normalizeNumber(durationMatch?.[0]) || 1)
+        };
+    }
 
-        /* =====================================================
-           TRAVEL END DATE
-           ===================================================== */
+    function generateRegularSchedulesForMonth(year, month) {
+        const config = getRegularScheduleConfig();
+        if (!config.enabled) return [];
 
-        function calculateTravelEndDate(
-            startDate,
-            duration
+        const firstOfMonth = new Date(year, month, 1);
+        const lastOfMonth = new Date(year, month + 1, 0);
+
+        const firstMatch = new Date(firstOfMonth);
+        const daysUntil =
+            (config.startDay - firstMatch.getDay() + 7) % 7;
+
+        firstMatch.setDate(firstMatch.getDate() + daysUntil);
+
+        const schedules = [];
+
+        for (
+            let start = new Date(firstMatch);
+            start <= lastOfMonth;
+            start.setDate(start.getDate() + 7)
         ) {
-
-            if (
-                !startDate
-            ) {
-
-                return "";
-
-            }
-
-
-            const match =
-                String(
-                    duration || ""
-                ).match(
-                    /(\d+)\s*D/i
-                );
-
-
-            if (
-                !match
-            ) {
-
-                return startDate;
-
-            }
-
-
-            const days =
-                Number(
-                    match[1]
-                );
-
-
-            if (
-                !Number.isFinite(
-                    days
-                ) ||
-                days <= 1
-            ) {
-
-                return startDate;
-
-            }
-
-
-            const date =
-                new Date(
-                    `${startDate}T00:00:00`
-                );
-
-
-            date.setDate(
-                date.getDate() +
-                days -
+            const end = new Date(start);
+            end.setDate(
+                start.getDate() +
+                config.durationDays -
                 1
             );
 
-
-            const year =
-                date.getFullYear();
-
-
-            const month =
-                String(
-                    date.getMonth() + 1
-                ).padStart(
-                    2,
-                    "0"
-                );
-
-
-            const day =
-                String(
-                    date.getDate()
-                ).padStart(
-                    2,
-                    "0"
-                );
-
-
-            return `${year}-${month}-${day}`;
-
-        }
-
-
-        /* =====================================================
-           MINIMUM TRAVEL DATE
-           ===================================================== */
-
-        function setMinimumTravelDate() {
-
-            if (
-                !travelDate
-            ) {
-
-                return;
-
-            }
-
-
-            const today =
-                new Date();
-
-
-            const year =
-                today.getFullYear();
-
-
-            const month =
-                String(
-                    today.getMonth() + 1
-                ).padStart(
-                    2,
-                    "0"
-                );
-
-
-            const day =
-                String(
-                    today.getDate()
-                ).padStart(
-                    2,
-                    "0"
-                );
-
-
-            travelDate.min =
-                `${year}-${month}-${day}`;
-
-        }
-
-
-        function syncPassengerPricingForm() {
-
-            const config =
-                getPackagePassengerPricing();
-
-            const showKids =
-                config.enabled === true;
-
-
-            childrenFreeField
-                ?.classList.toggle(
-                    "hidden",
-                    !showKids
-                );
-
-            childrenDiscountField
-                ?.classList.toggle(
-                    "hidden",
-                    !showKids
-                );
-
-
-            if (!showKids) {
-
-                if (children0To3) {
-                    children0To3.value = "0";
-                    children0To3.setCustomValidity("");
-                }
-
-                if (children4To8) {
-                    children4To8.value = "0";
-                    children4To8.setCustomValidity("");
-                }
-
-                summaryChildFreeRow
-                    ?.classList.add(
-                        "hidden"
-                    );
-
-                summaryChildDiscountRow
-                    ?.classList.add(
-                        "hidden"
-                    );
-
-                return;
-
-            }
-
-
-            if (childrenFreeLabel) {
-                childrenFreeLabel.textContent =
-                    `Children 0–${config.childFreeMaxAge} yrs`;
-            }
-
-
-            if (childrenDiscountLabel) {
-                childrenDiscountLabel.textContent =
-                    `Children ${config.childDiscountMinAge}–${config.childDiscountMaxAge} yrs`;
-            }
-
-
-            if (childrenDiscountHelp) {
-                childrenDiscountHelp.textContent =
-                    `₱${formatMoney(
-                        config.childDiscountAmount
-                    )} OFF per child`;
-            }
-
-        }
-
-
-        /* =====================================================
-   LOAD CUSTOMER PROFILE
-   ===================================================== */
-
-async function loadCustomerProfile(
-    user
-) {
-
-    if (!user) {
-        return false;
-    }
-
-    try {
-
-        const profileSnapshot =
-            await getDoc(
-                doc(
-                    db,
-                    "users",
-                    user.uid
-                )
-            );
-
-
-        if (!profileSnapshot.exists()) {
-
-            console.error(
-                "CUSTOMER PROFILE NOT FOUND"
-            );
-
-            return false;
-
-        }
-
-
-        const profile =
-            profileSnapshot.data();
-
-
-        currentCustomer =
-            user;
-
-        currentCustomerProfile =
-            profile;
-
-
-        const fullName =
-            [
-                profile.firstName,
-                profile.middleName,
-                profile.lastName,
-                profile.suffix
-            ]
-                .map(
-                    value =>
-                        normalizeText(
-                            value
-                        )
-                )
-                .filter(Boolean)
-                .join(" ");
-
-
-        if (customerName) {
-
-            customerName.value =
-                fullName;
-
-        }
-
-
-        if (customerContact) {
-
-            customerContact.value =
-                normalizeText(
-                    profile.phone
-                );
-
-        }
-
-
-        if (customerEmail) {
-
-            customerEmail.value =
-                normalizeLower(
-                    user.email ||
-                    profile.email
-                );
-
-            customerEmail.readOnly =
-                true;
-
-        }
-
-
-        console.log(
-            "BOOKING CUSTOMER PROFILE LOADED:",
-            {
-                uid:
-                    user.uid,
-
-                name:
-                    fullName,
-
-                phone:
-                    profile.phone ||
-                    "",
-
-                email:
-                    customerEmail?.value ||
-                    ""
-            }
-        );
-
-
-        return true;
-
-
-    } catch (error) {
-
-        console.error(
-            "LOAD CUSTOMER PROFILE ERROR:",
-            error
-        );
-
-        return false;
-
-    }
-
-}
-
-
-        /* =====================================================
-           LOAD PACKAGE
-           ===================================================== */
-
-        async function loadSelectedPackage() {
-
-            const params =
-                new URLSearchParams(
-                    window.location.search
-                );
-
-
-            const packageId =
-                params.get(
-                    "package"
-                );
-
-
-            if (
-                !packageId
-            ) {
-
-                showPackageError();
-
-                return;
-
-            }
-
-
-            try {
-
-                const packageSnapshot =
-                    await getDoc(
-                        doc(
-                            db,
-                            "packages",
-                            packageId
-                        )
-                    );
-
-
-                if (
-                    !packageSnapshot.exists()
-                ) {
-
-                    showPackageError();
-
-                    return;
-
-                }
-
-
-                const data =
-                    packageSnapshot.data();
-
-
-                /*
-                 * Client cannot book an inactive package.
-                 */
-
-                const packageStatus =
-                    normalizeLower(
-                        data.status ||
-                        "active"
-                    );
-
-
-                if (
-                    packageStatus !==
-                    "active"
-                ) {
-
-                    showPackageError();
-
-                    return;
-
-                }
-
-
-                selectedPackage = {
-
-                    id:
-                        packageSnapshot.id,
-
-                    name:
-                        data.name ||
-                        "",
-
-                    category:
-                        data.category ||
-                        "",
-
-                    location:
-                        data.location ||
-                        "",
-
-                    price:
-                        normalizeNumber(
-                            data.price
-                        ),
-
-                    duration:
-                        data.duration ||
-                        "",
-
-                    description:
-                        data.description ||
-                        "",
-
-                    status:
-                        packageStatus,
-
-                    accommodations:
-    Array.isArray(
-        data.accommodations
-    )
-        ? data.accommodations
-        : [],
-
-pickupLocations:
-    Array.isArray(
-        data.pickupLocations
-    )
-        ? data.pickupLocations
-        : [],
-
-passengerPricing:
-    data.passengerPricing &&
-    typeof data.passengerPricing === "object"
-        ? data.passengerPricing
-        : {
-            kidsPricingEnabled: false,
-            childFreeMaxAge: 3,
-            childDiscountMinAge: 4,
-            childDiscountMaxAge: 8,
-            childDiscountAmount: 500
-        },
-
-exclusiveTour:
-    data.exclusiveTour &&
-    typeof data.exclusiveTour === "object"
-        ? data.exclusiveTour
-        : {
-            enabled: false,
-            minimumPayingPax: 12,
-            freeStartsAt: 13,
-            freePax: 1,
-            maxFreePax: 1
-        },
-
-gallery:
-    Array.isArray(
-        data.gallery
-    )
-        ? data.gallery
-        : []
-
-                };
-
-
-                renderSelectedPackage();
-
-                syncPassengerPricingForm();
-
-                populateAccommodations();
-
-                populatePickupLocations();
-
-                updateBookingSummary();
-
-
-            } catch (error) {
-
-                console.error(
-                    "LOAD SELECTED PACKAGE ERROR:",
-                    error
-                );
-
-
-                showPackageError();
-
-            }
-
-        }
-
-
-        /* =====================================================
-           PACKAGE ERROR
-           ===================================================== */
-
-        function showPackageError() {
-
-            packageLoading
-                ?.classList.add(
-                    "hidden"
-                );
-
-
-            packageContent
-                ?.classList.add(
-                    "hidden"
-                );
-
-
-            packageError
-                ?.classList.remove(
-                    "hidden"
-                );
-
-
-            if (
-                submitBookingButton
-            ) {
-
-                submitBookingButton.disabled =
-                    true;
-
-            }
-
-        }
-
-
-        /* =====================================================
-           RENDER PACKAGE
-           ===================================================== */
-
-        function renderSelectedPackage() {
-
-            if (
-                !selectedPackage
-            ) {
-
-                return;
-
-            }
-
-
-            packageLoading
-                ?.classList.add(
-                    "hidden"
-                );
-
-
-            packageError
-                ?.classList.add(
-                    "hidden"
-                );
-
-
-            packageContent
-                ?.classList.remove(
-                    "hidden"
-                );
-
-
-            const image =
-                selectedPackage.gallery
-                    ?.find(
-                        item =>
-                            item &&
-                            item.url
-                    )
-                    ?.url ||
-                "";
-
-
-            if (
-                packageImage
-            ) {
-
-                if (
-                    image
-                ) {
-
-                    packageImage.src =
-                        image;
-
-
-                    packageImage.style.display =
-                        "block";
-
-                } else {
-
-                    packageImage.removeAttribute(
-                        "src"
-                    );
-
-
-                    packageImage.style.display =
-                        "none";
-
-                }
-
-            }
-
-
-            if (
-                packageName
-            ) {
-
-                packageName.textContent =
-                    selectedPackage.name ||
-                    "Tour Package";
-
-            }
-
-
-            if (
-                packageLocation
-            ) {
-
-                packageLocation.textContent =
-                    selectedPackage.location ||
-                    "Philippines";
-
-            }
-
-
-            if (
-                packageDuration
-            ) {
-
-                packageDuration.textContent =
-                    selectedPackage.duration ||
-                    "—";
-
-            }
-
-
-            if (
-                packagePrice
-            ) {
-
-                packagePrice.textContent =
-                    `₱${formatMoney(
-                        selectedPackage.price
-                    )}`;
-
-            }
-
-        }
-
-
-        /* =====================================================
-           ACCOMMODATIONS
-           ===================================================== */
-
-        function packageAccommodations() {
-            return Array.isArray(selectedPackage?.accommodations)
-                ? selectedPackage.accommodations
-                : [];
-        }
-
-        function includedPackageAccommodation() {
-            return packageAccommodations().find(item => {
-                const type = normalizeLower(item?.type || item?.optionType || "included");
-                const status = normalizeLower(item?.status || "active");
-                return type === "included" && item?.active !== false && status !== "hidden";
-            }) || null;
-        }
-
-        function optionalPackageAccommodations() {
-            return packageAccommodations().filter(item => {
-                const type = normalizeLower(item?.type || item?.optionType || "included");
-                const status = normalizeLower(item?.status || "active");
-                return type !== "included" && item?.active !== false && status !== "hidden";
+            const startDate = toDateInputValue(start);
+            const endDate = toDateInputValue(end);
+
+            schedules.push({
+                id: `regular-${startDate}`,
+                startDate,
+                endDate,
+                status: "available",
+                slots: null,
+                generatedRegularSchedule: true
             });
         }
 
-        function populateAccommodations() {
-            if (!accommodation || !selectedPackage) return;
+        return schedules;
+    }
 
-            const included = includedPackageAccommodation();
-
-            selectedAccommodation = included
-                ? {
-                    id: normalizeText(included.id || included.accommodationId),
-                    name: normalizeText(included.name) || "Package Included Accommodation",
-                    resortName: normalizeText(included.resortName),
-                    capacity: normalizeText(included.capacity || included.maxGuests),
-                    type: "included",
-                    price: 0
-                }
-                : {
-                    id: "",
-                    name: "Standard / Package Included",
-                    resortName: "",
-                    capacity: "",
-                    type: "included",
-                    price: 0
-                };
-
-            accommodation.value = selectedAccommodation.name;
-            updateBookingSummary();
-        }
-
-        function updateSelectedAccommodation() {
-            populateAccommodations();
-        }
-
-
-        /* =====================================================
-           PROMO CODE
-           ===================================================== */
-
-        function getDateTimestamp(
-            value
-        ) {
-
-            if (!value) {
-                return 0;
-            }
-
-            if (
-                typeof value.toDate ===
-                "function"
-            ) {
-                return value
-                    .toDate()
-                    .getTime();
-            }
-
-            const timestamp =
-                Date.parse(
-                    value
-                );
-
-            return Number.isNaN(
-                timestamp
-            )
-                ? 0
-                : timestamp;
-
-        }
-
-
-        function showPromoMessage(
-            message,
-            type = ""
-        ) {
-
-            if (!promoBookingMessage) {
-                return;
-            }
-
-            promoBookingMessage.textContent =
-                message || "";
-
-            promoBookingMessage.classList.remove(
-                "hidden",
-                "success",
-                "error"
+    function schedulesForMonth(year, month) {
+        const generated =
+            generateRegularSchedulesForMonth(
+                year,
+                month
             );
 
-            if (!message) {
-                promoBookingMessage.classList.add(
-                    "hidden"
-                );
-                return;
-            }
+        const monthPrefix =
+            `${year}-${String(month + 1).padStart(2, "0")}-`;
 
-            if (type) {
-                promoBookingMessage.classList.add(
-                    type
-                );
-            }
-
-        }
-
-
-        function clearAppliedPromo(
-            message = ""
-        ) {
-
-            appliedPromo =
-                null;
-
-            summaryPromoRow
-                ?.classList.add(
-                    "hidden"
-                );
-
-            if (summaryPromoDiscount) {
-                summaryPromoDiscount.textContent =
-                    "-₱0";
-            }
-
-            if (bookingPromoCode) {
-                bookingPromoCode.disabled =
-                    false;
-            }
-
-            if (applyPromoButton) {
-                applyPromoButton.disabled =
-                    false;
-
-                applyPromoButton.classList.remove(
-                    "remove-promo"
-                );
-
-                applyPromoButton.textContent =
-                    "Apply";
-            }
-
-            showPromoMessage(
-                message,
-                message ? "error" : ""
+        const explicit =
+            loadedScheduleItems.filter(
+                item =>
+                    String(item.startDate || "")
+                        .startsWith(monthPrefix)
             );
 
-            updateBookingSummary();
+        const map = new Map();
 
-        }
+        generated.forEach(
+            item => map.set(item.startDate, item)
+        );
 
+        explicit.forEach(
+            item => map.set(item.startDate, item)
+        );
 
-        function promoAppliesToSelectedPackage(
-            promo
-        ) {
-
-            const applicableTo =
-                normalizeLower(
-                    promo.applicableTo ||
-                    "all"
-                );
-
-            if (
-                applicableTo === "all" ||
-                applicableTo === "all_packages"
-            ) {
-                return true;
-            }
-
-            const promoPackageId =
-                normalizeText(
-                    promo.packageId
-                );
-
-            if (
-                promoPackageId &&
-                promoPackageId ===
-                selectedPackage?.id
-            ) {
-                return true;
-            }
-
-            const promoPackageName =
-                normalizeLower(
-                    promo.packageName
-                );
-
-            return Boolean(
-                promoPackageName &&
-                promoPackageName ===
-                    normalizeLower(
-                        selectedPackage?.name
-                    )
-            );
-
-        }
-
-
-        function calculatePromoDiscount(
-            promo,
-            originalTotal,
-            promoPax = 1
-        ) {
-
-            const value =
-                Math.max(
-                    0,
-                    normalizeNumber(
-                        promo.discountValue
-                    )
-                );
-
-            const discountType =
-                normalizeLower(
-                    promo.discountType
-                );
-
-            let discount = 0;
-
-            if (
-                discountType === "percentage"
-            ) {
-
-                discount =
-                    originalTotal *
-                    (value / 100);
-
-            } else if (
-                discountType === "per_pax"
-            ) {
-
-                discount =
-                    value *
-                    Math.max(
-                        0,
-                        promoPax
-                    );
-
-            } else {
-
-                /*
-                 * Fixed per booking.
-                 */
-                discount =
-                    value;
-
-            }
-
-            const maximumDiscount =
-                Math.max(
-                    0,
-                    normalizeNumber(
-                        promo.maximumDiscount
-                    )
-                );
-
-            /*
-             * Maximum Discount applies to percentage and per-pax promos.
-             * A value of 0 means no cap.
-             */
-            if (
-                maximumDiscount > 0 &&
-                (
-                    discountType === "percentage" ||
-                    discountType === "per_pax"
-                )
-            ) {
-
-                discount =
-                    Math.min(
-                        discount,
-                        maximumDiscount
-                    );
-
-            }
-
-            return Math.min(
-                originalTotal,
-                Math.max(
-                    0,
-                    discount
-                )
-            );
-
-        }
-
-
-        async function countPromoUsage(
-            promoId,
-            customerUid
-        ) {
-
-            const allUsageQuery =
-                query(
-                    collection(
-                        db,
-                        "bookings"
-                    ),
-                    where(
-                        "promoId",
-                        "==",
-                        promoId
-                    )
-                );
-
-            const allUsageSnapshot =
-                await getDocs(
-                    allUsageQuery
-                );
-
-            let customerUsage =
-                0;
-
-            allUsageSnapshot.forEach(
-                item => {
-
-                    const data =
-                        item.data();
-
-                    if (
-                        normalizeText(
-                            data.customerUid
-                        ) ===
-                        normalizeText(
-                            customerUid
+        return Array.from(map.values())
+            .sort(
+                (a, b) =>
+                    String(a.startDate)
+                        .localeCompare(
+                            String(b.startDate)
                         )
-                    ) {
-                        customerUsage += 1;
-                    }
+            );
+    }
 
+    function upcomingSchedulesFromCursor(
+        count = 3
+    ) {
+        const results = [];
+        const seen = new Set();
+
+        let probe =
+            new Date(
+                calendarCursor.getFullYear(),
+                calendarCursor.getMonth(),
+                1
+            );
+
+        /*
+         * Recurring schedules can continue indefinitely.
+         * We calculate months only as the user browses them,
+         * so there is no advance-booking year cap.
+         */
+        for (
+            let monthIndex = 0;
+            monthIndex < 36 &&
+            results.length < count;
+            monthIndex += 1
+        ) {
+            const monthSchedules =
+                schedulesForMonth(
+                    probe.getFullYear(),
+                    probe.getMonth()
+                );
+
+            monthSchedules.forEach(item => {
+                if (
+                    results.length < count &&
+                    !scheduleIsFull(item) &&
+                    normalizeLower(item.status) !== "closed" &&
+                    !seen.has(item.startDate) &&
+                    new Date(`${item.startDate}T00:00:00`) >=
+                        new Date(new Date().setHours(0, 0, 0, 0))
+                ) {
+                    seen.add(item.startDate);
+                    results.push(item);
+                }
+            });
+
+            probe.setMonth(
+                probe.getMonth() + 1
+            );
+        }
+
+        return results;
+    }
+
+    function isMobileBookingView() {
+        return window.matchMedia(
+            "(max-width: 560px)"
+        ).matches;
+    }
+
+    function setMobileCalendarOpen(
+        isOpen,
+        shouldScroll = false
+    ) {
+        if (!travelCalendarCard) {
+            return;
+        }
+
+        travelCalendarCard.classList.toggle(
+            "mobile-calendar-open",
+            isOpen
+        );
+
+        if (
+            quickViewMoreButton &&
+            isMobileBookingView()
+        ) {
+            const label =
+                quickViewMoreButton.querySelector(
+                    "span"
+                );
+
+            if (label) {
+                label.textContent =
+                    isOpen
+                        ? "Hide Calendar"
+                        : "View Calendar";
+            }
+
+            quickViewMoreButton.setAttribute(
+                "aria-expanded",
+                String(isOpen)
+            );
+        }
+
+        if (
+            isOpen &&
+            shouldScroll &&
+            isMobileBookingView()
+        ) {
+            travelCalendarCard.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+        }
+    }
+
+    function syncMobileCalendarUI() {
+        if (!travelCalendarCard) {
+            return;
+        }
+
+        if (isMobileBookingView()) {
+            setMobileCalendarOpen(
+                travelCalendarCard.classList.contains(
+                    "mobile-calendar-open"
+                )
+            );
+        } else {
+            travelCalendarCard.classList.remove(
+                "mobile-calendar-open"
+            );
+
+            if (quickViewMoreButton) {
+                const label =
+                    quickViewMoreButton.querySelector(
+                        "span"
+                    );
+
+                if (label) {
+                    label.textContent =
+                        "View More";
+                }
+
+                quickViewMoreButton.removeAttribute(
+                    "aria-expanded"
+                );
+            }
+        }
+    }
+
+    function renderTravelCalendar() {
+        if (
+            !travelCalendarGrid ||
+            !calendarMonthLabel
+        ) {
+            return;
+        }
+
+        const year =
+            calendarCursor.getFullYear();
+
+        const month =
+            calendarCursor.getMonth();
+
+        calendarMonthLabel.textContent =
+            calendarCursor.toLocaleDateString(
+                "en-US",
+                {
+                    month: "long",
+                    year: "numeric"
                 }
             );
 
-            return {
-                total:
-                    allUsageSnapshot.size,
-                customer:
-                    customerUsage
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const currentMonthStart =
+            new Date(
+                today.getFullYear(),
+                today.getMonth(),
+                1
+            );
+
+        const cursorMonthStart =
+            new Date(year, month, 1);
+
+        if (calendarPrevMonth) {
+            calendarPrevMonth.disabled =
+                cursorMonthStart <=
+                currentMonthStart;
+        }
+
+        const monthSchedules =
+            schedulesForMonth(
+                year,
+                month
+            );
+
+        /*
+         * Include nearby-month schedules too, so a tour that starts
+         * near month-end can still highlight its full travel range.
+         */
+        const previousMonthSchedules =
+            schedulesForMonth(
+                new Date(year, month - 1, 1).getFullYear(),
+                new Date(year, month - 1, 1).getMonth()
+            );
+
+        const nextMonthSchedules =
+            schedulesForMonth(
+                new Date(year, month + 1, 1).getFullYear(),
+                new Date(year, month + 1, 1).getMonth()
+            );
+
+        const calendarSchedules =
+            Array.from(
+                new Map(
+                    [
+                        ...previousMonthSchedules,
+                        ...monthSchedules,
+                        ...nextMonthSchedules
+                    ].map(item => [
+                        item.startDate,
+                        item
+                    ])
+                ).values()
+            );
+
+        const scheduleByDate =
+            new Map(
+                calendarSchedules.map(
+                    item => [
+                        item.startDate,
+                        item
+                    ]
+                )
+            );
+
+        const getScheduleForCalendarDate =
+            dateValue => {
+
+                const exact =
+                    scheduleByDate.get(
+                        dateValue
+                    );
+
+                if (exact) {
+                    return exact;
+                }
+
+                const target =
+                    new Date(
+                        `${dateValue}T00:00:00`
+                    );
+
+                return (
+                    calendarSchedules.find(
+                        schedule => {
+
+                            if (
+                                !schedule.startDate ||
+                                !schedule.endDate
+                            ) {
+                                return false;
+                            }
+
+                            const start =
+                                new Date(
+                                    `${schedule.startDate}T00:00:00`
+                                );
+
+                            const end =
+                                new Date(
+                                    `${schedule.endDate}T00:00:00`
+                                );
+
+                            return (
+                                target >= start &&
+                                target <= end
+                            );
+                        }
+                    ) ||
+                    null
+                );
             };
 
+        const firstVisible =
+            new Date(year, month, 1);
+
+        firstVisible.setDate(
+            1 - firstVisible.getDay()
+        );
+
+        travelCalendarGrid.innerHTML = "";
+
+        for (
+            let cell = 0;
+            cell < 42;
+            cell += 1
+        ) {
+            const date =
+                new Date(firstVisible);
+
+            date.setDate(
+                firstVisible.getDate() +
+                cell
+            );
+
+            const dateValue =
+                toDateInputValue(date);
+
+            const item =
+                scheduleByDate.get(
+                    dateValue
+                );
+
+            const rangeSchedule =
+                getScheduleForCalendarDate(
+                    dateValue
+                );
+
+            const displaySchedule =
+                item ||
+                rangeSchedule;
+
+            const outsideMonth =
+                date.getMonth() !== month;
+
+            const past =
+                date < today;
+
+            const full =
+                displaySchedule
+                    ? scheduleIsFull(
+                        displaySchedule
+                    )
+                    : false;
+
+            const limited =
+                displaySchedule &&
+                !full &&
+                scheduleIsLimited(
+                    displaySchedule
+                );
+
+            const closed =
+                displaySchedule &&
+                normalizeLower(
+                    displaySchedule.status
+                ) === "closed";
+
+            const button =
+                document.createElement(
+                    "button"
+                );
+
+            button.type = "button";
+
+            button.className =
+                [
+                    "calendar-day",
+                    outsideMonth
+                        ? "outside-month"
+                        : "",
+                    past
+                        ? "past"
+                        : "",
+                    displaySchedule && !past
+                        ? "has-schedule"
+                        : "",
+                    displaySchedule && !item && !past
+                        ? "schedule-range-day"
+                        : "",
+                    limited
+                        ? "limited"
+                        : "",
+                    full
+                        ? "full"
+                        : "",
+                    closed
+                        ? "closed"
+                        : ""
+                ]
+                .filter(Boolean)
+                .join(" ");
+
+            let calendarStatusLabel = "";
+
+            if (
+                displaySchedule &&
+                !past &&
+                !outsideMonth
+            ) {
+                if (full) {
+                    calendarStatusLabel =
+                        "Fully Booked";
+                } else if (closed) {
+                    calendarStatusLabel =
+                        "Unavailable";
+                } else if (limited) {
+                    calendarStatusLabel =
+                        "Limited";
+                } else {
+                    calendarStatusLabel =
+                        "Available";
+                }
+            }
+
+            button.innerHTML = `
+                <span class="calendar-day-number">
+                    ${date.getDate()}
+                </span>
+
+                ${
+                    calendarStatusLabel
+                        ? `
+                            <span class="calendar-day-label">
+                                ${calendarStatusLabel}
+                            </span>
+                        `
+                        : ""
+                }
+            `;
+
+            button.dataset.date =
+                dateValue;
+
+            button.disabled =
+                !displaySchedule ||
+                past ||
+                full ||
+                closed;
+
+            if (
+                selectedSchedule?.startDate ===
+                dateValue
+            ) {
+                button.classList.add(
+                    "selected"
+                );
+            }
+
+            if (
+                selectedSchedule?.startDate &&
+                selectedSchedule?.endDate
+            ) {
+                const rangeStart =
+                    new Date(
+                        `${selectedSchedule.startDate}T00:00:00`
+                    );
+
+                const rangeEnd =
+                    new Date(
+                        `${selectedSchedule.endDate}T00:00:00`
+                    );
+
+                if (
+                    date >= rangeStart &&
+                    date <= rangeEnd
+                ) {
+                    button.classList.add(
+                        "in-selected-range"
+                    );
+                }
+            }
+
+            if (
+                displaySchedule &&
+                !button.disabled
+            ) {
+                button.title =
+                    `${formatTravelDate(
+                        displaySchedule.startDate
+                    )}${
+                        displaySchedule.endDate
+                            ? ` to ${formatTravelDate(
+                                displaySchedule.endDate
+                            )}`
+                            : ""
+                    }`;
+
+                button.addEventListener(
+                    "click",
+                    () => {
+                        selectSchedule(
+                            displaySchedule,
+                            button
+                        );
+                    }
+                );
+            }
+
+            travelCalendarGrid.appendChild(
+                button
+            );
         }
 
+        renderQuickSchedules();
+        renderSelectedScheduleCard();
+    }
 
-        async function validatePromoDocument(
-            promo,
-            promoId
+    function renderQuickSchedules() {
+        if (!travelScheduleList) return;
+
+        const upcoming =
+            upcomingSchedulesFromCursor(3);
+
+        if (!upcoming.length) {
+            travelScheduleList.innerHTML = `
+                <div class="schedule-state" style="grid-column:1/-1;">
+                    <span>No published schedule found from this month.</span>
+                </div>
+            `;
+            return;
+        }
+
+        renderScheduleCards(
+            upcoming,
+            false
+        );
+    }
+
+    function renderSelectedScheduleCard() {
+        if (!selectedScheduleCard) return;
+
+        if (
+            !selectedSchedule ||
+            selectedSchedule.requestedDate
         ) {
+            selectedScheduleCard.innerHTML = `
+                <div class="selected-schedule-empty">
+                    <i class="fa-regular fa-calendar-check"></i>
+                    <div>
+                        <strong>Select a travel date</strong>
+                        <small>Available tour dates are highlighted on the calendar.</small>
+                    </div>
+                </div>
+            `;
+            return;
+        }
 
-            if (!promo || !promoId) {
-                throw new Error(
-                    "Promo code not found."
+        const full =
+            scheduleIsFull(
+                selectedSchedule
+            );
+
+        const limited =
+            !full &&
+            scheduleIsLimited(
+                selectedSchedule
+            );
+
+        const statusLabel =
+            full
+                ? "Fully Booked"
+                : limited
+                    ? "Limited Slots"
+                    : "Available";
+
+        const confirmedPax =
+            getConfirmedPax(
+                selectedSchedule
+            );
+
+        const confirmedText =
+            `${confirmedPax} pax confirmed`;
+
+        selectedScheduleCard.innerHTML = `
+            <div class="selected-schedule-info">
+                <div>
+                    <strong>Selected Schedule</strong>
+
+                    <div class="selected-schedule-date">
+                        ${escapeHtml(
+                            formatTravelDate(
+                                selectedSchedule.startDate
+                            )
+                        )}
+                        ${
+                            selectedSchedule.endDate
+                                ? ` – ${escapeHtml(
+                                    formatTravelDate(
+                                        selectedSchedule.endDate
+                                    )
+                                )}`
+                                : ""
+                        }
+                    </div>
+
+                    <div class="selected-schedule-meta">
+                        ${escapeHtml(
+                            selectedPackage?.duration ||
+                            ""
+                        )}
+                    </div>
+                </div>
+
+                <span class="selected-schedule-badge ${limited ? "limited" : ""}">
+                    ${statusLabel}
+                </span>
+
+                <div class="selected-schedule-extra">
+                    <div>
+                        <i class="fa-solid fa-user-group"></i>
+                        <div>
+                            <small>Confirmed Booking</small>
+                            <strong>${escapeHtml(confirmedText)}</strong>
+                        </div>
+                    </div>
+
+                    <div>
+                        <i class="fa-solid fa-tag"></i>
+                        <div>
+                            <small>Package Rate</small>
+                            <strong>₱${formatMoney(selectedPackage?.price || 0)} / person</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    function syncRequestedDateEligibility() {
+        const config = getRequestedDateConfig();
+        if (!requestedDateOption) return;
+
+        requestedDateOption.classList.toggle("hidden", !config.enabled);
+
+        if (!config.enabled) {
+            exitRequestedDateMode(false);
+            return;
+        }
+
+        if (requestedDateMinimumText) {
+            requestedDateMinimumText.textContent =
+                `Minimum ${config.minPax} guests required for a custom date.`;
+        }
+
+        const pax = getPassengerBreakdown().totalPax;
+        const eligible = pax >= config.minPax;
+
+        if (requestedTravelDate) {
+            requestedTravelDate.disabled = !eligible;
+            requestedTravelDate.min = toDateInputValue(new Date());
+        }
+
+        if (requestedDateRequirementTitle) {
+            requestedDateRequirementTitle.textContent =
+                eligible
+                    ? "Custom date request available"
+                    : `Minimum ${config.minPax} guests required`;
+        }
+
+        if (requestedDateRequirementText) {
+            const missing = Math.max(0, config.minPax - pax);
+            requestedDateRequirementText.textContent =
+                eligible
+                    ? `Your group has ${pax} pax. You may select a preferred travel date.`
+                    : `Current headcount: ${pax} pax. Add at least ${missing} more guest${missing === 1 ? "" : "s"} to request another date.`;
+        }
+
+        if (isRequestedDateMode && !eligible) {
+            if (requestedTravelDate) requestedTravelDate.value = "";
+            selectedSchedule = null;
+            if (travelDate) travelDate.value = "";
+            if (selectedScheduleId) selectedScheduleId.value = "";
+        }
+
+        syncRequestedDateModeUI();
+    }
+
+    function syncRequestedDateModeUI() {
+        document.body.classList.toggle("requested-date-mode", isRequestedDateMode);
+        requestAnotherDateButton?.classList.toggle("active", isRequestedDateMode);
+        requestedDatePanel?.classList.toggle("hidden", !isRequestedDateMode);
+
+        if (bookingAgreementText) {
+            bookingAgreementText.textContent =
+                isRequestedDateMode
+                    ? "I confirm that the information provided is correct and understand that my requested travel date is subject to Trips Wonder availability and admin approval."
+                    : "I confirm that the information provided is correct and understand that my booking will only be confirmed after Trips Wonder verifies my payment.";
+        }
+
+        if (submitBookingButton) {
+            submitBookingButton.innerHTML =
+                isRequestedDateMode
+                    ? `<span>Submit Date Request</span><i class="fa-solid fa-calendar-check"></i>`
+                    : `<span>Proceed to Payment</span><i class="fa-solid fa-arrow-right"></i>`;
+        }
+
+        updateProgress();
+    }
+
+    function enterRequestedDateMode() {
+        if (!getRequestedDateConfig().enabled) return;
+
+        isRequestedDateMode = true;
+
+        document.querySelectorAll(".schedule-card")
+            .forEach(card => card.classList.remove("selected"));
+
+        selectedAccommodation = null;
+        if (accommodation) accommodation.value = "";
+        if (selectedAccommodationId) selectedAccommodationId.value = "";
+
+        syncRequestedDateEligibility();
+        renderTravelCalendar();
+    }
+
+    function exitRequestedDateMode(preserveSchedule = false) {
+        isRequestedDateMode = false;
+
+        if (requestedTravelDate) requestedTravelDate.value = "";
+
+        if (!preserveSchedule && selectedSchedule?.requestedDate === true) {
+            selectedSchedule = null;
+            if (travelDate) travelDate.value = "";
+            if (selectedScheduleId) selectedScheduleId.value = "";
+        }
+
+        syncRequestedDateModeUI();
+    }
+
+    function selectRequestedTravelDate() {
+        if (!isRequestedDateMode) return;
+
+        const config = getRequestedDateConfig();
+        const pax = getPassengerBreakdown().totalPax;
+
+        if (pax < config.minPax) {
+            if (requestedTravelDate) requestedTravelDate.value = "";
+            syncRequestedDateEligibility();
+            return;
+        }
+
+        const startDate = requestedTravelDate?.value || "";
+
+        if (!startDate) {
+            selectedSchedule = null;
+            if (travelDate) travelDate.value = "";
+            if (selectedScheduleId) selectedScheduleId.value = "";
+            updateProgress();
+            return;
+        }
+
+        selectedSchedule = {
+            id: `requested-${startDate}`,
+            startDate,
+            endDate: calculateTravelEndDate(startDate, selectedPackage?.duration),
+            status: "requested",
+            requestedDate: true,
+            minimumHeadcount: config.minPax
+        };
+
+        if (travelDate) travelDate.value = startDate;
+        if (selectedScheduleId) selectedScheduleId.value = "";
+
+        updateBookingSummary();
+        updateProgress();
+    }
+
+
+    function packageSchedules() {
+        const candidates = [
+            selectedPackage?.schedules,
+            selectedPackage?.travelSchedules,
+            selectedPackage?.tourSchedules,
+            selectedPackage?.availableSchedules,
+            selectedPackage?.dates
+        ];
+
+        const array =
+            candidates.find(value => Array.isArray(value)) || [];
+
+        return array
+            .map((item, index) => {
+
+                if (typeof item === "string") {
+                    return {
+                        id: `schedule-${index + 1}`,
+                        startDate: normalizeDateValue(item),
+                        status: "available"
+                    };
+                }
+
+                const startDate =
+                    normalizeDateValue(
+                        item?.startDate ||
+                        item?.travelDate ||
+                        item?.date ||
+                        item?.from
+                    );
+
+                return {
+                    ...item,
+                    id:
+                        normalizeText(
+                            item?.id ||
+                            item?.scheduleId ||
+                            item?.reference
+                        ) ||
+                        `schedule-${index + 1}`,
+
+                    startDate,
+
+                    endDate:
+                        normalizeDateValue(
+                            item?.endDate ||
+                            item?.to
+                        ),
+
+                    status:
+                        normalizeLower(
+                            item?.status ||
+                            "available"
+                        ),
+
+                    slots:
+                        normalizeNumber(
+                            item?.slotsRemaining ??
+                            item?.remainingSlots ??
+                            item?.availableSlots ??
+                            item?.slots
+                        )
+                };
+            })
+            .filter(item => item.startDate);
+    }
+
+    async function loadSchedules() {
+        if (!travelScheduleList) return;
+
+        let schedules = packageSchedules();
+
+        /*
+         * Optional Firestore schedule support.
+         * If your package document has no embedded schedules, the page
+         * also checks /tourSchedules by packageId.
+         */
+        if (!schedules.length && selectedPackage?.id) {
+            try {
+                const scheduleQuery =
+                    query(
+                        collection(db, "tourSchedules"),
+                        where("packageId", "==", selectedPackage.id)
+                    );
+
+                const snapshot = await getDocs(scheduleQuery);
+
+                schedules = snapshot.docs
+                    .map(scheduleDoc => {
+                        const item = scheduleDoc.data() || {};
+
+                        return {
+                            ...item,
+                            id: scheduleDoc.id,
+                            startDate:
+                                normalizeDateValue(
+                                    item.startDate ||
+                                    item.travelDate ||
+                                    item.date
+                                ),
+
+                            endDate:
+                                normalizeDateValue(item.endDate),
+
+                            status:
+                                normalizeLower(item.status || "available"),
+
+                            slots:
+                                normalizeNumber(
+                                    item.slotsRemaining ??
+                                    item.remainingSlots ??
+                                    item.availableSlots ??
+                                    item.slots
+                                )
+                        };
+                    })
+                    .filter(item => item.startDate);
+
+            } catch (error) {
+                console.warn(
+                    "TOUR SCHEDULE COLLECTION NOT AVAILABLE:",
+                    error
                 );
             }
+        }
 
-            if (
-                normalizeLower(
-                    promo.status
-                ) !== "active"
-            ) {
-                throw new Error(
-                    "This promo is not active."
-                );
-            }
-
-            const now =
-                Date.now();
-
-            const validFrom =
-                getDateTimestamp(
-                    promo.validFrom
-                );
-
-            const validUntil =
-                getDateTimestamp(
-                    promo.validUntil
-                );
-
-            if (
-                validFrom &&
-                now < validFrom
-            ) {
-                throw new Error(
-                    "This promo is not available yet."
-                );
-            }
-
-            if (
-                validUntil &&
-                now > validUntil
-            ) {
-                throw new Error(
-                    "This promo has already expired."
-                );
-            }
-
-            if (
-                !promoAppliesToSelectedPackage(
-                    promo
+        loadedScheduleItems =
+            schedules
+                .filter(
+                    item => item.startDate
                 )
-            ) {
-                throw new Error(
-                    "This promo is not applicable to the selected package."
+                .sort(
+                    (a, b) =>
+                        String(a.startDate)
+                            .localeCompare(
+                                String(b.startDate)
+                            )
                 );
+
+        calendarCursor =
+            new Date();
+
+        calendarCursor.setDate(1);
+        calendarCursor.setHours(0, 0, 0, 0);
+
+        syncRequestedDateEligibility();
+
+        const regularEnabled =
+            getRegularScheduleConfig()
+                .enabled;
+
+        if (
+            regularEnabled ||
+            loadedScheduleItems.length
+        ) {
+            scheduleLoading?.classList.add(
+                "hidden"
+            );
+
+            renderTravelCalendar();
+
+            if (!selectedSchedule) {
+                const firstAvailable =
+                    upcomingSchedulesFromCursor(1)[0];
+
+                if (firstAvailable) {
+                    selectSchedule(
+                        firstAvailable,
+                        null
+                    );
+                }
             }
 
-            const calculation =
-                calculateBooking(
+            return;
+        }
+
+        if (
+            getRequestedDateConfig().enabled
+        ) {
+            scheduleLoading?.classList.add(
+                "hidden"
+            );
+
+            if (travelScheduleList) {
+                travelScheduleList.innerHTML = `
+                    <div class="schedule-state" style="grid-column:1/-1;">
+                        <span>No regular dates are published. You may request another travel date below.</span>
+                    </div>
+                `;
+            }
+
+            renderTravelCalendar();
+            return;
+        }
+
+        renderManualDateFallback();
+    }
+
+    function scheduleIsFull(item) {
+        const status = normalizeLower(item.status);
+
+        return (
+            status === "full" ||
+            status === "fully_booked" ||
+            status === "fully booked" ||
+            item.full === true ||
+            (
+                Object.prototype.hasOwnProperty.call(item, "slots") &&
+                item.slots === 0
+            )
+        );
+    }
+
+    function getConfirmedPax(item) {
+        const possibleValue =
+            item?.confirmedPax ??
+            item?.confirmedPaxCount ??
+            item?.confirmedGuests ??
+            0;
+
+        return Math.max(
+            0,
+            Math.floor(
+                normalizeNumber(possibleValue) || 0
+            )
+        );
+    }
+
+    function scheduleIsLimited(item) {
+        const status = normalizeLower(item.status);
+
+        return (
+            status === "limited" ||
+            status === "limited_slots" ||
+            status === "limited slots" ||
+            (
+                item.slots > 0 &&
+                item.slots <= 5
+            )
+        );
+    }
+
+    function renderScheduleCards(schedules, showLoadingState = true) {
+        if (showLoadingState) {
+            scheduleLoading?.classList.add("hidden");
+        }
+
+        travelScheduleList.innerHTML = "";
+
+        schedules.forEach(item => {
+            const full = scheduleIsFull(item);
+            const limited = !full && scheduleIsLimited(item);
+
+            const button = document.createElement("button");
+
+            button.type = "button";
+            button.className =
+                `schedule-card${full ? " fully-booked" : ""}`;
+
+            button.disabled = full;
+
+            const statusLabel =
+                full
+                    ? "Fully Booked"
+                    : limited
+                        ? "Limited Slots"
+                        : "Available";
+
+            button.innerHTML = `
+                <div>
+                    <div class="schedule-card-date">
+                        ${escapeHtml(formatTravelDate(item.startDate))}
+                    </div>
+
+                    <div class="schedule-card-sub">
+                        ${escapeHtml(
+                            item.endDate
+                                ? `until ${formatTravelDate(item.endDate)}`
+                                : selectedPackage?.duration || ""
+                        )}
+                    </div>
+                </div>
+
+                <div class="schedule-card-footer">
+                    <span class="schedule-status ${
+                        full ? "full" : limited ? "limited" : ""
+                    }">
+                        ${statusLabel}
+                    </span>
+
+                    <span class="schedule-slots confirmed-pax-count">
+                        ${getConfirmedPax(item)} pax confirmed
+                    </span>
+                </div>
+            `;
+
+            button.addEventListener("click", () => {
+                selectSchedule(item, button);
+            });
+
+            travelScheduleList.appendChild(button);
+        });
+    }
+
+    function renderManualDateFallback() {
+        scheduleLoading?.classList.add("hidden");
+
+        travelScheduleList.innerHTML = `
+            <div class="form-field full" style="grid-column:1/-1;">
+                <label for="manualTravelDate">
+                    Travel Date *
+                </label>
+
+                <input
+                    type="date"
+                    id="manualTravelDate"
+                    required
+                >
+
+                <small class="field-help">
+                    Schedule cards will appear automatically once tour schedules
+                    are configured in the admin system.
+                </small>
+            </div>
+        `;
+
+        const manualTravelDate = $("manualTravelDate");
+
+        if (manualTravelDate) {
+            manualTravelDate.min = toDateInputValue(new Date());
+
+            manualTravelDate.addEventListener("change", () => {
+                selectedSchedule = {
+                    id: "",
+                    startDate: manualTravelDate.value,
+                    endDate:
+                        calculateTravelEndDate(
+                            manualTravelDate.value,
+                            selectedPackage?.duration
+                        ),
+                    status: "available",
+                    manual: true
+                };
+
+                if (travelDate) {
+                    travelDate.value = manualTravelDate.value;
+                }
+
+                if (selectedScheduleId) {
+                    selectedScheduleId.value = "";
+                }
+
+                renderAccommodationCards();
+                updateProgress();
+            });
+        }
+    }
+
+    function selectSchedule(item, button) {
+        exitRequestedDateMode(true);
+        selectedSchedule = item;
+
+        if (travelDate) {
+            travelDate.value = item.startDate;
+        }
+
+        if (selectedScheduleId) {
+            selectedScheduleId.value = item.id || "";
+        }
+
+        document
+            .querySelectorAll(
+                ".schedule-card, .calendar-day"
+            )
+            .forEach(card => {
+                const sameDate =
+                    card.dataset?.date ===
+                    item.startDate;
+
+                card.classList.toggle(
+                    "selected",
+                    card === button ||
+                    sameDate
+                );
+            });
+
+        if (
+            button?.classList?.contains(
+                "schedule-card"
+            )
+        ) {
+            const selectedDate =
+                new Date(
+                    `${item.startDate}T00:00:00`
+                );
+
+            if (
+                selectedDate.getFullYear() !==
+                    calendarCursor.getFullYear() ||
+                selectedDate.getMonth() !==
+                    calendarCursor.getMonth()
+            ) {
+                calendarCursor =
+                    new Date(
+                        selectedDate.getFullYear(),
+                        selectedDate.getMonth(),
+                        1
+                    );
+            }
+        }
+
+        /*
+         * Changing the schedule invalidates an accommodation choice,
+         * because availability is schedule-specific.
+         */
+        selectedAccommodation = null;
+
+        if (accommodation) accommodation.value = "";
+        if (selectedAccommodationId) {
+            selectedAccommodationId.value = "";
+        }
+
+        renderAccommodationCards();
+        clearAppliedPromo();
+        updateBookingSummary();
+        updateProgress();
+        renderTravelCalendar();
+    }
+
+
+    /* =====================================================
+       PICKUP LOCATIONS
+       ===================================================== */
+
+    function populatePickupLocations() {
+        if (!pickupPoint) return;
+
+        const configured =
+            Array.isArray(selectedPackage?.pickupLocations)
+                ? selectedPackage.pickupLocations
+                    .map(item =>
+                        normalizeText(
+                            typeof item === "string"
+                                ? item
+                                : item?.name || item?.label || item?.value
+                        )
+                    )
+                    .filter(Boolean)
+                : [];
+
+        /*
+         * Keep the default Trips Wonder pickup locations if the package
+         * does not provide its own list.
+         */
+        const locations =
+            configured.length
+                ? configured
+                : [
+                    "Pasay - Uniqlo",
+                    "Greenfield Shaw",
+                    "Quezon Ave / Centris"
+                ];
+
+        pickupPoint.innerHTML =
+            `<option value="">Select pick-up location</option>` +
+            locations.map(location =>
+                `<option value="${escapeHtml(location)}">
+                    ${escapeHtml(location)}
+                 </option>`
+            ).join("") +
+            `<option value="Other / Along the Way">
+                Other / Along the Way
+             </option>`;
+    }
+
+    function handlePickupChange() {
+        const isOther =
+            pickupPoint?.value === "Other / Along the Way";
+
+        otherPickupField?.classList.toggle("hidden", !isOther);
+
+        if (otherPickup) {
+            otherPickup.required = isOther;
+
+            if (!isOther) {
+                otherPickup.value = "";
+            }
+        }
+    }
+
+
+    /* =====================================================
+       ACCOMMODATION
+       ===================================================== */
+
+    function packageAccommodations() {
+        return Array.isArray(selectedPackage?.accommodations)
+            ? selectedPackage.accommodations
+            : [];
+    }
+
+    function normalizeAccommodation(item, index) {
+        const type =
+            normalizeLower(
+                item?.type ||
+                item?.optionType ||
+                item?.category ||
+                "included"
+            );
+
+        const included =
+            type === "included" ||
+            item?.included === true ||
+            item?.isIncluded === true;
+
+        const pricePerNight =
+            Math.max(
+                0,
+                normalizeNumber(
+                    item?.pricePerNight ??
+                    item?.upgradePricePerNight
+                )
+            );
+
+        const flatPrice =
+            Math.max(
+                0,
+                normalizeNumber(
+                    item?.price ??
+                    item?.upgradePrice ??
+                    item?.additionalPrice
+                )
+            );
+
+        const nights = getBookingNights();
+
+        const totalPrice =
+            included
+                ? 0
+                : pricePerNight > 0
+                    ? pricePerNight * nights
+                    : flatPrice;
+
+        const gallery =
+            Array.isArray(item?.gallery)
+                ? item.gallery
+                : Array.isArray(item?.photos)
+                    ? item.photos
+                    : [];
+
+        const photo =
+            normalizeText(
+                item?.mainPhoto?.url ||
+                item?.mainPhoto ||
+                item?.photo?.url ||
+                item?.photo ||
+                item?.imageUrl
+            ) ||
+            firstPhotoUrl(gallery);
+
+        const features =
+            Array.isArray(item?.amenities)
+                ? item.amenities
+                : Array.isArray(item?.features)
+                    ? item.features
+                    : [];
+
+        return {
+            ...item,
+
+            id:
+                normalizeText(
+                    item?.id ||
+                    item?.accommodationId
+                ) ||
+                `accommodation-${index + 1}`,
+
+            name:
+                normalizeText(
+                    item?.name ||
+                    item?.title
+                ) ||
+                (included
+                    ? "Package Included Accommodation"
+                    : "Accommodation Upgrade"),
+
+            resortName:
+                normalizeText(item?.resortName),
+
+            capacity:
+                normalizeText(
+                    item?.capacity ||
+                    item?.maxGuests ||
+                    item?.occupancy
+                ),
+
+            type: included ? "included" : "upgrade",
+            included,
+            price: totalPrice,
+            pricePerNight,
+            nights,
+            photo,
+            gallery,
+            features
+        };
+    }
+
+    function accommodationAvailability(item) {
+        if (!selectedSchedule?.startDate) {
+            return {
+                available: false,
+                status: "Select Date",
+                limited: false
+            };
+        }
+
+        const date = selectedSchedule.startDate;
+        let available = true;
+        let status = "Available";
+        let limited = false;
+
+        const unavailableDates =
+            Array.isArray(item?.unavailableDates)
+                ? item.unavailableDates.map(normalizeDateValue)
+                : [];
+
+        const availableDates =
+            Array.isArray(item?.availableDates)
+                ? item.availableDates.map(normalizeDateValue)
+                : [];
+
+        if (unavailableDates.includes(date)) {
+            available = false;
+            status = "Fully Booked";
+        }
+
+        if (availableDates.length && !availableDates.includes(date)) {
+            available = false;
+            status = "Fully Booked";
+        }
+
+        /*
+         * Support common schedule-based inventory shapes:
+         * scheduleAvailability: { scheduleId: { available, remaining } }
+         * availability: [{ scheduleId/date, available, remaining }]
+         */
+        const scheduleId =
+            normalizeText(selectedSchedule?.id);
+
+        const map =
+            item?.scheduleAvailability &&
+            typeof item.scheduleAvailability === "object" &&
+            !Array.isArray(item.scheduleAvailability)
+                ? item.scheduleAvailability
+                : null;
+
+        const mapped =
+            map
+                ? map[scheduleId] || map[date]
+                : null;
+
+        if (mapped !== null && mapped !== undefined) {
+            if (typeof mapped === "boolean") {
+                available = mapped;
+            } else if (typeof mapped === "number") {
+                available = mapped > 0;
+                limited = mapped > 0 && mapped <= 2;
+            } else if (typeof mapped === "object") {
+                if (mapped.available === false) available = false;
+
+                const remaining =
+                    normalizeNumber(
+                        mapped.remaining ??
+                        mapped.availableRooms ??
+                        mapped.slots
+                    );
+
+                if (
+                    Object.prototype.hasOwnProperty.call(mapped, "remaining") ||
+                    Object.prototype.hasOwnProperty.call(mapped, "availableRooms") ||
+                    Object.prototype.hasOwnProperty.call(mapped, "slots")
+                ) {
+                    available = remaining > 0;
+                    limited = remaining > 0 && remaining <= 2;
+                }
+            }
+        }
+
+        if (Array.isArray(item?.availability)) {
+            const record =
+                item.availability.find(record =>
+                    normalizeText(record?.scheduleId) === scheduleId ||
+                    normalizeDateValue(record?.date) === date
+                );
+
+            if (record) {
+                if (record.available === false) {
+                    available = false;
+                }
+
+                const remaining =
+                    normalizeNumber(
+                        record.remaining ??
+                        record.availableRooms ??
+                        record.slots
+                    );
+
+                if (
+                    Object.prototype.hasOwnProperty.call(record, "remaining") ||
+                    Object.prototype.hasOwnProperty.call(record, "availableRooms") ||
+                    Object.prototype.hasOwnProperty.call(record, "slots")
+                ) {
+                    available = remaining > 0;
+                    limited = remaining > 0 && remaining <= 2;
+                }
+            }
+        }
+
+        if (item?.active === false) {
+            available = false;
+        }
+
+        const itemStatus =
+            normalizeLower(item?.status || "active");
+
+        if (
+            itemStatus === "hidden" ||
+            itemStatus === "inactive" ||
+            itemStatus === "full" ||
+            itemStatus === "fully_booked"
+        ) {
+            available = false;
+        }
+
+        if (!available) {
+            status = "Fully Booked";
+            limited = false;
+        } else if (limited) {
+            status = "Only 1–2 Left";
+        }
+
+        return {
+            available,
+            status,
+            limited
+        };
+    }
+
+    function renderAccommodationCards(filter = "all") {
+        if (!accommodationList) return;
+
+        if (!selectedSchedule?.startDate) {
+            accommodationList.innerHTML = "";
+            accommodationLoadingState?.classList.remove("hidden");
+            return;
+        }
+
+        accommodationLoadingState?.classList.add("hidden");
+
+        let options =
+            packageAccommodations()
+                .map(normalizeAccommodation);
+
+        if (!options.length) {
+            options = [{
+                id: "included-standard",
+                name: "Standard / Package Included",
+                resortName: "",
+                capacity: "",
+                type: "included",
+                included: true,
+                price: 0,
+                pricePerNight: 0,
+                nights: getBookingNights(),
+                photo: "",
+                gallery: [],
+                features: []
+            }];
+        }
+
+        const visible =
+            options.filter(item =>
+                filter === "all" ||
+                item.type === filter
+            );
+
+        accommodationList.innerHTML = "";
+
+        if (!visible.length) {
+            accommodationList.innerHTML = `
+                <div class="accommodation-state" style="grid-column:1/-1;">
+                    <i class="fa-solid fa-bed"></i>
+                    <strong>No accommodation found</strong>
+                    <span>No options are available under this filter.</span>
+                </div>
+            `;
+            return;
+        }
+
+        visible.forEach(item => {
+            const availability =
+                accommodationAvailability(item);
+
+            const card = document.createElement("article");
+
+            card.className =
+                `accommodation-card ${
+                    availability.available ? "" : "unavailable"
+                } ${
+                    selectedAccommodation?.id === item.id
+                        ? "selected"
+                        : ""
+                }`;
+
+            const featureItems =
+                item.features
+                    .slice(0, 4)
+                    .map(feature =>
+                        `<span>${escapeHtml(
+                            typeof feature === "string"
+                                ? feature
+                                : feature?.name || feature?.label
+                        )}</span>`
+                    )
+                    .join("");
+
+            card.innerHTML = `
+                <div class="accommodation-image">
+                    ${
+                        item.photo
+                            ? `<img src="${escapeHtml(item.photo)}"
+                                    alt="${escapeHtml(item.name)}">`
+                            : `<div style="
+                                    width:100%;
+                                    height:100%;
+                                    display:grid;
+                                    place-items:center;
+                                    color:#9babb4;
+                                    font-size:28px;">
+                                    <i class="fa-solid fa-bed"></i>
+                               </div>`
+                    }
+
+                    <div class="accommodation-badges">
+                        <span class="accommodation-badge ${
+                            item.included ? "included" : "upgrade"
+                        }">
+                            ${
+                                item.included
+                                    ? "Included"
+                                    : "Room Upgrade"
+                            }
+                        </span>
+
+                        <span class="accommodation-badge availability ${
+                            availability.available
+                                ? availability.limited
+                                    ? "limited"
+                                    : ""
+                                : "full"
+                        }">
+                            ${escapeHtml(availability.status)}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="accommodation-body">
+
+                    <div class="accommodation-title-row">
+                        <h3>${escapeHtml(item.name)}</h3>
+
+                        <div class="accommodation-price">
+                            ${
+                                item.included
+                                    ? "Included"
+                                    : `+₱${formatMoney(item.price)}`
+                            }
+
+                            ${
+                                !item.included && item.pricePerNight > 0
+                                    ? `<small>
+                                        ₱${formatMoney(item.pricePerNight)}/night
+                                       </small>`
+                                    : ""
+                            }
+                        </div>
+                    </div>
+
+                    ${
+                        item.capacity
+                            ? `<div class="accommodation-capacity">
+                                <i class="fa-solid fa-user-group"></i>
+                                ${escapeHtml(item.capacity)}
+                               </div>`
+                            : ""
+                    }
+
+                    ${
+                        featureItems
+                            ? `<div class="accommodation-features">
+                                ${featureItems}
+                               </div>`
+                            : ""
+                    }
+
+                    <div class="accommodation-actions">
+                        <button
+                            type="button"
+                            class="view-photos-button"
+                            ${item.gallery.length || item.photo ? "" : "disabled"}
+                        >
+                            View Photos
+                        </button>
+
+                        <button
+                            type="button"
+                            class="select-accommodation-button"
+                            ${availability.available ? "" : "disabled"}
+                        >
+                            ${
+                                selectedAccommodation?.id === item.id
+                                    ? "Selected"
+                                    : "Select"
+                            }
+                        </button>
+                    </div>
+
+                </div>
+            `;
+
+            card
+                .querySelector(".view-photos-button")
+                ?.addEventListener("click", () => {
+                    openAccommodationGallery(item);
+                });
+
+            card
+                .querySelector(".select-accommodation-button")
+                ?.addEventListener("click", () => {
+                    selectAccommodation(item);
+                });
+
+            accommodationList.appendChild(card);
+        });
+
+        /*
+         * Automatically select the first available Included option
+         * if the client has not selected one yet.
+         */
+        if (!selectedAccommodation) {
+            const defaultIncluded =
+                options.find(item =>
+                    item.included &&
+                    accommodationAvailability(item).available
+                );
+
+            if (defaultIncluded) {
+                selectAccommodation(
+                    defaultIncluded,
                     false
                 );
+            }
+        }
+    }
 
-            const minimumPax =
-                Math.max(
-                    1,
-                    normalizeNumber(
-                        promo.minimumPax ||
-                        1
-                    )
+    function selectAccommodation(item, rerender = true) {
+        selectedAccommodation = item;
+
+        if (accommodation) {
+            accommodation.value = item.name;
+        }
+
+        if (selectedAccommodationId) {
+            selectedAccommodationId.value = item.id;
+        }
+
+        selectedAccommodationSummary?.classList.remove("hidden");
+
+        if (selectedAccommodationName) {
+            selectedAccommodationName.textContent = item.name;
+        }
+
+        if (selectedAccommodationPrice) {
+            selectedAccommodationPrice.textContent =
+                item.price > 0
+                    ? `+₱${formatMoney(item.price)}`
+                    : "Included";
+        }
+
+        clearAppliedPromo();
+        updateBookingSummary();
+        updateProgress();
+
+        if (rerender) {
+            const activeFilter =
+                accommodationTabs
+                    ?.querySelector("button.active")
+                    ?.dataset.filter ||
+                "all";
+
+            renderAccommodationCards(activeFilter);
+        }
+    }
+
+    function openAccommodationGallery(item) {
+        const photos = [];
+
+        if (item.photo) photos.push(item.photo);
+
+        if (Array.isArray(item.gallery)) {
+            item.gallery.forEach(photo => {
+                const url =
+                    typeof photo === "string"
+                        ? photo
+                        : photo?.url || photo?.src || "";
+
+                if (normalizeText(url) && !photos.includes(url)) {
+                    photos.push(normalizeText(url));
+                }
+            });
+        }
+
+        if (!photos.length) return;
+
+        galleryPhotos = photos;
+        galleryIndex = 0;
+
+        if (galleryAccommodationName) {
+            galleryAccommodationName.textContent = item.name;
+        }
+
+        renderGallery();
+        setModalState(accommodationGalleryModal, true);
+    }
+
+    function renderGallery() {
+        if (!galleryPhotos.length) return;
+
+        galleryIndex =
+            (galleryIndex + galleryPhotos.length) %
+            galleryPhotos.length;
+
+        if (galleryMainImage) {
+            galleryMainImage.src =
+                galleryPhotos[galleryIndex];
+        }
+
+        if (galleryCounter) {
+            galleryCounter.textContent =
+                `${galleryIndex + 1} / ${galleryPhotos.length}`;
+        }
+
+        if (galleryThumbnails) {
+            galleryThumbnails.innerHTML = "";
+
+            galleryPhotos.forEach((photo, index) => {
+                const button = document.createElement("button");
+
+                button.type = "button";
+                button.className =
+                    `gallery-thumbnail ${
+                        index === galleryIndex ? "active" : ""
+                    }`;
+
+                button.innerHTML =
+                    `<img src="${escapeHtml(photo)}"
+                          alt="Accommodation photo ${index + 1}">`;
+
+                button.addEventListener("click", () => {
+                    galleryIndex = index;
+                    renderGallery();
+                });
+
+                galleryThumbnails.appendChild(button);
+            });
+        }
+    }
+
+
+    /* =====================================================
+       PROMOS / TRIPSWONDER DISCOUNT
+       ===================================================== */
+
+    function promoAppliesToPackage(promo) {
+        const applicableTo =
+            normalizeLower(promo?.applicableTo || "all");
+
+        if (
+            applicableTo === "all" ||
+            applicableTo === "" ||
+            applicableTo === "all packages"
+        ) {
+            return true;
+        }
+
+        const promoPackageId =
+            normalizeText(promo?.packageId);
+
+        if (
+            promoPackageId &&
+            promoPackageId !== selectedPackage?.id
+        ) {
+            return false;
+        }
+
+        const ids =
+            Array.isArray(promo?.packageIds)
+                ? promo.packageIds.map(normalizeText)
+                : [];
+
+        if (
+            ids.length &&
+            !ids.includes(selectedPackage?.id)
+        ) {
+            return false;
+        }
+
+        return true;
+    }
+
+    function promoDateIsValid(promo) {
+        const now = new Date();
+
+        const from =
+            promo?.validFrom?.toDate instanceof Function
+                ? promo.validFrom.toDate()
+                : promo?.validFrom
+                    ? new Date(promo.validFrom)
+                    : null;
+
+        const until =
+            promo?.validUntil?.toDate instanceof Function
+                ? promo.validUntil.toDate()
+                : promo?.validUntil
+                    ? new Date(promo.validUntil)
+                    : null;
+
+        if (from && !Number.isNaN(from.getTime()) && now < from) {
+            return false;
+        }
+
+        if (until && !Number.isNaN(until.getTime()) && now > until) {
+            return false;
+        }
+
+        return true;
+    }
+
+    function calculatePromoDiscount(promo, amount, payablePax) {
+        if (!promo) return 0;
+
+        const type =
+            normalizeLower(
+                promo.discountType ||
+                promo.type
+            );
+
+        const value =
+            Math.max(
+                0,
+                normalizeNumber(
+                    promo.discountValue ??
+                    promo.value ??
+                    promo.amount
+                )
+            );
+
+        let discount = 0;
+
+        if (
+            type === "percentage" ||
+            type === "percent" ||
+            type === "%"
+        ) {
+            discount = amount * (value / 100);
+
+        } else if (
+            type === "per_pax" ||
+            type === "per pax" ||
+            type === "perpax"
+        ) {
+            discount = value * payablePax;
+
+        } else {
+            discount = value;
+        }
+
+        const maximumDiscount =
+            Math.max(
+                0,
+                normalizeNumber(promo.maximumDiscount)
+            );
+
+        if (maximumDiscount > 0) {
+            discount =
+                Math.min(discount, maximumDiscount);
+        }
+
+        return Math.min(
+            Math.max(0, discount),
+            Math.max(0, amount)
+        );
+    }
+
+    function promoIsEligible(promo) {
+        if (
+            normalizeLower(promo?.status || "active") !== "active"
+        ) {
+            return false;
+        }
+
+        if (!promoDateIsValid(promo)) return false;
+        if (!promoAppliesToPackage(promo)) return false;
+
+        const calculation =
+            calculateBooking(false);
+
+        const minimumAmount =
+            Math.max(0, normalizeNumber(promo?.minimumAmount));
+
+        if (
+            minimumAmount > 0 &&
+            calculation.originalTotal < minimumAmount
+        ) {
+            return false;
+        }
+
+        const minimumPax =
+            Math.max(1, normalizeNumber(promo?.minimumPax || 1));
+
+        if (calculation.payablePax < minimumPax) {
+            return false;
+        }
+
+        return (
+            calculatePromoDiscount(
+                promo,
+                calculation.originalTotal,
+                calculation.payablePax
+            ) > 0
+        );
+    }
+
+    async function loadEligiblePromos() {
+        availablePromos = [];
+
+        try {
+            const promoQuery =
+                query(
+                    collection(db, "promos"),
+                    where("status", "==", "active")
                 );
 
-            if (
-                calculation.payablePax <
-                minimumPax
-            ) {
-                throw new Error(
-                    `Minimum ${minimumPax} paying pax required for this promo.`
-                );
+            const snapshot =
+                await getDocs(promoQuery);
+
+            availablePromos =
+                snapshot.docs
+                    .map(promoDoc => ({
+                        id: promoDoc.id,
+                        ...promoDoc.data()
+                    }))
+                    .filter(promoIsEligible);
+
+        } catch (error) {
+            console.warn("LOAD PROMOS ERROR:", error);
+        }
+
+        renderDiscountList();
+    }
+
+    function renderDiscountList() {
+        if (!discountList) return;
+
+        const eligible =
+            availablePromos.filter(promoIsEligible);
+
+        discountList.innerHTML = "";
+
+        if (!eligible.length) {
+            const empty = document.createElement("div");
+
+            empty.className = "modal-empty-state";
+            empty.innerHTML = `
+                <i class="fa-solid fa-ticket"></i>
+                <strong>No eligible discount yet</strong>
+                <span>
+                    Available promos for this booking will appear here.
+                </span>
+            `;
+
+            discountList.appendChild(empty);
+
+            pendingPromo = null;
+
+            if (confirmDiscountButton) {
+                confirmDiscountButton.disabled = true;
             }
 
+            return;
+        }
 
-            const minimumAmount =
-                Math.max(
-                    0,
-                    normalizeNumber(
-                        promo.minimumAmount
-                    )
-                );
+        eligible.forEach(promo => {
+            const calculation =
+                calculateBooking(false);
 
-            if (
-                minimumAmount > 0 &&
-                calculation.originalTotal <
-                    minimumAmount
-            ) {
-                throw new Error(
-                    `Minimum booking amount is ₱${formatMoney(
-                        minimumAmount
-                    )}.`
-                );
-            }
-
-            const usage =
-                await countPromoUsage(
-                    promoId,
-                    currentCustomer?.uid ||
-                        auth.currentUser?.uid ||
-                        ""
-                );
-
-            const usageLimit =
-                Math.max(
-                    0,
-                    normalizeNumber(
-                        promo.usageLimit
-                    )
-                );
-
-            if (
-                usageLimit > 0 &&
-                usage.total >= usageLimit
-            ) {
-                throw new Error(
-                    "This promo has reached its usage limit."
-                );
-            }
-
-            const perCustomerLimit =
-                Math.max(
-                    0,
-                    normalizeNumber(
-                        promo.perCustomerLimit
-                    )
-                );
-
-            if (
-                perCustomerLimit > 0 &&
-                usage.customer >=
-                    perCustomerLimit
-            ) {
-                throw new Error(
-                    "You have already reached the usage limit for this promo."
-                );
-            }
-
-            const discountAmount =
+            const discount =
                 calculatePromoDiscount(
                     promo,
                     calculation.originalTotal,
                     calculation.payablePax
                 );
 
-            if (
-                discountAmount <= 0
-            ) {
-                throw new Error(
-                    "This promo does not provide a valid discount."
-                );
-            }
+            const card = document.createElement("button");
 
-            return {
-                id:
-                    promoId,
+            card.type = "button";
+            card.className =
+                `discount-card ${
+                    pendingPromo?.id === promo.id ||
+                    appliedPromo?.id === promo.id
+                        ? "selected"
+                        : ""
+                }`;
 
-                code:
-                    normalizeText(
-                        promo.code
-                    ).toUpperCase(),
+            card.innerHTML = `
+                <span class="discount-card-icon">
+                    <i class="fa-solid fa-ticket"></i>
+                </span>
 
-                title:
-                    normalizeText(
-                        promo.title
-                    ),
+                <span class="discount-card-copy">
+                    <strong>
+                        ${escapeHtml(
+                            promo.title ||
+                            promo.name ||
+                            promo.code ||
+                            "Tripswonder Discount"
+                        )}
+                    </strong>
 
-                discountType:
-                    normalizeLower(
-                        promo.discountType
-                    ),
+                    <span>
+                        ${escapeHtml(
+                            promo.description ||
+                            (promo.code
+                                ? `Promo ${promo.code}`
+                                : "Eligible for this booking")
+                        )}
+                    </span>
+                </span>
 
-                discountValue:
-                    normalizeNumber(
-                        promo.discountValue
-                    ),
+                <span class="discount-card-value">
+                    -₱${formatMoney(discount)}
+                </span>
+            `;
 
-                maximumDiscount:
-                    normalizeNumber(
-                        promo.maximumDiscount
-                    ),
+            card.addEventListener("click", () => {
+                pendingPromo = promo;
+                renderDiscountList();
 
-                minimumAmount:
-                    normalizeNumber(
-                        promo.minimumAmount
-                    ),
+                if (confirmDiscountButton) {
+                    confirmDiscountButton.disabled = false;
+                }
+            });
 
+            discountList.appendChild(card);
+        });
 
-                minimumPax:
-                    Math.max(
-                        1,
-                        normalizeNumber(
-                            promo.minimumPax ||
-                            1
-                        )
-                    ),
-
-                applicableTo:
-                    normalizeLower(
-                        promo.applicableTo
-                    ),
-
-                packageId:
-                    normalizeText(
-                        promo.packageId
-                    ),
-
-                packageName:
-                    normalizeText(
-                        promo.packageName
-                    ),
-
-                validFrom:
-                    promo.validFrom ||
-                    null,
-
-                validUntil:
-                    promo.validUntil ||
-                    null,
-
-                discountAmount:
-                    discountAmount
-            };
-
-        }
-
-
-        async function findAndValidatePromo(
-            rawCode
+        if (
+            confirmDiscountButton &&
+            (pendingPromo || appliedPromo)
         ) {
-
-            const code =
-                normalizeText(
-                    rawCode
-                ).toUpperCase();
-
-            if (!code) {
-                throw new Error(
-                    "Please enter a promo code."
-                );
-            }
-
-            const promoQuery =
-                query(
-                    collection(
-                        db,
-                        "promos"
-                    ),
-                    where(
-                        "status",
-                        "==",
-                        "active"
-                    ),
-                    where(
-                        "code",
-                        "==",
-                        code
-                    )
-                );
-
-            const snapshot =
-                await getDocs(
-                    promoQuery
-                );
-
-            if (snapshot.empty) {
-                throw new Error(
-                    "Invalid or unavailable promo code."
-                );
-            }
-
-            const promoDocument =
-                snapshot.docs[0];
-
-            return validatePromoDocument(
-                promoDocument.data(),
-                promoDocument.id
-            );
-
+            confirmDiscountButton.disabled = false;
         }
-
-
-        async function handleApplyPromo() {
-
-            if (appliedPromo) {
-                clearAppliedPromo();
-                return;
-            }
-
-            if (
-                !selectedPackage
-            ) {
-                showPromoMessage(
-                    "Please wait for the package to finish loading.",
-                    "error"
-                );
-                return;
-            }
-
-            const code =
-                normalizeText(
-                    bookingPromoCode?.value
-                ).toUpperCase();
-
-            if (bookingPromoCode) {
-                bookingPromoCode.value =
-                    code;
-            }
-
-            const originalButtonText =
-                applyPromoButton
-                    ?.textContent ||
-                "Apply";
-
-            try {
-
-                if (applyPromoButton) {
-                    applyPromoButton.disabled =
-                        true;
-
-                    applyPromoButton.innerHTML =
-                        '<i class="fa-solid fa-spinner fa-spin"></i>';
-                }
-
-                showPromoMessage("");
-
-                const validatedPromo =
-                    await findAndValidatePromo(
-                        code
-                    );
-
-                appliedPromo =
-                    validatedPromo;
-
-                if (bookingPromoCode) {
-                    bookingPromoCode.disabled =
-                        true;
-                }
-
-                if (applyPromoButton) {
-                    applyPromoButton.disabled =
-                        false;
-
-                    applyPromoButton.textContent =
-                        "Remove";
-
-                    applyPromoButton.classList.add(
-                        "remove-promo"
-                    );
-                }
-
-                showPromoMessage(
-                    `${validatedPromo.title || validatedPromo.code} applied successfully.`,
-                    "success"
-                );
-
-                updateBookingSummary();
-
-            } catch (error) {
-
-                console.error(
-                    "PROMO APPLY ERROR:",
-                    error
-                );
-
-                appliedPromo =
-                    null;
-
-                showPromoMessage(
-                    error?.message ||
-                    "Unable to apply promo code.",
-                    "error"
-                );
-
-                if (applyPromoButton) {
-                    applyPromoButton.disabled =
-                        false;
-
-                    applyPromoButton.textContent =
-                        originalButtonText;
-                }
-
-                updateBookingSummary();
-
-            }
-
-        }
-
-
-        async function revalidateAppliedPromo() {
-
-            if (!appliedPromo) {
-                return true;
-            }
-
-            try {
-
-                const refreshedPromo =
-                    await findAndValidatePromo(
-                        appliedPromo.code
-                    );
-
-                appliedPromo =
-                    refreshedPromo;
-
-                updateBookingSummary();
-
-                return true;
-
-            } catch (error) {
-
-                clearAppliedPromo(
-                    error?.message ||
-                    "Your promo is no longer available."
-                );
-
-                return false;
-
-            }
-
-        }
-
-
-        /* =====================================================
-           BOOKING CALCULATION
-           ===================================================== */
-
-        function calculateBooking(
-            includePromo = true
-        ) {
-
-            const passenger =
-                getPassengerBreakdown();
-
-            const packageRate =
-                selectedPackage
-                    ?.price ||
-                0;
-
-            /*
-             * Start from every traveler at the regular package rate,
-             * then remove the free-child and discount benefits.
-             */
-            const grossPackageAmount =
-                packageRate *
-                passenger.totalPax;
-
-            const childFreeAmount =
-                passenger.kidsPricingEnabled
-                    ? packageRate *
-                        passenger.freeChildPax
-                    : 0;
-
-            const childDiscountPerPax =
-                passenger.kidsPricingEnabled
-                    ? Math.min(
-                        packageRate,
-                        Math.max(
-                            0,
-                            passenger.childDiscountPerPax
-                        )
-                    )
-                    : 0;
-
-            const childDiscountAmount =
-                childDiscountPerPax *
-                passenger.discountedChildPax;
-
-            const exclusiveDiscountAmount =
-                packageRate *
-                passenger.exclusiveFreePax;
-
-            const packageSubtotal =
-                Math.max(
-                    0,
-                    grossPackageAmount -
-                    childFreeAmount -
-                    childDiscountAmount -
-                    exclusiveDiscountAmount
-                );
-
-            const accommodationAmount =
-                selectedAccommodation
-                    ?.price ||
-                0;
-
-            const originalTotal =
-                packageSubtotal +
-                accommodationAmount;
-
-            const discountAmount =
-                includePromo &&
-                appliedPromo
-                    ? calculatePromoDiscount(
-                        appliedPromo,
-                        originalTotal,
-                        passenger.payablePax
-                    )
-                    : 0;
-
-            const total =
-                Math.max(
-                    0,
-                    originalTotal -
-                    discountAmount
-                );
-
-            /*
-             * Deposit is collected only from payable package passengers.
-             * Only payable package passengers are included in the deposit.
-             */
-            const deposit =
-                DEPOSIT_PER_PAX *
-                passenger.payablePax;
-
-            return {
-
-                pax:
-                    passenger.totalPax,
-
-                totalPax:
-                    passenger.totalPax,
-
-                child0To3:
-                    passenger.child0To3,
-
-                child4To8:
-                    passenger.child4To8,
-
-                kidsPricingEnabled:
-                    passenger.kidsPricingEnabled,
-
-                freeChildPax:
-                    passenger.freeChildPax,
-
-                discountedChildPax:
-                    passenger.discountedChildPax,
-
-                childDiscountPerPax,
-
-                regularPax:
-                    passenger.regularPax,
-
-                payingPaxBeforeExclusive:
-                    passenger.payingPaxBeforeExclusive,
-
-                payablePax:
-                    passenger.payablePax,
-
-                exclusiveTourEnabled:
-                    passenger.exclusiveTourEnabled,
-
-                isExclusive:
-                    passenger.isExclusive,
-
-                exclusiveFreePax:
-                    passenger.exclusiveFreePax,
-
-                passengerPricing:
-                    passenger.passengerPricing,
-
-                exclusiveConfig:
-                    passenger.exclusiveConfig,
-
-                packageRate,
-                grossPackageAmount,
-                childFreeAmount,
-                childDiscountAmount,
-                exclusiveDiscountAmount,
-                packageSubtotal,
-                accommodationAmount,
-                originalTotal,
-                discountAmount,
-                total,
-                deposit
-
-            };
-
-        }
-
-
-        /* =====================================================
-           UPDATE SUMMARY
-           ===================================================== */
-
-        function updateBookingSummary() {
-
-            if (
-                !selectedPackage
-            ) {
-
-                return;
-
-            }
-
-
-            const calculation =
-                calculateBooking();
-
-
-            if (!calculation.kidsPricingEnabled) {
-
-                summaryChildFreeRow
-                    ?.classList.add(
-                        "hidden"
-                    );
-
-                summaryChildDiscountRow
-                    ?.classList.add(
-                        "hidden"
-                    );
-
-            }
-
-
-            if (
-                summaryPackageRate
-            ) {
-
-                summaryPackageRate.textContent =
-                    `₱${formatMoney(
-                        calculation.packageRate
-                    )}`;
-
-            }
-
-
-            if (
-                summaryPax
-            ) {
-
-                summaryPax.textContent =
-                    String(
-                        calculation.pax
-                    );
-
-            }
-
-
-            if (
-                summarySubtotal
-            ) {
-
-                summarySubtotal.textContent =
-                    `₱${formatMoney(
-                        calculation.packageSubtotal
-                    )}`;
-
-            }
-
-
-            if (
-                summaryChildFreeRow &&
-                summaryChildFree
-            ) {
-
-                if (
-                    calculation.kidsPricingEnabled &&
-                    calculation.freeChildPax > 0
-                ) {
-
-                    summaryChildFreeRow.classList.remove(
-                        "hidden"
-                    );
-
-                    summaryChildFree.textContent =
-                        `${calculation.freeChildPax} ${
-                            calculation.freeChildPax === 1
-                                ? "pax"
-                                : "pax"
-                        } • FREE`;
-
-                } else {
-
-                    summaryChildFreeRow.classList.add(
-                        "hidden"
-                    );
-
-                }
-
-            }
-
-
-            if (
-                summaryChildDiscountRow &&
-                summaryChildDiscount
-            ) {
-
-                if (
-                    calculation.childDiscountAmount > 0
-                ) {
-
-                    summaryChildDiscountRow.classList.remove(
-                        "hidden"
-                    );
-
-                    summaryChildDiscount.textContent =
-                        `-₱${formatMoney(
-                            calculation.childDiscountAmount
-                        )}`;
-
-                } else {
-
-                    summaryChildDiscountRow.classList.add(
-                        "hidden"
-                    );
-
-                }
-
-            }
-
-
-            if (
-                summaryExclusiveRow &&
-                summaryExclusiveDiscount
-            ) {
-
-                if (
-                    calculation.exclusiveFreePax > 0
-                ) {
-
-                    summaryExclusiveRow.classList.remove(
-                        "hidden"
-                    );
-
-                    summaryExclusiveDiscount.textContent =
-                        `${calculation.exclusiveFreePax} FREE pax (-₱${formatMoney(
-                            calculation.exclusiveDiscountAmount
-                        )})`;
-
-                } else {
-
-                    summaryExclusiveRow.classList.add(
-                        "hidden"
-                    );
-
-                }
-
-            }
-
-
-            if (
-                summaryAccommodation
-            ) {
-
-                if (
-                    selectedAccommodation
-                ) {
-
-                    summaryAccommodation.textContent =
-                        selectedAccommodation.price >
-                        0
-
-                            ? `${selectedAccommodation.name} (+₱${formatMoney(
-                                selectedAccommodation.price
-                            )})`
-
-                            : selectedAccommodation.name;
-
-                } else {
-
-                    summaryAccommodation.textContent =
-                        "Included";
-
-                }
-
-            }
-
-
-            if (
-                summaryPromoRow &&
-                summaryPromoDiscount
-            ) {
-
-                if (
-                    calculation.discountAmount >
-                    0
-                ) {
-
-                    summaryPromoRow.classList.remove(
-                        "hidden"
-                    );
-
-                    summaryPromoDiscount.textContent =
-                        `-₱${formatMoney(
-                            calculation.discountAmount
-                        )}`;
-
-                } else {
-
-                    summaryPromoRow.classList.add(
-                        "hidden"
-                    );
-
-                    summaryPromoDiscount.textContent =
-                        "-₱0";
-
-                }
-
-            }
-
-
-            if (
-                summaryTotal
-            ) {
-
-                summaryTotal.textContent =
-                    `₱${formatMoney(
-                        calculation.total
-                    )}`;
-
-            }
-
-
-            if (
-                requiredDeposit
-            ) {
-
-                requiredDeposit.textContent =
-                    `₱${formatMoney(
-                        calculation.deposit
-                    )}`;
-
-            }
-
-
-            if (
-                depositBreakdown
-            ) {
-
-                depositBreakdown.textContent =
-                    `₱${formatMoney(
-                        DEPOSIT_PER_PAX
-                    )} × ${calculation.payablePax} pax`;
-
-            }
-
-        }
-
-        /* =====================================================
-   POPULATE PICKUP LOCATIONS
-   ===================================================== */
-
-function populatePickupLocations() {
-
-    if (!pickupPoint) {
-        return;
     }
 
-    pickupPoint.innerHTML = `
-        <option value="">
-            Select pick up location
-        </option>
-    `;
+    function clearAppliedPromo(message = "") {
+        appliedPromo = null;
+        pendingPromo = null;
 
-    const locations =
-        Array.isArray(
-            selectedPackage?.pickupLocations
-        )
-            ? selectedPackage.pickupLocations
-            : [];
+        if (bookingPromoCode) {
+            bookingPromoCode.value = "";
+        }
 
-    locations.forEach(
-        location => {
+        if (selectedDiscountLabel) {
+            selectedDiscountLabel.textContent = "Select";
+        }
 
-            const option =
-                document.createElement(
-                    "option"
-                );
+        if (promoBookingMessage) {
+            promoBookingMessage.textContent = message;
+        }
 
-            option.value =
-                location;
+        updateBookingSummary();
+    }
 
-            option.textContent =
-                location;
+    function applyPendingPromo() {
+        if (!pendingPromo) return;
 
-            pickupPoint.appendChild(
-                option
+        if (!promoIsEligible(pendingPromo)) {
+            alert(
+                "This discount is no longer eligible for the current booking."
             );
 
-        }
-    );
-
-    const otherOption =
-        document.createElement(
-            "option"
-        );
-
-    otherOption.value =
-        "Other / Along the Way";
-
-    otherOption.textContent =
-        "Other / Along the Way";
-
-    pickupPoint.appendChild(
-        otherOption
-    );
-
-}
-
-
-        /* =====================================================
-           PICKUP
-           ===================================================== */
-
-        function handlePickupChange() {
-
-            const isOther =
-                pickupPoint?.value ===
-                "Other / Along the Way";
-
-
-            if (
-                isOther
-            ) {
-
-                otherPickupField
-                    ?.classList.remove(
-                        "hidden"
-                    );
-
-
-                if (
-                    otherPickup
-                ) {
-
-                    otherPickup.required =
-                        true;
-
-                }
-
-            } else {
-
-                otherPickupField
-                    ?.classList.add(
-                        "hidden"
-                    );
-
-
-                if (
-                    otherPickup
-                ) {
-
-                    otherPickup.required =
-                        false;
-
-
-                    otherPickup.value =
-                        "";
-
-                }
-
-            }
-
+            pendingPromo = null;
+            renderDiscountList();
+            return;
         }
 
-
-        /* =====================================================
-           PAYMENT INSTRUCTIONS
-           ===================================================== */
-
-        function showPaymentInstructions() {
-
-            const method =
-                getSelectedPaymentMethod();
-
-
-            if (
-                !method ||
-                !PAYMENT_DETAILS[
-                    method
-                ]
-            ) {
-
-                paymentInstructions
-                    ?.classList.add(
-                        "hidden"
-                    );
-
-
-                return;
-
-            }
-
-
-            const details =
-                PAYMENT_DETAILS[
-                    method
-                ];
-
-
-            const calculation =
-                calculateBooking();
-
-
-            if (
-                method ===
-                "gcash"
-            ) {
-
-                paymentInstructionsContent.innerHTML = `
-
-                    <strong>
-                        Send your initial deposit via GCash
-                    </strong>
-
-                    <div class="payment-detail-row">
-
-                        <span>
-                            Account Name
-                        </span>
-
-                        <span>
-                            ${details.accountName}
-                        </span>
-
-                    </div>
-
-
-                    <div class="payment-detail-row">
-
-    <span>
-        GCash Number
-    </span>
-
-    <div class="payment-copy-value">
-
-        <span>
-            ${details.accountNumber}
-        </span>
-
-        <button
-            type="button"
-            class="payment-copy-btn"
-            data-copy="${details.accountNumber}"
-        >
-            <i class="fa-regular fa-copy"></i>
-            Copy
-        </button>
-
-    </div>
-
-</div>
-
-
-                    <div class="payment-detail-row">
-
-                        <span>
-                            Amount to Send
-                        </span>
-
-                        <span>
-                            ₱${formatMoney(
-                                calculation.deposit
-                            )}
-                        </span>
-
-                    </div>
-
-                `;
-
-            } else {
-
-                paymentInstructionsContent.innerHTML = `
-
-                    <strong>
-                        Send your initial deposit via Bank Transfer
-                    </strong>
-
-
-                    <div class="payment-detail-row">
-
-                        <span>
-                            Bank
-                        </span>
-
-                        <span>
-                            ${details.bankName}
-                        </span>
-
-                    </div>
-
-
-                    <div class="payment-detail-row">
-
-                        <span>
-                            Account Name
-                        </span>
-
-                        <span>
-                            ${details.accountName}
-                        </span>
-
-                    </div>
-
-
-                   <div class="payment-detail-row">
-
-    <span>
-        Account Number
-    </span>
-
-    <div class="payment-copy-value">
-
-        <span>
-            ${details.accountNumber}
-        </span>
-
-        <button
-            type="button"
-            class="payment-copy-btn"
-            data-copy="${details.accountNumber}"
-        >
-            <i class="fa-regular fa-copy"></i>
-            Copy
-        </button>
-
-    </div>
-
-</div>
-
-
-                    <div class="payment-detail-row">
-
-                        <span>
-                            Amount to Send
-                        </span>
-
-                        <span>
-                            ₱${formatMoney(
-                                calculation.deposit
-                            )}
-                        </span>
-
-                    </div>
-
-                `;
-
-            }
-
-
-            paymentInstructions
-                ?.classList.remove(
-                    "hidden"
-                );
-
+        appliedPromo = {
+            ...pendingPromo
+        };
+
+        if (bookingPromoCode) {
+            bookingPromoCode.value =
+                normalizeText(appliedPromo.code).toUpperCase();
         }
 
+        if (selectedDiscountLabel) {
+            selectedDiscountLabel.textContent =
+                appliedPromo.title ||
+                appliedPromo.code ||
+                "Applied";
+        }
 
-        /* =====================================================
-           DUPLICATE PAYMENT REFERENCE
-           ===================================================== */
-
-        async function paymentReferenceExists(
-            reference
-        ) {
-
-            const normalizedReference =
-                normalizeLower(
-                    reference
-                );
+        updateBookingSummary();
+        setModalState(discountModal, false);
+    }
 
 
-            if (
-                !normalizedReference
-            ) {
+    /* =====================================================
+       REFERRAL
+       ===================================================== */
 
-                return false;
+    function showReferralMessage(message, type = "") {
+        if (!referralMessage) return;
 
+        if (!message) {
+            referralMessage.textContent = "";
+            referralMessage.className =
+                "referral-message hidden";
+            return;
+        }
+
+        referralMessage.textContent = message;
+        referralMessage.className =
+            `referral-message ${type}`;
+    }
+
+    async function applyReferralCode() {
+        const code =
+            normalizeText(referralCode?.value).toUpperCase();
+
+        if (!code) {
+            appliedReferral = null;
+            showReferralMessage("", "");
+            return;
+        }
+
+        const oldText =
+            applyReferralButton?.textContent || "Apply";
+
+        try {
+            if (applyReferralButton) {
+                applyReferralButton.disabled = true;
+                applyReferralButton.textContent = "Checking...";
             }
 
+            showReferralMessage("", "");
 
-            /*
-             * Query normalized field.
-             * New client submissions will always store this.
-             */
-
-            const paymentQuery =
+            const referralQuery =
                 query(
-                    collection(
-                        db,
-                        "bookings"
-                    ),
-                    where(
-                        "paymentReferenceNormalized",
-                        "==",
-                        normalizedReference
-                    )
+                    collection(db, "referralCodes"),
+                    where("code", "==", code),
+                    where("status", "==", "active")
                 );
-
 
             const snapshot =
-                await getDocs(
-                    paymentQuery
-                );
+                await getDocs(referralQuery);
 
-
-            return !snapshot.empty;
-
-        }
-
-
-        /* =====================================================
-           VALIDATION
-           ===================================================== */
-
-        function validateBooking() {
-
-            if (
-                !selectedPackage
-            ) {
-
-                alert(
-                    "Please select a valid tour package."
-                );
-
-
-                return false;
-
+            if (snapshot.empty) {
+                throw new Error("Referral code is not valid.");
             }
 
+            const referralDoc = snapshot.docs[0];
+            const data = referralDoc.data() || {};
+            const status = normalizeLower(data.status || "active");
 
-            if (
-                !clientBookingForm
-                    ?.checkValidity()
-            ) {
-
-                clientBookingForm
-                    ?.reportValidity();
-
-
-                return false;
-
+            if (status !== "active") {
+                throw new Error("Referral code is not currently active.");
             }
 
-
-            const pax =
-                getPax();
-
-
-            if (
-                pax < 1
-            ) {
-
-                alert(
-                    "Please enter a valid number of guests."
-                );
-
-
-                return false;
-
-            }
-
-
-            const passenger =
-                getPassengerBreakdown();
-
-            if (
-                passenger.childTotal >
-                passenger.totalPax
-            ) {
-
-                alert(
-                    "Children count cannot be greater than the total number of pax."
-                );
-
-                return false;
-
-            }
-
-
-            const method =
-                getSelectedPaymentMethod();
-
-
-            if (
-                !method
-            ) {
-
-                alert(
-                    "Please select GCash or Bank Transfer."
-                );
-
-
-                return false;
-
-            }
-
-
-            const reference =
-                normalizeText(
-                    paymentReference
-                        ?.value
-                );
-
-
-            if (
-                !reference
-            ) {
-
-                alert(
-                    "Payment reference number is required."
-                );
-
-
-                paymentReference
-                    ?.focus();
-
-
-                return false;
-
-            }
-
-
-            if (
-                reference.length <
-                4
-            ) {
-
-                alert(
-                    "Please enter a valid payment reference number."
-                );
-
-
-                paymentReference
-                    ?.focus();
-
-
-                return false;
-
-            }
-
-
-            if (
-                !bookingAgreement
-                    ?.checked
-            ) {
-
-                alert(
-                    "Please confirm the booking agreement."
-                );
-
-
-                return false;
-
-            }
-
-
-            return true;
-
-        }
-
-
-        /* =====================================================
-           CREATE BOOKING DATA
-           ===================================================== */
-
-        function createBookingData(
-    bookingNumber
-) {
-
-            const calculation =
-                calculateBooking();
-
-
-            const startDate =
-                travelDate.value;
-
-
-            const endDate =
-                calculateTravelEndDate(
-                    startDate,
-                    selectedPackage.duration
-                );
-
-
-            const paymentMethod =
-                getSelectedPaymentMethod();
-
-
-            const paymentReferenceValue =
-                normalizeText(
-                    paymentReference.value
-                );
-
-
-            const finalPickup =
-                pickupPoint.value ===
-                "Other / Along the Way"
-
-                    ? normalizeText(
-                        otherPickup.value
+            appliedReferral = {
+                id: referralDoc.id,
+                code,
+                ownerId:
+                    normalizeText(
+                        data.ownerId ||
+                        data.referrerId ||
+                        data.customerId
+                    ),
+                ownerName:
+                    normalizeText(
+                        data.ownerName ||
+                        data.referrerName ||
+                        data.name
+                    ),
+                rewardType:
+                    normalizeLower(
+                        data.rewardType ||
+                        data.commissionType
+                    ),
+                rewardValue:
+                    normalizeNumber(
+                        data.rewardValue ??
+                        data.commissionValue
                     )
+            };
 
-                    : pickupPoint.value;
+            if (referralCode) {
+                referralCode.value = code;
+                referralCode.readOnly = true;
+            }
+
+            if (applyReferralButton) {
+                applyReferralButton.textContent = "Applied";
+            }
+
+            showReferralMessage(
+                "Referral code applied. This does not change your booking total.",
+                "success"
+            );
+
+        } catch (error) {
+            console.error("REFERRAL CODE ERROR:", error);
+
+            appliedReferral = null;
+
+            showReferralMessage(
+                error?.message || "Unable to validate referral code.",
+                "error"
+            );
+
+            if (applyReferralButton) {
+                applyReferralButton.textContent = oldText;
+            }
+
+        } finally {
+            if (applyReferralButton) {
+                applyReferralButton.disabled = false;
+            }
+        }
+    }
 
 
-            const now =
-                new Date()
-                    .toISOString();
+    /* =====================================================
+       CALCULATION
+       ===================================================== */
+
+    function calculateBooking(includePromo = true) {
+        const passenger =
+            getPassengerBreakdown();
+
+        const packageRate =
+            selectedPackage?.price || 0;
+
+        const grossPackageAmount =
+            packageRate * passenger.totalPax;
+
+        const childFreeAmount =
+            passenger.kidsPricingEnabled
+                ? packageRate * passenger.freeChildPax
+                : 0;
+
+        const childDiscountPerPax =
+            passenger.kidsPricingEnabled
+                ? Math.min(
+                    packageRate,
+                    Math.max(
+                        0,
+                        passenger.childDiscountPerPax
+                    )
+                )
+                : 0;
+
+        const childDiscountAmount =
+            childDiscountPerPax *
+            passenger.discountedChildPax;
+
+        const exclusiveDiscountAmount =
+            packageRate *
+            passenger.exclusiveFreePax;
+
+        const packageSubtotal =
+            Math.max(
+                0,
+                grossPackageAmount -
+                childFreeAmount -
+                childDiscountAmount -
+                exclusiveDiscountAmount
+            );
+
+        const accommodationAmount =
+            Math.max(
+                0,
+                normalizeNumber(
+                    selectedAccommodation?.price
+                )
+            );
+
+        const originalTotal =
+            packageSubtotal +
+            accommodationAmount;
+
+        const discountAmount =
+            includePromo &&
+            appliedPromo
+                ? calculatePromoDiscount(
+                    appliedPromo,
+                    originalTotal,
+                    passenger.payablePax
+                )
+                : 0;
+
+        const total =
+            Math.max(
+                0,
+                originalTotal -
+                discountAmount
+            );
+
+        const deposit =
+            Math.min(
+                total,
+                DEPOSIT_PER_PAX *
+                passenger.payablePax
+            );
+
+        const remainingBalance =
+            Math.max(0, total - deposit);
+
+        return {
+            ...passenger,
+
+            packageRate,
+            grossPackageAmount,
+            childFreeAmount,
+            childDiscountPerPax,
+            childDiscountAmount,
+            exclusiveDiscountAmount,
+            packageSubtotal,
+            accommodationAmount,
+            originalTotal,
+            discountAmount,
+            total,
+            deposit,
+            remainingBalance
+        };
+    }
+
+    function updateBookingSummary() {
+        if (!selectedPackage) return;
+
+        const calculation =
+            calculateBooking();
+
+        if (summaryPackageRate) {
+            summaryPackageRate.textContent =
+                `₱${formatMoney(calculation.packageRate)}`;
+        }
+
+        if (summaryPax) {
+            summaryPax.textContent =
+                String(calculation.totalPax);
+        }
+
+        if (summarySubtotal) {
+            summarySubtotal.textContent =
+                `₱${formatMoney(calculation.packageSubtotal)}`;
+        }
+
+        if (
+            calculation.kidsPricingEnabled &&
+            calculation.freeChildPax > 0
+        ) {
+            summaryChildFreeRow?.classList.remove("hidden");
+
+            if (summaryChildFree) {
+                summaryChildFree.textContent =
+                    `${calculation.freeChildPax} pax • FREE`;
+            }
+        } else {
+            summaryChildFreeRow?.classList.add("hidden");
+        }
+
+        if (calculation.childDiscountAmount > 0) {
+            summaryChildDiscountRow?.classList.remove("hidden");
+
+            if (summaryChildDiscount) {
+                summaryChildDiscount.textContent =
+                    `-₱${formatMoney(
+                        calculation.childDiscountAmount
+                    )}`;
+            }
+        } else {
+            summaryChildDiscountRow?.classList.add("hidden");
+        }
+
+        if (calculation.exclusiveFreePax > 0) {
+            summaryExclusiveRow?.classList.remove("hidden");
+
+            if (summaryExclusiveDiscount) {
+                summaryExclusiveDiscount.textContent =
+                    `${calculation.exclusiveFreePax} FREE pax (-₱${formatMoney(
+                        calculation.exclusiveDiscountAmount
+                    )})`;
+            }
+        } else {
+            summaryExclusiveRow?.classList.add("hidden");
+        }
+
+        if (summaryAccommodation) {
+            summaryAccommodation.textContent =
+                selectedAccommodation?.name ||
+                "Select accommodation";
+        }
+
+        if (
+            selectedAccommodation?.price > 0
+        ) {
+            summaryAccommodationUpgradeRow
+                ?.classList.remove("hidden");
+
+            if (summaryAccommodationUpgrade) {
+                summaryAccommodationUpgrade.textContent =
+                    `+₱${formatMoney(
+                        selectedAccommodation.price
+                    )}`;
+            }
+        } else {
+            summaryAccommodationUpgradeRow
+                ?.classList.add("hidden");
+        }
+
+        if (
+            appliedPromo &&
+            calculation.discountAmount > 0
+        ) {
+            summaryPromoRow?.classList.remove("hidden");
+
+            if (summaryPromoDiscount) {
+                summaryPromoDiscount.textContent =
+                    `-₱${formatMoney(
+                        calculation.discountAmount
+                    )}`;
+            }
+        } else {
+            summaryPromoRow?.classList.add("hidden");
+
+            if (summaryPromoDiscount) {
+                summaryPromoDiscount.textContent = "-₱0";
+            }
+        }
+
+        if (summaryTotal) {
+            summaryTotal.textContent =
+                `₱${formatMoney(calculation.total)}`;
+        }
+
+        if (requiredDeposit) {
+            requiredDeposit.textContent =
+                `₱${formatMoney(calculation.deposit)}`;
+        }
+
+        if (summaryRemainingBalance) {
+            summaryRemainingBalance.textContent =
+                `₱${formatMoney(
+                    calculation.remainingBalance
+                )}`;
+        }
+
+        if (depositBreakdown) {
+            depositBreakdown.textContent =
+                `₱${formatMoney(DEPOSIT_PER_PAX)} × ` +
+                `${calculation.payablePax} payable pax`;
+        }
+
+        updatePaymentModalAmounts();
+        renderDiscountList();
+    }
 
 
+    /* =====================================================
+       PAYMENT
+       ===================================================== */
+
+    function updatePaymentModalAmounts() {
+        const calculation = calculateBooking();
+
+        if (gcashAccountName) {
+            gcashAccountName.textContent =
+                PAYMENT_DETAILS.gcash.accountName;
+        }
+
+        if (gcashAccountNumber) {
+            gcashAccountNumber.textContent =
+                PAYMENT_DETAILS.gcash.accountNumber;
+        }
+
+        if (gcashDepositAmount) {
+            gcashDepositAmount.textContent =
+                `₱${formatMoney(calculation.deposit)}`;
+        }
+
+        if (gcashDepositBreakdown) {
+            gcashDepositBreakdown.textContent =
+                `₱${formatMoney(DEPOSIT_PER_PAX)} × ` +
+                `${calculation.payablePax} payable pax`;
+        }
+
+        if (gcashQrImage) {
+            const qr =
+                normalizeText(
+                    selectedPackage?.paymentDetails?.gcash?.qrImage ||
+                    selectedPackage?.gcashQrImage ||
+                    PAYMENT_DETAILS.gcash.qrImage
+                );
+
+            if (qr) {
+                gcashQrImage.src = qr;
+                gcashQrImage.style.display = "block";
+            } else {
+                gcashQrImage.removeAttribute("src");
+                gcashQrImage.style.display = "none";
+            }
+        }
+
+        if (bankName) {
+            bankName.textContent =
+                PAYMENT_DETAILS.bank.bankName;
+        }
+
+        if (bankAccountName) {
+            bankAccountName.textContent =
+                PAYMENT_DETAILS.bank.accountName;
+        }
+
+        if (bankAccountNumber) {
+            bankAccountNumber.textContent =
+                PAYMENT_DETAILS.bank.accountNumber;
+        }
+
+        if (bankDepositAmount) {
+            bankDepositAmount.textContent =
+                `₱${formatMoney(calculation.deposit)}`;
+        }
+    }
+
+    function openPaymentModal(method) {
+        updatePaymentModalAmounts();
+
+        if (method === "gcash") {
+            if (gcashReferenceInput) {
+                gcashReferenceInput.value =
+                    paymentReference?.value || "";
+            }
+
+            setModalState(gcashPaymentModal, true);
+
+        } else if (method === "bank") {
+            if (bankReferenceInput) {
+                bankReferenceInput.value =
+                    paymentReference?.value || "";
+            }
+
+            setModalState(bankPaymentModal, true);
+        }
+    }
+
+    function confirmPaymentReference(method) {
+        const input =
+            method === "gcash"
+                ? gcashReferenceInput
+                : bankReferenceInput;
+
+        const value =
+            normalizeText(input?.value);
+
+        if (value.length < 4) {
+            alert("Please enter a valid payment reference number.");
+            input?.focus();
+            return;
+        }
+
+        if (paymentReference) {
+            paymentReference.value = value;
+        }
+
+        setModalState(
+            method === "gcash"
+                ? gcashPaymentModal
+                : bankPaymentModal,
+            false
+        );
+
+        updateProgress();
+    }
+
+    function showPaymentInstructions() {
+        /*
+         * New UI uses dedicated GCash / Bank modals.
+         * Hide the old inline instruction box if it exists.
+         */
+        paymentInstructions?.classList.add("hidden");
+
+        const method =
+            getSelectedPaymentMethod();
+
+        if (!method) return;
+
+        openPaymentModal(method);
+    }
+
+    function downloadGcashQr() {
+        const src =
+            normalizeText(gcashQrImage?.src);
+
+        if (!src) {
+            alert("GCash QR code is not available yet.");
+            return;
+        }
+
+        const link =
+            document.createElement("a");
+
+        link.href = src;
+        link.download = "Trips-Wonder-GCash-QR.png";
+        link.target = "_blank";
+
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+    }
+
+
+    /* =====================================================
+       PROGRESS
+       ===================================================== */
+
+    function updateProgress() {
+        const items =
+            [...document.querySelectorAll(".progress-item")];
+
+        const scheduleComplete =
+            Boolean(selectedSchedule?.startDate);
+
+        const detailsComplete =
+            Boolean(
+                normalizeText(customerName?.value) &&
+                normalizeText(customerContact?.value) &&
+                normalizeText(customerEmail?.value) &&
+                getPax() > 0
+            );
+
+        const accommodationComplete =
+            Boolean(selectedAccommodation);
+
+        const paymentComplete =
+            Boolean(
+                getSelectedPaymentMethod() &&
+                normalizeText(paymentReference?.value)
+            );
+
+        const states = [
+            scheduleComplete,
+            detailsComplete,
+            accommodationComplete,
+            paymentComplete
+        ];
+
+        let firstIncomplete =
+            states.findIndex(value => !value);
+
+        if (firstIncomplete === -1) {
+            firstIncomplete = states.length - 1;
+        }
+
+        items.forEach((item, index) => {
+            item.classList.toggle(
+                "completed",
+                states[index] === true &&
+                index < firstIncomplete
+            );
+
+            item.classList.toggle(
+                "active",
+                index === firstIncomplete
+            );
+        });
+    }
+
+
+    /* =====================================================
+       VALIDATION
+       ===================================================== */
+
+    function validateBooking() {
+        if (!selectedPackage) {
+            alert("Please select a valid tour package.");
+            return false;
+        }
+
+        if (!selectedSchedule?.startDate || !travelDate?.value) {
+            alert("Please select your travel date.");
+            document
+                .getElementById("scheduleSection")
+                ?.scrollIntoView({
+                    behavior: "smooth",
+                    block: "center"
+                });
+            return false;
+        }
+
+        if (!clientBookingForm?.checkValidity()) {
+            clientBookingForm?.reportValidity();
+            return false;
+        }
+
+        const passenger =
+            getPassengerBreakdown();
+
+        if (
+            passenger.childTotal >
+            passenger.totalPax
+        ) {
+            alert(
+                "Children count cannot be greater than the total number of pax."
+            );
+            return false;
+        }
+
+        if (isRequestedDateMode) {
+            const config = getRequestedDateConfig();
+
+            if (passenger.totalPax < config.minPax) {
+                alert(`A minimum of ${config.minPax} guests is required to request another travel date.`);
+                return false;
+            }
+
+            if (!selectedSchedule?.requestedDate || !requestedTravelDate?.value) {
+                alert("Please select your preferred requested travel date.");
+                return false;
+            }
+
+        } else {
+            if (!selectedAccommodation) {
+                alert(
+                    "Please select an accommodation for your chosen schedule."
+                );
+
+                document
+                    .getElementById("accommodationSection")
+                    ?.scrollIntoView({
+                        behavior: "smooth",
+                        block: "center"
+                    });
+
+                return false;
+            }
+
+            const method = getSelectedPaymentMethod();
+
+            if (!method) {
+                alert("Please select a payment method.");
+                return false;
+            }
+
+            const reference = normalizeText(paymentReference?.value);
+
+            if (reference.length < 4) {
+                alert(
+                    "Please enter your payment reference number before submitting."
+                );
+
+                openPaymentModal(method);
+                return false;
+            }
+        }
+
+        if (!bookingAgreement?.checked) {
+            alert("Please confirm the booking agreement.");
+            return false;
+        }
+
+        return true;
+    }
+
+
+    /* =====================================================
+       BOOKING DATA
+       ===================================================== */
+
+    function generateBookingNumber(documentId) {
+        const year = new Date().getFullYear();
+
+        const uniqueCode =
+            String(documentId)
+                .replace(/[^a-zA-Z0-9]/g, "")
+                .substring(0, 6)
+                .toUpperCase();
+
+        return `TW-${year}-${uniqueCode}`;
+    }
+
+    function calculateReferralRewardSnapshot() {
+        if (!appliedReferral) {
             return {
+                amount: 0,
+                status: ""
+            };
+        }
 
-                /* =============================================
-                   REQUEST
-                   ============================================= */
+        const type =
+            normalizeLower(appliedReferral.rewardType);
 
-                bookingReference:
-    bookingNumber,
+        const value =
+            Math.max(
+                0,
+                normalizeNumber(
+                    appliedReferral.rewardValue
+                )
+            );
 
-bookingNumber:
-    bookingNumber,
+        const pax =
+            getPassengerBreakdown().payablePax;
 
+        let amount = 0;
 
-                /* =============================================
-                   CUSTOMER
-                   ============================================= */
+        if (
+            type === "per_pax" ||
+            type === "per pax"
+        ) {
+            amount = value * pax;
 
-                customerUid:
-    currentCustomer?.uid ||
-    auth.currentUser?.uid ||
-    "",
+        } else if (
+            type === "percentage" ||
+            type === "percent"
+        ) {
+            amount =
+                calculateBooking().total *
+                (value / 100);
 
-customerType:
-    (currentCustomer?.uid || auth.currentUser?.uid)
-        ? "registered"
-        : "guest",
+        } else {
+            amount = value;
+        }
 
-accountStatus:
-    (currentCustomer?.uid || auth.currentUser?.uid)
-        ? "registered"
-        : "guest",
+        return {
+            amount:
+                Math.max(0, amount),
+            status:
+                "pending"
+        };
+    }
 
-customerName:
-    normalizeText(
-        customerName.value
-    ),
+    function createBookingData(bookingNumber) {
+        const calculation =
+            calculateBooking();
 
-customerContact:
-    normalizeText(
-        customerContact.value
-    ),
+        const startDate =
+            selectedSchedule?.startDate ||
+            travelDate?.value ||
+            "";
 
-customerEmail:
-    normalizeLower(
-        customerEmail.value
-    ),
+        const endDate =
+            selectedSchedule?.endDate ||
+            calculateTravelEndDate(
+                startDate,
+                selectedPackage?.duration
+            );
 
-customerFb:
-    normalizeText(
-        customerFacebook.value
-    ),
+        const paymentMethod =
+            isRequestedDateMode
+                ? ""
+                : getSelectedPaymentMethod();
 
+        const paymentReferenceValue =
+            isRequestedDateMode
+                ? ""
+                : normalizeText(paymentReference?.value);
 
-                /* =============================================
-                   PACKAGE
-                   ============================================= */
+        const finalPickup =
+            pickupPoint?.value === "Other / Along the Way"
+                ? normalizeText(otherPickup?.value)
+                : normalizeText(pickupPoint?.value);
 
-                packageId:
-                    selectedPackage.id,
+        const referralReward =
+            calculateReferralRewardSnapshot();
 
-                packageName:
-                    selectedPackage.name,
+        const now =
+            new Date().toISOString();
 
-                packageCategory:
-                    selectedPackage.category,
+        return {
+            /* BOOKING REFERENCE */
+            bookingReference: bookingNumber,
+            bookingNumber,
 
-                packageLocation:
-                    selectedPackage.location,
+            /* CUSTOMER SNAPSHOT */
+            customerUid:
+                currentCustomer?.uid ||
+                auth.currentUser?.uid ||
+                "",
 
-                duration:
-                    selectedPackage.duration,
+            customerName:
+                normalizeText(customerName?.value),
 
-                packageRate:
-                    calculation.packageRate,
+            customerContact:
+                normalizeText(customerContact?.value),
 
+            customerEmail:
+                normalizeLower(customerEmail?.value),
 
-                /* =============================================
-                   TRAVEL
-                   ============================================= */
+            customerFacebook:
+                normalizeText(customerFacebook?.value),
 
-                travelStartDate:
-                    startDate,
+            /* PACKAGE SNAPSHOT */
+            packageId:
+                selectedPackage.id,
 
-                travelEndDate:
-                    endDate,
+            packageName:
+                selectedPackage.name,
 
-                pax:
-                    calculation.pax,
+            packageLocation:
+                selectedPackage.location,
 
-                totalPax:
-                    calculation.totalPax,
+            packageCategory:
+                selectedPackage.category,
 
-                child0To3:
-                    calculation.child0To3,
+            packageDuration:
+                selectedPackage.duration,
 
-                child4To8:
-                    calculation.child4To8,
+            packageRate:
+                calculation.packageRate,
 
-                regularPax:
-                    calculation.regularPax,
+            /* SCHEDULE SNAPSHOT */
+            scheduleId:
+                normalizeText(selectedSchedule?.id),
 
-                payingPax:
-                    calculation.payablePax,
+            travelDate:
+                startDate,
 
-                payingPaxBeforeExclusive:
-                    calculation.payingPaxBeforeExclusive,
+            travelStartDate:
+                startDate,
 
-                exclusiveTour:
-                    calculation.isExclusive,
+            travelEndDate:
+                endDate,
 
-                exclusiveFreePax:
-                    calculation.exclusiveFreePax,
+            scheduleStatusAtBooking:
+                normalizeLower(
+                    selectedSchedule?.status ||
+                    "available"
+                ),
 
+            requestedTravelDate:
+                isRequestedDateMode,
+
+            requestedTravelDateMinPax:
+                isRequestedDateMode
+                    ? getRequestedDateConfig().minPax
+                    : 0,
+
+            requestedTravelDateStatus:
+                isRequestedDateMode
+                    ? "for_availability_check"
+                    : "",
+
+            requestedTravelDateApproved:
+                false,
+
+            requestedTravelDateApprovedAt:
+                null,
+
+            requestedTravelDateApprovedBy:
+                "",
+
+            /* PASSENGERS */
+            numberOfGuests:
+                calculation.totalPax,
+
+            pax:
+                calculation.totalPax,
+
+            regularPax:
+                calculation.regularPax,
+
+            children0To3:
+                calculation.child0To3,
+
+            children4To8:
+                calculation.child4To8,
+
+            payablePax:
+                calculation.payablePax,
+
+            exclusiveFreePax:
+                calculation.exclusiveFreePax,
+
+            passengerPricingSnapshot: {
                 kidsPricingEnabled:
                     calculation.kidsPricingEnabled,
 
                 childDiscountPerPax:
-                    calculation.childDiscountPerPax,
+                    calculation.childDiscountPerPax
+            },
 
-                passengerPricingSnapshot: {
-                    kidsPricingEnabled:
-                        calculation.passengerPricing.enabled,
-                    childFreeMaxAge:
-                        calculation.passengerPricing.childFreeMaxAge,
-                    childDiscountMinAge:
-                        calculation.passengerPricing.childDiscountMinAge,
-                    childDiscountMaxAge:
-                        calculation.passengerPricing.childDiscountMaxAge,
-                    childDiscountAmount:
-                        calculation.passengerPricing.childDiscountAmount
-                },
-
-                exclusiveTourEnabled:
+            exclusiveTourSnapshot: {
+                enabled:
                     calculation.exclusiveTourEnabled,
 
-                exclusiveTourSnapshot: {
-                    enabled:
-                        calculation.exclusiveConfig.enabled,
-                    minimumPayingPax:
-                        calculation.exclusiveConfig.minimumPayingPax,
-                    freeStartsAt:
-                        calculation.exclusiveConfig.freeStartsAt,
-                    freePax:
-                        calculation.exclusiveConfig.freePax,
-                    maxFreePax:
-                        calculation.exclusiveConfig.maxFreePax
-                },
+                isExclusive:
+                    calculation.isExclusive,
 
-                pickup:
-                    finalPickup,
+                freePax:
+                    calculation.exclusiveFreePax
+            },
 
-                specialRequest:
-                    normalizeText(
-                        specialRequest.value
-                    ),
+            /* TRAVEL DETAILS */
+            pickup:
+                finalPickup,
 
+            specialRequest:
+                normalizeText(specialRequest?.value),
 
-                /* =============================================
-                   ACCOMMODATION
-                   ============================================= */
+            /* ACCOMMODATION SNAPSHOT */
+            accommodation:
+                selectedAccommodation?.name || "",
 
-                accommodation:
-                    selectedAccommodation?.name ||
-                    "Standard / Package Included",
+            accommodationId:
+                selectedAccommodation?.id || "",
 
-                accommodationId:
-                    selectedAccommodation?.id || "",
+            accommodationResortName:
+                selectedAccommodation?.resortName || "",
 
-                accommodationResortName:
-                    selectedAccommodation?.resortName || "",
+            accommodationType:
+                selectedAccommodation?.type || "included",
 
-                accommodationType:
-                    "included",
+            accommodationPrice:
+                calculation.accommodationAmount,
 
-                accommodationPrice:
-                    0,
+            accommodationPricePerNight:
+                normalizeNumber(
+                    selectedAccommodation?.pricePerNight
+                ),
 
-                addons: [],
-                addonsTotal: 0,
+            accommodationNights:
+                normalizeNumber(
+                    selectedAccommodation?.nights
+                ),
 
+            addons:
+                calculation.accommodationAmount > 0
+                    ? [{
+                        category: "accommodation",
+                        accommodationId:
+                            selectedAccommodation?.id || "",
+                        resortName:
+                            selectedAccommodation?.resortName || "",
+                        name:
+                            selectedAccommodation?.name || "",
+                        quantity: 1,
+                        unitPrice:
+                            normalizeNumber(
+                                selectedAccommodation?.pricePerNight ||
+                                selectedAccommodation?.price
+                            ),
+                        nights:
+                            normalizeNumber(
+                                selectedAccommodation?.nights
+                            ),
+                        amount:
+                            calculation.accommodationAmount,
+                        status:
+                            "selected",
+                        addedBy:
+                            "customer"
+                    }]
+                    : [],
 
-/* =============================================
-                   AMOUNTS
-                   ============================================= */
+            addonsTotal:
+                calculation.accommodationAmount,
 
-                grossPackageAmount:
-                    calculation.grossPackageAmount,
+            /* AMOUNT SNAPSHOT */
+            grossPackageAmount:
+                calculation.grossPackageAmount,
 
-                childFreeAmount:
-                    calculation.childFreeAmount,
+            childFreeAmount:
+                calculation.childFreeAmount,
 
-                childDiscountAmount:
-                    calculation.childDiscountAmount,
+            childDiscountAmount:
+                calculation.childDiscountAmount,
 
-                exclusiveDiscountAmount:
-                    calculation.exclusiveDiscountAmount,
+            exclusiveDiscountAmount:
+                calculation.exclusiveDiscountAmount,
 
-                packageSubtotal:
-                    calculation.packageSubtotal,
+            packageSubtotal:
+                calculation.packageSubtotal,
 
-                originalAmount:
-                    calculation.originalTotal,
+            originalAmount:
+                calculation.originalTotal,
 
-                promoId:
-                    appliedPromo?.id ||
-                    "",
+            /* TRIPSWONDER DISCOUNT SNAPSHOT */
+            promoId:
+                appliedPromo?.id || "",
 
-                promoCode:
-                    appliedPromo?.code ||
-                    "",
+            promoCode:
+                normalizeText(
+                    appliedPromo?.code
+                ).toUpperCase(),
 
-                promoTitle:
+            promoTitle:
+                normalizeText(
                     appliedPromo?.title ||
-                    "",
+                    appliedPromo?.name
+                ),
 
-                promoDiscountType:
+            promoDiscountType:
+                normalizeLower(
                     appliedPromo?.discountType ||
-                    "",
+                    appliedPromo?.type
+                ),
 
-                promoDiscountValue:
-                    appliedPromo?.discountValue ||
-                    0,
+            promoDiscountValue:
+                normalizeNumber(
+                    appliedPromo?.discountValue ??
+                    appliedPromo?.value ??
+                    appliedPromo?.amount
+                ),
 
-                discountAmount:
-                    calculation.discountAmount,
+            discountAmount:
+                calculation.discountAmount,
 
-                totalAmount:
-                    calculation.total,
+            /* REFERRAL SNAPSHOT */
+            referralCode:
+                appliedReferral?.code || "",
 
-                requiredDeposit:
-                    calculation.deposit,
+            referralId:
+                appliedReferral?.id || "",
 
-                depositPerPax:
-                    DEPOSIT_PER_PAX,
+            referrerId:
+                appliedReferral?.ownerId || "",
 
-                amountPaid:
-                    0,
+            referrerName:
+                appliedReferral?.ownerName || "",
 
-                balance:
-                    calculation.total,
+            referralRewardType:
+                appliedReferral?.rewardType || "",
+
+            referralRewardValue:
+                appliedReferral?.rewardValue || 0,
+
+            referralCommissionAmount:
+                referralReward.amount,
+
+            referralStatus:
+                appliedReferral
+                    ? referralReward.status
+                    : "",
+
+            /* FINAL TOTAL */
+            totalAmount:
+                calculation.total,
+
+            requiredDeposit:
+                isRequestedDateMode
+                    ? 0
+                    : calculation.deposit,
+
+            depositPerPax:
+                isRequestedDateMode
+                    ? 0
+                    : DEPOSIT_PER_PAX,
+
+            amountPaid:
+                0,
+
+            balance:
+                calculation.total,
+
+            remainingBalanceAfterDeposit:
+                isRequestedDateMode
+                    ? calculation.total
+                    : calculation.remainingBalance,
+
+            /* PAYMENT */
+            paymentMethod,
+            paymentReference:
+                paymentReferenceValue,
+
+            paymentReferenceNormalized:
+                normalizeLower(
+                    paymentReferenceValue
+                ),
+
+            paymentStatus:
+                isRequestedDateMode
+                    ? "not_required_yet"
+                    : "pending_verification",
+
+            paymentVerified:
+                false,
+
+            paymentVerifiedAt:
+                null,
+
+            paymentVerifiedBy:
+                "",
+
+            /* STATUS */
+            bookingStatus:
+                isRequestedDateMode
+                    ? "date_request_pending"
+                    : "pending",
+
+            bookingLocked:
+                true,
+
+            bookingSource:
+                "website",
+
+            source:
+                "client_booking_form",
+
+            confirmationEmailSent:
+                false,
+
+            confirmationEmailSentAt:
+                null,
+
+            createdAt:
+                now,
+
+            updatedAt:
+                now
+        };
+    }
 
 
-                /* =============================================
-                   PAYMENT
-                   ============================================= */
+    /* =====================================================
+       SUBMIT
+       ===================================================== */
 
-                paymentMethod:
-                    paymentMethod,
+    async function submitBooking(event) {
+        event.preventDefault();
 
-                paymentReference:
-                    paymentReferenceValue,
+        if (isSubmitting) return;
 
-                paymentReferenceNormalized:
-                    normalizeLower(
-                        paymentReferenceValue
-                    ),
+        if (!validateBooking()) return;
 
-                paymentStatus:
-                    "pending_verification",
+        const originalContent =
+            submitBookingButton?.innerHTML;
 
-                paymentVerified:
-                    false,
+        try {
+            isSubmitting = true;
 
-                paymentVerifiedAt:
-                    null,
+            if (submitBookingButton) {
+                submitBookingButton.disabled = true;
+                submitBookingButton.innerHTML = `
+                    <i class="fa-solid fa-spinner fa-spin"></i>
+                    Submitting...
+                `;
+            }
 
-                paymentVerifiedBy:
-                    "",
+            /*
+             * Re-check promo eligibility immediately before snapshot/save.
+             */
+            if (
+                appliedPromo &&
+                !promoIsEligible(appliedPromo)
+            ) {
+                clearAppliedPromo();
 
+                alert(
+                    "Your selected Tripswonder Discount is no longer eligible. Please review your Payment Summary."
+                );
 
-                /* =============================================
-                   BOOKING STATUS
-                   ============================================= */
+                return;
+            }
 
-                bookingStatus:
-                    "pending",
+            const bookingDocRef =
+                doc(collection(db, "bookings"));
 
-                bookingSource:
-                    "website",
+            const bookingNumber =
+                generateBookingNumber(
+                    bookingDocRef.id
+                );
 
-                source:
-                    "client_booking_form",
+            const bookingData =
+                createBookingData(
+                    bookingNumber
+                );
 
+            /*
+             * Inventory is not reduced merely by viewing/selecting.
+             * The booking is saved for payment verification first.
+             * Admin/backend inventory handling can act on the required
+             * booking/payment status.
+             */
+            await setDoc(
+                bookingDocRef,
+                bookingData
+            );
 
-                /* =============================================
-                   EMAIL
-                   ============================================= */
+            showSuccessModal(bookingNumber);
 
-                confirmationEmailSent:
-                    false,
+        } catch (error) {
+            console.error(
+                "CLIENT BOOKING SUBMIT ERROR:",
+                error
+            );
 
-                confirmationEmailSentAt:
-                    null,
+            if (!navigator.onLine) {
+                alert(
+                    "No internet connection. Please check your connection and try again."
+                );
+            } else {
+                alert(
+                    "Unable to submit your booking request. Please try again."
+                );
+            }
 
+        } finally {
+            isSubmitting = false;
 
-                /* =============================================
-                   TIMESTAMPS
-                   ============================================= */
+            if (submitBookingButton) {
+                submitBookingButton.disabled = false;
 
-                createdAt:
-                    now,
+                submitBookingButton.innerHTML =
+                    isRequestedDateMode
+                        ? `
+                            <span>Submit Date Request</span>
+                            <i class="fa-solid fa-calendar-check"></i>
+                        `
+                        : (
+                            originalContent ||
+                            `
+                                <span>Proceed to Payment</span>
+                                <i class="fa-solid fa-arrow-right"></i>
+                            `
+                        );
+            }
+        }
+    }
 
-                updatedAt:
-                    now
-
-            };
-
+    function showSuccessModal(bookingNumber) {
+        if (bookingRequestReference) {
+            bookingRequestReference.textContent = bookingNumber;
         }
 
+        if (isRequestedDateMode) {
+            if (successStatusLabel) successStatusLabel.textContent = "FOR AVAILABILITY CHECK";
+            if (successTitle) successTitle.textContent = "Travel Date Request Received";
+            if (successMessage) successMessage.textContent =
+                "Your requested travel date has been submitted. Trips Wonder will review availability before asking for payment.";
+            if (successPaymentStatus) successPaymentStatus.textContent = "Not Required Yet";
+            if (successBookingStatus) successBookingStatus.textContent = "Date Request Pending";
+        } else {
+            if (successStatusLabel) successStatusLabel.textContent = "FOR PAYMENT VERIFICATION";
+            if (successTitle) successTitle.textContent = "Booking Request Received";
+            if (successMessage) successMessage.textContent =
+                "Your booking details and payment reference have been submitted. Our admin will verify your payment before your booking becomes confirmed.";
+            if (successPaymentStatus) successPaymentStatus.textContent = "For Verification";
+            if (successBookingStatus) successBookingStatus.textContent = "Pending Confirmation";
+        }
 
-        /* =====================================================
-           SUBMIT
-           ===================================================== */
+        setModalState(bookingSuccessModal, true);
+    }
 
-        async function submitBooking(
-            event
-        ) {
+    function closeSuccessModal() {
+        setModalState(
+            bookingSuccessModal,
+            false
+        );
 
-            event.preventDefault();
+        window.location.href = "home.html";
+    }
 
 
-            if (
-                isSubmitting
-            ) {
+    /* =====================================================
+       EVENTS
+       ===================================================== */
 
-                return;
+    viewPackageDetailsButton
+        ?.addEventListener("click", () => {
+            setModalState(packageDetailsModal, true);
+        });
 
+    document
+        .querySelectorAll("[data-close-modal]")
+        .forEach(button => {
+            button.addEventListener("click", () => {
+                const modalId =
+                    button.dataset.closeModal;
+
+                setModalState(
+                    document.getElementById(modalId),
+                    false
+                );
+            });
+        });
+
+    document
+        .addEventListener("keydown", event => {
+            if (event.key === "Escape") {
+                closeAllBookingModals();
             }
+        });
 
-
-            if (
-                !validateBooking()
-            ) {
-
-                return;
-
-            }
-
-
-            const originalButtonContent =
-                submitBookingButton
-                    ?.innerHTML;
-
-
-            try {
-
-                isSubmitting =
-                    true;
-
-
-                if (
-                    submitBookingButton
-                ) {
-
-                    submitBookingButton.disabled =
-                        true;
-
-
-                    submitBookingButton.innerHTML = `
-
-                        <i class="fa-solid fa-spinner fa-spin"></i>
-
-                        Submitting...
-
-                    `;
-
-                }
-
-
-                const reference =
-                    normalizeText(
-                        paymentReference.value
+    accommodationTabs
+        ?.querySelectorAll("button")
+        .forEach(button => {
+            button.addEventListener("click", () => {
+                accommodationTabs
+                    .querySelectorAll("button")
+                    .forEach(item =>
+                        item.classList.remove("active")
                     );
 
+                button.classList.add("active");
 
-                /*
-                 * Revalidate an applied promo immediately
-                 * before saving the booking.
-                 */
-                const promoStillValid =
-                    await revalidateAppliedPromo();
+                renderAccommodationCards(
+                    button.dataset.filter || "all"
+                );
+            });
+        });
 
+    galleryPrevButton
+        ?.addEventListener("click", () => {
+            galleryIndex -= 1;
+            renderGallery();
+        });
 
-                if (!promoStillValid) {
+    galleryNextButton
+        ?.addEventListener("click", () => {
+            galleryIndex += 1;
+            renderGallery();
+        });
 
-                    alert(
-                        "Your promo could not be applied. Please review the promo message and submit again."
+    openDiscountButton
+        ?.addEventListener("click", async () => {
+            await loadEligiblePromos();
+
+            pendingPromo =
+                appliedPromo
+                    ? { ...appliedPromo }
+                    : null;
+
+            renderDiscountList();
+            setModalState(discountModal, true);
+        });
+
+    confirmDiscountButton
+        ?.addEventListener(
+            "click",
+            applyPendingPromo
+        );
+
+    applyReferralButton
+        ?.addEventListener(
+            "click",
+            applyReferralCode
+        );
+
+    referralCode
+        ?.addEventListener("keydown", event => {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                applyReferralCode();
+            }
+        });
+
+    pickupPoint
+        ?.addEventListener(
+            "change",
+            handlePickupChange
+        );
+
+    paymentMethodInputs
+        .forEach(input => {
+            input.addEventListener(
+                "change",
+                showPaymentInstructions
+            );
+        });
+
+    confirmGcashPaymentButton
+        ?.addEventListener("click", () => {
+            confirmPaymentReference("gcash");
+        });
+
+    confirmBankPaymentButton
+        ?.addEventListener("click", () => {
+            confirmPaymentReference("bank");
+        });
+
+    downloadGcashQrButton
+        ?.addEventListener(
+            "click",
+            downloadGcashQr
+        );
+
+    quickViewMoreButton
+        ?.addEventListener(
+            "click",
+            () => {
+
+                if (isMobileBookingView()) {
+                    const isOpen =
+                        travelCalendarCard
+                            ?.classList.contains(
+                                "mobile-calendar-open"
+                            ) === true;
+
+                    setMobileCalendarOpen(
+                        !isOpen,
+                        !isOpen
                     );
 
                     return;
                 }
 
-
-                /*
-                 * SECURITY:
-                 * Do not query the private /bookings collection from
-                 * the public customer booking page.
-                 *
-                 * Duplicate payment-reference verification is handled
-                 * by Admin during payment verification.
-                 */
-
-
-                /*
- * Generate Firestore document reference first.
- * Hindi pa ito nagsa-save.
- */
-const bookingDocRef =
-    doc(
-        collection(
-            db,
-            "bookings"
-        )
-    );
-
-
-/*
- * Use part of Firestore's unique ID
- * for the permanent booking number.
- */
-const bookingNumber =
-    generateBookingNumber(
-        bookingDocRef.id
-    );
-
-
-const bookingData =
-    createBookingData(
-        bookingNumber
-    );
-
-
-/*
- * Save once only.
- */
-await setDoc(
-    bookingDocRef,
-    bookingData
-);
-
-
-                console.log(
-    "CLIENT BOOKING SUBMITTED:",
-    {
-        id:
-            bookingDocRef.id,
-
-        bookingNumber:
-            bookingNumber,
-
-        package:
-            selectedPackage.name,
-
-        paymentStatus:
-            bookingData.paymentStatus,
-
-        bookingStatus:
-            bookingData.bookingStatus
-    }
-);
-
-
-                submittedBooking = {
-                    id: bookingDocRef.id,
-                    ref: bookingDocRef,
-                    bookingNumber,
-                    data: bookingData
-                };
-
-                showSuccessModal(
-                    bookingNumber
-                );
-
-
-            } catch (error) {
-
-                console.error(
-                    "CLIENT BOOKING SUBMIT ERROR:",
-                    error
-                );
-
-
-                if (
-                    !navigator.onLine
-                ) {
-
-                    alert(
-                        "No internet connection. Please check your connection and try again."
+                calendarCursor =
+                    new Date(
+                        calendarCursor.getFullYear(),
+                        calendarCursor.getMonth() + 1,
+                        1
                     );
 
-                } else {
+                renderTravelCalendar();
 
-                    alert(
-                        "Unable to submit your booking request. Please try again."
-                    );
-
-                }
-
-
-            } finally {
-
-                isSubmitting =
-                    false;
-
-
-                if (
-                    submitBookingButton
-                ) {
-
-                    submitBookingButton.disabled =
-                        false;
-
-
-                    submitBookingButton.innerHTML =
-                        originalButtonContent ||
-                        `
-                            <i class="fa-solid fa-paper-plane"></i>
-                            Submit Booking Request
-                        `;
-
-                }
-
+                document
+                    .getElementById(
+                        "travelCalendarShell"
+                    )
+                    ?.scrollIntoView({
+                        behavior: "smooth",
+                        block: "start"
+                    });
             }
+        );
 
+    window.addEventListener(
+        "resize",
+        syncMobileCalendarUI
+    );
+
+    calendarPrevMonth
+        ?.addEventListener(
+            "click",
+            () => {
+                const today = new Date();
+
+                const currentMonthStart =
+                    new Date(
+                        today.getFullYear(),
+                        today.getMonth(),
+                        1
+                    );
+
+                const previous =
+                    new Date(
+                        calendarCursor.getFullYear(),
+                        calendarCursor.getMonth() - 1,
+                        1
+                    );
+
+                if (
+                    previous >=
+                    currentMonthStart
+                ) {
+                    calendarCursor =
+                        previous;
+
+                    renderTravelCalendar();
+                }
+            }
+        );
+
+    calendarNextMonth
+        ?.addEventListener(
+            "click",
+            () => {
+                calendarCursor =
+                    new Date(
+                        calendarCursor.getFullYear(),
+                        calendarCursor.getMonth() + 1,
+                        1
+                    );
+
+                renderTravelCalendar();
+            }
+        );
+
+    requestAnotherDateButton
+        ?.addEventListener("click", () => {
+            if (isRequestedDateMode) {
+                exitRequestedDateMode();
+            } else {
+                enterRequestedDateMode();
+            }
+        });
+
+    requestedTravelDate
+        ?.addEventListener("change", selectRequestedTravelDate);
+
+    hasChildrenInputs.forEach(
+        input => {
+            input.addEventListener(
+                "change",
+                () => {
+                    syncChildrenFieldsVisibility();
+
+                    clearAppliedPromo();
+                    updateBookingSummary();
+                    updateProgress();
+                }
+            );
         }
+    );
 
+    numberOfGuests
+        ?.addEventListener("input", () => {
+            const passenger =
+                getPassengerBreakdown();
 
-        /* =====================================================
-           SUCCESS MODAL
-           ===================================================== */
+            const invalid =
+                passenger.childTotal >
+                passenger.totalPax;
 
-        function addonPricePerNight(item) {
-            return Math.max(0, normalizeNumber(item?.pricePerNight ?? item?.price ?? 0));
-        }
-
-        function addonPhoto(item) {
-            const direct = item?.mainPhoto?.url || item?.mainPhoto ||
-                item?.photo?.url || item?.photo || "";
-
-            if (normalizeText(direct)) return normalizeText(direct);
-
-            const gallery = Array.isArray(item?.gallery) ? item.gallery : [];
-            const first = gallery.find(photo =>
-                normalizeText(photo?.url || (typeof photo === "string" ? photo : ""))
+            numberOfGuests.setCustomValidity(
+                invalid
+                    ? "Total pax must be equal to or greater than the children count."
+                    : ""
             );
 
-            return normalizeText(first?.url || (typeof first === "string" ? first : ""));
-        }
-
-        function bookingNights() {
-            const duration = normalizeText(selectedPackage?.duration);
-            const match = duration.match(/(\d+)\s*D\s*(\d+)\s*N/i);
-            if (match) return Math.max(1, Number(match[2]) || 1);
-
-            const days = duration.match(/(\d+)\s*D/i);
-            return days ? Math.max(1, (Number(days[1]) || 1) - 1) : 1;
-        }
-
-        function renderPostBookingAddons() {
-            if (!postBookingAddons || !postBookingAddonList) return;
-
-            const upgrades = optionalPackageAccommodations();
-
-            selectedPostBookingAddon = null;
-            postBookingAddonList.innerHTML = "";
-            addSelectedAddonButton?.classList.add("hidden");
-            postBookingSelectedSummary?.classList.add("hidden");
-
-            if (currentIncludedAccommodation) {
-                currentIncludedAccommodation.textContent =
-                    selectedAccommodation?.name ||
-                    "Package Included Accommodation";
+            if (appliedPromo) {
+                clearAppliedPromo();
             }
 
-            if (!upgrades.length) {
-                postBookingAddons.classList.add("hidden");
+            syncRequestedDateEligibility();
+
+            if (isRequestedDateMode && requestedTravelDate?.value) {
+                selectRequestedTravelDate();
+            }
+
+            updateBookingSummary();
+            updateProgress();
+        });
+
+    [
+        children0To3,
+        children4To8
+    ].forEach(element => {
+        element
+            ?.addEventListener("input", () => {
+                const passenger =
+                    getPassengerBreakdown();
+
+                const invalid =
+                    passenger.childTotal >
+                    passenger.totalPax;
+
+                element.setCustomValidity(
+                    invalid
+                        ? "Children count cannot be greater than total pax."
+                        : ""
+                );
+
+                if (!invalid) {
+                    children0To3?.setCustomValidity("");
+                    children4To8?.setCustomValidity("");
+                }
+
+                if (appliedPromo) {
+                    clearAppliedPromo();
+                }
+
+                updateBookingSummary();
+                updateProgress();
+            });
+    });
+
+    [
+        customerName,
+        customerContact,
+        customerEmail
+    ].forEach(element => {
+        element
+            ?.addEventListener(
+                "input",
+                updateProgress
+            );
+    });
+
+    clientBookingForm
+        ?.addEventListener(
+            "submit",
+            submitBooking
+        );
+
+    successDoneButton
+        ?.addEventListener(
+            "click",
+            closeSuccessModal
+        );
+
+
+    /* =====================================================
+       INITIALIZE
+       ===================================================== */
+
+    handlePickupChange();
+    updateProgress();
+
+    onAuthStateChanged(
+        auth,
+        async user => {
+
+            if (!user) {
+                currentCustomer = null;
+                currentCustomerProfile = null;
+
+                if (customerEmail) {
+                    customerEmail.readOnly = false;
+                }
+
+                await loadSelectedPackage();
+
+                console.log(
+                    "GUEST BOOKING READY"
+                );
+
                 return;
             }
 
-            postBookingAddons.classList.remove("hidden");
-
-            const nights = bookingNights();
-            const currentTotal = Math.max(
-                0,
-                normalizeNumber(submittedBooking?.data?.totalAmount)
-            );
-
-            upgrades.forEach(item => {
-                const price = addonPricePerNight(item);
-                const image = addonPhoto(item);
-                const resort = normalizeText(item.resortName);
-                const roomName = normalizeText(item.name) || "Accommodation Upgrade";
-                const maxGuests = Math.max(
-                    0,
-                    normalizeNumber(item.maxGuests || item.capacity)
-                );
-                const totalUpgrade = price * nights;
-
-                const card = document.createElement("article");
-                card.className = "post-booking-addon-card";
-
-                card.innerHTML = `
-                    <div class="post-booking-addon-photo">
-                        ${
-                            image
-                                ? `<img src="${image}" alt="${roomName}" loading="lazy">`
-                                : `<div class="post-booking-addon-placeholder"><i class="fa-solid fa-bed"></i></div>`
-                        }
-                    </div>
-
-                    <div class="post-booking-addon-info">
-                        <div class="post-booking-addon-top">
-                            <div>
-                                <strong>${roomName}</strong>
-                                ${resort ? `<span><i class="fa-solid fa-location-dot"></i> ${resort}</span>` : ""}
-                            </div>
-                            <span class="optional-badge">Optional</span>
-                        </div>
-
-                        <div class="post-booking-addon-meta">
-                            ${
-                                maxGuests > 0
-                                    ? `<span><i class="fa-solid fa-user-group"></i> Up to ${maxGuests} guest${maxGuests === 1 ? "" : "s"}</span>`
-                                    : ""
-                            }
-                            <span><i class="fa-regular fa-moon"></i> ${nights} night${nights === 1 ? "" : "s"}</span>
-                        </div>
-
-                        <div class="post-booking-addon-price-row">
-                            <div>
-                                <small>Upgrade Rate</small>
-                                <b>₱${formatMoney(price)} <em>/ night</em></b>
-                            </div>
-
-                            <div class="post-booking-addon-total">
-                                <small>Total Upgrade</small>
-                                <strong>+₱${formatMoney(totalUpgrade)}</strong>
-                            </div>
-                        </div>
-
-                        <button type="button" class="post-booking-select-addon">
-                            Select Upgrade
-                        </button>
-                    </div>
-                `;
-
-                const selectButton = card.querySelector(".post-booking-select-addon");
-
-                selectButton?.addEventListener("click", () => {
-                    postBookingAddonList
-                        .querySelectorAll(".post-booking-addon-card")
-                        .forEach(element => {
-                            element.classList.remove("selected");
-                            const button = element.querySelector(".post-booking-select-addon");
-                            if (button) button.innerHTML = "Select Upgrade";
-                        });
-
-                    card.classList.add("selected");
-
-                    if (selectButton) {
-                        selectButton.innerHTML =
-                            `<i class="fa-solid fa-check"></i> Selected`;
-                    }
-
-                    selectedPostBookingAddon = {
-                        ...item,
-                        pricePerNight: price,
-                        nights,
-                        amount: totalUpgrade
-                    };
-
-                    if (selectedAddonName) selectedAddonName.textContent = roomName;
-                    if (selectedAddonAmount) {
-                        selectedAddonAmount.textContent =
-                            `+₱${formatMoney(totalUpgrade)}`;
-                    }
-                    if (selectedAddonNewTotal) {
-                        selectedAddonNewTotal.textContent =
-                            `New booking total: ₱${formatMoney(currentTotal + totalUpgrade)}`;
-                    }
-
-                    postBookingSelectedSummary?.classList.remove("hidden");
-                    addSelectedAddonButton?.classList.remove("hidden");
-                });
-
-                postBookingAddonList.appendChild(card);
-            });
-        }
-
-
-        function showPostBookingMessage(message, type = "error") {
-            if (!postBookingAddonMessage) return;
-            postBookingAddonMessage.textContent = message;
-            postBookingAddonMessage.className = `post-booking-addon-message ${type}`;
-        }
-
-        async function addSelectedAddonToBooking() {
-            if (!submittedBooking?.ref || !selectedPostBookingAddon) return;
-
-            const original = addSelectedAddonButton?.innerHTML;
-
-            try {
-                if (addSelectedAddonButton) {
-                    addSelectedAddonButton.disabled = true;
-                    addSelectedAddonButton.innerHTML =
-                        `<i class="fa-solid fa-spinner fa-spin"></i> Adding...`;
-                }
-
-                const addon = selectedPostBookingAddon;
-                const amount = Math.max(0, normalizeNumber(addon.amount));
-                const previousTotal = Math.max(
-                    0, normalizeNumber(submittedBooking.data?.totalAmount)
-                );
-                const previousPaid = Math.max(
-                    0, normalizeNumber(submittedBooking.data?.amountPaid)
-                );
-                const newTotal = previousTotal + amount;
-
-                const addonRecord = {
-                    category: "accommodation",
-                    accommodationId: normalizeText(addon.id || addon.accommodationId),
-                    resortName: normalizeText(addon.resortName),
-                    name: normalizeText(addon.name) || "Accommodation Upgrade",
-                    quantity: 1,
-                    unitPrice: addon.pricePerNight,
-                    nights: addon.nights,
-                    amount,
-                    status: "requested",
-                    addedBy: "customer",
-                    addedAt: new Date().toISOString()
-                };
-
-                await updateDoc(submittedBooking.ref, {
-                    addons: [addonRecord],
-                    addonsTotal: amount,
-                    totalAmount: newTotal,
-                    balance: Math.max(0, newTotal - previousPaid),
-                    updatedAt: new Date().toISOString()
-                });
-
-                showPostBookingMessage(
-                    `${addonRecord.name} was added to booking ${submittedBooking.bookingNumber}.`,
-                    "success"
-                );
-
-                if (addSelectedAddonButton) {
-                    addSelectedAddonButton.innerHTML =
-                        `<i class="fa-solid fa-check"></i> Added to Booking`;
-                }
-
-                window.setTimeout(() => {
-                    window.location.href = "home.html";
-                }, 900);
-
-            } catch (error) {
-                console.error("ADD POST-BOOKING ADDON ERROR:", error);
-                showPostBookingMessage(
-                    "Unable to add the accommodation upgrade. Your original booking is still saved.",
-                    "error"
-                );
-
-                if (addSelectedAddonButton) {
-                    addSelectedAddonButton.disabled = false;
-                    addSelectedAddonButton.innerHTML =
-                        original || `<i class="fa-solid fa-plus"></i> Add to Booking`;
-                }
-            }
-        }
-
-        function showPostBookingAccountMessage(
-    element,
-    message,
-    type = "error"
-) {
-
-    if (!element) {
-        return;
-    }
-
-
-    element.style.display =
-        "block";
-
-    element.textContent =
-        message;
-
-
-    if (
-        type ===
-        "success"
-    ) {
-
-        element.style.background =
-            "#ecfdf5";
-
-        element.style.color =
-            "#166534";
-
-        element.style.border =
-            "1px solid #bbf7d0";
-
-    } else {
-
-        element.style.background =
-            "#fef2f2";
-
-        element.style.color =
-            "#991b1b";
-
-        element.style.border =
-            "1px solid #fecaca";
-
-    }
-
-}
-
-async function renderPostBookingAccountPrompt() {
-
-    if (!bookingSuccessModal) {
-        return;
-    }
-
-    // Logged-in customer already has an account.
-    if (
-        currentCustomer?.uid ||
-        auth.currentUser?.uid
-    ) {
-
-        bookingSuccessModal
-            .querySelector(
-                "#postBookingAccountPrompt"
-            )
-            ?.remove();
-
-        return;
-    }
-
-
-    let prompt =
-        bookingSuccessModal.querySelector(
-            "#postBookingAccountPrompt"
-        );
-
-
-    if (!prompt) {
-
-        prompt =
-            document.createElement(
-                "section"
-            );
-
-        prompt.id =
-            "postBookingAccountPrompt";
-
-        prompt.className =
-            "post-booking-account-prompt";
-
-
-        const modalPanel =
-            bookingSuccessModal.querySelector(
-                ".success-modal-panel"
-            ) ||
-            bookingSuccessModal.firstElementChild ||
-            bookingSuccessModal;
-
-
-        modalPanel.appendChild(
-            prompt
-        );
-    }
-
-
-    const bookingId =
-        normalizeText(
-            submittedBooking?.id ||
-            ""
-        );
-
-
-    const bookingEmail =
-        normalizeLower(
-            submittedBooking?.data?.customerEmail ||
-            customerEmail?.value ||
-            ""
-        );
-
-
-    const bookingNumber =
-        normalizeText(
-            submittedBooking?.bookingNumber ||
-            bookingRequestReference?.textContent ||
-            ""
-        );
-
-
-    if (
-        !bookingId ||
-        !bookingEmail
-    ) {
-
-        prompt.innerHTML = `
-            <div
-                style="
-                    margin-top:16px;
-                    padding:16px;
-                    border:1px solid #e2e8f0;
-                    border-radius:14px;
-                    background:#f8fafc;
-                    text-align:center;
-                "
-            >
-                <strong
-                    style="
-                        display:block;
-                        color:#0f172a;
-                        font-size:14px;
-                    "
-                >
-                    Booking saved successfully
-                </strong>
-
-                <p
-                    style="
-                        margin:6px 0 0;
-                        color:#64748b;
-                        font-size:11px;
-                    "
-                >
-                    You can create your Trips Wonder account later.
-                </p>
-            </div>
-        `;
-
-        return;
-    }
-
-
-    prompt.innerHTML = `
-        <div
-            style="
-                margin-top:16px;
-                padding:18px;
-                border:1px solid #e2e8f0;
-                border-radius:14px;
-                background:#f8fafc;
-                text-align:center;
-            "
-        >
-            <div
-                style="
-                    width:42px;
-                    height:42px;
-                    margin:0 auto 10px;
-                    display:grid;
-                    place-items:center;
-                    border-radius:50%;
-                    background:#eaf2ff;
-                    color:#1264e8;
-                    font-size:18px;
-                "
-            >
-                <i class="fa-solid fa-spinner fa-spin"></i>
-            </div>
-
-            <strong
-                style="
-                    display:block;
-                    margin-bottom:5px;
-                    color:#0f172a;
-                    font-size:14px;
-                "
-            >
-                Preparing your account options...
-            </strong>
-
-            <p
-                style="
-                    margin:0;
-                    color:#64748b;
-                    font-size:11px;
-                "
-            >
-                Please wait a moment.
-            </p>
-        </div>
-    `;
-
-
-    try {
-
-        const checkBookingAccount =
-            httpsCallable(
-                functions,
-                "checkBookingAccount"
-            );
-
-
-        const result =
-            await checkBookingAccount({
-                bookingId:
-                    bookingId,
-
-                email:
-                    bookingEmail
-            });
-
-
-        const data =
-            result?.data ||
-            {};
-
-
-        const mode =
-            normalizeLower(
-                data.mode
-            );
-
-
-        // =====================================================
-        // NEW CUSTOMER
-        // =====================================================
-
-        if (
-            mode ===
-            "new"
-        ) {
-
-            prompt.innerHTML = `
-                <div
-                    style="
-                        margin-top:16px;
-                        padding:18px;
-                        border:1px solid #e2e8f0;
-                        border-radius:14px;
-                        background:#f8fafc;
-                    "
-                >
-                    <div
-                        style="
-                            text-align:center;
-                            margin-bottom:14px;
-                        "
-                    >
-                        <div
-                            style="
-                                width:42px;
-                                height:42px;
-                                margin:0 auto 10px;
-                                display:grid;
-                                place-items:center;
-                                border-radius:50%;
-                                background:#eaf2ff;
-                                color:#1264e8;
-                                font-size:18px;
-                            "
-                        >
-                            <i class="fa-solid fa-user-plus"></i>
-                        </div>
-
-                        <strong
-                            style="
-                                display:block;
-                                margin-bottom:5px;
-                                color:#0f172a;
-                                font-size:14px;
-                            "
-                        >
-                            Create your Trips Wonder account
-                        </strong>
-
-                        <p
-                            style="
-                                margin:0;
-                                color:#64748b;
-                                font-size:11px;
-                                line-height:1.5;
-                            "
-                        >
-                            Your booking details are already saved.
-                            Just create a password to manage your trip.
-                        </p>
-                    </div>
-
-
-                    <div
-                        style="
-                            margin-bottom:10px;
-                            padding:10px 12px;
-                            border-radius:10px;
-                            background:#ffffff;
-                            border:1px solid #e2e8f0;
-                            font-size:11px;
-                            color:#475569;
-                        "
-                    >
-                        <strong>Email:</strong>
-                        ${bookingEmail}
-
-                        <br>
-
-                        <strong>Booking:</strong>
-                        ${bookingNumber}
-                    </div>
-
-
-                    <div
-                        style="
-                            display:grid;
-                            gap:10px;
-                        "
-                    >
-                        <input
-                            type="password"
-                            id="postBookingPassword"
-                            placeholder="Create password"
-                            autocomplete="new-password"
-                            style="
-                                width:100%;
-                                box-sizing:border-box;
-                                min-height:44px;
-                                padding:0 12px;
-                                border:1px solid #cbd5e1;
-                                border-radius:10px;
-                                font:inherit;
-                                font-size:12px;
-                            "
-                        >
-
-                        <input
-                            type="password"
-                            id="postBookingConfirmPassword"
-                            placeholder="Confirm password"
-                            autocomplete="new-password"
-                            style="
-                                width:100%;
-                                box-sizing:border-box;
-                                min-height:44px;
-                                padding:0 12px;
-                                border:1px solid #cbd5e1;
-                                border-radius:10px;
-                                font:inherit;
-                                font-size:12px;
-                            "
-                        >
-
-                        <div
-                            id="postBookingAccountMessage"
-                            style="
-                                display:none;
-                                padding:9px 10px;
-                                border-radius:8px;
-                                font-size:11px;
-                                line-height:1.4;
-                            "
-                        ></div>
-
-                        <button
-                            type="button"
-                            id="createAccountAfterBooking"
-                            style="
-                                min-height:42px;
-                                border:0;
-                                border-radius:10px;
-                                background:#1264e8;
-                                color:#ffffff;
-                                font:inherit;
-                                font-size:11px;
-                                font-weight:700;
-                                cursor:pointer;
-                            "
-                        >
-                            <i class="fa-solid fa-user-plus"></i>
-                            Create Account
-                        </button>
-
-                        <button
-                            type="button"
-                            id="maybeLaterAfterBooking"
-                            style="
-                                min-height:40px;
-                                border:1px solid #cbd5e1;
-                                border-radius:10px;
-                                background:#ffffff;
-                                color:#334155;
-                                font:inherit;
-                                font-size:11px;
-                                font-weight:700;
-                                cursor:pointer;
-                            "
-                        >
-                            Maybe Later
-                        </button>
-                    </div>
-                </div>
-            `;
-
-
-            const passwordInput =
-                prompt.querySelector(
-                    "#postBookingPassword"
-                );
-
-
-            const confirmPasswordInput =
-                prompt.querySelector(
-                    "#postBookingConfirmPassword"
-                );
-
-
-            const createButton =
-                prompt.querySelector(
-                    "#createAccountAfterBooking"
-                );
-
-
-            const messageBox =
-                prompt.querySelector(
-                    "#postBookingAccountMessage"
-                );
-
-
-            createButton
-                ?.addEventListener(
-                    "click",
-                    async () => {
-
-                        const password =
-                            passwordInput?.value ||
-                            "";
-
-
-                        const confirmPassword =
-                            confirmPasswordInput?.value ||
-                            "";
-
-
-                        if (
-                            password.length <
-                            6
-                        ) {
-
-                            showPostBookingAccountMessage(
-                                messageBox,
-                                "Password must be at least 6 characters.",
-                                "error"
-                            );
-
-                            return;
-                        }
-
-
-                        if (
-                            password !==
-                            confirmPassword
-                        ) {
-
-                            showPostBookingAccountMessage(
-                                messageBox,
-                                "Passwords do not match.",
-                                "error"
-                            );
-
-                            return;
-                        }
-
-
-                        const originalText =
-                            createButton.innerHTML;
-
-
-                        try {
-
-                            createButton.disabled =
-                                true;
-
-                            createButton.innerHTML = `
-                                <i class="fa-solid fa-spinner fa-spin"></i>
-                                Creating Account...
-                            `;
-
-
-                            const createAccountFromBooking =
-                                httpsCallable(
-                                    functions,
-                                    "createAccountFromBooking"
-                                );
-
-
-                            await createAccountFromBooking({
-                                bookingId:
-                                    bookingId,
-
-                                email:
-                                    bookingEmail,
-
-                                password:
-                                    password
-                            });
-
-
-                            showPostBookingAccountMessage(
-                                messageBox,
-                                "Account created successfully. Redirecting to login...",
-                                "success"
-                            );
-
-
-                            window.setTimeout(
-                                () => {
-
-                                    const params =
-                                        new URLSearchParams();
-
-
-                                    params.set(
-                                        "email",
-                                        bookingEmail
-                                    );
-
-
-                                    params.set(
-                                        "booking",
-                                        bookingNumber
-                                    );
-
-
-                                    params.set(
-                                        "from",
-                                        "booking"
-                                    );
-
-
-                                    window.location.href =
-                                        `../../login.html?${params.toString()}`;
-
-                                },
-                                1000
-                            );
-
-
-                        } catch (error) {
-
-                            console.error(
-                                "CREATE ACCOUNT FROM BOOKING ERROR:",
-                                error
-                            );
-
-
-                            createButton.disabled =
-                                false;
-
-                            createButton.innerHTML =
-                                originalText;
-
-
-                            showPostBookingAccountMessage(
-                                messageBox,
-                                error?.message ||
-                                "Unable to create your account.",
-                                "error"
-                            );
-                        }
-
-                    }
-                );
-
-
-            prompt
-                .querySelector(
-                    "#maybeLaterAfterBooking"
-                )
-                ?.addEventListener(
-                    "click",
-                    () => {
-
-                        window.location.href =
-                            "home.html";
-
-                    }
-                );
-
-
-            return;
-        }
-
-
-        // =====================================================
-        // EXISTING CUSTOMER
-        // =====================================================
-
-        if (
-            mode ===
-            "existing"
-        ) {
-
-            prompt.innerHTML = `
-                <div
-                    style="
-                        margin-top:16px;
-                        padding:18px;
-                        border:1px solid #e2e8f0;
-                        border-radius:14px;
-                        background:#f8fafc;
-                        text-align:center;
-                    "
-                >
-                    <div
-                        style="
-                            width:42px;
-                            height:42px;
-                            margin:0 auto 10px;
-                            display:grid;
-                            place-items:center;
-                            border-radius:50%;
-                            background:#eaf2ff;
-                            color:#1264e8;
-                            font-size:18px;
-                        "
-                    >
-                        <i class="fa-solid fa-link"></i>
-                    </div>
-
-                    <strong
-                        style="
-                            display:block;
-                            margin-bottom:6px;
-                            color:#0f172a;
-                            font-size:14px;
-                        "
-                    >
-                        You already have a Trips Wonder account
-                    </strong>
-
-                    <p
-                        style="
-                            margin:0 auto 12px;
-                            max-width:330px;
-                            color:#64748b;
-                            font-size:11px;
-                            line-height:1.5;
-                        "
-                    >
-                        Send a secure connection link to
-                        <strong>${bookingEmail}</strong>
-                        to connect this booking to your existing account.
-                    </p>
-
-
-                    <div
-                        id="postBookingAccountMessage"
-                        style="
-                            display:none;
-                            margin-bottom:10px;
-                            padding:9px 10px;
-                            border-radius:8px;
-                            font-size:11px;
-                            line-height:1.4;
-                        "
-                    ></div>
-
-
-                    <div
-                        style="
-                            display:flex;
-                            gap:8px;
-                            justify-content:center;
-                            flex-wrap:wrap;
-                        "
-                    >
-                        <button
-                            type="button"
-                            id="connectAccountAfterBooking"
-                            style="
-                                min-height:40px;
-                                padding:0 16px;
-                                border:0;
-                                border-radius:10px;
-                                background:#1264e8;
-                                color:#ffffff;
-                                font:inherit;
-                                font-size:11px;
-                                font-weight:700;
-                                cursor:pointer;
-                            "
-                        >
-                            <i class="fa-regular fa-envelope"></i>
-                            Connect with Email
-                        </button>
-
-                        <button
-                            type="button"
-                            id="maybeLaterAfterBooking"
-                            style="
-                                min-height:40px;
-                                padding:0 16px;
-                                border:1px solid #cbd5e1;
-                                border-radius:10px;
-                                background:#ffffff;
-                                color:#334155;
-                                font:inherit;
-                                font-size:11px;
-                                font-weight:700;
-                                cursor:pointer;
-                            "
-                        >
-                            Maybe Later
-                        </button>
-                    </div>
-                </div>
-            `;
-
-
-            const connectButton =
-                prompt.querySelector(
-                    "#connectAccountAfterBooking"
-                );
-
-
-            const messageBox =
-                prompt.querySelector(
-                    "#postBookingAccountMessage"
-                );
-
-
-            connectButton
-                ?.addEventListener(
-                    "click",
-                    async () => {
-
-                        const originalText =
-                            connectButton.innerHTML;
-
-
-                        try {
-
-                            connectButton.disabled =
-                                true;
-
-                            connectButton.innerHTML = `
-                                <i class="fa-solid fa-spinner fa-spin"></i>
-                                Sending...
-                            `;
-
-
-                            const sendBookingConnectEmail =
-                                httpsCallable(
-                                    functions,
-                                    "sendBookingConnectEmail"
-                                );
-
-
-                            await sendBookingConnectEmail({
-                                bookingId:
-                                    bookingId,
-
-                                email:
-                                    bookingEmail
-                            });
-
-
-                            showPostBookingAccountMessage(
-                                messageBox,
-                                "Connection email sent. Please check your inbox.",
-                                "success"
-                            );
-
-
-                            connectButton.innerHTML = `
-                                <i class="fa-solid fa-check"></i>
-                                Email Sent
-                            `;
-
-
-                        } catch (error) {
-
-                            console.error(
-                                "SEND BOOKING CONNECT EMAIL ERROR:",
-                                error
-                            );
-
-
-                            connectButton.disabled =
-                                false;
-
-                            connectButton.innerHTML =
-                                originalText;
-
-
-                            showPostBookingAccountMessage(
-                                messageBox,
-                                error?.message ||
-                                "Unable to send the connection email.",
-                                "error"
-                            );
-                        }
-
-                    }
-                );
-
-
-            prompt
-                .querySelector(
-                    "#maybeLaterAfterBooking"
-                )
-                ?.addEventListener(
-                    "click",
-                    () => {
-
-                        window.location.href =
-                            "home.html";
-
-                    }
-                );
-
-
-            return;
-        }
-
-
-        // =====================================================
-        // ALREADY LINKED
-        // =====================================================
-
-        if (
-            mode ===
-            "linked"
-        ) {
-
-            prompt.innerHTML = `
-                <div
-                    style="
-                        margin-top:16px;
-                        padding:18px;
-                        border:1px solid #bbf7d0;
-                        border-radius:14px;
-                        background:#f0fdf4;
-                        text-align:center;
-                    "
-                >
-                    <div
-                        style="
-                            width:42px;
-                            height:42px;
-                            margin:0 auto 10px;
-                            display:grid;
-                            place-items:center;
-                            border-radius:50%;
-                            background:#dcfce7;
-                            color:#16a34a;
-                            font-size:18px;
-                        "
-                    >
-                        <i class="fa-solid fa-check"></i>
-                    </div>
-
-                    <strong
-                        style="
-                            display:block;
-                            margin-bottom:6px;
-                            color:#14532d;
-                            font-size:14px;
-                        "
-                    >
-                        Booking already connected
-                    </strong>
-
-                    <p
-                        style="
-                            margin:0 0 12px;
-                            color:#64748b;
-                            font-size:11px;
-                        "
-                    >
-                        Sign in to manage this booking in My Trip.
-                    </p>
-
-                    <button
-                        type="button"
-                        id="goToLoginAfterBooking"
-                        style="
-                            min-height:40px;
-                            padding:0 16px;
-                            border:0;
-                            border-radius:10px;
-                            background:#1264e8;
-                            color:#ffffff;
-                            font:inherit;
-                            font-size:11px;
-                            font-weight:700;
-                            cursor:pointer;
-                        "
-                    >
-                        Go to Login
-                    </button>
-                </div>
-            `;
-
-
-            prompt
-                .querySelector(
-                    "#goToLoginAfterBooking"
-                )
-                ?.addEventListener(
-                    "click",
-                    () => {
-
-                        const params =
-                            new URLSearchParams();
-
-
-                        params.set(
-                            "email",
-                            bookingEmail
+            const profileLoaded =
+                await loadCustomerProfile(user);
+
+            if (!profileLoaded) {
+                currentCustomer = user;
+                currentCustomerProfile = null;
+
+                if (customerEmail) {
+                    customerEmail.value =
+                        normalizeLower(
+                            user.email || ""
                         );
 
-
-                        window.location.href =
-                            `../../login.html?${params.toString()}`;
-
-                    }
-                );
-
-
-            return;
-        }
-
-
-        throw new Error(
-            "Unknown account status."
-        );
-
-
-    } catch (error) {
-
-        console.error(
-            "POST BOOKING ACCOUNT CHECK ERROR:",
-            error
-        );
-
-
-        prompt.innerHTML = `
-            <div
-                style="
-                    margin-top:16px;
-                    padding:16px;
-                    border:1px solid #fecaca;
-                    border-radius:14px;
-                    background:#fff7f7;
-                    text-align:center;
-                "
-            >
-                <strong
-                    style="
-                        display:block;
-                        margin-bottom:5px;
-                        color:#991b1b;
-                        font-size:13px;
-                    "
-                >
-                    Unable to load account options
-                </strong>
-
-                <p
-                    style="
-                        margin:0 0 12px;
-                        color:#64748b;
-                        font-size:11px;
-                    "
-                >
-                    Your booking is still saved successfully.
-                    You may continue without creating an account.
-                </p>
-
-                <button
-                    type="button"
-                    id="maybeLaterAfterBooking"
-                    style="
-                        min-height:40px;
-                        padding:0 16px;
-                        border:1px solid #cbd5e1;
-                        border-radius:10px;
-                        background:#ffffff;
-                        color:#334155;
-                        font:inherit;
-                        font-size:11px;
-                        font-weight:700;
-                        cursor:pointer;
-                    "
-                >
-                    Continue
-                </button>
-            </div>
-        `;
-
-
-        prompt
-            .querySelector(
-                "#maybeLaterAfterBooking"
-            )
-            ?.addEventListener(
-                "click",
-                () => {
-
-                    window.location.href =
-                        "home.html";
-
+                    customerEmail.readOnly = false;
                 }
-            );
-
-    }
-}
-
-
-function showPostBookingAccountMessage(
-    element,
-    message,
-    type = "error"
-) {
-
-    if (!element) {
-        return;
-    }
-
-
-    element.style.display =
-        "block";
-
-    element.textContent =
-        message;
-
-
-    if (
-        type ===
-        "success"
-    ) {
-
-        element.style.background =
-            "#ecfdf5";
-
-        element.style.color =
-            "#166534";
-
-        element.style.border =
-            "1px solid #bbf7d0";
-
-    } else {
-
-        element.style.background =
-            "#fef2f2";
-
-        element.style.color =
-            "#991b1b";
-
-        element.style.border =
-            "1px solid #fecaca";
-
-    }
-}
-
-
-function showSuccessModal(requestReference) {
-
-    if (bookingRequestReference) {
-        bookingRequestReference.textContent =
-            requestReference;
-    }
-
-
-    renderPostBookingAddons();
-
-    void renderPostBookingAccountPrompt();
-
-
-    bookingSuccessModal
-        ?.classList.add(
-            "show"
-        );
-
-
-    bookingSuccessModal
-        ?.setAttribute(
-            "aria-hidden",
-            "false"
-        );
-
-
-    document.body.style.overflow =
-        "hidden";
-}
-
-
-        function showSuccessModal(requestReference) {
-            if (bookingRequestReference) {
-                bookingRequestReference.textContent = requestReference;
-            }
-
-            renderPostBookingAddons();
-void renderPostBookingAccountPrompt();
-
-            bookingSuccessModal?.classList.add("show");
-            bookingSuccessModal?.setAttribute("aria-hidden", "false");
-            document.body.style.overflow = "hidden";
-        }
-
-        function closeSuccessModal() {
-            bookingSuccessModal?.classList.remove("show");
-            bookingSuccessModal?.setAttribute("aria-hidden", "true");
-            document.body.style.overflow = "";
-            window.location.href = "home.html";
-        }
-
-
-        /* =====================================================
-   COPY PAYMENT DETAILS
-   ===================================================== */
-
-document.addEventListener("click", async event => {
-
-    const copyButton =
-        event.target.closest(".payment-copy-btn");
-
-    if (!copyButton) {
-        return;
-    }
-
-    const value =
-        copyButton.dataset.copy || "";
-
-    if (!value) {
-        return;
-    }
-
-    try {
-
-        await navigator.clipboard.writeText(
-            value.replace(/\s+/g, "")
-        );
-
-        const originalHTML =
-            copyButton.innerHTML;
-
-        copyButton.innerHTML = `
-            <i class="fa-solid fa-check"></i>
-            Copied
-        `;
-
-        copyButton.classList.add("copied");
-
-        setTimeout(() => {
-
-            copyButton.innerHTML =
-                originalHTML;
-
-            copyButton.classList.remove(
-                "copied"
-            );
-
-        }, 1500);
-
-    } catch (error) {
-
-        console.error(
-            "COPY PAYMENT DETAIL ERROR:",
-            error
-        );
-
-    }
-
-});
-
-
-        /* =====================================================
-           EVENTS
-           ===================================================== */
-
-        numberOfGuests
-            ?.addEventListener(
-                "input",
-                () => {
-
-                    const passenger =
-                        getPassengerBreakdown();
-
-                    if (
-                        passenger.childTotal >
-                        passenger.totalPax
-                    ) {
-
-                        numberOfGuests.setCustomValidity(
-                            "Total pax must be equal to or greater than the children count."
-                        );
-
-                    } else {
-
-                        numberOfGuests.setCustomValidity(
-                            ""
-                        );
-
-                        children0To3
-                            ?.setCustomValidity(
-                                ""
-                            );
-
-                        children4To8
-                            ?.setCustomValidity(
-                                ""
-                            );
-
-                    }
-
-                    if (appliedPromo) {
-                        clearAppliedPromo(
-                            "Booking amount changed. Please apply the promo again."
-                        );
-                    } else {
-                        updateBookingSummary();
-                    }
-
-                    showPaymentInstructions();
-                }
-            );
-
-
-        [
-            children0To3,
-            children4To8
-        ].forEach(
-            element => {
-
-                element
-                    ?.addEventListener(
-                        "input",
-                        () => {
-
-                            const passenger =
-                                getPassengerBreakdown();
-
-                            if (
-                                passenger.childTotal >
-                                passenger.totalPax
-                            ) {
-
-                                element.setCustomValidity(
-                                    "Children count cannot be greater than total pax."
-                                );
-
-                            } else {
-
-                                children0To3
-                                    ?.setCustomValidity(
-                                        ""
-                                    );
-
-                                children4To8
-                                    ?.setCustomValidity(
-                                        ""
-                                    );
-
-                            }
-
-                            if (appliedPromo) {
-
-                                clearAppliedPromo(
-                                    "Passenger pricing changed. Please apply the promo again."
-                                );
-
-                            } else {
-
-                                updateBookingSummary();
-
-                            }
-
-                            showPaymentInstructions();
-
-                        }
-                    );
-
-            }
-        );
-
-
-        applyPromoButton
-            ?.addEventListener(
-                "click",
-                handleApplyPromo
-            );
-
-
-        bookingPromoCode
-            ?.addEventListener(
-                "keydown",
-                event => {
-
-                    if (
-                        event.key ===
-                        "Enter"
-                    ) {
-
-                        event.preventDefault();
-                        handleApplyPromo();
-
-                    }
-
-                }
-            );
-
-
-
-        pickupPoint
-            ?.addEventListener(
-                "change",
-                handlePickupChange
-            );
-
-
-        paymentMethodInputs
-            .forEach(
-                input => {
-
-                    input.addEventListener(
-                        "change",
-                        showPaymentInstructions
-                    );
-
-                }
-            );
-
-
-        clientBookingForm
-            ?.addEventListener(
-                "submit",
-                submitBooking
-            );
-
-
-        successDoneButton
-            ?.addEventListener(
-                "click",
-                closeSuccessModal
-            );
-
-
-        addSelectedAddonButton
-            ?.addEventListener(
-                "click",
-                addSelectedAddonToBooking
-            );
-
-
-        /* =====================================================
-           INITIALIZE
-           ===================================================== */
-        setMinimumTravelDate();
-handlePickupChange();
-
-
-onAuthStateChanged(
-    auth,
-    async user => {
-
-        /*
-         * GUEST MODE:
-         * Visitors may book without creating an account first.
-         */
-        if (!user) {
-
-            currentCustomer = null;
-            currentCustomerProfile = null;
-
-            if (customerEmail) {
-                customerEmail.readOnly = false;
             }
 
             await loadSelectedPackage();
 
             console.log(
-                "GUEST BOOKING READY"
+                "CUSTOMER BOOKING READY:",
+                {
+                    uid: user.uid,
+                    email: user.email
+                }
             );
-
-            return;
         }
+    );
 
-
-        /*
-         * REGISTERED CUSTOMER:
-         * Prefill the booking form from the saved customer profile.
-         */
-        const profileLoaded =
-            await loadCustomerProfile(
-                user
-            );
-
-
-        if (!profileLoaded) {
-
-            console.warn(
-                "BOOKING: Signed-in profile could not be loaded. Continuing with editable booking form."
-            );
-
-            currentCustomer = user;
-            currentCustomerProfile = null;
-
-            if (customerEmail) {
-                customerEmail.value =
-                    normalizeLower(user.email || "");
-
-                customerEmail.readOnly = false;
-            }
-        }
-
-
-        await loadSelectedPackage();
-
-
-        console.log(
-            "CUSTOMER BOOKING READY:",
-            {
-                uid:
-                    user.uid,
-
-                email:
-                    user.email
-            }
-        );
-
-    }
-);  // closes onAuthStateChanged
-        
-        
-
-/* CLOSE DOMContentLoaded */
-    }
-);
+});

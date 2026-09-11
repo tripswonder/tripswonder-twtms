@@ -402,7 +402,7 @@
 
             <a href="#packageSectionAccommodation" class="package-builder-nav-item">
                 <span>06</span>
-                Stay
+                Accommodation
             </a>
 
             <a href="#packageSectionPickup" class="package-builder-nav-item">
@@ -412,11 +412,16 @@
 
 <a href="#packageSectionSchedule" class="package-builder-nav-item">
     <span>08</span>
-    Schedule
+    Pattern
+</a>
+
+<a href="#packageSectionScheduleAvailability" class="package-builder-nav-item">
+    <span>09</span>
+    Travel Dates
 </a>
 
 <a href="#packageSectionItinerary" class="package-builder-nav-item">
-    <span>09</span>
+    <span>10</span>
     Itinerary
 </a>
 
@@ -1143,29 +1148,70 @@
                     <div>
                         <h3>Resorts & Accommodation</h3>
                         <p>
-                            Manage each resort and its accommodation options in one place.
+                            Configure the accommodation choices customers can select before payment.
                         </p>
                     </div>
 
                 </div>
 
+                <div class="package-builder-tip accommodation-builder-tip">
 
-                <div class="package-builder-tip">
-
-                    <i class="fa-solid fa-circle-info"></i>
+                    <i class="fa-solid fa-bed"></i>
 
                     <span>
-                        Resort and operational accommodation details are required before saving. Photos may be added later. Default units are copied to new Trip Operations schedules as inventory snapshots.
+                        Add the resort, accommodation type, capacity, amenities, photos,
+                        package inclusion or upgrade price, and default inventory.
+                        Schedule-specific availability is managed in Travel Schedule Availability below.
                     </span>
 
                 </div>
 
+                <div class="accommodation-builder-head">
 
-                <div
-                    class="accommodation-list"
-                    id="accommodationList">
+                    <div>
+                        <strong>Accommodation Options</strong>
+                        <small>
+                            These options are displayed as visual cards on the customer Booking page.
+                        </small>
+                    </div>
+
+                    <button
+                        type="button"
+                        class="add-accommodation-button"
+                        id="addAccommodationTop">
+
+                        <i class="fa-solid fa-plus"></i>
+                        Add Accommodation
+
+                    </button>
+
                 </div>
 
+                <!--
+                    Existing packages.js renders accommodation cards here.
+                    Keep this ID unchanged for backward compatibility.
+                -->
+                <div
+                    class="accommodation-list"
+                    id="accommodationList"
+                    aria-live="polite">
+                </div>
+
+                <div
+                    class="accommodation-empty-helper"
+                    id="accommodationEmptyHelper">
+
+                    <i class="fa-regular fa-images"></i>
+
+                    <div>
+                        <strong>Create customer-ready accommodation cards</strong>
+                        <span>
+                            Each option should have a clear name, capacity, amenities,
+                            Included in Package or upgrade price, and representative photos.
+                        </span>
+                    </div>
+
+                </div>
 
                 <button
                     type="button"
@@ -1176,6 +1222,20 @@
                     Add Resort Accommodation
 
                 </button>
+
+                <div class="accommodation-policy-note">
+
+                    <i class="fa-solid fa-circle-info"></i>
+
+                    <div>
+                        <strong>Photo notice</strong>
+                        <span>
+                            If uploaded photos are representative only, the customer Booking page
+                            will display: “Sample photos only. Actual room may vary.”
+                        </span>
+                    </div>
+
+                </div>
 
             </section>
 
@@ -1343,6 +1403,74 @@
                 </div>
 
 
+                <div class="schedule-settings-card requested-date-settings-card">
+
+                    <div class="schedule-settings-head">
+
+                        <div>
+                            <strong>Requested Travel Date</strong>
+                            <small>
+                                Allow clients to request a custom travel date when they meet the minimum headcount.
+                            </small>
+                        </div>
+
+                        <label class="package-toggle">
+                            <input
+                                type="checkbox"
+                                id="requestedTravelDateEnabled">
+                            <span class="package-toggle-slider"></span>
+                        </label>
+
+                    </div>
+
+                    <div
+                        class="schedule-settings-fields"
+                        id="requestedTravelDateFields">
+
+                        <div class="form-grid">
+
+                            <div class="form-group">
+
+                                <label for="requestedTravelDateMinPax">
+                                    Minimum Headcount
+                                </label>
+
+                                <div class="input-suffix-wrap">
+                                    <input
+                                        type="number"
+                                        id="requestedTravelDateMinPax"
+                                        min="1"
+                                        max="200"
+                                        step="1"
+                                        value="10">
+                                    <span class="input-suffix">pax</span>
+                                </div>
+
+                                <small class="field-help">
+                                    Example: 10 means a client needs at least 10 guests before a custom date can be requested.
+                                </small>
+
+                            </div>
+
+                            <div class="form-group full">
+
+                                <div class="requested-date-admin-note">
+                                    <i class="fa-solid fa-circle-info"></i>
+                                    <span>
+                                        Requested dates are not automatically confirmed. They will be saved as
+                                        <strong>For Availability Check</strong> and must be reviewed by an admin.
+                                    </span>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
                 <div class="schedule-settings-card">
 
                     <div class="schedule-settings-head">
@@ -1436,12 +1564,203 @@
 
 
             <!-- =================================================
+                 TRAVEL SCHEDULE AVAILABILITY
+            ================================================== -->
+
+            <section
+                class="form-section package-builder-section"
+                id="packageSectionScheduleAvailability">
+
+                <div class="form-section-title">
+
+                    <span>
+                        <i class="fa-solid fa-calendar-check"></i>
+                    </span>
+
+                    <div>
+                        <h3>Travel Schedule Availability</h3>
+                        <p>
+                            Publish actual bookable dates and control slots and accommodation availability per schedule.
+                        </p>
+                    </div>
+
+                </div>
+
+                <div class="package-builder-tip schedule-availability-tip">
+
+                    <i class="fa-solid fa-circle-info"></i>
+
+                    <span>
+                        Regular Schedule above defines the normal pattern only.
+                        The dates added here are the actual schedules customers can select on the Booking page.
+                    </span>
+
+                </div>
+
+                <div class="schedule-availability-toolbar">
+
+                    <div>
+                        <strong>Published Travel Dates</strong>
+                        <small>
+                            Example: Sep 18–20 • Available • 8 slots remaining
+                        </small>
+                    </div>
+
+                    <button
+                        type="button"
+                        class="add-row-button"
+                        id="addTravelSchedule">
+
+                        <i class="fa-solid fa-calendar-plus"></i>
+                        Add Travel Schedule
+
+                    </button>
+
+                </div>
+
+                <div
+                    class="travel-schedule-list"
+                    id="travelScheduleList"
+                    aria-live="polite">
+                </div>
+
+                <div
+                    class="travel-schedule-empty"
+                    id="travelScheduleEmpty">
+
+                    <i class="fa-regular fa-calendar"></i>
+
+                    <div>
+                        <strong>No published travel dates yet</strong>
+                        <span>
+                            Add a schedule to replace the customer Booking page's manual date fallback
+                            with selectable schedule cards.
+                        </span>
+                    </div>
+
+                </div>
+
+                <!-- Template used by the upgraded packages.js in the next step. -->
+                <template id="travelScheduleTemplate">
+
+                    <article class="travel-schedule-card" data-schedule-id="">
+
+                        <div class="travel-schedule-card-head">
+
+                            <div>
+                                <span class="travel-schedule-label">TRAVEL SCHEDULE</span>
+                                <strong class="travel-schedule-title">New Schedule</strong>
+                            </div>
+
+                            <button
+                                type="button"
+                                class="travel-schedule-remove"
+                                aria-label="Remove travel schedule">
+
+                                <i class="fa-solid fa-trash"></i>
+
+                            </button>
+
+                        </div>
+
+                        <div class="form-grid">
+
+                            <div class="form-group">
+                                <label>Start Date</label>
+                                <input
+                                    type="date"
+                                    class="travel-schedule-start-date">
+                            </div>
+
+                            <div class="form-group">
+                                <label>End Date</label>
+                                <input
+                                    type="date"
+                                    class="travel-schedule-end-date">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Status</label>
+                                <select class="travel-schedule-status">
+                                    <option value="available">Available</option>
+                                    <option value="limited">Limited Slots</option>
+                                    <option value="full">Fully Booked</option>
+                                    <option value="closed">Closed</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Total Tour Slots</label>
+                                <input
+                                    type="number"
+                                    class="travel-schedule-total-slots"
+                                    min="0"
+                                    step="1"
+                                    placeholder="e.g. 12">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Available Slots</label>
+                                <input
+                                    type="number"
+                                    class="travel-schedule-available-slots"
+                                    min="0"
+                                    step="1"
+                                    placeholder="e.g. 8">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Booking Visibility</label>
+                                <select class="travel-schedule-visibility">
+                                    <option value="published">Published</option>
+                                    <option value="hidden">Hidden</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group full">
+                                <label>Schedule Note</label>
+                                <input
+                                    type="text"
+                                    class="travel-schedule-note"
+                                    placeholder="e.g. Guaranteed sure trip • Limited room upgrades">
+                            </div>
+
+                        </div>
+
+                        <div class="schedule-accommodation-inventory">
+
+                            <div class="schedule-accommodation-head">
+
+                                <div>
+                                    <strong>Accommodation Availability</strong>
+                                    <small>
+                                        Override the default accommodation inventory for this exact schedule.
+                                    </small>
+                                </div>
+
+                            </div>
+
+                            <div
+                                class="schedule-accommodation-list"
+                                data-schedule-accommodations>
+                            </div>
+
+                        </div>
+
+                    </article>
+
+                </template>
+
+            </section>
+
+
+            <!-- =================================================
                  09 ITINERARY
             ================================================== -->
 
             <section class="form-section package-builder-section" id="packageSectionItinerary">
                 <div class="form-section-title">
-                    <span>08</span>
+                    <span>10</span>
                     <div>
                         <h3>Schedule / Itinerary</h3>
                         <p>Build the tour schedule per day, then add general notes or reminders.</p>
