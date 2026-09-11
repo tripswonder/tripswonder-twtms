@@ -1103,3 +1103,102 @@
     justify-content: center;
     box-sizing: border-box;
 }
+
+
+/* =========================================================
+   PAYMENT METHOD LOGO UPLOAD
+========================================================= */
+
+.payment-logo-admin {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.payment-logo-preview {
+    width: 118px;
+    height: 82px;
+    border: 1px dashed #cfd9e8;
+    border-radius: 14px;
+    background: #f8fbff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    flex: 0 0 auto;
+    box-sizing: border-box;
+}
+
+.payment-logo-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 12px;
+    box-sizing: border-box;
+}
+
+.payment-logo-preview img[hidden],
+.payment-logo-empty[hidden] {
+    display: none !important;
+}
+
+.payment-logo-empty {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    color: #98a2b3;
+    text-align: center;
+    font-size: 12px;
+}
+
+.payment-logo-empty i {
+    font-size: 24px;
+    color: #7ea7e8;
+}
+
+.payment-logo-actions {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.payment-logo-actions small {
+    width: 100%;
+    color: #667085;
+}
+
+.payment-remove-logo-button {
+    min-height: 40px;
+    padding: 0 14px;
+    border: 1px solid #f2b8b5;
+    border-radius: 10px;
+    background: #fff;
+    color: #d92d20;
+    font: inherit;
+    cursor: pointer;
+}
+
+.payment-remove-logo-button:hover {
+    background: #fff5f4;
+}
+
+@media (max-width: 560px) {
+    .payment-logo-admin {
+        align-items: stretch;
+    }
+
+    .payment-logo-preview {
+        width: 100%;
+        height: 92px;
+    }
+
+    .payment-logo-actions {
+        width: 100%;
+    }
+}

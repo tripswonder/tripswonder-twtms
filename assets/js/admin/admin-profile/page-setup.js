@@ -130,6 +130,7 @@ const defaultPageSetupSettings = {
                 status: "active",
                 accountName: "Eric Ramirez",
                 accountNumber: "0952 478 8316",
+                logoImage: "",
                 qrImage: ""
             },
             seabank: {
@@ -137,6 +138,7 @@ const defaultPageSetupSettings = {
                 status: "active",
                 accountName: "",
                 accountNumber: "",
+                logoImage: "",
                 qrImage: ""
             },
             maya: {
@@ -144,6 +146,7 @@ const defaultPageSetupSettings = {
                 status: "coming_soon",
                 accountName: "",
                 accountNumber: "",
+                logoImage: "",
                 qrImage: ""
             },
             gotyme: {
@@ -151,6 +154,7 @@ const defaultPageSetupSettings = {
                 status: "coming_soon",
                 accountName: "",
                 accountNumber: "",
+                logoImage: "",
                 qrImage: ""
             },
             card: {
@@ -158,6 +162,7 @@ const defaultPageSetupSettings = {
                 status: "coming_soon",
                 accountName: "",
                 accountNumber: "",
+                logoImage: "",
                 qrImage: ""
             }
         },
@@ -462,7 +467,8 @@ async function uploadSelectedPageSetupImages(
         "gcash",
         "seabank",
         "maya",
-        "gotyme"
+        "gotyme",
+        "card"
     ];
 
     for (const key of paymentMethodKeys) {
@@ -470,7 +476,39 @@ async function uploadSelectedPageSetupImages(
         const methodElements =
             pageSetupElements.paymentMethods?.[key];
 
-        if (!methodElements?.qrInput) {
+        if (!methodElements) {
+            continue;
+        }
+
+
+        const logoURL =
+            await uploadPageSetupImageIfNeeded({
+                input:
+                    methodElements.logoInput,
+                storagePath:
+                    `systemSettings/general/payment-${key}-logo`,
+                label:
+                    `${key.toUpperCase()} payment logo`
+            });
+
+        if (logoURL) {
+
+            finalSettings.paymentSettings =
+                finalSettings.paymentSettings || {};
+
+            finalSettings.paymentSettings.methods =
+                finalSettings.paymentSettings.methods || {};
+
+            finalSettings.paymentSettings.methods[key] = {
+                ...(finalSettings.paymentSettings.methods[key] || {}),
+                logoImage:
+                    logoURL
+            };
+
+        }
+
+
+        if (!methodElements.qrInput) {
             continue;
         }
 
@@ -598,9 +636,69 @@ function createPaymentMethodAdminMarkup(
     hasAccountDetails = true
 ) {
 
+    const logoField = `
+        <div class="form-group form-group-full">
+            <label>
+                Payment Logo
+            </label>
+
+            <div class="payment-logo-admin">
+
+                <div class="payment-logo-preview">
+                    <div
+                        class="payment-logo-empty"
+                        id="payment_${key}_logoEmpty"
+                    >
+                        <i class="${iconClass}"></i>
+                        <span>No logo uploaded</span>
+                    </div>
+
+                    <img
+                        id="payment_${key}_logoPreview"
+                        alt="${label} Logo"
+                        hidden
+                    >
+                </div>
+
+                <div class="payment-logo-actions">
+                    <input
+                        type="file"
+                        id="payment_${key}_logoInput"
+                        accept="image/jpeg,image/png,image/webp"
+                        hidden
+                    >
+
+                    <button
+                        type="button"
+                        class="page-setup-secondary-button payment-logo-upload-button"
+                        data-payment-logo-key="${key}"
+                    >
+                        <i class="fa-solid fa-upload"></i>
+                        Upload Logo
+                    </button>
+
+                    <button
+                        type="button"
+                        class="payment-remove-logo-button"
+                        data-payment-remove-logo="${key}"
+                    >
+                        Remove Logo
+                    </button>
+
+                    <small>
+                        Transparent PNG or WEBP recommended. Maximum 2MB.
+                    </small>
+                </div>
+
+            </div>
+        </div>
+    `;
+
     const accountFields = hasAccountDetails
         ? `
             <div class="payment-method-fields">
+
+                ${logoField}
 
                 <div class="form-group">
                     <label for="payment_${key}_accountName">
@@ -685,11 +783,15 @@ function createPaymentMethodAdminMarkup(
             </div>
         `
         : `
-            <div class="payment-card-coming-note">
-                <i class="fa-solid fa-circle-info"></i>
-                Card gateway credentials can be connected later.
-                For now, control whether this option is Active,
-                Coming Soon, or Hidden.
+            <div class="payment-method-fields">
+                ${logoField}
+
+                <div class="payment-card-coming-note form-group-full">
+                    <i class="fa-solid fa-circle-info"></i>
+                    Card gateway credentials can be connected later.
+                    For now, control whether this option is Active,
+                    Coming Soon, or Hidden.
+                </div>
             </div>
         `;
 
@@ -736,7 +838,6 @@ function createPaymentMethodAdminMarkup(
         </article>
     `;
 }
-
 
 function ensurePageSetupMarkup() {
 
@@ -1674,6 +1775,18 @@ function collectPageSetupElements() {
                     document.getElementById(
                         `payment_${key}_accountNumber`
                     ),
+                logoPreview:
+                    document.getElementById(
+                        `payment_${key}_logoPreview`
+                    ),
+                logoEmpty:
+                    document.getElementById(
+                        `payment_${key}_logoEmpty`
+                    ),
+                logoInput:
+                    document.getElementById(
+                        `payment_${key}_logoInput`
+                    ),
                 qrPreview:
                     document.getElementById(
                         `payment_${key}_qrPreview`
@@ -2309,6 +2422,11 @@ function populatePageSetupForm(
                 method.accountNumber || "";
         }
 
+        setPaymentLogoPreview(
+            key,
+            method.logoImage || ""
+        );
+
         setPaymentQrPreview(
             key,
             method.qrImage || ""
@@ -2449,6 +2567,14 @@ function collectPaymentSettings() {
         const elements =
             pageSetupElements.paymentMethods?.[key];
 
+        const currentLogo =
+            elements?.logoPreview &&
+            !elements.logoPreview.hidden
+                ? String(
+                    elements.logoPreview.src || ""
+                ).trim()
+                : "";
+
         const currentQr =
             elements?.qrPreview &&
             !elements.qrPreview.hidden
@@ -2471,6 +2597,8 @@ function collectPaymentSettings() {
                 elements?.accountNumber
                     ?.value
                     ?.trim() || "",
+            logoImage:
+                currentLogo,
             qrImage:
                 currentQr
         };
@@ -2523,6 +2651,51 @@ function collectPaymentSettings() {
         }
     };
 
+}
+
+
+function setPaymentLogoPreview(
+    key,
+    source
+) {
+
+    const elements =
+        pageSetupElements.paymentMethods?.[key];
+
+    if (!elements?.logoPreview) {
+        return;
+    }
+
+    const value =
+        String(source || "").trim();
+
+    if (value) {
+
+        elements.logoPreview.src =
+            value;
+
+        elements.logoPreview.hidden =
+            false;
+
+        if (elements.logoEmpty) {
+            elements.logoEmpty.hidden =
+                true;
+        }
+
+    } else {
+
+        elements.logoPreview.removeAttribute(
+            "src"
+        );
+
+        elements.logoPreview.hidden =
+            true;
+
+        if (elements.logoEmpty) {
+            elements.logoEmpty.hidden =
+                false;
+        }
+    }
 }
 
 
@@ -2623,6 +2796,122 @@ function initializePaymentSettingsEvents() {
                 () => {
                     updatePaymentMethodStatusUI(
                         select.dataset.paymentStatusSelect
+                    );
+                }
+            );
+
+        });
+
+
+    document
+        .querySelectorAll(
+            "[data-payment-logo-key]"
+        )
+        .forEach((button) => {
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    const key =
+                        button.dataset.paymentLogoKey;
+
+                    pageSetupElements
+                        .paymentMethods?.[key]
+                        ?.logoInput
+                        ?.click();
+
+                }
+            );
+
+        });
+
+
+    Object.entries(
+        pageSetupElements.paymentMethods || {}
+    ).forEach(([key, elements]) => {
+
+        elements.logoInput
+            ?.addEventListener(
+                "change",
+                () => {
+
+                    const file =
+                        elements.logoInput.files?.[0];
+
+                    if (!file) {
+                        return;
+                    }
+
+                    if (
+                        ![
+                            "image/jpeg",
+                            "image/png",
+                            "image/webp"
+                        ].includes(file.type)
+                    ) {
+                        showPageSetupMessage(
+                            "Payment logo must be JPG, PNG, or WEBP.",
+                            "error"
+                        );
+                        elements.logoInput.value = "";
+                        return;
+                    }
+
+                    if (
+                        file.size >
+                        2 * 1024 * 1024
+                    ) {
+                        showPageSetupMessage(
+                            "Payment logo must be 2MB or smaller.",
+                            "error"
+                        );
+                        elements.logoInput.value = "";
+                        return;
+                    }
+
+                    const reader =
+                        new FileReader();
+
+                    reader.onload = () => {
+                        setPaymentLogoPreview(
+                            key,
+                            reader.result
+                        );
+                    };
+
+                    reader.readAsDataURL(
+                        file
+                    );
+                }
+            );
+
+    });
+
+
+    document
+        .querySelectorAll(
+            "[data-payment-remove-logo]"
+        )
+        .forEach((button) => {
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    const key =
+                        button.dataset.paymentRemoveLogo;
+
+                    const elements =
+                        pageSetupElements.paymentMethods?.[key];
+
+                    if (elements?.logoInput) {
+                        elements.logoInput.value = "";
+                    }
+
+                    setPaymentLogoPreview(
+                        key,
+                        ""
                     );
                 }
             );

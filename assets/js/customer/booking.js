@@ -53,6 +53,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 status: "active",
                 accountName: "Eric Ramirez",
                 accountNumber: "0952 478 8316",
+                logoImage: "",
                 qrImage: ""
             },
             seabank: {
@@ -60,6 +61,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 status: "active",
                 accountName: "",
                 accountNumber: "",
+                logoImage: "",
                 qrImage: ""
             },
             maya: {
@@ -67,6 +69,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 status: "coming_soon",
                 accountName: "",
                 accountNumber: "",
+                logoImage: "",
                 qrImage: ""
             },
             gotyme: {
@@ -74,6 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 status: "coming_soon",
                 accountName: "",
                 accountNumber: "",
+                logoImage: "",
                 qrImage: ""
             },
             card: {
@@ -81,6 +85,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 status: "coming_soon",
                 accountName: "",
                 accountNumber: "",
+                logoImage: "",
                 qrImage: ""
             }
         },
@@ -605,6 +610,17 @@ document.addEventListener("DOMContentLoaded", () => {
             "Trips Wonder Payment Settings:",
             paymentSettings
         );
+
+        console.log(
+            "Trips Wonder Payment Logos:",
+            Object.fromEntries(
+                Object.entries(paymentSettings.methods || {})
+                    .map(([key, method]) => [
+                        key,
+                        normalizeText(method.logoImage)
+                    ])
+            )
+        );
     }
 
 
@@ -712,7 +728,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 <span class="payment-option-content payment-option-content-clean">
                     <span class="payment-logo-icon ${escapeHtml(meta.brandClass)}">
-                        <i class="${escapeHtml(meta.icon)}"></i>
+                        ${
+                            normalizeText(method.logoImage)
+                                ? `
+                                    <img
+                                        src="${escapeHtml(method.logoImage)}"
+                                        alt="${escapeHtml(method.label || key)} logo"
+                                        class="payment-method-brand-logo"
+                                        loading="lazy"
+                                    >
+                                `
+                                : `
+                                    <i class="${escapeHtml(meta.icon)}"></i>
+                                `
+                        }
                     </span>
 
                     <span class="payment-option-copy">
@@ -807,6 +836,10 @@ document.addEventListener("DOMContentLoaded", () => {
             accountNumber:
                 normalizeText(
                     method.accountNumber
+                ),
+            logoImage:
+                normalizeText(
+                    method.logoImage
                 ),
             qrImage:
                 normalizeText(

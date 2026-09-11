@@ -8125,3 +8125,115 @@ body.requested-date-mode #paymentMethodSection .payment-step-summary {
         font-size: 9px;
     }
 }
+
+
+/* =========================================================
+   PAYMENT METHOD — CLEAN SINGLE BORDER + BRAND LOGOS
+========================================================= */
+
+.payment-methods-clean .payment-option {
+    border: 0 !important;
+    box-shadow: none !important;
+    background: transparent !important;
+}
+
+.payment-methods-clean .payment-option-content {
+    border: 1px solid #d8e1ed !important;
+    box-shadow: none !important;
+    background: #ffffff;
+}
+
+.payment-methods-clean .payment-option input:checked + .payment-option-content {
+    border: 2px solid #0866ff !important;
+    box-shadow: none !important;
+    background: #f7fbff;
+}
+
+.payment-methods-clean .payment-logo-icon {
+    width: 42px;
+    height: 42px;
+    padding: 5px;
+    border-radius: 10px;
+    background: transparent !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 42px;
+    box-sizing: border-box;
+}
+
+.payment-method-brand-logo {
+    display: block;
+    width: 100%;
+    height: 100%;
+    max-width: 36px;
+    max-height: 36px;
+    object-fit: contain;
+}
+
+.payment-methods-clean .payment-logo-icon:has(.payment-method-brand-logo) i {
+    display: none;
+}
+
+@media (max-width: 560px) {
+    .payment-methods-clean .payment-logo-icon {
+        width: 38px;
+        height: 38px;
+        flex-basis: 38px;
+    }
+
+    .payment-method-brand-logo {
+        max-width: 32px;
+        max-height: 32px;
+    }
+}
+
+
+/* =========================================================
+   PAYMENT METHOD — LOGO ONLY / NO ICON BOX
+   Final override
+========================================================= */
+
+#paymentMethodSection .payment-methods-clean .payment-logo-icon {
+    width: 46px !important;
+    height: 46px !important;
+    flex: 0 0 46px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+#paymentMethodSection .payment-method-brand-logo {
+    width: 44px !important;
+    height: 44px !important;
+    max-width: 44px !important;
+    max-height: 44px !important;
+    display: block !important;
+    object-fit: contain !important;
+}
+
+#paymentMethodSection .payment-methods-clean .payment-logo-icon:has(.payment-method-brand-logo) i {
+    display: none !important;
+}
+
+@media (max-width: 560px) {
+    #paymentMethodSection .payment-methods-clean .payment-logo-icon {
+        width: 40px !important;
+        height: 40px !important;
+        flex-basis: 40px !important;
+    }
+
+    #paymentMethodSection .payment-method-brand-logo {
+        width: 38px !important;
+        height: 38px !important;
+        max-width: 38px !important;
+        max-height: 38px !important;
+    }
+}
