@@ -370,8 +370,8 @@
                                min="1"
                                value="1"
                                required>
-                        <small class="field-help">
-                            Include adults and children in the total headcount.
+                        <small class="field-help pax-count-note" id="paxCountNote">
+                            Important: Include all guests in the Total Number of Pax, including children aged 0–8.
                         </small>
                     </div>
 
@@ -399,7 +399,7 @@
                             </label>
                         </div>
 
-                        <small class="field-help">
+                        <small class="field-help" id="childrenQuestionHelp">
                             Select Yes only if children aged 0–8 are included in this booking.
                         </small>
                     </div>
@@ -559,7 +559,7 @@
 
                         <div class="clean-summary-row">
                             <div>
-                                <span>Number of Pax</span>
+                                <span>Total Guests</span>
                             </div>
                             <strong id="summaryPax">1</strong>
                         </div>
@@ -567,7 +567,7 @@
                         <div class="clean-summary-row">
                             <div>
                                 <span>Total Package</span>
-                                <small>Package Rate × Total Pax</small>
+                                <small>Package Rate × Paying Guests</small>
                             </div>
                             <strong id="summaryTotalPackage">₱0</strong>
                         </div>
@@ -584,7 +584,7 @@
                             <div>
                                 <span>Children 0–3 (FREE)</span>
                             </div>
-                            <strong id="summaryChildFree">0 pax</strong>
+                            <strong id="summaryChildFree">0 pax • FREE</strong>
                         </div>
 
                         <div class="clean-summary-row discount-line hidden" id="summaryChildDiscountRow">
@@ -657,13 +657,6 @@
 
                 </div>
 
-                <!-- Hidden compatibility values used by payment modal / existing JS -->
-                <div class="hidden" aria-hidden="true">
-                    <strong id="requiredDeposit">₱500</strong>
-                    <strong id="summaryRemainingBalance">₱0</strong>
-                    <small id="depositBreakdown">₱500 × 1 pax</small>
-                </div>
-
             </section>
 
 
@@ -687,11 +680,86 @@
                     <span class="section-number">05</span>
                     <div>
                         <h2>Payment Method</h2>
-                        <p>Select how you want to pay your initial deposit.</p>
+                        <p>Choose how you want to pay the required initial deposit.</p>
                     </div>
                 </div>
 
-                <div class="payment-methods">
+                <div class="payment-step-summary">
+
+                    <div class="payment-step-summary-main">
+                        <span>Amount to Pay Today</span>
+                        <strong id="requiredDeposit">₱500</strong>
+                        <small id="depositBreakdown">Minimum ₱500 × 1 payable pax</small>
+                    </div>
+
+                    <div class="payment-step-summary-details">
+                        <div>
+                            <span>Total Booking Amount</span>
+                            <strong id="paymentStepTotal">₱0</strong>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="payment-amount-choice-wrap">
+                    <button type="button"
+                            class="payment-more-toggle"
+                            id="paymentMoreToggle"
+                            aria-expanded="false">
+                        <span>
+                            <strong>Want to pay more?</strong>
+                            <small>You can pay 50% or settle the full booking amount.</small>
+                        </span>
+                        <span class="payment-more-chevron">⌄</span>
+                    </button>
+
+                    <div class="payment-amount-choices payment-amount-choices-collapsed"
+                         id="paymentAmountChoices">
+
+                        <label class="payment-amount-option">
+                            <input type="radio"
+                                   name="paymentAmountOption"
+                                   value="minimum"
+                                   checked>
+                            <span>
+                                <strong>Minimum Deposit</strong>
+                                <small id="minimumDepositChoice">₱500</small>
+                            </span>
+                        </label>
+
+                        <label class="payment-amount-option">
+                            <input type="radio"
+                                   name="paymentAmountOption"
+                                   value="half">
+                            <span>
+                                <strong>Pay 50%</strong>
+                                <small id="halfPaymentChoice">₱0</small>
+                            </span>
+                        </label>
+
+                        <label class="payment-amount-option">
+                            <input type="radio"
+                                   name="paymentAmountOption"
+                                   value="full">
+                            <span>
+                                <strong>Full Payment</strong>
+                                <small id="fullPaymentChoice">₱0</small>
+                            </span>
+                        </label>
+
+                    </div>
+
+                    <small class="payment-followup-note">
+                        Minimum required deposit is ₱500 per payable guest. If a balance remains after payment, Trips Wonder can send a reminder after 3 days for full settlement.
+                    </small>
+                </div>
+
+                <div class="payment-method-label">
+                    <strong>Select Payment Method</strong>
+                    <small>Your payment will be verified by Trips Wonder before booking confirmation.</small>
+                </div>
+
+                <div class="payment-methods payment-methods-clean">
 
                     <label class="payment-option payment-option-primary">
                         <input type="radio"
@@ -699,12 +767,22 @@
                                value="gcash"
                                required>
 
-                        <span class="payment-option-content">
+                        <span class="payment-option-content payment-option-content-clean">
                             <span class="payment-logo-icon gcash">
                                 <i class="fa-solid fa-mobile-screen-button"></i>
                             </span>
-                            <strong>GCash</strong>
-                            <small>Pay using QR or account number</small>
+
+                            <span class="payment-option-copy">
+                                <strong>GCash</strong>
+                                <small>Pay using QR code or GCash account number</small>
+                            </span>
+
+                            <span class="payment-option-end">
+                                <span class="payment-radio-indicator">
+                                    <i class="fa-solid fa-check"></i>
+                                </span>
+                                <i class="fa-solid fa-chevron-right payment-option-chevron"></i>
+                            </span>
                         </span>
                     </label>
 
@@ -714,15 +792,33 @@
                                value="bank"
                                required>
 
-                        <span class="payment-option-content">
+                        <span class="payment-option-content payment-option-content-clean">
                             <span class="payment-logo-icon">
                                 <i class="fa-solid fa-building-columns"></i>
                             </span>
-                            <strong>Bank Transfer</strong>
-                            <small>Transfer to our bank account</small>
+
+                            <span class="payment-option-copy">
+                                <strong>Bank Transfer</strong>
+                                <small>Transfer the initial deposit to our bank account</small>
+                            </span>
+
+                            <span class="payment-option-end">
+                                <span class="payment-radio-indicator">
+                                    <i class="fa-solid fa-check"></i>
+                                </span>
+                                <i class="fa-solid fa-chevron-right payment-option-chevron"></i>
+                            </span>
                         </span>
                     </label>
 
+                </div>
+
+                <div class="payment-security-note">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <span>
+                        Only the required initial deposit is collected at this step.
+                        Keep your payment receipt until your payment has been verified.
+                    </span>
                 </div>
 
                 <!-- Existing JS fallback container -->
@@ -730,8 +826,7 @@
                     <div id="paymentInstructionsContent"></div>
                 </div>
 
-                <!-- Reference remains in the document for JS/form compatibility.
-                     New JS will show it inside the appropriate payment modal. -->
+                <!-- Reference remains hidden; dedicated payment modal collects it. -->
                 <div class="form-field full payment-reference-fallback hidden"
                      id="paymentReferenceField">
                     <label for="paymentReference">Payment Reference Number *</label>
@@ -958,7 +1053,7 @@
                 </div>
 
                 <div class="gcash-amount-card">
-                    <span>Initial Deposit Required</span>
+                    <span>Amount to Pay</span>
                     <strong id="gcashDepositAmount">₱0</strong>
                     <small id="gcashDepositBreakdown">—</small>
                 </div>
@@ -1033,7 +1128,7 @@
         </div>
 
         <div class="gcash-amount-card">
-            <span>Initial Deposit Required</span>
+            <span>Amount to Pay</span>
             <strong id="bankDepositAmount">₱0</strong>
         </div>
 

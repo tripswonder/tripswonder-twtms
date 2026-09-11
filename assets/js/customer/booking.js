@@ -84,6 +84,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let appliedReferral = null;
 
+    let selectedPaymentAmountOption = "minimum";
+
     let currentCustomer = null;
     let currentCustomerProfile = null;
 
@@ -160,6 +162,7 @@ document.addEventListener("DOMContentLoaded", () => {
         document.querySelectorAll('input[name="hasChildren"]');
     const childrenChoiceNo = $("childrenChoiceNo");
     const childrenChoiceYes = $("childrenChoiceYes");
+    const childrenQuestionHelp = $("childrenQuestionHelp");
 
     const pickupPoint = $("pickupPoint");
     const otherPickupField = $("otherPickupField");
@@ -206,6 +209,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const requiredDeposit = $("requiredDeposit");
     const depositBreakdown = $("depositBreakdown");
     const summaryRemainingBalance = $("summaryRemainingBalance");
+    const paymentStepTotal = $("paymentStepTotal");
+
+    const paymentAmountOptionInputs =
+        document.querySelectorAll('input[name="paymentAmountOption"]');
+    const minimumDepositChoice = $("minimumDepositChoice");
+    const halfPaymentChoice = $("halfPaymentChoice");
+    const fullPaymentChoice = $("fullPaymentChoice");
+    const paymentMoreToggle = $("paymentMoreToggle");
+    const paymentAmountChoices = $("paymentAmountChoices");
 
     /*
      * Legacy hidden elements retained in HTML so old promo behavior
@@ -389,6 +401,52 @@ document.addEventListener("DOMContentLoaded", () => {
         const pax = parseInt(numberOfGuests?.value, 10);
 
         return Number.isFinite(pax) && pax > 0 ? pax : 1;
+    }
+
+    function getSelectedPaymentAmount(calculation = calculateBooking()) {
+        const minimumDeposit =
+            Math.min(
+                calculation.total,
+                DEPOSIT_PER_PAX *
+                calculation.payablePax
+            );
+
+        const halfPayment =
+            Math.min(
+                calculation.total,
+                Math.max(
+                    minimumDeposit,
+                    calculation.total * 0.5
+                )
+            );
+
+        const fullPayment =
+            calculation.total;
+
+        let selectedAmount =
+            minimumDeposit;
+
+        if (selectedPaymentAmountOption === "half") {
+            selectedAmount = halfPayment;
+        }
+
+        if (selectedPaymentAmountOption === "full") {
+            selectedAmount = fullPayment;
+        }
+
+        return {
+            option: selectedPaymentAmountOption,
+            minimumDeposit,
+            halfPayment,
+            fullPayment,
+            selectedAmount,
+            remainingBalance:
+                Math.max(
+                    0,
+                    calculation.total -
+                    selectedAmount
+                )
+        };
     }
 
     function getChildCount(element) {
@@ -683,6 +741,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             syncRequestedDateEligibility();
             syncMobileCalendarUI();
+            syncChildrenAvailability();
             syncChildrenFieldsVisibility();
             updateBookingSummary();
 
@@ -933,6 +992,75 @@ document.addEventListener("DOMContentLoaded", () => {
                 'input[name="hasChildren"]:checked'
             )?.value === "yes"
         );
+    }
+
+    function syncChildrenAvailability() {
+        const totalPax = getPax();
+
+        const yesInput =
+            document.querySelector(
+                'input[name="hasChildren"][value="yes"]'
+            );
+
+        const noInput =
+            document.querySelector(
+                'input[name="hasChildren"][value="no"]'
+            );
+
+        const canAddChildren =
+            totalPax >= 2;
+
+        if (yesInput) {
+            yesInput.disabled =
+                !canAddChildren;
+        }
+
+        childrenChoiceYes
+            ?.classList.toggle(
+                "disabled",
+                !canAddChildren
+            );
+
+        childrenChoiceYes
+            ?.setAttribute(
+                "aria-disabled",
+                canAddChildren
+                    ? "false"
+                    : "true"
+            );
+
+        if (!canAddChildren) {
+            if (noInput) {
+                noInput.checked = true;
+            }
+
+            if (yesInput) {
+                yesInput.checked = false;
+            }
+
+            if (children0To3) {
+                children0To3.value = "0";
+            }
+
+            if (children4To8) {
+                children4To8.value = "0";
+            }
+
+            childrenFreeField
+                ?.classList.add("hidden");
+
+            childrenDiscountField
+                ?.classList.add("hidden");
+
+            syncChildrenChoiceUI();
+        }
+
+        if (childrenQuestionHelp) {
+            childrenQuestionHelp.textContent =
+                canAddChildren
+                    ? "Select Yes only if children aged 0–8 are included in this booking."
+                    : "Children can be added only when Total Number of Pax is 2 or more. Include the child in the total headcount first.";
+        }
     }
 
     function syncChildrenChoiceUI() {
@@ -3619,8 +3747,12 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         if (summaryTotalPackage) {
+            const totalPackageBeforeDiscounts =
+                calculation.packageRate *
+                calculation.payablePax;
+
             summaryTotalPackage.textContent =
-                `₱${formatMoney(calculation.grossPackageAmount)}`;
+                `₱${formatMoney(totalPackageBeforeDiscounts)}`;
         }
 
         if (summarySubtotal) {
@@ -3732,22 +3864,61 @@ document.addEventListener("DOMContentLoaded", () => {
                 `₱${formatMoney(calculation.total)}`;
         }
 
+        const paymentSelection =
+            getSelectedPaymentAmount(calculation);
+
         if (requiredDeposit) {
             requiredDeposit.textContent =
-                `₱${formatMoney(calculation.deposit)}`;
+                `₱${formatMoney(
+                    paymentSelection.selectedAmount
+                )}`;
         }
 
         if (summaryRemainingBalance) {
             summaryRemainingBalance.textContent =
                 `₱${formatMoney(
-                    calculation.remainingBalance
+                    paymentSelection.remainingBalance
+                )}`;
+        }
+
+        if (paymentStepTotal) {
+            paymentStepTotal.textContent =
+                `₱${formatMoney(calculation.total)}`;
+        }
+
+        if (minimumDepositChoice) {
+            minimumDepositChoice.textContent =
+                `₱${formatMoney(
+                    paymentSelection.minimumDeposit
+                )}`;
+        }
+
+        if (halfPaymentChoice) {
+            halfPaymentChoice.textContent =
+                `₱${formatMoney(
+                    paymentSelection.halfPayment
+                )}`;
+        }
+
+        if (fullPaymentChoice) {
+            fullPaymentChoice.textContent =
+                `₱${formatMoney(
+                    paymentSelection.fullPayment
                 )}`;
         }
 
         if (depositBreakdown) {
-            depositBreakdown.textContent =
-                `₱${formatMoney(DEPOSIT_PER_PAX)} × ` +
-                `${calculation.payablePax} payable pax`;
+            if (selectedPaymentAmountOption === "minimum") {
+                depositBreakdown.textContent =
+                    `Minimum ₱${formatMoney(DEPOSIT_PER_PAX)} × ` +
+                    `${calculation.payablePax} payable pax`;
+            } else if (selectedPaymentAmountOption === "half") {
+                depositBreakdown.textContent =
+                    "50% of total booking amount";
+            } else {
+                depositBreakdown.textContent =
+                    "Full booking payment";
+            }
         }
 
         updatePaymentModalAmounts();
@@ -3761,6 +3932,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function updatePaymentModalAmounts() {
         const calculation = calculateBooking();
+        const paymentSelection =
+            getSelectedPaymentAmount(calculation);
 
         if (gcashAccountName) {
             gcashAccountName.textContent =
@@ -3774,13 +3947,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (gcashDepositAmount) {
             gcashDepositAmount.textContent =
-                `₱${formatMoney(calculation.deposit)}`;
+                `₱${formatMoney(
+                    paymentSelection.selectedAmount
+                )}`;
         }
 
         if (gcashDepositBreakdown) {
             gcashDepositBreakdown.textContent =
-                `₱${formatMoney(DEPOSIT_PER_PAX)} × ` +
-                `${calculation.payablePax} payable pax`;
+                selectedPaymentAmountOption === "minimum"
+                    ? `Minimum ₱${formatMoney(DEPOSIT_PER_PAX)} × ${calculation.payablePax} payable pax`
+                    : selectedPaymentAmountOption === "half"
+                        ? "50% of total booking amount"
+                        : "Full booking payment";
         }
 
         if (gcashQrImage) {
@@ -3817,7 +3995,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (bankDepositAmount) {
             bankDepositAmount.textContent =
-                `₱${formatMoney(calculation.deposit)}`;
+                `₱${formatMoney(
+                    paymentSelection.selectedAmount
+                )}`;
         }
     }
 
@@ -4437,7 +4617,23 @@ document.addEventListener("DOMContentLoaded", () => {
             requiredDeposit:
                 isRequestedDateMode
                     ? 0
-                    : calculation.deposit,
+                    : Math.min(
+                        calculation.total,
+                        DEPOSIT_PER_PAX *
+                        calculation.payablePax
+                    ),
+
+            selectedPaymentAmount:
+                isRequestedDateMode
+                    ? 0
+                    : getSelectedPaymentAmount(
+                        calculation
+                    ).selectedAmount,
+
+            paymentAmountOption:
+                isRequestedDateMode
+                    ? ""
+                    : selectedPaymentAmountOption,
 
             depositPerPax:
                 isRequestedDateMode
@@ -4453,7 +4649,9 @@ document.addEventListener("DOMContentLoaded", () => {
             remainingBalanceAfterDeposit:
                 isRequestedDateMode
                     ? calculation.total
-                    : calculation.remainingBalance,
+                    : getSelectedPaymentAmount(
+                        calculation
+                    ).remainingBalance,
 
             /* PAYMENT */
             paymentMethod,
@@ -4748,6 +4946,36 @@ document.addEventListener("DOMContentLoaded", () => {
             handlePickupChange
         );
 
+    if (paymentMoreToggle && paymentAmountChoices) {
+        paymentMoreToggle.addEventListener("click", () => {
+            const isOpen =
+                paymentMoreToggle.getAttribute("aria-expanded") === "true";
+
+            paymentMoreToggle.setAttribute(
+                "aria-expanded",
+                String(!isOpen)
+            );
+
+            paymentAmountChoices.classList.toggle(
+                "payment-amount-choices-collapsed",
+                isOpen
+            );
+        });
+    }
+
+    paymentAmountOptionInputs
+        .forEach(input => {
+            input.addEventListener(
+                "change",
+                () => {
+                    selectedPaymentAmountOption =
+                        input.value || "minimum";
+
+                    updateBookingSummary();
+                }
+            );
+        });
+
     paymentMethodInputs
         .forEach(input => {
             input.addEventListener(
@@ -4880,7 +5108,30 @@ document.addEventListener("DOMContentLoaded", () => {
         input => {
             input.addEventListener(
                 "change",
-                () => {
+                event => {
+                    if (
+                        event.target.value === "yes" &&
+                        getPax() < 2
+                    ) {
+                        const noInput =
+                            document.querySelector(
+                                'input[name="hasChildren"][value="no"]'
+                            );
+
+                        if (noInput) {
+                            noInput.checked = true;
+                        }
+
+                        event.target.checked = false;
+
+                        syncChildrenAvailability();
+                        syncChildrenFieldsVisibility();
+                        updateBookingSummary();
+                        updateProgress();
+                        return;
+                    }
+
+                    syncChildrenAvailability();
                     syncChildrenFieldsVisibility();
 
                     clearAppliedPromo();
@@ -4893,6 +5144,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     numberOfGuests
         ?.addEventListener("input", () => {
+            syncChildrenAvailability();
+            syncChildrenFieldsVisibility();
+
             const passenger =
                 getPassengerBreakdown();
 
