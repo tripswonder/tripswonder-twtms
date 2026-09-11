@@ -512,180 +512,156 @@
                     </div>
                 </div>
 
-                <div class="payment-summary-layout">
+                <!-- Separate voucher card -->
+                <button type="button"
+                        class="discount-voucher-card"
+                        id="openDiscountButton">
 
-                    <!-- LEFT: BOOKING BREAKDOWN -->
-                    <div class="payment-breakdown-card">
+                    <span class="discount-voucher-icon">
+                        <i class="fa-solid fa-ticket"></i>
+                    </span>
 
-                        <div class="payment-block-title">
-                            <span class="payment-block-icon">
-                                <i class="fa-solid fa-receipt"></i>
-                            </span>
+                    <span class="discount-voucher-copy">
+                        <strong>Tripswonder Discount Voucher</strong>
+                        <small>Available vouchers apply to the tour package only. Room upgrades are excluded.</small>
+                    </span>
 
+                    <span class="discount-voucher-action">
+                        <strong id="selectedDiscountLabel">Select Voucher</strong>
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </span>
+                </button>
+
+                <!-- Legacy promo values retained for current JS compatibility -->
+                <div class="hidden" aria-hidden="true">
+                    <input type="text" id="bookingPromoCode" tabindex="-1">
+                    <button type="button" id="applyPromoButton" tabindex="-1">Apply</button>
+                    <div id="promoBookingMessage"></div>
+                </div>
+
+                <!-- Clean booking summary -->
+                <div class="clean-booking-summary-card">
+
+                    <div class="clean-summary-header">
+                        <strong>Booking Summary</strong>
+                        <small>Your selected package and booking details</small>
+                    </div>
+
+                    <div class="clean-summary-list">
+
+                        <div class="clean-summary-row">
                             <div>
-                                <strong>Booking Breakdown</strong>
-                                <small>Your selected package and add-ons</small>
-                            </div>
-                        </div>
-
-                        <div class="booking-summary compact-summary">
-
-                            <div class="summary-row">
                                 <span>Package Rate</span>
-                                <strong id="summaryPackageRate">₱0</strong>
+                                <small>Per person</small>
                             </div>
+                            <strong id="summaryPackageRate">₱0</strong>
+                        </div>
 
-                            <div class="summary-row">
+                        <div class="clean-summary-row">
+                            <div>
                                 <span>Number of Pax</span>
-                                <strong id="summaryPax">1</strong>
                             </div>
+                            <strong id="summaryPax">1</strong>
+                        </div>
 
-                            <div class="summary-row subtotal-row">
+                        <div class="clean-summary-row">
+                            <div>
+                                <span>Total Package</span>
+                                <small>Package Rate × Total Pax</small>
+                            </div>
+                            <strong id="summaryTotalPackage">₱0</strong>
+                        </div>
+
+                        <div class="clean-summary-row clean-summary-subtotal">
+                            <div>
                                 <span>Package Subtotal</span>
-                                <strong id="summarySubtotal">₱0</strong>
+                                <small>After applicable child / exclusive discounts</small>
                             </div>
+                            <strong id="summarySubtotal">₱0</strong>
+                        </div>
 
-                            <div class="summary-row hidden" id="summaryChildFreeRow">
+                        <div class="clean-summary-row hidden" id="summaryChildFreeRow">
+                            <div>
                                 <span>Children 0–3 (FREE)</span>
-                                <strong id="summaryChildFree">0 pax</strong>
                             </div>
+                            <strong id="summaryChildFree">0 pax</strong>
+                        </div>
 
-                            <div class="summary-row hidden" id="summaryChildDiscountRow">
+                        <div class="clean-summary-row discount-line hidden" id="summaryChildDiscountRow">
+                            <div>
                                 <span>Kids Discount (4–8 yrs)</span>
-                                <strong id="summaryChildDiscount">-₱0</strong>
                             </div>
+                            <strong id="summaryChildDiscount">-₱0</strong>
+                        </div>
 
-                            <div class="summary-row hidden" id="summaryExclusiveRow">
+                        <div class="clean-summary-row discount-line hidden" id="summaryExclusiveRow">
+                            <div>
                                 <span>Exclusive Tour Benefit</span>
-                                <strong id="summaryExclusiveDiscount">-₱0</strong>
                             </div>
+                            <strong id="summaryExclusiveDiscount">-₱0</strong>
+                        </div>
 
-                            <div class="summary-row">
-                                <span>Accommodation</span>
-                                <strong id="summaryAccommodation">Included</strong>
-                            </div>
-
-                            <div class="summary-row hidden" id="summaryAccommodationUpgradeRow">
+                        <div class="clean-summary-row hidden" id="summaryAccommodationRow">
+                            <div>
                                 <span>Accommodation Upgrade</span>
-                                <strong id="summaryAccommodationUpgrade">+₱0</strong>
+                                <small id="summaryAccommodation">—</small>
                             </div>
+                            <strong id="summaryAccommodationUpgradeInline">+₱0</strong>
+                        </div>
 
-                            <button type="button"
-                                    class="summary-action-row"
-                                    id="openDiscountButton">
-                                <span class="summary-action-label">
-                                    <i class="fa-solid fa-ticket"></i>
-                                    Tripswonder Discount
-                                </span>
+                        <div class="hidden" aria-hidden="true">
+                            <div id="summaryAccommodationUpgradeRow"></div>
+                            <strong id="summaryAccommodationUpgrade">+₱0</strong>
+                        </div>
 
-                                <span class="summary-action-value">
-                                    <strong id="selectedDiscountLabel">Select</strong>
-                                    <i class="fa-solid fa-chevron-right"></i>
-                                </span>
-                            </button>
-
-                            <!-- Legacy promo values retained for current JS compatibility -->
-                            <div class="hidden" aria-hidden="true">
-                                <input type="text" id="bookingPromoCode" tabindex="-1">
-                                <button type="button" id="applyPromoButton" tabindex="-1">Apply</button>
-                                <div id="promoBookingMessage"></div>
-                            </div>
-
-                            <div class="summary-row promo-discount-row hidden" id="summaryPromoRow">
+                        <div class="clean-summary-row discount-line hidden" id="summaryPromoRow">
+                            <div>
                                 <span>Tripswonder Discount</span>
-                                <strong id="summaryPromoDiscount">-₱0</strong>
+                                <small>Applied voucher</small>
                             </div>
-
-                        </div>
-
-                        <!-- Referral stays separate because it does not reduce booking total -->
-                        <div class="referral-box compact-referral-box">
-
-                            <div class="referral-heading">
-                                <div>
-                                    <span class="referral-mini-icon">
-                                        <i class="fa-solid fa-user-group"></i>
-                                    </span>
-
-                                    <div class="referral-heading-copy">
-                                        <span>Referral Code</span>
-                                        <small>Optional • does not reduce your total</small>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="referral-input-row">
-                                <input type="text"
-                                       id="referralCode"
-                                       placeholder="Enter referral code"
-                                       autocomplete="off"
-                                       maxlength="40">
-
-                                <button type="button" id="applyReferralButton">
-                                    Apply
-                                </button>
-                            </div>
-
-                            <div class="referral-message hidden" id="referralMessage"></div>
-
+                            <strong id="summaryPromoDiscount">-₱0</strong>
                         </div>
 
                     </div>
 
+                    <div class="clean-summary-total clean-summary-total-highlight">
+                        <span>Total Booking Amount</span>
+                        <strong id="summaryTotal">₱0</strong>
+                    </div>
 
-                    <!-- RIGHT: TOTAL / DEPOSIT -->
-                    <div class="payment-total-card">
+                    <!-- Referral is intentionally below the total -->
+                    <div class="clean-referral-section">
 
-                        <div class="payment-total-head">
-                            <span>Booking Total</span>
-                            <small>Final amount for this booking</small>
-                        </div>
-
-                        <strong class="payment-total-amount" id="summaryTotal">₱0</strong>
-
-                        <div class="payment-total-divider"></div>
-
-                        <div class="payment-money-grid">
-
-                            <div class="payment-money-item deposit-row">
-                                <span class="payment-money-icon">
-                                    <i class="fa-solid fa-wallet"></i>
-                                </span>
-
-                                <div>
-                                    <small>Initial Deposit Required</small>
-                                    <strong id="requiredDeposit">₱500</strong>
-                                </div>
+                        <div class="clean-referral-heading">
+                            <div>
+                                <strong>Referral Code</strong>
+                                <small>Optional • does not reduce your booking total</small>
                             </div>
-
-                            <div class="payment-money-item balance-row">
-                                <span class="payment-money-icon">
-                                    <i class="fa-solid fa-coins"></i>
-                                </span>
-
-                                <div>
-                                    <small>Remaining Balance</small>
-                                    <strong id="summaryRemainingBalance">₱0</strong>
-                                </div>
-                            </div>
-
                         </div>
 
-                        <small class="deposit-breakdown" id="depositBreakdown">
-                            ₱500 × 1 pax
-                        </small>
+                        <div class="referral-input-row">
+                            <input type="text"
+                                   id="referralCode"
+                                   placeholder="Enter referral code"
+                                   autocomplete="off"
+                                   maxlength="40">
 
-                        <div class="payment-summary-note">
-                            <i class="fa-solid fa-circle-info"></i>
-
-                            <span>
-                                Your initial deposit is deducted from the total booking amount.
-                                Remaining balance will be settled based on Trips Wonder payment instructions.
-                            </span>
+                            <button type="button" id="applyReferralButton">
+                                Apply
+                            </button>
                         </div>
+
+                        <div class="referral-message hidden" id="referralMessage"></div>
 
                     </div>
 
+                </div>
+
+                <!-- Hidden compatibility values used by payment modal / existing JS -->
+                <div class="hidden" aria-hidden="true">
+                    <strong id="requiredDeposit">₱500</strong>
+                    <strong id="summaryRemainingBalance">₱0</strong>
+                    <small id="depositBreakdown">₱500 × 1 pax</small>
                 </div>
 
             </section>

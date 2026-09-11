@@ -5421,3 +5421,582 @@ body.requested-date-mode #paymentSummarySection #depositBreakdown {
         grid-template-columns: 1fr !important;
     }
 }
+
+
+/* =========================================================
+   04 PAYMENT SUMMARY — CLEAN VOUCHER + SUMMARY FINAL
+   Voucher is separate above Booking Summary.
+   Referral stays below Total Booking Amount.
+   ========================================================= */
+
+#paymentSummarySection {
+    padding: 16px 18px !important;
+}
+
+#paymentSummarySection .payment-summary-heading {
+    margin-bottom: 12px !important;
+}
+
+/* Separate Tripswonder voucher card */
+#paymentSummarySection .discount-voucher-card {
+    width: 100% !important;
+    min-height: 66px !important;
+    margin: 0 0 11px !important;
+    padding: 11px 13px !important;
+
+    display: grid !important;
+    grid-template-columns: 34px minmax(0, 1fr) auto !important;
+    align-items: center !important;
+    gap: 10px !important;
+
+    color: inherit !important;
+    background: linear-gradient(135deg, #f2fbf8, #ffffff) !important;
+
+    border: 1px solid #cfe8e2 !important;
+    border-radius: 12px !important;
+
+    text-align: left !important;
+    box-shadow: none !important;
+
+    transition:
+        border-color .16s ease,
+        background .16s ease,
+        transform .16s ease !important;
+}
+
+#paymentSummarySection .discount-voucher-card:hover {
+    transform: translateY(-1px) !important;
+    border-color: #91cbbb !important;
+    background: #f5fcfa !important;
+}
+
+#paymentSummarySection .discount-voucher-icon {
+    width: 34px !important;
+    height: 34px !important;
+
+    display: grid !important;
+    place-items: center !important;
+
+    color: var(--tw-primary) !important;
+    background: #ffffff !important;
+
+    border: 1px solid #d7ece7 !important;
+    border-radius: 9px !important;
+
+    font-size: 12px !important;
+}
+
+#paymentSummarySection .discount-voucher-copy {
+    min-width: 0 !important;
+}
+
+#paymentSummarySection .discount-voucher-copy strong {
+    display: block !important;
+    color: var(--tw-secondary) !important;
+    font-size: 9px !important;
+    font-weight: 800 !important;
+}
+
+#paymentSummarySection .discount-voucher-copy small {
+    display: block !important;
+    margin-top: 2px !important;
+
+    color: var(--tw-muted) !important;
+    font-size: 6.5px !important;
+    line-height: 1.4 !important;
+}
+
+#paymentSummarySection .discount-voucher-action {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 7px !important;
+
+    color: var(--tw-primary) !important;
+    white-space: nowrap !important;
+}
+
+#paymentSummarySection .discount-voucher-action strong {
+    font-size: 7px !important;
+    font-weight: 800 !important;
+}
+
+#paymentSummarySection .discount-voucher-action i {
+    font-size: 6px !important;
+}
+
+/* Main booking summary */
+#paymentSummarySection .clean-booking-summary-card {
+    overflow: hidden !important;
+
+    background: #ffffff !important;
+
+    border: 1px solid var(--tw-border) !important;
+    border-radius: 12px !important;
+
+    box-shadow: none !important;
+}
+
+#paymentSummarySection .clean-summary-header {
+    padding: 12px 13px 10px !important;
+
+    background: #ffffff !important;
+    border-bottom: 1px solid var(--tw-border-soft) !important;
+}
+
+#paymentSummarySection .clean-summary-header strong {
+    display: block !important;
+
+    color: var(--tw-secondary) !important;
+
+    font-size: 10px !important;
+    font-weight: 800 !important;
+}
+
+#paymentSummarySection .clean-summary-header small {
+    display: block !important;
+    margin-top: 2px !important;
+
+    color: var(--tw-muted) !important;
+    font-size: 6.5px !important;
+}
+
+#paymentSummarySection .clean-summary-list {
+    padding: 3px 13px 0 !important;
+}
+
+#paymentSummarySection .clean-summary-row {
+    min-height: 42px !important;
+
+    padding: 8px 0 !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+
+    gap: 16px !important;
+
+    border-bottom: 1px solid #f0f3f5 !important;
+}
+
+#paymentSummarySection .clean-summary-row:last-child {
+    border-bottom: 0 !important;
+}
+
+#paymentSummarySection .clean-summary-row > div {
+    min-width: 0 !important;
+}
+
+#paymentSummarySection .clean-summary-row span {
+    display: block !important;
+
+    color: #526d81 !important;
+
+    font-size: 8px !important;
+    font-weight: 600 !important;
+}
+
+#paymentSummarySection .clean-summary-row small {
+    display: block !important;
+    margin-top: 2px !important;
+
+    color: var(--tw-soft-text) !important;
+    font-size: 5.8px !important;
+}
+
+#paymentSummarySection .clean-summary-row > strong {
+    flex: 0 0 auto !important;
+
+    color: #34536b !important;
+
+    font-size: 9px !important;
+    font-weight: 800 !important;
+
+    text-align: right !important;
+}
+
+#paymentSummarySection .clean-summary-subtotal span,
+#paymentSummarySection .clean-summary-subtotal > strong {
+    color: var(--tw-secondary) !important;
+    font-weight: 800 !important;
+}
+
+#paymentSummarySection .clean-summary-row.discount-line > strong {
+    color: var(--tw-success) !important;
+}
+
+/* Total is part of summary, but visually prominent */
+#paymentSummarySection .clean-summary-total {
+    min-height: 64px !important;
+
+    margin: 3px 13px 0 !important;
+    padding: 12px 0 !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+
+    gap: 16px !important;
+
+    border-top: 1.5px solid #cfdcdf !important;
+}
+
+#paymentSummarySection .clean-summary-total span {
+    color: var(--tw-secondary) !important;
+
+    font-size: 10px !important;
+    font-weight: 800 !important;
+}
+
+#paymentSummarySection .clean-summary-total strong {
+    color: var(--tw-primary) !important;
+
+    font-size: 18px !important;
+    font-weight: 900 !important;
+}
+
+/* Referral stays after Total */
+#paymentSummarySection .clean-referral-section {
+    padding: 11px 13px 13px !important;
+
+    background: #fbfcfd !important;
+
+    border-top: 1px solid var(--tw-border-soft) !important;
+}
+
+#paymentSummarySection .clean-referral-heading {
+    margin-bottom: 8px !important;
+}
+
+#paymentSummarySection .clean-referral-heading strong {
+    display: block !important;
+
+    color: #436378 !important;
+
+    font-size: 8px !important;
+    font-weight: 800 !important;
+}
+
+#paymentSummarySection .clean-referral-heading small {
+    display: block !important;
+    margin-top: 2px !important;
+
+    color: var(--tw-soft-text) !important;
+    font-size: 6px !important;
+}
+
+#paymentSummarySection .referral-input-row {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) 70px !important;
+    gap: 6px !important;
+}
+
+#paymentSummarySection .referral-input-row input {
+    height: 36px !important;
+
+    padding: 0 10px !important;
+
+    font-size: 8px !important;
+
+    border-radius: 9px !important;
+}
+
+#paymentSummarySection .referral-input-row button {
+    min-width: 70px !important;
+    height: 36px !important;
+
+    padding: 0 10px !important;
+
+    color: var(--tw-primary) !important;
+    background: var(--tw-primary-soft) !important;
+
+    border: 1px solid #d0e9e6 !important;
+    border-radius: 9px !important;
+
+    font-size: 7px !important;
+    font-weight: 800 !important;
+}
+
+#paymentSummarySection .referral-message {
+    margin-top: 7px !important;
+}
+
+/* Remove old Payment Summary layout from visual flow */
+#paymentSummarySection .payment-summary-layout,
+#paymentSummarySection .payment-breakdown-card,
+#paymentSummarySection .payment-total-card,
+#paymentSummarySection .payment-block-title,
+#paymentSummarySection .compact-summary,
+#paymentSummarySection .compact-referral-box {
+    /* old elements no longer exist in the updated HTML */
+}
+
+/* Mobile */
+@media (max-width: 560px) {
+
+    #paymentSummarySection {
+        padding: 13px !important;
+    }
+
+    #paymentSummarySection .discount-voucher-card {
+        min-height: 60px !important;
+
+        grid-template-columns: 30px minmax(0, 1fr) auto !important;
+
+        padding: 10px !important;
+        gap: 8px !important;
+    }
+
+    #paymentSummarySection .discount-voucher-icon {
+        width: 30px !important;
+        height: 30px !important;
+
+        font-size: 10px !important;
+    }
+
+    #paymentSummarySection .discount-voucher-copy strong {
+        font-size: 8px !important;
+    }
+
+    #paymentSummarySection .discount-voucher-copy small {
+        font-size: 5.7px !important;
+    }
+
+    #paymentSummarySection .discount-voucher-action strong {
+        max-width: 76px !important;
+
+        overflow: hidden !important;
+
+        font-size: 6px !important;
+
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+    }
+
+    #paymentSummarySection .clean-summary-header {
+        padding: 10px !important;
+    }
+
+    #paymentSummarySection .clean-summary-list {
+        padding-left: 10px !important;
+        padding-right: 10px !important;
+    }
+
+    #paymentSummarySection .clean-summary-row {
+        min-height: 38px !important;
+        padding: 7px 0 !important;
+    }
+
+    #paymentSummarySection .clean-summary-row span {
+        font-size: 7.2px !important;
+    }
+
+    #paymentSummarySection .clean-summary-row > strong {
+        font-size: 8px !important;
+    }
+
+    #paymentSummarySection .clean-summary-total {
+        min-height: 56px !important;
+
+        margin-left: 10px !important;
+        margin-right: 10px !important;
+
+        padding: 10px 0 !important;
+    }
+
+    #paymentSummarySection .clean-summary-total span {
+        font-size: 8.5px !important;
+    }
+
+    #paymentSummarySection .clean-summary-total strong {
+        font-size: 15px !important;
+    }
+
+    #paymentSummarySection .clean-referral-section {
+        padding: 10px !important;
+    }
+}
+
+@media (max-width: 390px) {
+
+    #paymentSummarySection .discount-voucher-card {
+        grid-template-columns: 30px minmax(0, 1fr) !important;
+    }
+
+    #paymentSummarySection .discount-voucher-action {
+        grid-column: 2 !important;
+        justify-self: start !important;
+        margin-top: -2px !important;
+    }
+}
+
+
+/* =========================================================
+   PAYMENT SUMMARY — CLEAN CONDITIONAL ROWS / NO LINES
+   ========================================================= */
+
+/* The generic .hidden rule was being overridden by the more specific
+   clean-summary-row display:flex!important rule. Keep optional rows
+   fully hidden unless JS explicitly activates them. */
+#paymentSummarySection .clean-summary-row.hidden {
+    display: none !important;
+}
+
+/* Cleaner TikTok-style summary: no horizontal divider lines. */
+#paymentSummarySection .clean-summary-row {
+    border-bottom: 0 !important;
+}
+
+#paymentSummarySection .clean-summary-total {
+    border-top: 0 !important;
+    margin-top: 5px !important;
+}
+
+/* Give subtotal/total separation through spacing only, not lines. */
+#paymentSummarySection .clean-summary-subtotal {
+    padding-bottom: 11px !important;
+}
+
+#paymentSummarySection .clean-summary-total {
+    padding-top: 14px !important;
+}
+
+/* Upgrade row: room name is secondary text under the label. */
+#paymentSummarySection #summaryAccommodationRow small {
+    color: var(--tw-muted) !important;
+    font-size: 6px !important;
+}
+
+
+/* =========================================================
+   PAYMENT SUMMARY — FINAL COMPACT SPACING + HIGHLIGHTED TOTAL
+   ========================================================= */
+
+#paymentSummarySection .clean-booking-summary-card {
+    padding-bottom: 0 !important;
+}
+
+#paymentSummarySection .clean-summary-header {
+    padding: 10px 13px 8px !important;
+}
+
+#paymentSummarySection .clean-summary-list {
+    padding: 1px 13px 0 !important;
+}
+
+#paymentSummarySection .clean-summary-row {
+    min-height: 34px !important;
+    padding: 5px 0 !important;
+    gap: 14px !important;
+}
+
+#paymentSummarySection .clean-summary-row span {
+    font-size: 7.5px !important;
+}
+
+#paymentSummarySection .clean-summary-row small {
+    margin-top: 1px !important;
+    font-size: 5.5px !important;
+}
+
+#paymentSummarySection .clean-summary-row > strong {
+    font-size: 8.5px !important;
+}
+
+#paymentSummarySection .clean-summary-subtotal {
+    padding-top: 6px !important;
+    padding-bottom: 8px !important;
+}
+
+#paymentSummarySection .clean-summary-total-highlight {
+    min-height: 58px !important;
+    margin: 7px 13px 8px !important;
+    padding: 10px 13px !important;
+
+    background: linear-gradient(
+        90deg,
+        rgba(233, 247, 245, .92),
+        rgba(245, 252, 250, .82)
+    ) !important;
+
+    border: 1px solid #d8eee9 !important;
+    border-radius: 10px !important;
+}
+
+#paymentSummarySection .clean-summary-total-highlight span {
+    color: var(--tw-primary-dark) !important;
+    font-size: 9px !important;
+}
+
+#paymentSummarySection .clean-summary-total-highlight strong {
+    color: var(--tw-primary) !important;
+    font-size: 19px !important;
+}
+
+#paymentSummarySection .clean-referral-section {
+    padding: 9px 13px 11px !important;
+}
+
+#paymentSummarySection .clean-referral-heading {
+    margin-bottom: 6px !important;
+}
+
+#paymentSummarySection .referral-input-row input,
+#paymentSummarySection .referral-input-row button {
+    height: 34px !important;
+}
+
+@media (max-width: 560px) {
+
+    #paymentSummarySection .clean-summary-header {
+        padding: 9px 10px 7px !important;
+    }
+
+    #paymentSummarySection .clean-summary-list {
+        padding-left: 10px !important;
+        padding-right: 10px !important;
+    }
+
+    #paymentSummarySection .clean-summary-row {
+        min-height: 32px !important;
+        padding: 4px 0 !important;
+    }
+
+    #paymentSummarySection .clean-summary-total-highlight {
+        min-height: 52px !important;
+        margin: 6px 10px 7px !important;
+        padding: 9px 10px !important;
+    }
+
+    #paymentSummarySection .clean-summary-total-highlight span {
+        font-size: 8px !important;
+    }
+
+    #paymentSummarySection .clean-summary-total-highlight strong {
+        font-size: 16px !important;
+    }
+
+    #paymentSummarySection .clean-referral-section {
+        padding: 8px 10px 10px !important;
+    }
+}
+
+
+/* =========================================================
+   PAYMENT SUMMARY — TOTAL PACKAGE + PACKAGE SUBTOTAL
+   ========================================================= */
+
+#paymentSummarySection #summaryTotalPackage {
+    color: #34536b !important;
+    font-weight: 800 !important;
+}
+
+#paymentSummarySection .clean-summary-subtotal {
+    margin-top: 2px !important;
+    padding-top: 6px !important;
+}
+
+#paymentSummarySection .clean-summary-subtotal span,
+#paymentSummarySection .clean-summary-subtotal > strong {
+    color: var(--tw-secondary) !important;
+    font-weight: 900 !important;
+}

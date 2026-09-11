@@ -185,8 +185,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const summaryPackageRate = $("summaryPackageRate");
     const summaryPax = $("summaryPax");
+    const summaryTotalPackage = $("summaryTotalPackage");
     const summarySubtotal = $("summarySubtotal");
+    const summaryAccommodationRow = $("summaryAccommodationRow");
     const summaryAccommodation = $("summaryAccommodation");
+    const summaryAccommodationUpgradeInline = $("summaryAccommodationUpgradeInline");
     const summaryAccommodationUpgradeRow = $("summaryAccommodationUpgradeRow");
     const summaryAccommodationUpgrade = $("summaryAccommodationUpgrade");
 
@@ -3155,7 +3158,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (
             minimumAmount > 0 &&
-            calculation.originalTotal < minimumAmount
+            calculation.packageSubtotal < minimumAmount
         ) {
             return false;
         }
@@ -3170,7 +3173,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return (
             calculatePromoDiscount(
                 promo,
-                calculation.originalTotal,
+                calculation.packageSubtotal,
                 calculation.payablePax
             ) > 0
         );
@@ -3242,7 +3245,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const discount =
                 calculatePromoDiscount(
                     promo,
-                    calculation.originalTotal,
+                    calculation.packageSubtotal,
                     calculation.payablePax
                 );
 
@@ -3544,12 +3547,20 @@ document.addEventListener("DOMContentLoaded", () => {
             packageSubtotal +
             accommodationAmount;
 
+        /*
+         * Tripswonder vouchers apply to the PACKAGE only.
+         * Accommodation / room upgrades are never included in the
+         * percentage or fixed promo base.
+         */
+        const promoEligibleAmount =
+            packageSubtotal;
+
         const discountAmount =
             includePromo &&
             appliedPromo
                 ? calculatePromoDiscount(
                     appliedPromo,
-                    originalTotal,
+                    promoEligibleAmount,
                     passenger.payablePax
                 )
                 : 0;
@@ -3583,6 +3594,7 @@ document.addEventListener("DOMContentLoaded", () => {
             packageSubtotal,
             accommodationAmount,
             originalTotal,
+            promoEligibleAmount,
             discountAmount,
             total,
             deposit,
@@ -3604,6 +3616,11 @@ document.addEventListener("DOMContentLoaded", () => {
         if (summaryPax) {
             summaryPax.textContent =
                 String(calculation.totalPax);
+        }
+
+        if (summaryTotalPackage) {
+            summaryTotalPackage.textContent =
+                `₱${formatMoney(calculation.grossPackageAmount)}`;
         }
 
         if (summarySubtotal) {
@@ -3651,15 +3668,26 @@ document.addEventListener("DOMContentLoaded", () => {
             summaryExclusiveRow?.classList.add("hidden");
         }
 
-        if (summaryAccommodation) {
-            summaryAccommodation.textContent =
-                selectedAccommodation?.name ||
-                "Select accommodation";
-        }
+        const hasAccommodationUpgrade =
+            normalizeNumber(selectedAccommodation?.price) > 0;
 
-        if (
-            selectedAccommodation?.price > 0
-        ) {
+        if (hasAccommodationUpgrade) {
+            summaryAccommodationRow?.classList.remove("hidden");
+
+            if (summaryAccommodation) {
+                summaryAccommodation.textContent =
+                    selectedAccommodation?.name ||
+                    "Room Upgrade";
+            }
+
+            if (summaryAccommodationUpgradeInline) {
+                summaryAccommodationUpgradeInline.textContent =
+                    `+₱${formatMoney(
+                        selectedAccommodation.price
+                    )}`;
+            }
+
+            // Retain hidden legacy values for compatibility.
             summaryAccommodationUpgradeRow
                 ?.classList.remove("hidden");
 
@@ -3670,8 +3698,13 @@ document.addEventListener("DOMContentLoaded", () => {
                     )}`;
             }
         } else {
+            summaryAccommodationRow?.classList.add("hidden");
             summaryAccommodationUpgradeRow
                 ?.classList.add("hidden");
+
+            if (summaryAccommodationUpgradeInline) {
+                summaryAccommodationUpgradeInline.textContent = "+₱0";
+            }
         }
 
         if (
