@@ -121,7 +121,56 @@ const defaultPageSetupSettings = {
         "We’re here to help",
 
     supportPhoto:
-        "../../assets/images/logo.png"
+        "../../assets/images/logo.png",
+
+    paymentSettings: {
+        methods: {
+            gcash: {
+                label: "GCash",
+                status: "active",
+                accountName: "Eric Ramirez",
+                accountNumber: "0952 478 8316",
+                qrImage: ""
+            },
+            seabank: {
+                label: "SeaBank / MariBank",
+                status: "active",
+                accountName: "",
+                accountNumber: "",
+                qrImage: ""
+            },
+            maya: {
+                label: "Maya",
+                status: "coming_soon",
+                accountName: "",
+                accountNumber: "",
+                qrImage: ""
+            },
+            gotyme: {
+                label: "GoTyme Bank",
+                status: "coming_soon",
+                accountName: "",
+                accountNumber: "",
+                qrImage: ""
+            },
+            card: {
+                label: "Credit / Debit Card",
+                status: "coming_soon",
+                accountName: "",
+                accountNumber: "",
+                qrImage: ""
+            }
+        },
+        rules: {
+            depositType: "per_pax",
+            depositPerPax: 500,
+            minimumDeposit: 500,
+            referenceRequired: true,
+            adminVerificationRequired: true,
+            receiptReminder:
+                "Please keep your initial deposit receipt until your payment has been verified."
+        }
+    }
 };
 
 
@@ -409,6 +458,50 @@ async function uploadSelectedPageSetupImages(
     }
 
 
+    const paymentMethodKeys = [
+        "gcash",
+        "seabank",
+        "maya",
+        "gotyme"
+    ];
+
+    for (const key of paymentMethodKeys) {
+
+        const methodElements =
+            pageSetupElements.paymentMethods?.[key];
+
+        if (!methodElements?.qrInput) {
+            continue;
+        }
+
+        const qrURL =
+            await uploadPageSetupImageIfNeeded({
+                input:
+                    methodElements.qrInput,
+                storagePath:
+                    `systemSettings/general/payment-${key}-qr`,
+                label:
+                    `${key.toUpperCase()} QR code`
+            });
+
+        if (qrURL) {
+
+            finalSettings.paymentSettings =
+                finalSettings.paymentSettings || {};
+
+            finalSettings.paymentSettings.methods =
+                finalSettings.paymentSettings.methods || {};
+
+            finalSettings.paymentSettings.methods[key] = {
+                ...(finalSettings.paymentSettings.methods[key] || {}),
+                qrImage:
+                    qrURL
+            };
+
+        }
+    }
+
+
     return finalSettings;
 }
 
@@ -496,6 +589,154 @@ async function initializePageSetup() {
 /* =========================================================
    ENSURE PAGE SETUP MARKUP
 ========================================================= */
+
+
+function createPaymentMethodAdminMarkup(
+    key,
+    label,
+    iconClass,
+    hasAccountDetails = true
+) {
+
+    const accountFields = hasAccountDetails
+        ? `
+            <div class="payment-method-fields">
+
+                <div class="form-group">
+                    <label for="payment_${key}_accountName">
+                        Account Name
+                    </label>
+                    <input
+                        type="text"
+                        id="payment_${key}_accountName"
+                        placeholder="Account name"
+                        autocomplete="off"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="payment_${key}_accountNumber">
+                        Account / Mobile Number
+                    </label>
+                    <input
+                        type="text"
+                        id="payment_${key}_accountNumber"
+                        placeholder="Account or mobile number"
+                        autocomplete="off"
+                    >
+                </div>
+
+                <div class="form-group form-group-full">
+                    <label>
+                        QR Code
+                    </label>
+
+                    <div class="payment-qr-admin">
+
+                        <div class="payment-qr-preview">
+                            <div
+                                class="payment-qr-empty"
+                                id="payment_${key}_qrEmpty"
+                            >
+                                <i class="fa-solid fa-qrcode"></i>
+                                <span>No QR uploaded</span>
+                            </div>
+
+                            <img
+                                id="payment_${key}_qrPreview"
+                                alt="${label} QR Code"
+                                hidden
+                            >
+                        </div>
+
+                        <div class="payment-qr-actions">
+                            <input
+                                type="file"
+                                id="payment_${key}_qrInput"
+                                accept="image/jpeg,image/png,image/webp"
+                                hidden
+                            >
+
+                            <button
+                                type="button"
+                                class="page-setup-secondary-button payment-qr-upload-button"
+                                data-payment-qr-key="${key}"
+                            >
+                                <i class="fa-solid fa-upload"></i>
+                                Upload QR Code
+                            </button>
+
+                            <button
+                                type="button"
+                                class="payment-remove-qr-button"
+                                data-payment-remove-qr="${key}"
+                            >
+                                Remove QR
+                            </button>
+
+                            <small>
+                                JPG, PNG or WEBP. Maximum 2MB.
+                            </small>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        `
+        : `
+            <div class="payment-card-coming-note">
+                <i class="fa-solid fa-circle-info"></i>
+                Card gateway credentials can be connected later.
+                For now, control whether this option is Active,
+                Coming Soon, or Hidden.
+            </div>
+        `;
+
+    return `
+        <article
+            class="payment-method-admin-card"
+            data-payment-method-card="${key}"
+        >
+
+            <div class="payment-method-admin-header">
+
+                <div class="payment-method-admin-title">
+                    <span class="payment-method-admin-icon">
+                        <i class="${iconClass}"></i>
+                    </span>
+
+                    <div>
+                        <strong>${label}</strong>
+                        <small data-payment-status-text="${key}">
+                            Payment method
+                        </small>
+                    </div>
+                </div>
+
+                <div class="payment-method-status-control">
+                    <label for="payment_${key}_status">
+                        Status
+                    </label>
+
+                    <select
+                        id="payment_${key}_status"
+                        data-payment-status-select="${key}"
+                    >
+                        <option value="active">Active</option>
+                        <option value="coming_soon">Coming Soon</option>
+                        <option value="hidden">Hidden</option>
+                    </select>
+                </div>
+
+            </div>
+
+            ${accountFields}
+
+        </article>
+    `;
+}
+
 
 function ensurePageSetupMarkup() {
 
@@ -1023,6 +1264,190 @@ function ensurePageSetupMarkup() {
                 </div>
 
 
+
+                <!-- =====================================
+                     PAYMENT METHOD SETTINGS
+                ====================================== -->
+
+                <div class="page-setup-block payment-settings-block">
+
+                    <div class="page-setup-block-header">
+
+                        <div class="page-setup-block-icon">
+                            <i class="fa-solid fa-wallet"></i>
+                        </div>
+
+                        <div>
+                            <h3>Payment Method Settings</h3>
+                            <p>
+                                Control which payment methods are shown to clients
+                                and manage account / QR information.
+                            </p>
+                        </div>
+
+                    </div>
+
+                    <div class="payment-settings-note">
+                        <i class="fa-solid fa-circle-info"></i>
+                        <span>
+                            <strong>Active</strong> = available for payment,
+                            <strong>Coming Soon</strong> = visible but disabled,
+                            <strong>Hidden</strong> = not shown to clients.
+                        </span>
+                    </div>
+
+                    <div class="payment-method-admin-list">
+
+                        ${createPaymentMethodAdminMarkup(
+                            "gcash",
+                            "GCash",
+                            "fa-solid fa-mobile-screen-button",
+                            true
+                        )}
+
+                        ${createPaymentMethodAdminMarkup(
+                            "seabank",
+                            "SeaBank / MariBank",
+                            "fa-solid fa-building-columns",
+                            true
+                        )}
+
+                        ${createPaymentMethodAdminMarkup(
+                            "maya",
+                            "Maya",
+                            "fa-solid fa-wallet",
+                            true
+                        )}
+
+                        ${createPaymentMethodAdminMarkup(
+                            "gotyme",
+                            "GoTyme Bank",
+                            "fa-solid fa-building-columns",
+                            true
+                        )}
+
+                        ${createPaymentMethodAdminMarkup(
+                            "card",
+                            "Credit / Debit Card",
+                            "fa-regular fa-credit-card",
+                            false
+                        )}
+
+                    </div>
+
+                </div>
+
+
+                <!-- =====================================
+                     PAYMENT RULES
+                ====================================== -->
+
+                <div class="page-setup-block">
+
+                    <div class="page-setup-block-header">
+
+                        <div class="page-setup-block-icon">
+                            <i class="fa-solid fa-sliders"></i>
+                        </div>
+
+                        <div>
+                            <h3>Payment Rules</h3>
+                            <p>
+                                Configure the initial deposit and payment
+                                verification requirements used by the booking system.
+                            </p>
+                        </div>
+
+                    </div>
+
+                    <div class="page-setup-grid">
+
+                        <div class="form-group">
+                            <label for="paymentDepositType">
+                                Initial Deposit Type
+                            </label>
+
+                            <select id="paymentDepositType">
+                                <option value="per_pax">Per Pax</option>
+                                <option value="fixed">Fixed Amount</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="paymentDepositPerPax">
+                                Deposit Amount
+                            </label>
+
+                            <div class="payment-money-input">
+                                <span>₱</span>
+                                <input
+                                    type="number"
+                                    id="paymentDepositPerPax"
+                                    min="0"
+                                    step="1"
+                                    inputmode="numeric"
+                                    placeholder="500"
+                                >
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="paymentMinimumDeposit">
+                                Minimum Deposit
+                            </label>
+
+                            <div class="payment-money-input">
+                                <span>₱</span>
+                                <input
+                                    type="number"
+                                    id="paymentMinimumDeposit"
+                                    min="0"
+                                    step="1"
+                                    inputmode="numeric"
+                                    placeholder="500"
+                                >
+                            </div>
+                        </div>
+
+                        <div class="form-group payment-toggle-group">
+                            <label>Payment Requirements</label>
+
+                            <label class="payment-switch-row">
+                                <span>
+                                    <strong>Reference Number Required</strong>
+                                    <small>Client must enter the payment reference number.</small>
+                                </span>
+                                <input type="checkbox" id="paymentReferenceRequired">
+                                <span class="payment-switch"></span>
+                            </label>
+
+                            <label class="payment-switch-row">
+                                <span>
+                                    <strong>Admin Verification Required</strong>
+                                    <small>Payment must be verified before confirmation.</small>
+                                </span>
+                                <input type="checkbox" id="paymentAdminVerificationRequired">
+                                <span class="payment-switch"></span>
+                            </label>
+                        </div>
+
+                        <div class="form-group form-group-full">
+                            <label for="paymentReceiptReminder">
+                                Payment Reminder
+                            </label>
+
+                            <textarea
+                                id="paymentReceiptReminder"
+                                rows="3"
+                                placeholder="Payment reminder shown to clients"
+                            ></textarea>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
                 <!-- =====================================
                      FORM MESSAGE
                 ====================================== -->
@@ -1197,8 +1622,73 @@ function collectPageSetupElements() {
         message:
             document.getElementById(
                 "pageSetupMessage"
-            )
+            ),
+
+        paymentDepositType:
+            document.getElementById(
+                "paymentDepositType"
+            ),
+
+        paymentDepositPerPax:
+            document.getElementById(
+                "paymentDepositPerPax"
+            ),
+
+        paymentMinimumDeposit:
+            document.getElementById(
+                "paymentMinimumDeposit"
+            ),
+
+        paymentReferenceRequired:
+            document.getElementById(
+                "paymentReferenceRequired"
+            ),
+
+        paymentAdminVerificationRequired:
+            document.getElementById(
+                "paymentAdminVerificationRequired"
+            ),
+
+        paymentReceiptReminder:
+            document.getElementById(
+                "paymentReceiptReminder"
+            ),
+
+        paymentMethods: {}
     };
+
+
+    ["gcash", "seabank", "maya", "gotyme", "card"]
+        .forEach((key) => {
+
+            pageSetupElements.paymentMethods[key] = {
+                status:
+                    document.getElementById(
+                        `payment_${key}_status`
+                    ),
+                accountName:
+                    document.getElementById(
+                        `payment_${key}_accountName`
+                    ),
+                accountNumber:
+                    document.getElementById(
+                        `payment_${key}_accountNumber`
+                    ),
+                qrPreview:
+                    document.getElementById(
+                        `payment_${key}_qrPreview`
+                    ),
+                qrEmpty:
+                    document.getElementById(
+                        `payment_${key}_qrEmpty`
+                    ),
+                qrInput:
+                    document.getElementById(
+                        `payment_${key}_qrInput`
+                    )
+            };
+
+        });
 
 
     if (
@@ -1546,6 +2036,19 @@ function getLocalSettings() {
 
             ...parsed,
 
+            paymentSettings: {
+                ...defaultPageSetupSettings.paymentSettings,
+                ...(parsed.paymentSettings || {}),
+                methods: {
+                    ...defaultPageSetupSettings.paymentSettings.methods,
+                    ...(parsed.paymentSettings?.methods || {})
+                },
+                rules: {
+                    ...defaultPageSetupSettings.paymentSettings.rules,
+                    ...(parsed.paymentSettings?.rules || {})
+                }
+            },
+
             businessLogo:
                 sanitizeImageSource(
                     parsed.businessLogo,
@@ -1764,6 +2267,95 @@ function populatePageSetupForm(
             settings.supportPhoto;
     }
 
+
+
+    const paymentSettings = {
+        ...defaultPageSetupSettings.paymentSettings,
+        ...(settings.paymentSettings || {}),
+        methods: {
+            ...defaultPageSetupSettings.paymentSettings.methods,
+            ...(settings.paymentSettings?.methods || {})
+        },
+        rules: {
+            ...defaultPageSetupSettings.paymentSettings.rules,
+            ...(settings.paymentSettings?.rules || {})
+        }
+    };
+
+
+    Object.entries(
+        paymentSettings.methods
+    ).forEach(([key, method]) => {
+
+        const elements =
+            pageSetupElements.paymentMethods?.[key];
+
+        if (!elements) {
+            return;
+        }
+
+        if (elements.status) {
+            elements.status.value =
+                method.status || "hidden";
+        }
+
+        if (elements.accountName) {
+            elements.accountName.value =
+                method.accountName || "";
+        }
+
+        if (elements.accountNumber) {
+            elements.accountNumber.value =
+                method.accountNumber || "";
+        }
+
+        setPaymentQrPreview(
+            key,
+            method.qrImage || ""
+        );
+
+        updatePaymentMethodStatusUI(
+            key
+        );
+
+    });
+
+
+    if (pageSetupElements.paymentDepositType) {
+        pageSetupElements.paymentDepositType.value =
+            paymentSettings.rules.depositType ||
+            "per_pax";
+    }
+
+    if (pageSetupElements.paymentDepositPerPax) {
+        pageSetupElements.paymentDepositPerPax.value =
+            Number(
+                paymentSettings.rules.depositPerPax ?? 500
+            );
+    }
+
+    if (pageSetupElements.paymentMinimumDeposit) {
+        pageSetupElements.paymentMinimumDeposit.value =
+            Number(
+                paymentSettings.rules.minimumDeposit ?? 500
+            );
+    }
+
+    if (pageSetupElements.paymentReferenceRequired) {
+        pageSetupElements.paymentReferenceRequired.checked =
+            paymentSettings.rules.referenceRequired !== false;
+    }
+
+    if (pageSetupElements.paymentAdminVerificationRequired) {
+        pageSetupElements.paymentAdminVerificationRequired.checked =
+            paymentSettings.rules.adminVerificationRequired !== false;
+    }
+
+    if (pageSetupElements.paymentReceiptReminder) {
+        pageSetupElements.paymentReceiptReminder.value =
+            paymentSettings.rules.receiptReminder || "";
+    }
+
 }
 
 
@@ -1835,10 +2427,323 @@ function collectPageSetupSettings() {
         supportPhoto:
             pageSetupElements.supportPhotoPreview
                 ?.src ||
-            defaultPageSetupSettings.supportPhoto
+            defaultPageSetupSettings.supportPhoto,
+
+        paymentSettings:
+            collectPaymentSettings()
 
     };
 
+}
+
+
+
+function collectPaymentSettings() {
+
+    const methods = {};
+
+    Object.entries(
+        defaultPageSetupSettings.paymentSettings.methods
+    ).forEach(([key, defaultMethod]) => {
+
+        const elements =
+            pageSetupElements.paymentMethods?.[key];
+
+        const currentQr =
+            elements?.qrPreview &&
+            !elements.qrPreview.hidden
+                ? String(
+                    elements.qrPreview.src || ""
+                ).trim()
+                : "";
+
+        methods[key] = {
+            label:
+                defaultMethod.label,
+            status:
+                elements?.status?.value ||
+                defaultMethod.status,
+            accountName:
+                elements?.accountName
+                    ?.value
+                    ?.trim() || "",
+            accountNumber:
+                elements?.accountNumber
+                    ?.value
+                    ?.trim() || "",
+            qrImage:
+                currentQr
+        };
+
+    });
+
+
+    return {
+        methods,
+        rules: {
+            depositType:
+                pageSetupElements.paymentDepositType
+                    ?.value ||
+                "per_pax",
+
+            depositPerPax:
+                Math.max(
+                    0,
+                    Number(
+                        pageSetupElements.paymentDepositPerPax
+                            ?.value || 0
+                    )
+                ),
+
+            minimumDeposit:
+                Math.max(
+                    0,
+                    Number(
+                        pageSetupElements.paymentMinimumDeposit
+                            ?.value || 0
+                    )
+                ),
+
+            referenceRequired:
+                Boolean(
+                    pageSetupElements.paymentReferenceRequired
+                        ?.checked
+                ),
+
+            adminVerificationRequired:
+                Boolean(
+                    pageSetupElements.paymentAdminVerificationRequired
+                        ?.checked
+                ),
+
+            receiptReminder:
+                pageSetupElements.paymentReceiptReminder
+                    ?.value
+                    ?.trim() || ""
+        }
+    };
+
+}
+
+
+function setPaymentQrPreview(
+    key,
+    source
+) {
+
+    const elements =
+        pageSetupElements.paymentMethods?.[key];
+
+    if (!elements?.qrPreview) {
+        return;
+    }
+
+    const value =
+        String(source || "").trim();
+
+    if (value) {
+
+        elements.qrPreview.src =
+            value;
+
+        elements.qrPreview.hidden =
+            false;
+
+        if (elements.qrEmpty) {
+            elements.qrEmpty.hidden =
+                true;
+        }
+
+    } else {
+
+        elements.qrPreview.removeAttribute(
+            "src"
+        );
+
+        elements.qrPreview.hidden =
+            true;
+
+        if (elements.qrEmpty) {
+            elements.qrEmpty.hidden =
+                false;
+        }
+    }
+}
+
+
+function updatePaymentMethodStatusUI(
+    key
+) {
+
+    const elements =
+        pageSetupElements.paymentMethods?.[key];
+
+    const card =
+        document.querySelector(
+            `[data-payment-method-card="${key}"]`
+        );
+
+    const text =
+        document.querySelector(
+            `[data-payment-status-text="${key}"]`
+        );
+
+    if (!elements?.status || !card) {
+        return;
+    }
+
+    const status =
+        elements.status.value;
+
+    card.dataset.status =
+        status;
+
+    if (text) {
+
+        text.textContent =
+            status === "active"
+                ? "Available to clients"
+                : status === "coming_soon"
+                    ? "Visible as Coming Soon"
+                    : "Hidden from clients";
+    }
+}
+
+
+function initializePaymentSettingsEvents() {
+
+    document
+        .querySelectorAll(
+            "[data-payment-status-select]"
+        )
+        .forEach((select) => {
+
+            select.addEventListener(
+                "change",
+                () => {
+                    updatePaymentMethodStatusUI(
+                        select.dataset.paymentStatusSelect
+                    );
+                }
+            );
+
+        });
+
+
+    document
+        .querySelectorAll(
+            "[data-payment-qr-key]"
+        )
+        .forEach((button) => {
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    const key =
+                        button.dataset.paymentQrKey;
+
+                    pageSetupElements
+                        .paymentMethods?.[key]
+                        ?.qrInput
+                        ?.click();
+
+                }
+            );
+
+        });
+
+
+    Object.entries(
+        pageSetupElements.paymentMethods || {}
+    ).forEach(([key, elements]) => {
+
+        elements.qrInput
+            ?.addEventListener(
+                "change",
+                () => {
+
+                    const file =
+                        elements.qrInput.files?.[0];
+
+                    if (!file) {
+                        return;
+                    }
+
+                    if (
+                        ![
+                            "image/jpeg",
+                            "image/png",
+                            "image/webp"
+                        ].includes(file.type)
+                    ) {
+                        showPageSetupMessage(
+                            "QR code must be JPG, PNG, or WEBP.",
+                            "error"
+                        );
+                        elements.qrInput.value = "";
+                        return;
+                    }
+
+                    if (
+                        file.size >
+                        2 * 1024 * 1024
+                    ) {
+                        showPageSetupMessage(
+                            "QR code must be 2MB or smaller.",
+                            "error"
+                        );
+                        elements.qrInput.value = "";
+                        return;
+                    }
+
+                    const reader =
+                        new FileReader();
+
+                    reader.onload = () => {
+                        setPaymentQrPreview(
+                            key,
+                            reader.result
+                        );
+                    };
+
+                    reader.readAsDataURL(
+                        file
+                    );
+                }
+            );
+
+    });
+
+
+    document
+        .querySelectorAll(
+            "[data-payment-remove-qr]"
+        )
+        .forEach((button) => {
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    const key =
+                        button.dataset.paymentRemoveQr;
+
+                    const elements =
+                        pageSetupElements.paymentMethods?.[key];
+
+                    if (elements?.qrInput) {
+                        elements.qrInput.value = "";
+                    }
+
+                    setPaymentQrPreview(
+                        key,
+                        ""
+                    );
+                }
+            );
+
+        });
 }
 
 
@@ -2553,6 +3458,9 @@ function handleSupportPhotoChange(event) {
 ========================================================= */
 
 function initializePageSetupEvents() {
+
+    initializePaymentSettingsEvents();
+
 
     const form =
         pageSetupElements.form;

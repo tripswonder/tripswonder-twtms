@@ -4041,14 +4041,24 @@ document.addEventListener("DOMContentLoaded", () => {
             paymentReference.value = value;
         }
 
-        setModalState(
+        const activeModal =
             method === "gcash"
                 ? gcashPaymentModal
-                : bankPaymentModal,
-            false
-        );
+                : bankPaymentModal;
 
+        /* Prevent aria-hidden/focus warnings when the modal closes. */
+        if (document.activeElement instanceof HTMLElement) {
+            document.activeElement.blur();
+        }
+
+        setModalState(activeModal, false);
         updateProgress();
+
+        /*
+         * The payment reference is now complete. Submit the same booking
+         * form again; this second pass will save the booking for verification.
+         */
+        clientBookingForm?.requestSubmit();
     }
 
     function showPaymentInstructions() {
@@ -4058,12 +4068,12 @@ document.addEventListener("DOMContentLoaded", () => {
          */
         paymentInstructions?.classList.add("hidden");
 
-        const method =
-            getSelectedPaymentMethod();
-
-        if (!method) return;
-
-        openPaymentModal(method);
+        /*
+         * Selecting GCash / Bank only selects the method.
+         * Do not open the payment modal yet; it opens only after the client
+         * clicks Proceed to Payment.
+         */
+        updateProgress();
     }
 
     function downloadGcashQr() {
@@ -4220,16 +4230,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 return false;
             }
 
-            const reference = normalizeText(paymentReference?.value);
-
-            if (reference.length < 4) {
-                alert(
-                    "Please enter your payment reference number before submitting."
-                );
-
-                openPaymentModal(method);
-                return false;
-            }
+            /*
+             * Payment reference is NOT required at this stage.
+             * The client first reviews the booking, selects a payment method,
+             * confirms the agreement, then clicks Proceed to Payment.
+             * The reference number is collected inside the payment modal.
+             */
         }
 
         if (!bookingAgreement?.checked) {
@@ -4717,6 +4723,22 @@ document.addEventListener("DOMContentLoaded", () => {
         if (isSubmitting) return;
 
         if (!validateBooking()) return;
+
+        /*
+         * Normal booking flow:
+         * Proceed to Payment opens the selected payment modal first.
+         * Nothing is saved until a valid payment reference is submitted
+         * from that modal. Requested-date bookings remain payment-free.
+         */
+        if (!isRequestedDateMode) {
+            const method = getSelectedPaymentMethod();
+            const reference = normalizeText(paymentReference?.value);
+
+            if (reference.length < 4) {
+                openPaymentModal(method);
+                return;
+            }
+        }
 
         const originalContent =
             submitBookingButton?.innerHTML;
@@ -5290,3 +5312,4 @@ document.addEventListener("DOMContentLoaded", () => {
     );
 
 });
+

@@ -699,3 +699,407 @@
     }
 
 }
+
+/* =========================================================
+   PAYMENT METHOD SETTINGS
+========================================================= */
+
+.payment-settings-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 20px;
+    padding: 13px 15px;
+    border: 1px solid #dbe7f7;
+    border-radius: 10px;
+    background: #f7fbff;
+    color: var(--ps-text-secondary);
+    font-size: 13px;
+    line-height: 1.55;
+}
+
+.payment-settings-note i {
+    margin-top: 2px;
+    color: var(--ps-primary);
+}
+
+.payment-method-admin-list {
+    display: grid;
+    gap: 14px;
+}
+
+.payment-method-admin-card {
+    border: 1px solid var(--ps-border);
+    border-radius: 13px;
+    background: #ffffff;
+    overflow: hidden;
+    transition:
+        border-color 0.18s ease,
+        box-shadow 0.18s ease,
+        opacity 0.18s ease;
+}
+
+.payment-method-admin-card[data-status="active"] {
+    border-color: rgba(22, 163, 74, 0.30);
+    box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.04);
+}
+
+.payment-method-admin-card[data-status="coming_soon"] {
+    border-color: rgba(217, 119, 6, 0.28);
+}
+
+.payment-method-admin-card[data-status="hidden"] {
+    opacity: 0.68;
+}
+
+.payment-method-admin-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 17px 18px;
+    background: #fbfcfe;
+    border-bottom: 1px solid var(--ps-border);
+}
+
+.payment-method-admin-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.payment-method-admin-title > div {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.payment-method-admin-title strong {
+    color: var(--ps-text-primary);
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.payment-method-admin-title small {
+    color: var(--ps-text-muted);
+    font-size: 12px;
+}
+
+.payment-method-admin-icon {
+    width: 40px;
+    min-width: 40px;
+    height: 40px;
+    display: grid;
+    place-items: center;
+    border-radius: 10px;
+    background: var(--ps-primary-soft);
+    color: var(--ps-primary);
+    font-size: 17px;
+}
+
+.payment-method-status-control {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.payment-method-status-control label {
+    color: var(--ps-text-muted);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.payment-method-status-control select,
+.form-group select {
+    min-height: 46px;
+    padding: 0 38px 0 13px;
+    border: 1px solid var(--ps-border-dark);
+    border-radius: 9px;
+    outline: none;
+    background: #ffffff;
+    color: var(--ps-text-primary);
+    font: inherit;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+.payment-method-status-control select:focus,
+.form-group select:focus {
+    border-color: var(--ps-primary);
+    box-shadow: 0 0 0 3px rgba(23, 105, 255, 0.10);
+}
+
+.payment-method-fields {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 20px;
+    padding: 18px;
+}
+
+.payment-method-fields .form-group {
+    margin-bottom: 16px;
+}
+
+.payment-qr-admin {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 14px;
+    border: 1px dashed var(--ps-border-dark);
+    border-radius: 11px;
+    background: #fbfcfe;
+}
+
+.payment-qr-preview {
+    width: 112px;
+    min-width: 112px;
+    height: 112px;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    border: 1px solid var(--ps-border);
+    border-radius: 10px;
+    background: #ffffff;
+}
+
+.payment-qr-preview img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: contain;
+    padding: 6px;
+    box-sizing: border-box;
+}
+
+.payment-qr-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 7px;
+    color: var(--ps-text-muted);
+    font-size: 11px;
+    text-align: center;
+}
+
+.payment-qr-empty i {
+    font-size: 28px;
+    color: #9aa8bc;
+}
+
+.payment-qr-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 9px;
+}
+
+.payment-qr-actions small {
+    width: 100%;
+    color: var(--ps-text-muted);
+    font-size: 12px;
+}
+
+.payment-remove-qr-button {
+    min-height: 42px;
+    padding: 0 14px;
+    border: 1px solid #fecaca;
+    border-radius: 9px;
+    background: #ffffff;
+    color: var(--ps-danger);
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.payment-remove-qr-button:hover {
+    background: var(--ps-danger-soft);
+}
+
+.payment-card-coming-note {
+    margin: 18px;
+    padding: 13px 15px;
+    border-radius: 10px;
+    background: #f8fafc;
+    color: var(--ps-text-secondary);
+    font-size: 13px;
+    line-height: 1.55;
+}
+
+.payment-card-coming-note i {
+    margin-right: 6px;
+    color: var(--ps-primary);
+}
+
+.payment-money-input {
+    position: relative;
+}
+
+.payment-money-input > span {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--ps-text-secondary);
+    font-weight: 600;
+    pointer-events: none;
+}
+
+.payment-money-input input {
+    padding-left: 34px;
+}
+
+.payment-toggle-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.payment-switch-row {
+    display: flex !important;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    margin: 0 !important;
+    padding: 12px 13px;
+    border: 1px solid var(--ps-border);
+    border-radius: 10px;
+    background: #fbfcfe;
+    cursor: pointer;
+}
+
+.payment-switch-row > span:first-child {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.payment-switch-row strong {
+    color: var(--ps-text-primary);
+    font-size: 13px;
+}
+
+.payment-switch-row small {
+    color: var(--ps-text-muted);
+    font-size: 11px;
+    font-weight: 400;
+}
+
+.payment-switch-row input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.payment-switch {
+    position: relative;
+    width: 42px;
+    min-width: 42px;
+    height: 24px;
+    border-radius: 999px;
+    background: #cbd5e1;
+    transition: background 0.18s ease;
+}
+
+.payment-switch::after {
+    content: "";
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #ffffff;
+    box-shadow: 0 1px 4px rgba(15, 23, 42, 0.18);
+    transition: transform 0.18s ease;
+}
+
+.payment-switch-row input:checked + .payment-switch {
+    background: var(--ps-success);
+}
+
+.payment-switch-row input:checked + .payment-switch::after {
+    transform: translateX(18px);
+}
+
+@media (max-width: 800px) {
+    .payment-method-fields {
+        grid-template-columns: 1fr;
+    }
+
+    .payment-method-admin-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .payment-method-status-control {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .payment-method-status-control select {
+        flex: 1;
+        max-width: 220px;
+    }
+}
+
+@media (max-width: 560px) {
+    .payment-method-fields {
+        padding: 14px;
+    }
+
+    .payment-qr-admin {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .payment-qr-preview {
+        width: 100%;
+        height: 180px;
+    }
+
+    .payment-qr-actions {
+        width: 100%;
+    }
+
+    .payment-qr-upload-button,
+    .payment-remove-qr-button {
+        flex: 1;
+    }
+}
+
+
+/* =========================================================
+   PAYMENT QR PREVIEW — HIDDEN STATE FIX
+   Prevents the empty placeholder and QR image from rendering
+   at the same time inside the fixed preview box.
+========================================================= */
+
+.payment-qr-preview img[hidden],
+.payment-qr-preview .payment-qr-empty[hidden] {
+    display: none !important;
+}
+
+.payment-qr-preview {
+    position: relative;
+}
+
+.payment-qr-preview > img:not([hidden]) {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: contain;
+    padding: 6px;
+    box-sizing: border-box;
+}
+
+.payment-qr-preview > .payment-qr-empty:not([hidden]) {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+}
