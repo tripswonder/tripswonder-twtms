@@ -44,25 +44,90 @@ document.addEventListener("DOMContentLoaded", () => {
        CONFIG
        ===================================================== */
 
-    const DEPOSIT_PER_PAX = 500;
+    let DEPOSIT_PER_PAX = 500;
 
-    /*
-     * Replace qrImage with the final Trips Wonder GCash QR image URL
-     * when available in your website/Firebase data.
-     */
-    const PAYMENT_DETAILS = {
-        gcash: {
-            label: "GCash",
-            accountName: "Eric Ramirez",
-            accountNumber: "0952 478 8316",
-            qrImage: ""
+    const DEFAULT_PAYMENT_SETTINGS = {
+        methods: {
+            gcash: {
+                label: "GCash",
+                status: "active",
+                accountName: "Eric Ramirez",
+                accountNumber: "0952 478 8316",
+                qrImage: ""
+            },
+            seabank: {
+                label: "SeaBank / MariBank",
+                status: "active",
+                accountName: "",
+                accountNumber: "",
+                qrImage: ""
+            },
+            maya: {
+                label: "Maya",
+                status: "coming_soon",
+                accountName: "",
+                accountNumber: "",
+                qrImage: ""
+            },
+            gotyme: {
+                label: "GoTyme Bank",
+                status: "coming_soon",
+                accountName: "",
+                accountNumber: "",
+                qrImage: ""
+            },
+            card: {
+                label: "Credit / Debit Card",
+                status: "coming_soon",
+                accountName: "",
+                accountNumber: "",
+                qrImage: ""
+            }
         },
+        rules: {
+            depositPerPax: 500,
+            minimumDeposit: 500,
+            referenceRequired: true,
+            adminVerificationRequired: true,
+            receiptReminder:
+                "Please keep your initial deposit receipt until your payment has been verified."
+        }
+    };
 
-        bank: {
-            label: "Bank Transfer",
-            bankName: "Maribank",
-            accountName: "Eric Ramirez",
-            accountNumber: "1260 9823 206"
+    let paymentSettings = {
+        methods: {
+            ...DEFAULT_PAYMENT_SETTINGS.methods
+        },
+        rules: {
+            ...DEFAULT_PAYMENT_SETTINGS.rules
+        }
+    };
+
+    const PAYMENT_METHOD_META = {
+        gcash: {
+            icon: "fa-solid fa-mobile-screen-button",
+            brandClass: "gcash",
+            description: "Pay using GCash QR or mobile number"
+        },
+        seabank: {
+            icon: "fa-solid fa-building-columns",
+            brandClass: "seabank",
+            description: "Transfer using SeaBank / MariBank"
+        },
+        maya: {
+            icon: "fa-solid fa-wallet",
+            brandClass: "maya",
+            description: "Pay using your Maya account"
+        },
+        gotyme: {
+            icon: "fa-solid fa-building-columns",
+            brandClass: "gotyme",
+            description: "Transfer using GoTyme Bank"
+        },
+        card: {
+            icon: "fa-regular fa-credit-card",
+            brandClass: "card",
+            description: "Credit / debit card payment"
         }
     };
 
@@ -85,6 +150,8 @@ document.addEventListener("DOMContentLoaded", () => {
     let appliedReferral = null;
 
     let selectedPaymentAmountOption = "minimum";
+    let currentPaymentMethodKey = "";
+    let paymentSettingsLoaded = false;
 
     let currentCustomer = null;
     let currentCustomerProfile = null;
@@ -238,8 +305,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const applyReferralButton = $("applyReferralButton");
     const referralMessage = $("referralMessage");
 
-    const paymentMethodInputs =
-        document.querySelectorAll('input[name="paymentMethod"]');
+    const paymentMethodsList = $("paymentMethodsList");
+    const paymentMethodLoading = $("paymentMethodLoading");
 
     const paymentInstructions = $("paymentInstructions");
     const paymentInstructionsContent = $("paymentInstructionsContent");
@@ -254,6 +321,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const gcashDepositBreakdown = $("gcashDepositBreakdown");
     const gcashReferenceInput = $("gcashReferenceInput");
     const confirmGcashPaymentButton = $("confirmGcashPaymentButton");
+    const paymentModalTitle = $("paymentModalTitle");
+    const paymentQrCard = $("paymentQrCard");
+    const paymentAccountNumberLabel = $("paymentAccountNumberLabel");
+    const paymentReferenceLabel = $("paymentReferenceLabel");
+    const paymentReceiptReminder = $("paymentReceiptReminder");
 
     const bankPaymentModal = $("bankPaymentModal");
     const bankName = $("bankName");
@@ -395,6 +467,352 @@ document.addEventListener("DOMContentLoaded", () => {
             document.querySelector('input[name="paymentMethod"]:checked');
 
         return checked ? checked.value : "";
+    }
+
+
+    function getPaymentMethodSettings(key) {
+        return (
+            paymentSettings?.methods?.[key] ||
+            DEFAULT_PAYMENT_SETTINGS.methods[key] ||
+            null
+        );
+    }
+
+
+    function getPaymentRules() {
+        return {
+            ...DEFAULT_PAYMENT_SETTINGS.rules,
+            ...(paymentSettings?.rules || {})
+        };
+    }
+
+
+    function paymentMethodIsActive(key) {
+        return (
+            normalizeLower(
+                getPaymentMethodSettings(key)?.status
+            ) === "active"
+        );
+    }
+
+
+    function normalizePaymentSettings(settings) {
+        const raw =
+            settings?.paymentSettings &&
+            typeof settings.paymentSettings === "object"
+                ? settings.paymentSettings
+                : {};
+
+        const rawMethods =
+            raw.methods &&
+            typeof raw.methods === "object"
+                ? raw.methods
+                : {};
+
+        const methods = {};
+
+        Object.keys(
+            DEFAULT_PAYMENT_SETTINGS.methods
+        ).forEach(key => {
+
+            /*
+             * IMPORTANT:
+             * If Admin has already saved a method record, use that
+             * saved record as the source of truth.
+             *
+             * The default object is only a fallback for fields that
+             * were never saved at all.
+             */
+            const savedMethod =
+                rawMethods[key] &&
+                typeof rawMethods[key] === "object"
+                    ? rawMethods[key]
+                    : null;
+
+            const fallbackMethod =
+                DEFAULT_PAYMENT_SETTINGS.methods[key];
+
+            const mergedMethod = {
+                ...fallbackMethod,
+                ...(savedMethod || {})
+            };
+
+            /*
+             * Preserve explicit Admin status exactly.
+             * This prevents "hidden" from falling back to
+             * the default "coming_soon" value.
+             */
+            const savedStatus =
+                savedMethod &&
+                Object.prototype.hasOwnProperty.call(
+                    savedMethod,
+                    "status"
+                )
+                    ? normalizeLower(
+                        savedMethod.status
+                    )
+                    : "";
+
+            const fallbackStatus =
+                normalizeLower(
+                    fallbackMethod.status
+                );
+
+            mergedMethod.status =
+                ["active", "coming_soon", "hidden"].includes(
+                    savedStatus
+                )
+                    ? savedStatus
+                    : fallbackStatus;
+
+            methods[key] =
+                mergedMethod;
+        });
+
+        const rules = {
+            ...DEFAULT_PAYMENT_SETTINGS.rules,
+            ...(raw.rules || {})
+        };
+
+        rules.depositPerPax =
+            Math.max(
+                0,
+                normalizeNumber(
+                    rules.depositPerPax ?? 500
+                )
+            ) || 500;
+
+        rules.minimumDeposit =
+            Math.max(
+                0,
+                normalizeNumber(
+                    rules.minimumDeposit ??
+                    rules.depositPerPax
+                )
+            );
+
+        paymentSettings = {
+            methods,
+            rules
+        };
+
+        DEPOSIT_PER_PAX =
+            rules.depositPerPax || 500;
+
+        paymentSettingsLoaded = true;
+
+        console.log(
+            "Trips Wonder Payment Settings:",
+            paymentSettings
+        );
+    }
+
+
+    async function loadPaymentSettings() {
+        try {
+            const snapshot =
+                await getDoc(
+                    doc(
+                        db,
+                        "systemSettings",
+                        "general"
+                    )
+                );
+
+            if (snapshot.exists()) {
+                const settingsData =
+                    snapshot.data();
+
+                console.log(
+                    "Trips Wonder raw paymentSettings:",
+                    settingsData?.paymentSettings
+                );
+
+                normalizePaymentSettings(
+                    settingsData
+                );
+            } else {
+                normalizePaymentSettings({});
+            }
+
+        } catch (error) {
+            console.warn(
+                "Payment settings could not be loaded. Using safe defaults.",
+                error
+            );
+
+            normalizePaymentSettings({});
+        }
+
+        renderPaymentMethods();
+        updateBookingSummary();
+    }
+
+
+    function renderPaymentMethods() {
+        if (!paymentMethodsList) {
+            return;
+        }
+
+        const currentSelection =
+            getSelectedPaymentMethod();
+
+        paymentMethodsList.innerHTML = "";
+
+        let visibleCount = 0;
+
+        Object.entries(
+            paymentSettings.methods || {}
+        ).forEach(([key, method]) => {
+
+            const status =
+                normalizeLower(method.status);
+
+            if (status === "hidden") {
+                return;
+            }
+
+            visibleCount += 1;
+
+            const meta =
+                PAYMENT_METHOD_META[key] || {
+                    icon: "fa-solid fa-wallet",
+                    brandClass: "default",
+                    description: "Payment method"
+                };
+
+            const active =
+                status === "active";
+
+            const card =
+                document.createElement("label");
+
+            card.className =
+                "payment-option payment-method-dynamic";
+
+            if (!active) {
+                card.classList.add(
+                    "payment-method-coming-soon"
+                );
+            }
+
+            card.innerHTML = `
+                <input
+                    type="radio"
+                    name="paymentMethod"
+                    value="${escapeHtml(key)}"
+                    ${active ? "required" : "disabled"}
+                    ${
+                        active &&
+                        currentSelection === key
+                            ? "checked"
+                            : ""
+                    }
+                >
+
+                <span class="payment-option-content payment-option-content-clean">
+                    <span class="payment-logo-icon ${escapeHtml(meta.brandClass)}">
+                        <i class="${escapeHtml(meta.icon)}"></i>
+                    </span>
+
+                    <span class="payment-option-copy">
+                        <strong>${escapeHtml(method.label || key)}</strong>
+                        <small>${escapeHtml(meta.description)}</small>
+                    </span>
+
+                    <span class="payment-option-end">
+                        ${
+                            active
+                                ? `
+                                    <span class="payment-radio-indicator">
+                                        <i class="fa-solid fa-check"></i>
+                                    </span>
+                                    <i class="fa-solid fa-chevron-right payment-option-chevron"></i>
+                                `
+                                : `
+                                    <span class="payment-soon-badge">SOON</span>
+                                `
+                        }
+                    </span>
+                </span>
+            `;
+
+            paymentMethodsList.appendChild(
+                card
+            );
+        });
+
+        if (!visibleCount) {
+            paymentMethodsList.innerHTML = `
+                <div class="payment-method-empty">
+                    <i class="fa-solid fa-circle-info"></i>
+                    <div>
+                        <strong>Payment methods are temporarily unavailable.</strong>
+                        <span>Please contact Trips Wonder support for assistance.</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        paymentMethodsList
+            .querySelectorAll(
+                'input[name="paymentMethod"]:not(:disabled)'
+            )
+            .forEach(input => {
+
+                input.addEventListener(
+                    "change",
+                    () => {
+
+                        if (paymentReference) {
+                            paymentReference.value = "";
+                        }
+
+                        if (gcashReferenceInput) {
+                            gcashReferenceInput.value = "";
+                        }
+
+                        currentPaymentMethodKey =
+                            input.value;
+
+                        showPaymentInstructions();
+                    }
+                );
+
+            });
+    }
+
+
+    function getSelectedPaymentMethodSnapshot() {
+        const key =
+            getSelectedPaymentMethod();
+
+        const method =
+            getPaymentMethodSettings(key);
+
+        if (!key || !method) {
+            return null;
+        }
+
+        return {
+            key,
+            label:
+                normalizeText(
+                    method.label || key
+                ),
+            accountName:
+                normalizeText(
+                    method.accountName
+                ),
+            accountNumber:
+                normalizeText(
+                    method.accountNumber
+                ),
+            qrImage:
+                normalizeText(
+                    method.qrImage
+                )
+        };
     }
 
     function getPax() {
@@ -3931,18 +4349,57 @@ document.addEventListener("DOMContentLoaded", () => {
        ===================================================== */
 
     function updatePaymentModalAmounts() {
-        const calculation = calculateBooking();
+        const calculation =
+            calculateBooking();
+
         const paymentSelection =
-            getSelectedPaymentAmount(calculation);
+            getSelectedPaymentAmount(
+                calculation
+            );
+
+        const methodKey =
+            currentPaymentMethodKey ||
+            getSelectedPaymentMethod();
+
+        const method =
+            getPaymentMethodSettings(
+                methodKey
+            ) || {};
+
+        const rules =
+            getPaymentRules();
+
+        const label =
+            normalizeText(
+                method.label ||
+                "Payment"
+            );
+
+        if (paymentModalTitle) {
+            paymentModalTitle.textContent =
+                `Pay with ${label}`;
+        }
 
         if (gcashAccountName) {
             gcashAccountName.textContent =
-                PAYMENT_DETAILS.gcash.accountName;
+                normalizeText(
+                    method.accountName
+                ) || "Trips Wonder";
         }
 
         if (gcashAccountNumber) {
             gcashAccountNumber.textContent =
-                PAYMENT_DETAILS.gcash.accountNumber;
+                normalizeText(
+                    method.accountNumber
+                ) || "—";
+        }
+
+        if (paymentAccountNumberLabel) {
+            paymentAccountNumberLabel.textContent =
+                methodKey === "gcash" ||
+                methodKey === "maya"
+                    ? "Account / Mobile Number"
+                    : "Account Number";
         }
 
         if (gcashDepositAmount) {
@@ -3961,14 +4418,12 @@ document.addEventListener("DOMContentLoaded", () => {
                         : "Full booking payment";
         }
 
-        if (gcashQrImage) {
-            const qr =
-                normalizeText(
-                    selectedPackage?.paymentDetails?.gcash?.qrImage ||
-                    selectedPackage?.gcashQrImage ||
-                    PAYMENT_DETAILS.gcash.qrImage
-                );
+        const qr =
+            normalizeText(
+                method.qrImage
+            );
 
+        if (gcashQrImage) {
             if (qr) {
                 gcashQrImage.src = qr;
                 gcashQrImage.style.display = "block";
@@ -3978,103 +4433,128 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
 
-        if (bankName) {
-            bankName.textContent =
-                PAYMENT_DETAILS.bank.bankName;
+        if (paymentQrCard) {
+            paymentQrCard.classList.toggle(
+                "hidden",
+                !qr
+            );
         }
 
-        if (bankAccountName) {
-            bankAccountName.textContent =
-                PAYMENT_DETAILS.bank.accountName;
+        if (downloadGcashQrButton) {
+            downloadGcashQrButton.classList.toggle(
+                "hidden",
+                !qr
+            );
         }
 
-        if (bankAccountNumber) {
-            bankAccountNumber.textContent =
-                PAYMENT_DETAILS.bank.accountNumber;
+        if (paymentReferenceLabel) {
+            paymentReferenceLabel.textContent =
+                `${label} Reference Number *`;
         }
 
-        if (bankDepositAmount) {
-            bankDepositAmount.textContent =
-                `₱${formatMoney(
-                    paymentSelection.selectedAmount
-                )}`;
+        if (gcashReferenceInput) {
+            gcashReferenceInput.placeholder =
+                `Enter ${label} reference number`;
+        }
+
+        if (paymentReceiptReminder) {
+            paymentReceiptReminder.textContent =
+                normalizeText(
+                    rules.receiptReminder
+                ) ||
+                DEFAULT_PAYMENT_SETTINGS.rules.receiptReminder;
         }
     }
+
 
     function openPaymentModal(method) {
+        if (
+            !method ||
+            !paymentMethodIsActive(method)
+        ) {
+            alert(
+                "This payment method is not currently available."
+            );
+            return;
+        }
+
+        if (method === "card") {
+            alert(
+                "Credit / Debit Card payment is not connected yet."
+            );
+            return;
+        }
+
+        currentPaymentMethodKey =
+            method;
+
         updatePaymentModalAmounts();
 
-        if (method === "gcash") {
-            if (gcashReferenceInput) {
-                gcashReferenceInput.value =
-                    paymentReference?.value || "";
-            }
-
-            setModalState(gcashPaymentModal, true);
-
-        } else if (method === "bank") {
-            if (bankReferenceInput) {
-                bankReferenceInput.value =
-                    paymentReference?.value || "";
-            }
-
-            setModalState(bankPaymentModal, true);
+        if (gcashReferenceInput) {
+            gcashReferenceInput.value =
+                paymentReference?.value || "";
         }
+
+        setModalState(
+            gcashPaymentModal,
+            true
+        );
     }
 
-    function confirmPaymentReference(method) {
-        const input =
-            method === "gcash"
-                ? gcashReferenceInput
-                : bankReferenceInput;
+
+    function confirmPaymentReference() {
+        const rules =
+            getPaymentRules();
 
         const value =
-            normalizeText(input?.value);
+            normalizeText(
+                gcashReferenceInput?.value
+            );
 
-        if (value.length < 4) {
-            alert("Please enter a valid payment reference number.");
-            input?.focus();
+        if (
+            rules.referenceRequired !== false &&
+            value.length < 4
+        ) {
+            alert(
+                "Please enter a valid payment reference number."
+            );
+
+            gcashReferenceInput?.focus();
             return;
         }
 
         if (paymentReference) {
-            paymentReference.value = value;
+            paymentReference.value =
+                value;
         }
 
-        const activeModal =
-            method === "gcash"
-                ? gcashPaymentModal
-                : bankPaymentModal;
-
-        /* Prevent aria-hidden/focus warnings when the modal closes. */
-        if (document.activeElement instanceof HTMLElement) {
+        if (
+            document.activeElement instanceof HTMLElement
+        ) {
             document.activeElement.blur();
         }
 
-        setModalState(activeModal, false);
+        setModalState(
+            gcashPaymentModal,
+            false
+        );
+
         updateProgress();
 
-        /*
-         * The payment reference is now complete. Submit the same booking
-         * form again; this second pass will save the booking for verification.
-         */
-        clientBookingForm?.requestSubmit();
+        clientBookingForm
+            ?.requestSubmit();
     }
+
 
     function showPaymentInstructions() {
-        /*
-         * New UI uses dedicated GCash / Bank modals.
-         * Hide the old inline instruction box if it exists.
-         */
-        paymentInstructions?.classList.add("hidden");
+        paymentInstructions
+            ?.classList.add(
+                "hidden"
+            );
 
-        /*
-         * Selecting GCash / Bank only selects the method.
-         * Do not open the payment modal yet; it opens only after the client
-         * clicks Proceed to Payment.
-         */
         updateProgress();
     }
+
 
     function downloadGcashQr() {
         const src =
@@ -4089,7 +4569,18 @@ document.addEventListener("DOMContentLoaded", () => {
             document.createElement("a");
 
         link.href = src;
-        link.download = "Trips-Wonder-GCash-QR.png";
+        const method =
+            getPaymentMethodSettings(
+                currentPaymentMethodKey ||
+                getSelectedPaymentMethod()
+            );
+
+        const safeName =
+            normalizeText(method?.label || "Payment")
+                .replace(/[^a-zA-Z0-9]+/g, "-");
+
+        link.download =
+            `Trips-Wonder-${safeName}-QR.png`;
         link.target = "_blank";
 
         document.body.appendChild(link);
@@ -4227,6 +4718,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (!method) {
                 alert("Please select a payment method.");
+                return false;
+            }
+
+            if (!paymentMethodIsActive(method)) {
+                alert(
+                    "The selected payment method is no longer available. Please choose another payment method."
+                );
+                renderPaymentMethods();
                 return false;
             }
 
@@ -4661,6 +5160,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
             /* PAYMENT */
             paymentMethod,
+
+            paymentMethodLabel:
+                getSelectedPaymentMethodSnapshot()?.label || "",
+
+            paymentMethodSnapshot:
+                getSelectedPaymentMethodSnapshot(),
+
             paymentReference:
                 paymentReferenceValue,
 
@@ -4998,22 +5504,18 @@ document.addEventListener("DOMContentLoaded", () => {
             );
         });
 
-    paymentMethodInputs
-        .forEach(input => {
-            input.addEventListener(
-                "change",
-                showPaymentInstructions
-            );
-        });
-
     confirmGcashPaymentButton
         ?.addEventListener("click", () => {
-            confirmPaymentReference("gcash");
+            confirmPaymentReference();
         });
 
+    /*
+     * Legacy bank modal remains in the HTML for compatibility.
+     * All configured active methods now use the dynamic payment modal.
+     */
     confirmBankPaymentButton
         ?.addEventListener("click", () => {
-            confirmPaymentReference("bank");
+            confirmPaymentReference();
         });
 
     downloadGcashQrButton
@@ -5273,6 +5775,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     customerEmail.readOnly = false;
                 }
 
+                await loadPaymentSettings();
                 await loadSelectedPackage();
 
                 console.log(
@@ -5299,6 +5802,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             }
 
+            await loadPaymentSettings();
             await loadSelectedPackage();
 
             console.log(
@@ -5312,4 +5816,3 @@ document.addEventListener("DOMContentLoaded", () => {
     );
 
 });
-

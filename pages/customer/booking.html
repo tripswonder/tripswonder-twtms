@@ -759,58 +759,15 @@
                     <small>Your payment will be verified by Trips Wonder before booking confirmation.</small>
                 </div>
 
-                <div class="payment-methods payment-methods-clean">
-
-                    <label class="payment-option payment-option-primary">
-                        <input type="radio"
-                               name="paymentMethod"
-                               value="gcash"
-                               required>
-
-                        <span class="payment-option-content payment-option-content-clean">
-                            <span class="payment-logo-icon gcash">
-                                <i class="fa-solid fa-mobile-screen-button"></i>
-                            </span>
-
-                            <span class="payment-option-copy">
-                                <strong>GCash</strong>
-                                <small>Pay using QR code or GCash account number</small>
-                            </span>
-
-                            <span class="payment-option-end">
-                                <span class="payment-radio-indicator">
-                                    <i class="fa-solid fa-check"></i>
-                                </span>
-                                <i class="fa-solid fa-chevron-right payment-option-chevron"></i>
-                            </span>
-                        </span>
-                    </label>
-
-                    <label class="payment-option">
-                        <input type="radio"
-                               name="paymentMethod"
-                               value="bank"
-                               required>
-
-                        <span class="payment-option-content payment-option-content-clean">
-                            <span class="payment-logo-icon">
-                                <i class="fa-solid fa-building-columns"></i>
-                            </span>
-
-                            <span class="payment-option-copy">
-                                <strong>Bank Transfer</strong>
-                                <small>Transfer the initial deposit to our bank account</small>
-                            </span>
-
-                            <span class="payment-option-end">
-                                <span class="payment-radio-indicator">
-                                    <i class="fa-solid fa-check"></i>
-                                </span>
-                                <i class="fa-solid fa-chevron-right payment-option-chevron"></i>
-                            </span>
-                        </span>
-                    </label>
-
+                <div
+                    class="payment-methods payment-methods-clean"
+                    id="paymentMethodsList"
+                    aria-live="polite"
+                >
+                    <div class="payment-method-loading" id="paymentMethodLoading">
+                        <i class="fa-solid fa-spinner fa-spin"></i>
+                        <span>Loading payment methods...</span>
+                    </div>
                 </div>
 
                 <div class="payment-security-note">
@@ -1010,7 +967,7 @@
         <div class="modal-header">
             <div>
                 <span>INITIAL DEPOSIT</span>
-                <h2>Pay with GCash</h2>
+                <h2 id="paymentModalTitle">Payment</h2>
             </div>
 
             <button type="button"
@@ -1023,11 +980,11 @@
 
         <div class="gcash-payment-layout">
 
-            <div class="gcash-qr-card">
+            <div class="gcash-qr-card" id="paymentQrCard">
                 <div class="gcash-qr-wrap">
                     <img id="gcashQrImage"
                          src=""
-                         alt="Trips Wonder GCash QR Code">
+                         alt="Payment QR Code">
                 </div>
 
                 <button type="button"
@@ -1047,7 +1004,7 @@
                     </div>
 
                     <div>
-                        <span>GCash Number</span>
+                        <span id="paymentAccountNumberLabel">Account / Mobile Number</span>
                         <strong id="gcashAccountNumber">—</strong>
                     </div>
                 </div>
@@ -1059,19 +1016,19 @@
                 </div>
 
                 <div class="gcash-reference-field">
-                    <label for="gcashReferenceInput">
-                        GCash Reference Number *
+                    <label for="gcashReferenceInput" id="paymentReferenceLabel">
+                        Payment Reference Number *
                     </label>
                     <input type="text"
                            id="gcashReferenceInput"
-                           placeholder="Enter GCash reference number"
+                           placeholder="Enter payment reference number"
                            inputmode="numeric"
                            autocomplete="off">
                 </div>
 
                 <div class="payment-receipt-reminder">
                     <i class="fa-solid fa-circle-info"></i>
-                    <span>
+                    <span id="paymentReceiptReminder">
                         Please keep your initial deposit receipt until your payment
                         has been verified.
                     </span>

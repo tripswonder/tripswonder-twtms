@@ -8025,4 +8025,103 @@ body.requested-date-mode #paymentMethodSection .payment-step-summary {
         font-size: 6.5px !important;
     }
 }
-    
+
+
+/* =========================================================
+   DYNAMIC PAYMENT METHODS
+========================================================= */
+
+.payment-method-loading,
+.payment-method-empty {
+    min-height: 78px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 18px;
+    border: 1px solid #e3e9f2;
+    border-radius: 12px;
+    background: #ffffff;
+    color: #667085;
+    box-sizing: border-box;
+}
+
+.payment-method-empty > div {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.payment-method-empty strong {
+    color: #172036;
+    font-size: 14px;
+}
+
+.payment-method-empty span {
+    font-size: 12px;
+}
+
+.payment-method-coming-soon {
+    cursor: default;
+}
+
+.payment-method-coming-soon .payment-option-content {
+    opacity: 0.72;
+    background: #fafbfc;
+}
+
+.payment-method-coming-soon:hover .payment-option-content {
+    border-color: #e3e9f2;
+    box-shadow: none;
+}
+
+.payment-soon-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 24px;
+    padding: 0 9px;
+    border-radius: 999px;
+    background: #eef1f5;
+    color: #667085;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+}
+
+.payment-logo-icon.gcash {
+    background: #edf4ff;
+    color: #0b63f6;
+}
+
+.payment-logo-icon.seabank {
+    background: #fff1ed;
+    color: #ee4d2d;
+}
+
+.payment-logo-icon.maya {
+    background: #ecfdf3;
+    color: #087f5b;
+}
+
+.payment-logo-icon.gotyme {
+    background: #eefbf7;
+    color: #004c45;
+}
+
+.payment-logo-icon.card {
+    background: #f3f4f6;
+    color: #344054;
+}
+
+#paymentQrCard.hidden,
+#downloadGcashQrButton.hidden {
+    display: none !important;
+}
+
+@media (max-width: 560px) {
+    .payment-soon-badge {
+        min-height: 22px;
+        padding: 0 7px;
+        font-size: 9px;
+    }
+}
