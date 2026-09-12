@@ -2300,17 +2300,12 @@ document.addEventListener("DOMContentLoaded", () => {
             !selectedSchedule ||
             selectedSchedule.requestedDate
         ) {
-            selectedScheduleCard.innerHTML = `
-                <div class="selected-schedule-empty">
-                    <i class="fa-regular fa-calendar-check"></i>
-                    <div>
-                        <strong>Select a travel date</strong>
-                        <small>Available tour dates are highlighted on the calendar.</small>
-                    </div>
-                </div>
-            `;
+            selectedScheduleCard.innerHTML = "";
+            selectedScheduleCard.classList.add("hidden");
             return;
         }
+
+        selectedScheduleCard.classList.remove("hidden");
 
         const full =
             scheduleIsFull(
@@ -2692,19 +2687,23 @@ document.addEventListener("DOMContentLoaded", () => {
                 "hidden"
             );
 
-            renderTravelCalendar();
+            /*
+             * Do not auto-select the first available schedule.
+             * The customer must explicitly choose a preferred travel date.
+             */
+            selectedSchedule = null;
 
-            if (!selectedSchedule) {
-                const firstAvailable =
-                    upcomingSchedulesFromCursor(1)[0];
-
-                if (firstAvailable) {
-                    selectSchedule(
-                        firstAvailable,
-                        null
-                    );
-                }
+            if (travelDate) {
+                travelDate.value = "";
             }
+
+            if (selectedScheduleId) {
+                selectedScheduleId.value = "";
+            }
+
+            renderTravelCalendar();
+            renderSelectedScheduleCard();
+            updateProgress();
 
             return;
         }
@@ -2955,6 +2954,7 @@ document.addEventListener("DOMContentLoaded", () => {
             selectedAccommodationId.value = "";
         }
 
+        renderSelectedScheduleCard();
         renderAccommodationCards();
         clearAppliedPromo();
         updateBookingSummary();
