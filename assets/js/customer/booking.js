@@ -327,6 +327,35 @@ document.addEventListener("DOMContentLoaded", () => {
     const gcashReferenceInput = $("gcashReferenceInput");
     const confirmGcashPaymentButton = $("confirmGcashPaymentButton");
     const paymentModalTitle = $("paymentModalTitle");
+
+    let paymentModalBrandLogo =
+        document.getElementById("paymentModalBrandLogo");
+
+    if (
+        paymentModalTitle &&
+        !paymentModalBrandLogo
+    ) {
+        paymentModalBrandLogo =
+            document.createElement("img");
+
+        paymentModalBrandLogo.id =
+            "paymentModalBrandLogo";
+
+        paymentModalBrandLogo.className =
+            "payment-modal-brand-logo";
+
+        paymentModalBrandLogo.alt =
+            "Payment method logo";
+
+        paymentModalBrandLogo.hidden =
+            true;
+
+        paymentModalTitle.parentElement
+            ?.insertBefore(
+                paymentModalBrandLogo,
+                paymentModalTitle
+            );
+    }
     const paymentQrCard = $("paymentQrCard");
     const paymentAccountNumberLabel = $("paymentAccountNumberLabel");
     const paymentReferenceLabel = $("paymentReferenceLabel");
@@ -609,17 +638,6 @@ document.addEventListener("DOMContentLoaded", () => {
         console.log(
             "Trips Wonder Payment Settings:",
             paymentSettings
-        );
-
-        console.log(
-            "Trips Wonder Payment Logos:",
-            Object.fromEntries(
-                Object.entries(paymentSettings.methods || {})
-                    .map(([key, method]) => [
-                        key,
-                        normalizeText(method.logoImage)
-                    ])
-            )
         );
     }
 
@@ -4411,6 +4429,31 @@ document.addEventListener("DOMContentLoaded", () => {
         if (paymentModalTitle) {
             paymentModalTitle.textContent =
                 `Pay with ${label}`;
+        }
+
+        if (paymentModalBrandLogo) {
+            const logo =
+                normalizeText(
+                    method.logoImage
+                );
+
+            if (logo) {
+                paymentModalBrandLogo.src =
+                    logo;
+
+                paymentModalBrandLogo.alt =
+                    `${label} logo`;
+
+                paymentModalBrandLogo.hidden =
+                    false;
+            } else {
+                paymentModalBrandLogo.removeAttribute(
+                    "src"
+                );
+
+                paymentModalBrandLogo.hidden =
+                    true;
+            }
         }
 
         if (gcashAccountName) {

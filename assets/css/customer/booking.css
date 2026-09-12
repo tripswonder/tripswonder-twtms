@@ -8190,50 +8190,401 @@ body.requested-date-mode #paymentMethodSection .payment-step-summary {
 
 
 /* =========================================================
-   PAYMENT METHOD — LOGO ONLY / NO ICON BOX
-   Final override
+   PAYMENT MODAL — SELECTED METHOD LOGO
 ========================================================= */
 
-#paymentMethodSection .payment-methods-clean .payment-logo-icon {
-    width: 46px !important;
-    height: 46px !important;
-    flex: 0 0 46px !important;
+.payment-modal-brand-logo {
+    width: 42px;
+    height: 42px;
+    display: block;
+    object-fit: contain;
+    margin-bottom: 8px;
+}
+
+.payment-modal-brand-logo[hidden] {
+    display: none !important;
+}
+
+@media (max-width: 560px) {
+    .payment-modal-brand-logo {
+        width: 36px;
+        height: 36px;
+        margin-bottom: 6px;
+    }
+}
+
+
+/* =========================================================
+   PAYMENT MODAL HEADER — COMPACT BRAND ROW
+   INITIAL DEPOSIT
+   [logo] Pay with <method>
+========================================================= */
+
+.payment-modal .modal-header > div {
+    min-width: 0;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    align-items: center;
+    column-gap: 9px;
+    row-gap: 4px;
+}
+
+.payment-modal .modal-header > div > span {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    margin: 0;
+}
+
+.payment-modal .payment-modal-brand-logo {
+    grid-column: 1;
+    grid-row: 2;
+    width: 30px;
+    height: 30px;
+    margin: 0;
+    object-fit: contain;
+}
+
+.payment-modal .modal-header h2 {
+    grid-column: 2;
+    grid-row: 2;
+    margin: 0;
+    min-width: 0;
+    line-height: 1.2;
+}
+
+.payment-modal .payment-modal-brand-logo[hidden] {
+    display: none !important;
+}
+
+.payment-modal .payment-modal-brand-logo[hidden] + h2 {
+    grid-column: 1 / -1;
+}
+
+@media (max-width: 560px) {
+    .payment-modal .modal-header > div {
+        column-gap: 8px;
+        row-gap: 3px;
+    }
+
+    .payment-modal .payment-modal-brand-logo {
+        width: 27px;
+        height: 27px;
+        margin: 0;
+    }
+
+    .payment-modal .modal-header h2 {
+        font-size: 14px;
+    }
+}
+
+/* =========================================================
+   PAYMENT METHOD LOGOS — LARGE / BORDERLESS FINAL
+========================================================= */
+
+.payment-methods-clean .payment-logo-icon,
+.payment-option-content-clean .payment-logo-icon,
+.payment-logo-icon {
+    width: 64px !important;
+    height: 52px !important;
+    min-width: 64px !important;
+    flex: 0 0 64px !important;
+
     padding: 0 !important;
     margin: 0 !important;
+
     background: transparent !important;
     border: 0 !important;
     border-radius: 0 !important;
     box-shadow: none !important;
-    overflow: visible !important;
+
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
 }
 
-#paymentMethodSection .payment-method-brand-logo {
-    width: 44px !important;
-    height: 44px !important;
-    max-width: 44px !important;
-    max-height: 44px !important;
-    display: block !important;
+.payment-method-brand-logo {
+    width: 100% !important;
+    height: 100% !important;
+
+    max-width: 64px !important;
+    max-height: 52px !important;
+
     object-fit: contain !important;
+
+    padding: 0 !important;
+    margin: 0 !important;
+
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
 }
 
-#paymentMethodSection .payment-methods-clean .payment-logo-icon:has(.payment-method-brand-logo) i {
-    display: none !important;
+/* Keep fallback icon only when no uploaded logo exists */
+.payment-logo-icon > i {
+    font-size: 24px;
+    color: #0866ff;
+}
+
+/* Better spacing for logo + copy + selector */
+.payment-option-content-clean {
+    grid-template-columns: 76px minmax(0, 1fr) auto !important;
+    column-gap: 14px !important;
 }
 
 @media (max-width: 560px) {
-    #paymentMethodSection .payment-methods-clean .payment-logo-icon {
-        width: 40px !important;
-        height: 40px !important;
-        flex-basis: 40px !important;
+    .payment-methods-clean .payment-logo-icon,
+    .payment-option-content-clean .payment-logo-icon,
+    .payment-logo-icon {
+        width: 54px !important;
+        height: 46px !important;
+        min-width: 54px !important;
+        flex-basis: 54px !important;
     }
 
-    #paymentMethodSection .payment-method-brand-logo {
-        width: 38px !important;
-        height: 38px !important;
-        max-width: 38px !important;
-        max-height: 38px !important;
+    .payment-method-brand-logo {
+        max-width: 54px !important;
+        max-height: 46px !important;
     }
+
+    .payment-option-content-clean {
+        grid-template-columns: 62px minmax(0, 1fr) auto !important;
+        column-gap: 10px !important;
+    }
+}
+
+
+/* =========================================================
+   TRIPS WONDER PAYMENT METHOD LOGO — LOCKED FINAL STYLE
+   Keep uploaded provider logos large, clean and borderless.
+========================================================= */
+.payment-logo-icon,
+.payment-methods-clean .payment-logo-icon,
+.payment-option-content-clean .payment-logo-icon {
+    width: 64px !important;
+    height: 52px !important;
+    min-width: 64px !important;
+    flex: 0 0 64px !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    outline: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+}
+
+.payment-method-brand-logo,
+.payment-logo-icon .payment-method-brand-logo {
+    display: block !important;
+    width: 64px !important;
+    height: 52px !important;
+    max-width: 64px !important;
+    max-height: 52px !important;
+    object-fit: contain !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    outline: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+}
+
+@media (max-width: 560px) {
+    .payment-logo-icon,
+    .payment-methods-clean .payment-logo-icon,
+    .payment-option-content-clean .payment-logo-icon {
+        width: 54px !important;
+        height: 46px !important;
+        min-width: 54px !important;
+        flex-basis: 54px !important;
+    }
+
+    .payment-method-brand-logo,
+    .payment-logo-icon .payment-method-brand-logo {
+        width: 54px !important;
+        height: 46px !important;
+        max-width: 54px !important;
+        max-height: 46px !important;
+    }
+}
+
+
+/* =========================================================
+   PAYMENT METHOD LOGOS — TRUE BORDERLESS FINAL OVERRIDE
+   Uses #paymentMethodSection specificity to override older
+   blue logo-container rules.
+========================================================= */
+
+#paymentMethodSection .payment-logo-icon,
+#paymentMethodSection .payment-logo-icon.gcash,
+#paymentMethodSection .payment-logo-icon.seabank,
+#paymentMethodSection .payment-logo-icon.maya,
+#paymentMethodSection .payment-logo-icon.gotyme,
+#paymentMethodSection .payment-logo-icon.card {
+    width: 64px !important;
+    height: 52px !important;
+    min-width: 64px !important;
+    flex: 0 0 64px !important;
+
+    padding: 0 !important;
+    margin: 0 !important;
+
+    color: inherit !important;
+    background: transparent !important;
+
+    border: 0 !important;
+    outline: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+#paymentMethodSection .payment-method-brand-logo,
+#paymentMethodSection .payment-logo-icon .payment-method-brand-logo {
+    display: block !important;
+
+    width: 64px !important;
+    height: 52px !important;
+    max-width: 64px !important;
+    max-height: 52px !important;
+
+    padding: 0 !important;
+    margin: 0 !important;
+
+    object-fit: contain !important;
+
+    background: transparent !important;
+    border: 0 !important;
+    outline: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+}
+
+#paymentMethodSection .payment-option-content-clean {
+    grid-template-columns: 76px minmax(0, 1fr) auto !important;
+    gap: 14px !important;
+}
+
+@media (max-width: 560px) {
+    #paymentMethodSection .payment-logo-icon,
+    #paymentMethodSection .payment-logo-icon.gcash,
+    #paymentMethodSection .payment-logo-icon.seabank,
+    #paymentMethodSection .payment-logo-icon.maya,
+    #paymentMethodSection .payment-logo-icon.gotyme,
+    #paymentMethodSection .payment-logo-icon.card {
+        width: 54px !important;
+        height: 46px !important;
+        min-width: 54px !important;
+        flex-basis: 54px !important;
+    }
+
+    #paymentMethodSection .payment-method-brand-logo,
+    #paymentMethodSection .payment-logo-icon .payment-method-brand-logo {
+        width: 54px !important;
+        height: 46px !important;
+        max-width: 54px !important;
+        max-height: 46px !important;
+    }
+
+    #paymentMethodSection .payment-option-content-clean {
+        grid-template-columns: 62px minmax(0, 1fr) auto !important;
+        gap: 10px !important;
+    }
+}
+
+@media (max-width: 390px) {
+    #paymentMethodSection .payment-logo-icon,
+    #paymentMethodSection .payment-logo-icon.gcash,
+    #paymentMethodSection .payment-logo-icon.seabank,
+    #paymentMethodSection .payment-logo-icon.maya,
+    #paymentMethodSection .payment-logo-icon.gotyme,
+    #paymentMethodSection .payment-logo-icon.card {
+        width: 50px !important;
+        height: 42px !important;
+        min-width: 50px !important;
+        flex-basis: 50px !important;
+    }
+
+    #paymentMethodSection .payment-method-brand-logo,
+    #paymentMethodSection .payment-logo-icon .payment-method-brand-logo {
+        width: 50px !important;
+        height: 42px !important;
+        max-width: 50px !important;
+        max-height: 42px !important;
+    }
+
+    #paymentMethodSection .payment-option-content-clean {
+        grid-template-columns: 58px minmax(0, 1fr) auto !important;
+    }
+}
+
+
+/* =========================================================
+   PAYMENT METHOD CARDS — ONE BORDER ONLY
+   Outer label has no border.
+   Inner payment card keeps the single visible border.
+========================================================= */
+
+#paymentMethodSection .payment-option {
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    overflow: visible !important;
+}
+
+#paymentMethodSection .payment-option:hover {
+    border: 0 !important;
+    box-shadow: none !important;
+    background: transparent !important;
+}
+
+#paymentMethodSection .payment-option-content-clean {
+    border: 1px solid #dce2ea !important;
+    border-radius: 11px !important;
+    background: #ffffff !important;
+    box-shadow: none !important;
+
+    transition:
+        border-color .16s ease,
+        background .16s ease,
+        box-shadow .16s ease,
+        transform .16s ease !important;
+}
+
+#paymentMethodSection .payment-option:hover .payment-option-content-clean {
+    border-color: #b6cef0 !important;
+    background: #f8fbff !important;
+    box-shadow: 0 5px 15px rgba(15,23,42,.045) !important;
+    transform: translateY(-1px);
+}
+
+#paymentMethodSection .payment-option:has(input:checked) {
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+#paymentMethodSection .payment-option:has(input:checked) .payment-option-content-clean {
+    border: 1px solid #0560db !important;
+    background: #f1f6ff !important;
+    box-shadow: 0 6px 18px rgba(5,96,219,.08) !important;
+}
+
+/* Preserve the final clean provider-logo treatment */
+#paymentMethodSection .payment-logo-icon,
+#paymentMethodSection .payment-logo-icon.gcash,
+#paymentMethodSection .payment-logo-icon.seabank,
+#paymentMethodSection .payment-logo-icon.maya,
+#paymentMethodSection .payment-logo-icon.gotyme,
+#paymentMethodSection .payment-logo-icon.card {
+    background: transparent !important;
+    border: 0 !important;
+    outline: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
 }
