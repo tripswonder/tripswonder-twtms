@@ -123,6 +123,11 @@ const defaultPageSetupSettings = {
     supportPhoto:
         "../../assets/images/logo.png",
 
+    holidaySettings: {
+        enabled: true,
+        holidays: []
+    },
+
     paymentSettings: {
         methods: {
             gcash: {
@@ -1550,6 +1555,87 @@ function ensurePageSetupMarkup() {
 
 
                 <!-- =====================================
+                     PHILIPPINE HOLIDAY SETTINGS
+                ====================================== -->
+
+                <div class="page-setup-block holiday-settings-block">
+
+                    <div class="page-setup-block-header">
+
+                        <div class="page-setup-block-icon">
+                            <i class="fa-regular fa-calendar-star"></i>
+                        </div>
+
+                        <div>
+                            <h3>
+                                Philippine Holiday Dates
+                            </h3>
+
+                            <p>
+                                Add holiday indicators shown on the customer
+                                travel calendar. Holiday dates do not change
+                                tour availability or package price.
+                            </p>
+                        </div>
+
+                    </div>
+
+
+                    <div class="holiday-settings-toolbar">
+
+                        <label class="payment-switch-row holiday-master-toggle">
+                            <span>
+                                <strong>Show Holiday Indicators</strong>
+                                <small>
+                                    Display active holiday dates on the booking calendar.
+                                </small>
+                            </span>
+
+                            <input
+                                type="checkbox"
+                                id="holidaySettingsEnabled"
+                                checked
+                            >
+
+                            <span class="payment-switch"></span>
+                        </label>
+
+                        <button
+                            type="button"
+                            id="addHolidayButton"
+                            class="page-setup-secondary-button holiday-add-button"
+                        >
+                            <i class="fa-solid fa-plus"></i>
+                            Add Holiday
+                        </button>
+
+                    </div>
+
+
+                    <div
+                        id="holidaySettingsList"
+                        class="holiday-settings-list"
+                    ></div>
+
+                    <div
+                        id="holidaySettingsEmpty"
+                        class="holiday-settings-empty"
+                    >
+                        <i class="fa-regular fa-calendar"></i>
+
+                        <div>
+                            <strong>No holiday dates added</strong>
+                            <span>
+                                Add Philippine national, special, local,
+                                or long-weekend dates as needed.
+                            </span>
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <!-- =====================================
                      FORM MESSAGE
                 ====================================== -->
 
@@ -1753,6 +1839,26 @@ function collectPageSetupElements() {
         paymentReceiptReminder:
             document.getElementById(
                 "paymentReceiptReminder"
+            ),
+
+        holidaySettingsEnabled:
+            document.getElementById(
+                "holidaySettingsEnabled"
+            ),
+
+        holidaySettingsList:
+            document.getElementById(
+                "holidaySettingsList"
+            ),
+
+        holidaySettingsEmpty:
+            document.getElementById(
+                "holidaySettingsEmpty"
+            ),
+
+        addHolidayButton:
+            document.getElementById(
+                "addHolidayButton"
             ),
 
         paymentMethods: {}
@@ -2474,6 +2580,25 @@ function populatePageSetupForm(
             paymentSettings.rules.receiptReminder || "";
     }
 
+
+    const holidaySettings = {
+        ...defaultPageSetupSettings.holidaySettings,
+        ...(settings.holidaySettings || {}),
+        holidays:
+            Array.isArray(settings.holidaySettings?.holidays)
+                ? settings.holidaySettings.holidays
+                : []
+    };
+
+    if (pageSetupElements.holidaySettingsEnabled) {
+        pageSetupElements.holidaySettingsEnabled.checked =
+            holidaySettings.enabled !== false;
+    }
+
+    renderHolidaySettingsRows(
+        holidaySettings.holidays
+    );
+
 }
 
 
@@ -2548,12 +2673,308 @@ function collectPageSetupSettings() {
             defaultPageSetupSettings.supportPhoto,
 
         paymentSettings:
-            collectPaymentSettings()
+            collectPaymentSettings(),
+
+        holidaySettings:
+            collectHolidaySettings()
 
     };
 
 }
 
+
+
+function normalizeHolidayTypeLabel(
+    value
+) {
+
+    const labels = {
+        regular:
+            "Regular Holiday",
+        special_non_working:
+            "Special Non-Working",
+        special_working:
+            "Special Working",
+        local:
+            "Local Holiday",
+        long_weekend:
+            "Long Weekend",
+        custom:
+            "Custom"
+    };
+
+    return labels[value] || labels.custom;
+}
+
+
+function createHolidaySettingsRow(
+    holiday = {}
+) {
+
+    const row =
+        document.createElement(
+            "div"
+        );
+
+    row.className =
+        "holiday-settings-row";
+
+    row.dataset.holidayRow =
+        "true";
+
+    const status =
+        holiday.status === "hidden"
+            ? "hidden"
+            : "active";
+
+    const type =
+        String(
+            holiday.type ||
+            "regular"
+        );
+
+    row.innerHTML = `
+        <div class="holiday-row-main">
+
+            <div class="form-group">
+                <label>
+                    Holiday Date
+                </label>
+
+                <input
+                    type="date"
+                    data-holiday-date
+                    value="${String(holiday.date || "")}"
+                >
+            </div>
+
+            <div class="form-group holiday-name-field">
+                <label>
+                    Holiday Name
+                </label>
+
+                <input
+                    type="text"
+                    data-holiday-name
+                    value="${String(holiday.name || "")
+                        .replace(/&/g, "&amp;")
+                        .replace(/"/g, "&quot;")
+                        .replace(/</g, "&lt;")
+                        .replace(/>/g, "&gt;")}"
+                    placeholder="e.g. Christmas Day"
+                    autocomplete="off"
+                >
+            </div>
+
+            <div class="form-group">
+                <label>
+                    Type
+                </label>
+
+                <select data-holiday-type>
+                    <option value="regular" ${type === "regular" ? "selected" : ""}>
+                        Regular Holiday
+                    </option>
+                    <option value="special_non_working" ${type === "special_non_working" ? "selected" : ""}>
+                        Special Non-Working
+                    </option>
+                    <option value="special_working" ${type === "special_working" ? "selected" : ""}>
+                        Special Working
+                    </option>
+                    <option value="local" ${type === "local" ? "selected" : ""}>
+                        Local Holiday
+                    </option>
+                    <option value="long_weekend" ${type === "long_weekend" ? "selected" : ""}>
+                        Long Weekend
+                    </option>
+                    <option value="custom" ${type === "custom" ? "selected" : ""}>
+                        Custom
+                    </option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>
+                    Status
+                </label>
+
+                <select data-holiday-status>
+                    <option value="active" ${status === "active" ? "selected" : ""}>
+                        Active
+                    </option>
+                    <option value="hidden" ${status === "hidden" ? "selected" : ""}>
+                        Hidden
+                    </option>
+                </select>
+            </div>
+
+            <button
+                type="button"
+                class="holiday-remove-button"
+                data-remove-holiday
+                aria-label="Remove holiday"
+                title="Remove holiday"
+            >
+                <i class="fa-solid fa-trash"></i>
+            </button>
+
+        </div>
+    `;
+
+    row.querySelector(
+        "[data-remove-holiday]"
+    )?.addEventListener(
+        "click",
+        () => {
+            row.remove();
+            syncHolidayEmptyState();
+        }
+    );
+
+    return row;
+}
+
+
+function syncHolidayEmptyState() {
+
+    const list =
+        pageSetupElements.holidaySettingsList;
+
+    const empty =
+        pageSetupElements.holidaySettingsEmpty;
+
+    if (!list || !empty) {
+        return;
+    }
+
+    const count =
+        list.querySelectorAll(
+            "[data-holiday-row]"
+        ).length;
+
+    empty.hidden =
+        count > 0;
+}
+
+
+function renderHolidaySettingsRows(
+    holidays = []
+) {
+
+    const list =
+        pageSetupElements.holidaySettingsList;
+
+    if (!list) {
+        return;
+    }
+
+    list.innerHTML = "";
+
+    const normalized =
+        Array.isArray(holidays)
+            ? holidays
+            : [];
+
+    normalized.forEach(
+        holiday => {
+            list.appendChild(
+                createHolidaySettingsRow(
+                    holiday
+                )
+            );
+        }
+    );
+
+    syncHolidayEmptyState();
+}
+
+
+function addHolidaySettingsRow() {
+
+    const list =
+        pageSetupElements.holidaySettingsList;
+
+    if (!list) {
+        return;
+    }
+
+    const row =
+        createHolidaySettingsRow({
+            date: "",
+            name: "",
+            type: "regular",
+            status: "active"
+        });
+
+    list.appendChild(row);
+
+    syncHolidayEmptyState();
+
+    row.querySelector(
+        "[data-holiday-date]"
+    )?.focus();
+}
+
+
+function collectHolidaySettings() {
+
+    const rows =
+        Array.from(
+            pageSetupElements.holidaySettingsList
+                ?.querySelectorAll(
+                    "[data-holiday-row]"
+                ) || []
+        );
+
+    const holidays =
+        rows
+            .map(row => ({
+                date:
+                    row.querySelector(
+                        "[data-holiday-date]"
+                    )?.value || "",
+                name:
+                    row.querySelector(
+                        "[data-holiday-name]"
+                    )?.value?.trim() || "",
+                type:
+                    row.querySelector(
+                        "[data-holiday-type]"
+                    )?.value || "custom",
+                status:
+                    row.querySelector(
+                        "[data-holiday-status]"
+                    )?.value || "active"
+            }))
+            .filter(
+                holiday =>
+                    holiday.date &&
+                    holiday.name
+            )
+            .sort(
+                (a, b) =>
+                    a.date.localeCompare(
+                        b.date
+                    )
+            );
+
+    return {
+        enabled:
+            pageSetupElements.holidaySettingsEnabled
+                ?.checked !== false,
+        holidays
+    };
+}
+
+
+function initializeHolidaySettingsEvents() {
+
+    pageSetupElements.addHolidayButton
+        ?.addEventListener(
+            "click",
+            addHolidaySettingsRow
+        );
+}
 
 
 function collectPaymentSettings() {
@@ -3749,6 +4170,7 @@ function handleSupportPhotoChange(event) {
 function initializePageSetupEvents() {
 
     initializePaymentSettingsEvents();
+    initializeHolidaySettingsEvents();
 
 
     const form =

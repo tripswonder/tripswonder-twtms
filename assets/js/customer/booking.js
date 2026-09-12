@@ -144,7 +144,18 @@ document.addEventListener("DOMContentLoaded", () => {
     let selectedPackage = null;
     let selectedSchedule = null;
     let selectedAccommodation = null;
-    let isRequestedDateMode = true;
+
+    /*
+     * Optional pre-selections passed from Tours page.
+     * They remain pending until the Booking page can safely
+     * verify them against the selected package / travel date.
+     */
+    let preselectedAccommodationId = "";
+    let preselectedAccommodationName = "";
+    let preselectedPickupLocation = "";
+    let preselectedAccommodationResolved = false;
+
+    let isRequestedDateMode = false;
     let loadedScheduleItems = [];
     let calendarCursor = new Date();
 
@@ -157,6 +168,11 @@ document.addEventListener("DOMContentLoaded", () => {
     let selectedPaymentAmountOption = "minimum";
     let currentPaymentMethodKey = "";
     let paymentSettingsLoaded = false;
+
+    let holidaySettings = {
+        enabled: true,
+        holidays: []
+    };
 
     let currentCustomer = null;
     let currentCustomerProfile = null;
@@ -215,6 +231,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const requestedDateRequirementTitle = $("requestedDateRequirementTitle");
     const requestedDateRequirementText = $("requestedDateRequirementText");
     const requestedDatePaymentNote = $("requestedDatePaymentNote");
+    const requestedTravelPeriod = $("requestedTravelPeriod");
+    const requestedTravelPeriodDates = $("requestedTravelPeriodDates");
+    const requestedTravelPeriodDuration = $("requestedTravelPeriodDuration");
     const bookingAgreementText = $("bookingAgreementText");
 
     const customerName = $("customerName");
@@ -249,6 +268,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const selectedAccommodationSummary = $("selectedAccommodationSummary");
     const selectedAccommodationName = $("selectedAccommodationName");
     const selectedAccommodationPrice = $("selectedAccommodationPrice");
+    const accommodationPreselectionNotice = $("accommodationPreselectionNotice");
 
     const accommodationGalleryModal = $("accommodationGalleryModal");
     const galleryAccommodationName = $("galleryAccommodationName");
@@ -462,6 +482,131 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    function formatRequestedTravelPeriod(
+        startDate,
+        endDate
+    ) {
+
+        const start =
+            normalizeDateValue(
+                startDate
+            );
+
+        const end =
+            normalizeDateValue(
+                endDate
+            );
+
+        if (!start) {
+            return "";
+        }
+
+        if (
+            !end ||
+            start === end
+        ) {
+            return formatTravelDate(
+                start
+            );
+        }
+
+        const startObject =
+            new Date(
+                `${start}T00:00:00`
+            );
+
+        const endObject =
+            new Date(
+                `${end}T00:00:00`
+            );
+
+        if (
+            startObject.getFullYear() ===
+            endObject.getFullYear()
+        ) {
+            const startText =
+                startObject.toLocaleDateString(
+                    "en-PH",
+                    {
+                        month: "short",
+                        day: "numeric"
+                    }
+                );
+
+            const endText =
+                endObject.toLocaleDateString(
+                    "en-PH",
+                    {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric"
+                    }
+                );
+
+            return `${startText} – ${endText}`;
+        }
+
+        return (
+            `${formatTravelDate(start)} – ` +
+            `${formatTravelDate(end)}`
+        );
+    }
+
+
+    function updateRequestedTravelPeriod(
+        startDate = ""
+    ) {
+
+        if (
+            !requestedTravelPeriod ||
+            !requestedTravelPeriodDates ||
+            !requestedTravelPeriodDuration
+        ) {
+            return;
+        }
+
+        const normalizedStart =
+            normalizeDateValue(
+                startDate
+            );
+
+        if (!normalizedStart) {
+            requestedTravelPeriod.classList.add(
+                "hidden"
+            );
+
+            requestedTravelPeriodDates.textContent =
+                "—";
+
+            requestedTravelPeriodDuration.textContent =
+                "—";
+
+            return;
+        }
+
+        const endDate =
+            calculateTravelEndDate(
+                normalizedStart,
+                selectedPackage?.duration
+            );
+
+        requestedTravelPeriodDates.textContent =
+            formatRequestedTravelPeriod(
+                normalizedStart,
+                endDate
+            );
+
+        requestedTravelPeriodDuration.textContent =
+            normalizeText(
+                selectedPackage?.duration
+            ) || "Package duration";
+
+        requestedTravelPeriod.classList.remove(
+            "hidden"
+        );
+    }
+
+
     function calculateTravelEndDate(startDate, duration) {
         if (!startDate) return "";
 
@@ -642,6 +787,98 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
+    function normalizeHolidaySettings(
+        settingsData = {}
+    ) {
+
+        const raw =
+            settingsData?.holidaySettings || {};
+
+        holidaySettings = {
+            enabled:
+                raw.enabled !== false,
+            holidays:
+                Array.isArray(raw.holidays)
+                    ? raw.holidays
+                        .map(item => ({
+                            date:
+                                normalizeText(
+                                    item?.date
+                                ),
+                            name:
+                                normalizeText(
+                                    item?.name
+                                ),
+                            type:
+                                normalizeLower(
+                                    item?.type ||
+                                    "custom"
+                                ),
+                            status:
+                                normalizeLower(
+                                    item?.status ||
+                                    "active"
+                                )
+                        }))
+                        .filter(
+                            item =>
+                                item.date &&
+                                item.name &&
+                                item.status !== "hidden"
+                        )
+                    : []
+        };
+    }
+
+
+    function getHolidayForDate(
+        dateValue
+    ) {
+
+        if (
+            !holidaySettings.enabled ||
+            !dateValue
+        ) {
+            return null;
+        }
+
+        return (
+            holidaySettings.holidays.find(
+                holiday =>
+                    holiday.date ===
+                    dateValue
+            ) ||
+            null
+        );
+    }
+
+
+    function getHolidayTypeLabel(
+        type
+    ) {
+
+        const labels = {
+            regular:
+                "Regular Holiday",
+            special_non_working:
+                "Special Non-Working Holiday",
+            special_working:
+                "Special Working Holiday",
+            local:
+                "Local Holiday",
+            long_weekend:
+                "Long Weekend",
+            custom:
+                "Holiday"
+        };
+
+        return (
+            labels[type] ||
+            labels.custom
+        );
+    }
+
+
     async function loadPaymentSettings() {
         try {
             const snapshot =
@@ -665,8 +902,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 normalizePaymentSettings(
                     settingsData
                 );
+
+                normalizeHolidaySettings(
+                    settingsData
+                );
             } else {
                 normalizePaymentSettings({});
+                normalizeHolidaySettings({});
             }
 
         } catch (error) {
@@ -676,9 +918,11 @@ document.addEventListener("DOMContentLoaded", () => {
             );
 
             normalizePaymentSettings({});
+            normalizeHolidaySettings({});
         }
 
         renderPaymentMethods();
+        renderTravelCalendar();
         updateBookingSummary();
     }
 
@@ -1134,6 +1378,36 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
+    function showAccommodationPreselectionNotice(
+        message = "",
+        type = "info"
+    ) {
+        if (!accommodationPreselectionNotice) return;
+
+        const text =
+            normalizeText(message);
+
+        if (!text) {
+            accommodationPreselectionNotice.classList.add(
+                "hidden"
+            );
+            accommodationPreselectionNotice.textContent = "";
+            accommodationPreselectionNotice.dataset.type = "";
+            return;
+        }
+
+        accommodationPreselectionNotice.textContent =
+            text;
+
+        accommodationPreselectionNotice.dataset.type =
+            normalizeLower(type) || "info";
+
+        accommodationPreselectionNotice.classList.remove(
+            "hidden"
+        );
+    }
+
+
     /* =====================================================
        PACKAGE
        ===================================================== */
@@ -1141,6 +1415,37 @@ document.addEventListener("DOMContentLoaded", () => {
     async function loadSelectedPackage() {
         const params = new URLSearchParams(window.location.search);
         const packageId = params.get("package");
+
+        preselectedAccommodationId =
+            normalizeText(
+                params.get("accommodation")
+            );
+
+        preselectedAccommodationName =
+            normalizeText(
+                params.get("accommodationName")
+            );
+
+        preselectedPickupLocation =
+            normalizeText(
+                params.get("pickup")
+            );
+
+        preselectedAccommodationResolved =
+            false;
+
+        if (
+            preselectedAccommodationId ||
+            preselectedAccommodationName
+        ) {
+            showAccommodationPreselectionNotice(
+                `Preferred accommodation: ${
+                    preselectedAccommodationName ||
+                    "your selected accommodation"
+                }. Select a travel date to verify availability.`,
+                "info"
+            );
+        }
 
         if (!packageId) {
             showPackageError();
@@ -1366,47 +1671,239 @@ document.addEventListener("DOMContentLoaded", () => {
                 ? selectedPackage.exclusions
                 : [];
 
-        const itinerary =
-            Array.isArray(selectedPackage.itinerary)
-                ? selectedPackage.itinerary
-                : [];
+        const normalizeDetailItem = item =>
+            normalizeText(
+                typeof item === "string"
+                    ? item
+                    : item?.name ||
+                      item?.title ||
+                      item?.text ||
+                      item?.description
+            );
 
-        const listHtml = items =>
-            items.length
-                ? `<ul>${items.map(item =>
-                    `<li>${escapeHtml(
-                        typeof item === "string"
-                            ? item
-                            : item?.name || item?.title || item?.text
-                    )}</li>`
-                ).join("")}</ul>`
-                : `<p>Information will be shown when available.</p>`;
+        const cleanItems = items =>
+            items
+                .map(normalizeDetailItem)
+                .filter(Boolean);
+
+        const cleanInclusions =
+            cleanItems(inclusions);
+
+        const cleanExclusions =
+            cleanItems(exclusions);
+
+        const listHtml = (
+            items,
+            type = ""
+        ) => {
+            if (!items.length) {
+                return "";
+            }
+
+            if (
+                type === "inclusions" ||
+                type === "exclusions"
+            ) {
+                const iconClass =
+                    type === "inclusions"
+                        ? "fa-solid fa-check"
+                        : "fa-solid fa-minus";
+
+                return `
+                    <ul class="package-detail-icon-list ${type}">
+                        ${items.map(item => `
+                            <li>
+                                <span class="package-detail-list-icon">
+                                    <i class="${iconClass}"></i>
+                                </span>
+                                <span>${escapeHtml(item)}</span>
+                            </li>
+                        `).join("")}
+                    </ul>
+                `;
+            }
+
+            return `
+                <ul>
+                    ${items.map(item =>
+                        `<li>${escapeHtml(item)}</li>`
+                    ).join("")}
+                </ul>
+            `;
+        };
+
+        const renderItinerary = itineraryData => {
+            if (
+                Array.isArray(itineraryData)
+            ) {
+                const items =
+                    cleanItems(itineraryData);
+
+                return items.length
+                    ? listHtml(items)
+                    : "";
+            }
+
+            if (
+                !itineraryData ||
+                typeof itineraryData !== "object"
+            ) {
+                return "";
+            }
+
+            const dayEntries =
+                Object.entries(itineraryData)
+                    .filter(([key]) =>
+                        /^day\d+$/i.test(key)
+                    )
+                    .sort((a, b) => {
+                        const dayA =
+                            normalizeNumber(
+                                String(a[0]).match(/\d+/)?.[0]
+                            );
+
+                        const dayB =
+                            normalizeNumber(
+                                String(b[0]).match(/\d+/)?.[0]
+                            );
+
+                        return dayA - dayB;
+                    });
+
+            const dayHtml =
+                dayEntries
+                    .map(([key, value]) => {
+                        const dayNumber =
+                            String(key).match(/\d+/)?.[0] || "";
+
+                        const items =
+                            Array.isArray(value)
+                                ? cleanItems(value)
+                                : [normalizeDetailItem(value)]
+                                    .filter(Boolean);
+
+                        if (!items.length) {
+                            return "";
+                        }
+
+                        return `
+                            <div class="package-itinerary-day">
+                                <strong>
+                                    Day ${escapeHtml(dayNumber)}
+                                </strong>
+                                ${listHtml(items)}
+                            </div>
+                        `;
+                    })
+                    .filter(Boolean);
+
+            const notes =
+                normalizeText(
+                    itineraryData.notes
+                );
+
+            if (notes) {
+                dayHtml.push(`
+                    <div class="package-itinerary-day">
+                        <strong>Notes</strong>
+                        <span>${escapeHtml(notes)}</span>
+                    </div>
+                `);
+            }
+
+            return dayHtml.length
+                ? `<div class="package-itinerary-list">${dayHtml.join("")}</div>`
+                : "";
+        };
+
+        const itineraryHtml =
+            renderItinerary(
+                selectedPackage.itinerary
+            );
+
+        const summaryItems = [];
+
+        if (selectedPackage.duration) {
+            summaryItems.push(`
+                <span class="package-detail-summary-item">
+                    <i class="fa-regular fa-clock"></i>
+                    ${escapeHtml(selectedPackage.duration)}
+                </span>
+            `);
+        }
+
+        if (normalizeNumber(selectedPackage.price) > 0) {
+            summaryItems.push(`
+                <span class="package-detail-summary-item">
+                    <i class="fa-solid fa-tag"></i>
+                    ₱${formatMoney(selectedPackage.price)} / pax
+                </span>
+            `);
+        }
+
+        if (selectedPackage.location) {
+            summaryItems.push(`
+                <span class="package-detail-summary-item">
+                    <i class="fa-solid fa-location-dot"></i>
+                    ${escapeHtml(selectedPackage.location)}
+                </span>
+            `);
+        }
+
+        const sections = [];
+
+        if (cleanInclusions.length) {
+            sections.push(`
+                <section class="package-detail-section">
+                    <div class="package-detail-section-heading">
+                        <span class="package-detail-section-icon">
+                            <i class="fa-solid fa-circle-check"></i>
+                        </span>
+                        <h3>Package Inclusions</h3>
+                    </div>
+                    ${listHtml(cleanInclusions, "inclusions")}
+                </section>
+            `);
+        }
+
+        if (cleanExclusions.length) {
+            sections.push(`
+                <section class="package-detail-section">
+                    <div class="package-detail-section-heading">
+                        <span class="package-detail-section-icon">
+                            <i class="fa-solid fa-circle-minus"></i>
+                        </span>
+                        <h3>Package Exclusions</h3>
+                    </div>
+                    ${listHtml(cleanExclusions, "exclusions")}
+                </section>
+            `);
+        }
+
+        if (itineraryHtml) {
+            sections.push(`
+                <section class="package-detail-section">
+                    <div class="package-detail-section-heading">
+                        <span class="package-detail-section-icon">
+                            <i class="fa-solid fa-route"></i>
+                        </span>
+                        <h3>Itinerary</h3>
+                    </div>
+                    ${itineraryHtml}
+                </section>
+            `);
+        }
 
         packageDetailsModalContent.innerHTML = `
-            <section class="package-detail-section">
-                <h3>About this package</h3>
-                <p>
-                    ${escapeHtml(
-                        selectedPackage.description ||
-                        `${selectedPackage.name || "This tour"} by Trips Wonder Travel and Tours.`
-                    )}
-                </p>
-            </section>
+            ${
+                summaryItems.length
+                    ? `<div class="package-detail-summary">${summaryItems.join("")}</div>`
+                    : ""
+            }
 
-            <section class="package-detail-section">
-                <h3>Package Inclusions</h3>
-                ${listHtml(inclusions)}
-            </section>
-
-            <section class="package-detail-section">
-                <h3>Package Exclusions</h3>
-                ${listHtml(exclusions)}
-            </section>
-
-            <section class="package-detail-section">
-                <h3>Itinerary</h3>
-                ${listHtml(itinerary)}
-            </section>
+            <div class="package-detail-grid">
+                ${sections.join("")}
+            </div>
         `;
     }
 
@@ -1685,10 +2182,76 @@ document.addEventListener("DOMContentLoaded", () => {
        ===================================================== */
 
     function getRequestedDateConfig() {
-        const settings = selectedPackage?.scheduleSettings || {};
+        const packageData =
+            selectedPackage || {};
+
+        const settings =
+            packageData.scheduleSettings &&
+            typeof packageData.scheduleSettings === "object"
+                ? packageData.scheduleSettings
+                : {};
+
+        const requestedDateSettings =
+            packageData.requestedTravelDate &&
+            typeof packageData.requestedTravelDate === "object"
+                ? packageData.requestedTravelDate
+                : {};
+
+        const customDateSettings =
+            packageData.customTravelDate &&
+            typeof packageData.customTravelDate === "object"
+                ? packageData.customTravelDate
+                : {};
+
+        /*
+         * IMPORTANT:
+         * The minimum headcount is PACKAGE-BASED.
+         * Never use a fixed 10-pax requirement here.
+         *
+         * We support the current scheduleSettings field plus
+         * earlier/root aliases so existing package records still work.
+         */
+        const configuredMinPaxCandidates = [
+            settings.requestedTravelDateMinPax,
+            settings.customTravelDateMinPax,
+            requestedDateSettings.minPax,
+            requestedDateSettings.minimumPax,
+            requestedDateSettings.minimumHeadcount,
+            customDateSettings.minPax,
+            customDateSettings.minimumPax,
+            customDateSettings.minimumHeadcount,
+            packageData.requestedTravelDateMinPax,
+            packageData.customTravelDateMinPax,
+            packageData.minimumCustomDatePax,
+            packageData.customDateMinimumHeadcount
+        ];
+
+        const configuredMinPax =
+            configuredMinPaxCandidates
+                .map(value => normalizeNumber(value))
+                .find(value => value > 0);
+
+        const enabled =
+            settings.requestedTravelDateEnabled === true ||
+            settings.customTravelDateEnabled === true ||
+            requestedDateSettings.enabled === true ||
+            customDateSettings.enabled === true ||
+            packageData.requestedTravelDateEnabled === true ||
+            packageData.customTravelDateEnabled === true;
+
+        if (!configuredMinPax) {
+            console.warn(
+                "CUSTOM DATE MINIMUM PAX NOT CONFIGURED FOR PACKAGE:",
+                packageData.id || packageData.name || "unknown package"
+            );
+        }
+
         return {
-            enabled: settings.requestedTravelDateEnabled === true,
-            minPax: Math.max(1, normalizeNumber(settings.requestedTravelDateMinPax) || 10)
+            enabled,
+            minPax: Math.max(
+                1,
+                configuredMinPax || 1
+            )
         };
     }
 
@@ -2082,6 +2645,11 @@ document.addEventListener("DOMContentLoaded", () => {
             const dateValue =
                 toDateInputValue(date);
 
+            const holiday =
+                getHolidayForDate(
+                    dateValue
+                );
+
             const item =
                 scheduleByDate.get(
                     dateValue
@@ -2152,6 +2720,21 @@ document.addEventListener("DOMContentLoaded", () => {
                         : "",
                     closed
                         ? "closed"
+                        : "",
+                    holiday
+                        ? "has-holiday"
+                        : "",
+                    holiday?.type === "regular"
+                        ? "regular-holiday"
+                        : "",
+                    holiday?.type === "special_non_working"
+                        ? "special-holiday"
+                        : "",
+                    holiday?.type === "local"
+                        ? "local-holiday"
+                        : "",
+                    holiday?.type === "long_weekend"
+                        ? "long-weekend"
                         : ""
                 ]
                 .filter(Boolean)
@@ -2183,6 +2766,24 @@ document.addEventListener("DOMContentLoaded", () => {
                 <span class="calendar-day-number">
                     ${date.getDate()}
                 </span>
+
+                ${
+                    holiday &&
+                    !outsideMonth
+                        ? `
+                            <span
+                                class="calendar-holiday-label"
+                                title="${escapeHtml(
+                                    `${holiday.name} — ${getHolidayTypeLabel(
+                                        holiday.type
+                                    )}`
+                                )}"
+                            >
+                                ${escapeHtml(holiday.name)}
+                            </span>
+                        `
+                        : ""
+                }
 
                 ${
                     calendarStatusLabel
@@ -2237,11 +2838,23 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             }
 
+            const holidayTitle =
+                holiday
+                    ? `${holiday.name} — ${getHolidayTypeLabel(
+                        holiday.type
+                    )}`
+                    : "";
+
+            if (holidayTitle) {
+                button.title =
+                    holidayTitle;
+            }
+
             if (
                 displaySchedule &&
                 !button.disabled
             ) {
-                button.title =
+                const scheduleTitle =
                     `${formatTravelDate(
                         displaySchedule.startDate
                     )}${
@@ -2251,6 +2864,11 @@ document.addEventListener("DOMContentLoaded", () => {
                             )}`
                             : ""
                     }`;
+
+                button.title =
+                    holidayTitle
+                        ? `${holidayTitle} | ${scheduleTitle}`
+                        : scheduleTitle;
 
                 button.addEventListener(
                     "click",
@@ -2401,21 +3019,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (requestedDateMinimumText) {
             requestedDateMinimumText.textContent =
-                `Minimum ${config.minPax} guests required for a custom date.`;
+                `Minimum ${config.minPax} guests required to book a custom travel date.`;
         }
 
         const pax = getPassengerBreakdown().totalPax;
         const eligible = pax >= config.minPax;
 
         if (requestedTravelDate) {
-            requestedTravelDate.disabled = !eligible;
+            /*
+             * Keep the preferred-date picker clickable at all times.
+             * Minimum headcount is enforced when proceeding to booking,
+             * not by disabling the date field itself.
+             */
+            requestedTravelDate.disabled = false;
             requestedTravelDate.min = toDateInputValue(new Date());
         }
 
         if (requestedDateRequirementTitle) {
             requestedDateRequirementTitle.textContent =
                 eligible
-                    ? "Custom date request available"
+                    ? "Custom date booking available"
                     : `Minimum ${config.minPax} guests required`;
         }
 
@@ -2423,12 +3046,31 @@ document.addEventListener("DOMContentLoaded", () => {
             const missing = Math.max(0, config.minPax - pax);
             requestedDateRequirementText.textContent =
                 eligible
-                    ? `Your group has ${pax} pax. You may select a preferred travel date.`
-                    : `Current headcount: ${pax} pax. Add at least ${missing} more guest${missing === 1 ? "" : "s"} to request another date.`;
+                    ? `Your group has ${pax} pax. Select your preferred travel date and continue directly to booking and payment.`
+                    : `Current headcount: ${pax} pax. Add at least ${missing} more guest${missing === 1 ? "" : "s"} to book another travel date.`;
         }
 
-        if (isRequestedDateMode && !eligible) {
-            if (requestedTravelDate) requestedTravelDate.value = "";
+        const requestedDateStatus =
+            document.getElementById(
+                "requestedDateStatus"
+            );
+
+        if (requestedDateStatus) {
+            requestedDateStatus.textContent =
+                eligible
+                    ? "Ready to Book"
+                    : "Minimum Headcount Required";
+        }
+
+        if (requestedDatePaymentNote) {
+            requestedDatePaymentNote.classList.add("hidden");
+        }
+
+        if (
+            isRequestedDateMode &&
+            !eligible &&
+            selectedSchedule?.customDate
+        ) {
             selectedSchedule = null;
             if (travelDate) travelDate.value = "";
             if (selectedScheduleId) selectedScheduleId.value = "";
@@ -2438,22 +3080,26 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function syncRequestedDateModeUI() {
-        document.body.classList.toggle("requested-date-mode", isRequestedDateMode);
-        requestAnotherDateButton?.classList.toggle("active", isRequestedDateMode);
-        requestedDatePanel?.classList.toggle("hidden", !isRequestedDateMode);
+        document.body.classList.remove("requested-date-mode");
+
+        requestAnotherDateButton?.classList.toggle(
+            "active",
+            isRequestedDateMode
+        );
+
+        requestedDatePanel?.classList.toggle(
+            "hidden",
+            !isRequestedDateMode
+        );
 
         if (bookingAgreementText) {
             bookingAgreementText.textContent =
-                isRequestedDateMode
-                    ? "I confirm that the information provided is correct and understand that my requested travel date is subject to Trips Wonder availability and admin approval."
-                    : "I confirm that the information provided is correct and understand that my booking will only be confirmed after Trips Wonder verifies my payment.";
+                "I confirm that the information provided is correct and understand that my booking will only be confirmed after Trips Wonder verifies my payment.";
         }
 
         if (submitBookingButton) {
             submitBookingButton.innerHTML =
-                isRequestedDateMode
-                    ? `<span>Submit Date Request</span><i class="fa-solid fa-calendar-check"></i>`
-                    : `<span>Proceed to Payment</span><i class="fa-solid fa-arrow-right"></i>`;
+                `<span>Proceed to Payment</span><i class="fa-solid fa-arrow-right"></i>`;
         }
 
         updateProgress();
@@ -2464,21 +3110,53 @@ document.addEventListener("DOMContentLoaded", () => {
 
         isRequestedDateMode = true;
 
-        document.querySelectorAll(".schedule-card")
+        /*
+         * When the customer switches from a regular/quick-select
+         * schedule to "Book Another Travel Date", clear the previous
+         * schedule selection so the Selected Schedule card closes.
+         * This keeps only the custom-date flow visible.
+         */
+        selectedSchedule = null;
+
+        if (travelDate) {
+            travelDate.value = "";
+        }
+
+        if (selectedScheduleId) {
+            selectedScheduleId.value = "";
+        }
+
+        document.querySelectorAll(".schedule-card, .calendar-day")
             .forEach(card => card.classList.remove("selected"));
 
         selectedAccommodation = null;
-        if (accommodation) accommodation.value = "";
-        if (selectedAccommodationId) selectedAccommodationId.value = "";
+
+        if (accommodation) {
+            accommodation.value = "";
+        }
+
+        if (selectedAccommodationId) {
+            selectedAccommodationId.value = "";
+        }
+
+        renderSelectedScheduleCard();
+        renderAccommodationCards();
+        clearAppliedPromo();
+        updateBookingSummary();
 
         syncRequestedDateEligibility();
         renderTravelCalendar();
+        updateProgress();
     }
 
     function exitRequestedDateMode(preserveSchedule = false) {
         isRequestedDateMode = false;
 
         if (requestedTravelDate) requestedTravelDate.value = "";
+
+        updateRequestedTravelPeriod(
+            ""
+        );
 
         if (!preserveSchedule && selectedSchedule?.requestedDate === true) {
             selectedSchedule = null;
@@ -2495,16 +3173,37 @@ document.addEventListener("DOMContentLoaded", () => {
         const config = getRequestedDateConfig();
         const pax = getPassengerBreakdown().totalPax;
 
+        const startDate =
+            requestedTravelDate?.value || "";
+
+        updateRequestedTravelPeriod(
+            startDate
+        );
+
         if (pax < config.minPax) {
-            if (requestedTravelDate) requestedTravelDate.value = "";
+            selectedSchedule = null;
+
+            if (travelDate) {
+                travelDate.value = "";
+            }
+
+            if (selectedScheduleId) {
+                selectedScheduleId.value = "";
+            }
+
             syncRequestedDateEligibility();
+            updateBookingSummary();
+            updateProgress();
             return;
         }
 
-        const startDate = requestedTravelDate?.value || "";
-
         if (!startDate) {
             selectedSchedule = null;
+
+            updateRequestedTravelPeriod(
+                ""
+            );
+
             if (travelDate) travelDate.value = "";
             if (selectedScheduleId) selectedScheduleId.value = "";
             updateProgress();
@@ -2512,17 +3211,31 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         selectedSchedule = {
-            id: `requested-${startDate}`,
+            id: `custom-${startDate}`,
             startDate,
-            endDate: calculateTravelEndDate(startDate, selectedPackage?.duration),
-            status: "requested",
-            requestedDate: true,
+            endDate:
+                calculateTravelEndDate(
+                    startDate,
+                    selectedPackage?.duration
+                ),
+            status: "available",
+            requestedDate: false,
+            customDate: true,
             minimumHeadcount: config.minPax
         };
 
-        if (travelDate) travelDate.value = startDate;
-        if (selectedScheduleId) selectedScheduleId.value = "";
+        if (travelDate) {
+            travelDate.value = startDate;
+        }
 
+        if (selectedScheduleId) {
+            selectedScheduleId.value =
+                selectedSchedule.id;
+        }
+
+        renderSelectedScheduleCard();
+        renderAccommodationCards();
+        clearAppliedPromo();
         updateBookingSummary();
         updateProgress();
     }
@@ -2718,7 +3431,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (travelScheduleList) {
                 travelScheduleList.innerHTML = `
                     <div class="schedule-state" style="grid-column:1/-1;">
-                        <span>No regular dates are published. You may request another travel date below.</span>
+                        <span>No regular dates are published. Eligible groups may book a custom travel date below.</span>
                     </div>
                 `;
             }
@@ -3006,6 +3719,36 @@ document.addEventListener("DOMContentLoaded", () => {
             `<option value="Other / Along the Way">
                 Other / Along the Way
              </option>`;
+
+        if (preselectedPickupLocation) {
+            const matchedLocation =
+                locations.find(
+                    location =>
+                        normalizeLower(location) ===
+                        normalizeLower(
+                            preselectedPickupLocation
+                        )
+                );
+
+            if (matchedLocation) {
+                pickupPoint.value =
+                    matchedLocation;
+
+                handlePickupChange();
+            } else if (
+                normalizeLower(
+                    preselectedPickupLocation
+                ) ===
+                normalizeLower(
+                    "Other / Along the Way"
+                )
+            ) {
+                pickupPoint.value =
+                    "Other / Along the Way";
+
+                handlePickupChange();
+            }
+        }
     }
 
     function handlePickupChange() {
@@ -3296,6 +4039,51 @@ document.addEventListener("DOMContentLoaded", () => {
             packageAccommodations()
                 .map(normalizeAccommodation);
 
+        /*
+         * If a different schedule/date makes the current room
+         * unavailable, release the selection and ask the client
+         * to choose another room instead of silently keeping it.
+         */
+        if (selectedAccommodation) {
+            const refreshedSelected =
+                options.find(
+                    item =>
+                        normalizeLower(item.id) ===
+                        normalizeLower(
+                            selectedAccommodation.id
+                        )
+                );
+
+            if (
+                refreshedSelected &&
+                !accommodationAvailability(
+                    refreshedSelected
+                ).available
+            ) {
+                const unavailableName =
+                    refreshedSelected.name;
+
+                selectedAccommodation = null;
+
+                if (accommodation) {
+                    accommodation.value = "";
+                }
+
+                if (selectedAccommodationId) {
+                    selectedAccommodationId.value = "";
+                }
+
+                selectedAccommodationSummary?.classList.add(
+                    "hidden"
+                );
+
+                showAccommodationPreselectionNotice(
+                    `"${unavailableName}" is not available or is fully booked for this travel date. Please choose another available accommodation.`,
+                    "warning"
+                );
+            }
+        }
+
         if (!options.length) {
             options = [{
                 id: "included-standard",
@@ -3342,10 +4130,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 `accommodation-card ${
                     availability.available ? "" : "unavailable"
                 } ${
-                    selectedAccommodation?.id === item.id
+                    normalizeLower(selectedAccommodation?.id) ===
+                    normalizeLower(item.id)
                         ? "selected"
                         : ""
                 }`;
+
+            card.dataset.accommodationId = item.id;
 
             const featureItems =
                 item.features
@@ -3453,7 +4244,8 @@ document.addEventListener("DOMContentLoaded", () => {
                             ${availability.available ? "" : "disabled"}
                         >
                             ${
-                                selectedAccommodation?.id === item.id
+                                normalizeLower(selectedAccommodation?.id) ===
+                                normalizeLower(item.id)
                                     ? "Selected"
                                     : "Select"
                             }
@@ -3479,8 +4271,70 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         /*
+         * Resolve the accommodation selected on Tours only after
+         * a travel date exists, because availability is date-based.
+         */
+        if (
+            !selectedAccommodation &&
+            !preselectedAccommodationResolved &&
+            (
+                preselectedAccommodationId ||
+                preselectedAccommodationName
+            )
+        ) {
+            const requestedAccommodation =
+                options.find(
+                    item =>
+                        preselectedAccommodationId &&
+                        normalizeLower(item.id) ===
+                        normalizeLower(
+                            preselectedAccommodationId
+                        )
+                ) ||
+                options.find(
+                    item =>
+                        preselectedAccommodationName &&
+                        normalizeLower(item.name) ===
+                        normalizeLower(
+                            preselectedAccommodationName
+                        )
+                );
+
+            preselectedAccommodationResolved = true;
+
+            if (requestedAccommodation) {
+                const requestedAvailability =
+                    accommodationAvailability(
+                        requestedAccommodation
+                    );
+
+                if (requestedAvailability.available) {
+                    selectAccommodation(
+                        requestedAccommodation,
+                        false
+                    );
+
+                    showAccommodationPreselectionNotice(
+                        `"${requestedAccommodation.name}" is available for your selected travel date and has been selected automatically.`,
+                        "success"
+                    );
+                } else {
+                    showAccommodationPreselectionNotice(
+                        `"${requestedAccommodation.name}" is not available or is fully booked for your selected travel date. Please choose another available accommodation below.`,
+                        "warning"
+                    );
+                }
+            } else {
+                showAccommodationPreselectionNotice(
+                    "Your previously selected accommodation is not available in this package. Please choose an available accommodation below.",
+                    "warning"
+                );
+            }
+        }
+
+        /*
          * Automatically select the first available Included option
-         * if the client has not selected one yet.
+         * only when there is no valid pending Tours selection.
          */
         if (!selectedAccommodation) {
             const defaultIncluded =
@@ -3498,8 +4352,42 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    function syncAccommodationSelectedCard() {
+        if (!accommodationList) return;
+
+        accommodationList
+            .querySelectorAll(".accommodation-card")
+            .forEach(card => {
+                const cardId = normalizeLower(
+                    card.dataset.accommodationId || ""
+                );
+
+                const isSelected =
+                    !!selectedAccommodation &&
+                    cardId === normalizeLower(selectedAccommodation.id);
+
+                card.classList.toggle("selected", isSelected);
+
+                const button = card.querySelector(
+                    ".select-accommodation-button"
+                );
+
+                if (button && !button.disabled) {
+                    button.textContent = isSelected
+                        ? "Selected"
+                        : "Select";
+
+                    button.classList.toggle(
+                        "selected",
+                        isSelected
+                    );
+                }
+            });
+    }
+
     function selectAccommodation(item, rerender = true) {
         selectedAccommodation = item;
+        preselectedAccommodationResolved = true;
 
         if (accommodation) {
             accommodation.value = item.name;
@@ -3534,6 +4422,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 "all";
 
             renderAccommodationCards(activeFilter);
+        } else {
+            /*
+             * Tours preselection happens after the cards are already
+             * rendered. Update the visible card immediately so the
+             * preselected room is highlighted without forcing another
+             * full accommodation render.
+             */
+            syncAccommodationSelectedCard();
         }
     }
 
@@ -4762,56 +5658,67 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         if (isRequestedDateMode) {
-            const config = getRequestedDateConfig();
+            const config =
+                getRequestedDateConfig();
 
-            if (passenger.totalPax < config.minPax) {
-                alert(`A minimum of ${config.minPax} guests is required to request another travel date.`);
-                return false;
-            }
-
-            if (!selectedSchedule?.requestedDate || !requestedTravelDate?.value) {
-                alert("Please select your preferred requested travel date.");
-                return false;
-            }
-
-        } else {
-            if (!selectedAccommodation) {
+            if (
+                passenger.totalPax <
+                config.minPax
+            ) {
                 alert(
-                    "Please select an accommodation for your chosen schedule."
+                    `A minimum of ${config.minPax} guests is required to book another travel date.`
                 );
-
-                document
-                    .getElementById("accommodationSection")
-                    ?.scrollIntoView({
-                        behavior: "smooth",
-                        block: "center"
-                    });
-
                 return false;
             }
 
-            const method = getSelectedPaymentMethod();
-
-            if (!method) {
-                alert("Please select a payment method.");
-                return false;
-            }
-
-            if (!paymentMethodIsActive(method)) {
+            if (
+                !selectedSchedule?.customDate ||
+                !requestedTravelDate?.value
+            ) {
                 alert(
-                    "The selected payment method is no longer available. Please choose another payment method."
+                    "Please select your preferred custom travel date."
                 );
-                renderPaymentMethods();
                 return false;
             }
-
-            /*
-             * Payment reference is NOT required at this stage.
-             * The client first reviews the booking, selects a payment method,
-             * confirms the agreement, then clicks Proceed to Payment.
-             * The reference number is collected inside the payment modal.
-             */
         }
+
+        if (!selectedAccommodation) {
+            alert(
+                "Please select an accommodation for your chosen schedule."
+            );
+
+            document
+                .getElementById("accommodationSection")
+                ?.scrollIntoView({
+                    behavior: "smooth",
+                    block: "center"
+                });
+
+            return false;
+        }
+
+        const method =
+            getSelectedPaymentMethod();
+
+        if (!method) {
+            alert(
+                "Please select a payment method."
+            );
+            return false;
+        }
+
+        if (!paymentMethodIsActive(method)) {
+            alert(
+                "The selected payment method is no longer available. Please choose another payment method."
+            );
+            renderPaymentMethods();
+            return false;
+        }
+
+        /*
+         * Regular schedules and eligible custom dates
+         * use the same payment verification flow.
+         */
 
         if (!bookingAgreement?.checked) {
             alert("Please confirm the booking agreement.");
@@ -4905,14 +5812,12 @@ document.addEventListener("DOMContentLoaded", () => {
             );
 
         const paymentMethod =
-            isRequestedDateMode
-                ? ""
-                : getSelectedPaymentMethod();
+            getSelectedPaymentMethod();
 
         const paymentReferenceValue =
-            isRequestedDateMode
-                ? ""
-                : normalizeText(paymentReference?.value);
+            normalizeText(
+                paymentReference?.value
+            );
 
         const finalPickup =
             pickupPoint?.value === "Other / Along the Way"
@@ -4986,27 +5891,19 @@ document.addEventListener("DOMContentLoaded", () => {
                     "available"
                 ),
 
-            requestedTravelDate:
-                isRequestedDateMode,
+            customTravelDate:
+                selectedSchedule?.customDate === true,
 
-            requestedTravelDateMinPax:
-                isRequestedDateMode
+            customTravelDateMinPax:
+                selectedSchedule?.customDate === true
                     ? getRequestedDateConfig().minPax
                     : 0,
 
-            requestedTravelDateStatus:
-                isRequestedDateMode
-                    ? "for_availability_check"
-                    : "",
-
-            requestedTravelDateApproved:
-                false,
-
-            requestedTravelDateApprovedAt:
-                null,
-
-            requestedTravelDateApprovedBy:
-                "",
+            customTravelDateEligible:
+                selectedSchedule?.customDate === true
+                    ? calculation.totalPax >=
+                        getRequestedDateConfig().minPax
+                    : false,
 
             /* PASSENGERS */
             numberOfGuests:
@@ -5196,30 +6093,22 @@ document.addEventListener("DOMContentLoaded", () => {
                 calculation.total,
 
             requiredDeposit:
-                isRequestedDateMode
-                    ? 0
-                    : Math.min(
-                        calculation.total,
-                        DEPOSIT_PER_PAX *
-                        calculation.payablePax
-                    ),
+                Math.min(
+                    calculation.total,
+                    DEPOSIT_PER_PAX *
+                    calculation.payablePax
+                ),
 
             selectedPaymentAmount:
-                isRequestedDateMode
-                    ? 0
-                    : getSelectedPaymentAmount(
-                        calculation
-                    ).selectedAmount,
+                getSelectedPaymentAmount(
+                    calculation
+                ).selectedAmount,
 
             paymentAmountOption:
-                isRequestedDateMode
-                    ? ""
-                    : selectedPaymentAmountOption,
+                selectedPaymentAmountOption,
 
             depositPerPax:
-                isRequestedDateMode
-                    ? 0
-                    : DEPOSIT_PER_PAX,
+                DEPOSIT_PER_PAX,
 
             amountPaid:
                 0,
@@ -5228,11 +6117,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 calculation.total,
 
             remainingBalanceAfterDeposit:
-                isRequestedDateMode
-                    ? calculation.total
-                    : getSelectedPaymentAmount(
-                        calculation
-                    ).remainingBalance,
+                getSelectedPaymentAmount(
+                    calculation
+                ).remainingBalance,
 
             /* PAYMENT */
             paymentMethod,
@@ -5252,9 +6139,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 ),
 
             paymentStatus:
-                isRequestedDateMode
-                    ? "not_required_yet"
-                    : "pending_verification",
+                "pending_verification",
 
             paymentVerified:
                 false,
@@ -5267,9 +6152,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             /* STATUS */
             bookingStatus:
-                isRequestedDateMode
-                    ? "date_request_pending"
-                    : "pending",
+                "pending",
 
             bookingLocked:
                 true,
@@ -5307,19 +6190,20 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!validateBooking()) return;
 
         /*
-         * Normal booking flow:
-         * Proceed to Payment opens the selected payment modal first.
-         * Nothing is saved until a valid payment reference is submitted
-         * from that modal. Requested-date bookings remain payment-free.
+         * Regular schedules and eligible custom dates
+         * use the exact same payment flow.
          */
-        if (!isRequestedDateMode) {
-            const method = getSelectedPaymentMethod();
-            const reference = normalizeText(paymentReference?.value);
+        const method =
+            getSelectedPaymentMethod();
 
-            if (reference.length < 4) {
-                openPaymentModal(method);
-                return;
-            }
+        const reference =
+            normalizeText(
+                paymentReference?.value
+            );
+
+        if (reference.length < 4) {
+            openPaymentModal(method);
+            return;
         }
 
         const originalContent =
@@ -5401,18 +6285,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 submitBookingButton.disabled = false;
 
                 submitBookingButton.innerHTML =
-                    isRequestedDateMode
-                        ? `
-                            <span>Submit Date Request</span>
-                            <i class="fa-solid fa-calendar-check"></i>
-                        `
-                        : (
-                            originalContent ||
-                            `
-                                <span>Proceed to Payment</span>
-                                <i class="fa-solid fa-arrow-right"></i>
-                            `
-                        );
+                    originalContent ||
+                    `
+                        <span>Proceed to Payment</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    `;
             }
         }
     }
@@ -5422,20 +6299,29 @@ document.addEventListener("DOMContentLoaded", () => {
             bookingRequestReference.textContent = bookingNumber;
         }
 
-        if (isRequestedDateMode) {
-            if (successStatusLabel) successStatusLabel.textContent = "FOR AVAILABILITY CHECK";
-            if (successTitle) successTitle.textContent = "Travel Date Request Received";
-            if (successMessage) successMessage.textContent =
-                "Your requested travel date has been submitted. Trips Wonder will review availability before asking for payment.";
-            if (successPaymentStatus) successPaymentStatus.textContent = "Not Required Yet";
-            if (successBookingStatus) successBookingStatus.textContent = "Date Request Pending";
-        } else {
-            if (successStatusLabel) successStatusLabel.textContent = "FOR PAYMENT VERIFICATION";
-            if (successTitle) successTitle.textContent = "Booking Request Received";
-            if (successMessage) successMessage.textContent =
+        if (successStatusLabel) {
+            successStatusLabel.textContent =
+                "FOR PAYMENT VERIFICATION";
+        }
+
+        if (successTitle) {
+            successTitle.textContent =
+                "Booking Request Received";
+        }
+
+        if (successMessage) {
+            successMessage.textContent =
                 "Your booking details and payment reference have been submitted. Our admin will verify your payment before your booking becomes confirmed.";
-            if (successPaymentStatus) successPaymentStatus.textContent = "For Verification";
-            if (successBookingStatus) successBookingStatus.textContent = "Pending Confirmation";
+        }
+
+        if (successPaymentStatus) {
+            successPaymentStatus.textContent =
+                "For Verification";
+        }
+
+        if (successBookingStatus) {
+            successBookingStatus.textContent =
+                "Pending Confirmation";
         }
 
         setModalState(bookingSuccessModal, true);
@@ -5892,3 +6778,4 @@ document.addEventListener("DOMContentLoaded", () => {
     );
 
 });
+    

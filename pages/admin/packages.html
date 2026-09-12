@@ -95,15 +95,30 @@
                 </div>
 
 
-                <button
-                    type="button"
-                    class="btn-primary"
-                    id="addPackageButton">
+                <div class="packages-header-actions">
 
-                    <i class="fa-solid fa-plus"></i>
-                    <span>Add Package</span>
+                    <button
+                        type="button"
+                        class="btn-secondary package-template-manage-btn"
+                        id="managePackageTemplatesButton">
 
-                </button>
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        <span>Package Templates</span>
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="btn-primary"
+                        id="addPackageButton">
+
+                        <i class="fa-solid fa-plus"></i>
+                        <span>Add Package</span>
+
+                    </button>
+
+                </div>
 
             </header>
 
@@ -154,6 +169,7 @@
 
                     <option value="all">All Status</option>
                     <option value="active">Active</option>
+                    <option value="draft">Draft</option>
                     <option value="hidden">Hidden</option>
 
                 </select>
@@ -349,7 +365,7 @@
             <div class="package-builder-header-actions">
 
                 <span
-                    class="package-builder-status"
+                    class="package-builder-status draft"
                     id="packageBuilderStatus">
                     Draft
                 </span>
@@ -369,71 +385,88 @@
         </header>
 
 
-        <!-- SECTION NAVIGATION -->
-
-        <nav
-            class="package-builder-nav"
-            aria-label="Package form sections">
-
-            <a href="#packageSectionBasic" class="package-builder-nav-item active">
-                <span>01</span>
-                Basic
-            </a>
-
-            <a href="#packageSectionGallery" class="package-builder-nav-item">
-                <span>02</span>
-                Gallery
-            </a>
-
-            <a href="#packageSectionDetails" class="package-builder-nav-item">
-                <span>03</span>
-                Details
-            </a>
-
-            <a href="#packageSectionInclusions" class="package-builder-nav-item">
-                <span>04</span>
-                Inclusions
-            </a>
-
-            <a href="#packageSectionExclusions" class="package-builder-nav-item">
-                <span>05</span>
-                Exclusions
-            </a>
-
-            <a href="#packageSectionAccommodation" class="package-builder-nav-item">
-                <span>06</span>
-                Accommodation
-            </a>
-
-            <a href="#packageSectionPickup" class="package-builder-nav-item">
-    <span>07</span>
-    Pick Up
-</a>
-
-<a href="#packageSectionSchedule" class="package-builder-nav-item">
-    <span>08</span>
-    Pattern
-</a>
-
-<a href="#packageSectionScheduleAvailability" class="package-builder-nav-item">
-    <span>09</span>
-    Travel Dates
-</a>
-
-<a href="#packageSectionItinerary" class="package-builder-nav-item">
-    <span>10</span>
-    Itinerary
-</a>
-
-        </nav>
-
-
         <!-- PACKAGE FORM -->
 
         <form
             id="packageForm"
             class="package-builder-form"
             autocomplete="off">
+
+            <div class="package-builder-workspace">
+
+                <!-- LEFT SECTION NAVIGATION -->
+                <aside class="package-builder-sidebar">
+
+                    <nav
+                        class="package-builder-side-nav"
+                        id="packageBuilderSideNav"
+                        aria-label="Package sections">
+
+                        <button type="button" class="package-builder-side-item active" data-builder-section="packageSectionBasic">
+                            <i class="fa-regular fa-file-lines"></i>
+                            <span>Basic Information</span>
+                        </button>
+
+                        <button type="button" class="package-builder-side-item" data-builder-section="packageSectionPassengerPricing">
+                            <i class="fa-solid fa-layer-group"></i>
+                            <span>Package Option</span>
+                        </button>
+
+                        <button type="button" class="package-builder-side-item" data-builder-section="packageSectionGallery">
+                            <i class="fa-regular fa-image"></i>
+                            <span>Gallery / Photos</span>
+                        </button>
+
+                        <button type="button" class="package-builder-side-item" data-builder-section="packageSectionDetails">
+                            <i class="fa-regular fa-rectangle-list"></i>
+                            <span>Details</span>
+                        </button>
+
+                        <button type="button" class="package-builder-side-item" data-builder-section="packageSectionInclusions">
+                            <i class="fa-regular fa-circle-check"></i>
+                            <span>Inclusions</span>
+                        </button>
+
+                        <button type="button" class="package-builder-side-item" data-builder-section="packageSectionExclusions">
+                            <i class="fa-solid fa-circle-minus"></i>
+                            <span>Exclusions</span>
+                        </button>
+
+                        <button type="button" class="package-builder-side-item" data-builder-section="packageSectionAccommodation">
+                            <i class="fa-solid fa-bed"></i>
+                            <span>Accommodation</span>
+                        </button>
+
+                        <button type="button" class="package-builder-side-item" data-builder-section="packageSectionPickup">
+                            <i class="fa-solid fa-location-dot"></i>
+                            <span>Pick Up Locations</span>
+                        </button>
+
+                        <button type="button" class="package-builder-side-item" data-builder-section="packageSectionSchedule">
+                            <i class="fa-regular fa-calendar-days"></i>
+                            <span>Tour Pattern</span>
+                        </button>
+
+                        <button type="button" class="package-builder-side-item" data-builder-section="packageSectionScheduleAvailability">
+                            <i class="fa-solid fa-calendar-days"></i>
+                            <span>Travel Dates</span>
+                        </button>
+
+                        <button type="button" class="package-builder-side-item" data-builder-section="packageSectionItinerary">
+                            <i class="fa-regular fa-map"></i>
+                            <span>Itinerary</span>
+                        </button>
+
+                    </nav>
+
+                </aside>
+
+
+                <!-- CENTER FORM CONTENT -->
+                <div
+                    class="package-builder-content"
+                    id="packageBuilderContent">
+
 
 
             <!-- =================================================
@@ -463,19 +496,65 @@
                     <div class="form-group full">
 
                         <label for="formPackageName">
-                            Package Name
+                            Destination / Tour Name
                             <span class="field-required">*</span>
                         </label>
 
-                        <input
-                            type="text"
-                            id="formPackageName"
-                            placeholder="e.g. Jomalig Island 3D2N"
-                            required>
+                        <div class="destination-lookup-wrap">
+
+                            <input
+                                type="text"
+                                id="formPackageName"
+                                placeholder="Type destination, e.g. Jomalig Island"
+                                autocomplete="off"
+                                required>
+
+                            <div
+                                class="destination-suggestions"
+                                id="destinationSuggestions"
+                                hidden>
+                            </div>
+
+                        </div>
 
                         <small class="field-help">
-                            Use a clear package name that is easy to recognize.
+                            Existing destinations will appear while you type. Select one to reuse its package data and avoid duplicate destination pages.
                         </small>
+
+
+                        <div
+                            class="existing-destination-panel"
+                            id="existingDestinationPanel"
+                            hidden>
+
+                            <div class="existing-destination-panel-head">
+
+                                <div>
+                                    <span>Existing Destination</span>
+                                    <strong id="existingDestinationName">
+                                        Destination
+                                    </strong>
+                                </div>
+
+                                <span
+                                    class="existing-destination-count"
+                                    id="existingDestinationCount">
+                                    0 Options
+                                </span>
+
+                            </div>
+
+                            <p>
+                                Select an existing option to load its details as your starting point.
+                                You can then change the duration, price, meals, itinerary or other differences.
+                            </p>
+
+                            <div
+                                class="existing-destination-options"
+                                id="existingDestinationOptions">
+                            </div>
+
+                        </div>
 
                     </div>
 
@@ -504,6 +583,22 @@
 
                         </select>
 
+                        <small class="field-help category-template-help">
+                            Selecting a category automatically loads its default Details, Inclusions and Exclusions.
+                        </small>
+
+                        <div
+                            class="category-template-applied"
+                            id="categoryTemplateApplied"
+                            hidden>
+
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                            <span id="categoryTemplateAppliedText">
+                                Category template applied
+                            </span>
+
+                        </div>
+
                     </div>
 
 
@@ -526,7 +621,7 @@
                     <div class="form-group">
 
                         <label for="formPrice">
-                            Starting Price
+                            Package Option Price
                         </label>
 
                         <div class="input-prefix-wrap">
@@ -550,13 +645,49 @@
                     <div class="form-group">
 
                         <label for="formDuration">
-                            Duration
+                            Package Option / Duration
+                            <span class="field-required">*</span>
                         </label>
 
                         <input
                             type="text"
                             id="formDuration"
-                            placeholder="e.g. 3D2N">
+                            list="packageDurationOptions"
+                            placeholder="e.g. Day Tour, 2D1N, 3D2N"
+                            required>
+
+                        <datalist id="packageDurationOptions">
+                            <option value="Day Tour"></option>
+                            <option value="2D1N"></option>
+                            <option value="3D2N"></option>
+                            <option value="4D3N"></option>
+                            <option value="5D4N"></option>
+                        </datalist>
+
+                        <small class="field-help">
+                            This becomes the selectable package option on the customer Tours page.
+                        </small>
+
+                        <div class="package-option-quick-select">
+                            <span class="package-option-quick-label">
+                                Quick select
+                            </span>
+
+                            <div class="package-option-quick-buttons">
+                                <button type="button" data-package-duration="Day Tour" data-duration-days="1">
+                                    Day Tour
+                                </button>
+                                <button type="button" data-package-duration="2D1N" data-duration-days="2">
+                                    2D1N
+                                </button>
+                                <button type="button" data-package-duration="3D2N" data-duration-days="3">
+                                    3D2N
+                                </button>
+                                <button type="button" data-package-duration="4D3N" data-duration-days="4">
+                                    4D3N
+                                </button>
+                            </div>
+                        </div>
 
                     </div>
 
@@ -1839,6 +1970,99 @@
             </section>
 
 
+
+
+                </div>
+
+
+                <!-- RIGHT HELPER / LIVE PREVIEW -->
+                <aside class="package-builder-preview-panel">
+
+                    <div class="builder-helper-card builder-options-helper">
+
+                        <div class="builder-helper-icon">
+                            <i class="fa-solid fa-layer-group"></i>
+                        </div>
+
+                        <div>
+                            <strong>Package Options</strong>
+                            <p>
+                                Add multiple package options for the same destination.
+                            </p>
+
+                            <div class="builder-option-example-chips">
+                                <span>Day Tour</span>
+                                <span>2D1N</span>
+                                <span>3D2N</span>
+                            </div>
+
+                            <small class="builder-helper-caption">
+                                Select the actual option in Basic Information.
+                            </small>
+                        </div>
+
+                    </div>
+
+
+                    <div class="builder-helper-card builder-tip-card">
+
+                        <i class="fa-regular fa-lightbulb"></i>
+
+                        <div>
+                            <strong>Tip</strong>
+                            <p>
+                                Use the exact same destination name for all package options
+                                so they group automatically on the Tours page.
+                            </p>
+                        </div>
+
+                    </div>
+
+
+                    <div class="builder-preview-card">
+
+                        <div class="builder-preview-title">
+                            <i class="fa-regular fa-eye"></i>
+                            <strong>Tour Card Preview</strong>
+                        </div>
+
+                        <div class="builder-tour-preview">
+
+                            <div class="builder-tour-preview-image" id="builderPreviewImage">
+                                <i class="fa-regular fa-image"></i>
+                            </div>
+
+                            <div class="builder-tour-preview-body">
+
+                                <strong id="builderPreviewName">
+                                    Tour Destination
+                                </strong>
+
+                                <span class="builder-preview-location">
+                                    <i class="fa-solid fa-location-dot"></i>
+                                    <span id="builderPreviewLocation">Location</span>
+                                </span>
+
+                                <div class="builder-preview-option-chips">
+                                    <span id="builderPreviewDuration">Package Option</span>
+                                </div>
+
+                                <div class="builder-preview-price">
+                                    <small>From</small>
+                                    <strong id="builderPreviewPrice">Price TBA</strong>
+                                    <span>/ person</span>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </aside>
+
+            </div>
+
             <!-- =================================================
                  STICKY FORM FOOTER
             ================================================== -->
@@ -1847,10 +2071,14 @@
 
                 <div class="package-builder-footer-note">
 
-                    <i class="fa-regular fa-circle-check"></i>
+                    <span
+                        class="package-builder-step-label"
+                        id="packageBuilderStepLabel">
+                        Basic Information
+                    </span>
 
-                    <span>
-                        Review all package information before saving.
+                    <span class="package-builder-draft-note">
+                        Drafts are private and not visible to customers.
                     </span>
 
                 </div>
@@ -1869,12 +2097,35 @@
 
 
                     <button
+                        type="button"
+                        class="btn-secondary package-save-draft-btn"
+                        id="savePackageDraftButton">
+
+                        <i class="fa-regular fa-floppy-disk"></i>
+                        Save as Draft
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="btn-primary package-next-btn"
+                        id="nextPackageSection">
+
+                        Next
+                        <i class="fa-solid fa-arrow-right"></i>
+
+                    </button>
+
+
+                    <button
                         type="submit"
                         class="btn-primary"
-                        id="savePackageButton">
+                        id="savePackageButton"
+                        hidden>
 
-                        <i class="fa-solid fa-floppy-disk"></i>
-                        Save Package
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                        Publish Package
 
                     </button>
 
@@ -1899,6 +2150,258 @@
 </script>
 
     <script type="module" src="/assets/js/shared/admin-nav.js"></script>
+
+
+
+<!-- =========================================================
+     PACKAGE TEMPLATE MANAGER
+========================================================= -->
+
+<div
+    class="package-template-modal"
+    id="packageTemplateModal"
+    aria-hidden="true">
+
+    <div
+        class="package-template-modal-overlay"
+        id="packageTemplateModalOverlay">
+    </div>
+
+
+    <div
+        class="package-template-modal-box"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="packageTemplateModalTitle">
+
+        <header class="package-template-modal-header">
+
+            <div>
+                <span>PACKAGE SETTINGS</span>
+                <h2 id="packageTemplateModalTitle">
+                    Package Templates
+                </h2>
+                <p>
+                    Set the default Details, Inclusions and Exclusions for each package category.
+                </p>
+            </div>
+
+            <button
+                type="button"
+                class="modal-close"
+                id="closePackageTemplateModal"
+                aria-label="Close package template manager">
+
+                <i class="fa-solid fa-xmark"></i>
+
+            </button>
+
+        </header>
+
+
+        <div class="package-template-modal-body">
+
+            <aside class="package-template-category-list">
+
+                <div class="package-template-category-heading">
+                    Categories
+                </div>
+
+                <button type="button" class="package-template-category active" data-template-category="Beach Tour">
+                    <i class="fa-solid fa-umbrella-beach"></i>
+                    <span>Beach Tour</span>
+                </button>
+
+                <button type="button" class="package-template-category" data-template-category="Island Tour">
+                    <i class="fa-solid fa-water"></i>
+                    <span>Island Tour</span>
+                </button>
+
+                <button type="button" class="package-template-category" data-template-category="City Tour">
+                    <i class="fa-solid fa-city"></i>
+                    <span>City Tour</span>
+                </button>
+
+                <button type="button" class="package-template-category" data-template-category="Land Tour">
+                    <i class="fa-solid fa-route"></i>
+                    <span>Land Tour</span>
+                </button>
+
+                <button type="button" class="package-template-category" data-template-category="Hiking">
+                    <i class="fa-solid fa-person-hiking"></i>
+                    <span>Hiking</span>
+                </button>
+
+                <button type="button" class="package-template-category" data-template-category="Chill Camp">
+                    <i class="fa-solid fa-campground"></i>
+                    <span>Chill Camp</span>
+                </button>
+
+                <button type="button" class="package-template-category" data-template-category="Home Stay">
+                    <i class="fa-solid fa-house"></i>
+                    <span>Home Stay</span>
+                </button>
+
+                <button type="button" class="package-template-category" data-template-category="Domestic">
+                    <i class="fa-solid fa-plane"></i>
+                    <span>Domestic</span>
+                </button>
+
+                <button type="button" class="package-template-category" data-template-category="Other">
+                    <i class="fa-solid fa-layer-group"></i>
+                    <span>Other</span>
+                </button>
+
+            </aside>
+
+
+            <div class="package-template-editor">
+
+                <div class="package-template-editor-top">
+
+                    <div>
+                        <span>Editing Template</span>
+                        <h3 id="packageTemplateEditingCategory">
+                            Beach Tour
+                        </h3>
+                    </div>
+
+                    <div class="package-template-source-badge" id="packageTemplateSourceBadge">
+                        Starter Template
+                    </div>
+
+                </div>
+
+
+                <div class="package-template-section">
+
+                    <label for="packageTemplateDetails">
+                        Default Details / Tour Overview
+                    </label>
+
+                    <textarea
+                        id="packageTemplateDetails"
+                        rows="5"
+                        placeholder="Default overview for this category..."></textarea>
+
+                </div>
+
+
+                <div class="package-template-grid">
+
+                    <div class="package-template-section">
+
+                        <div class="package-template-section-heading">
+                            <div>
+                                <label>Default Inclusions</label>
+                                <small>
+                                    These will be added automatically when this category is selected.
+                                </small>
+                            </div>
+
+                            <button
+                                type="button"
+                                class="package-template-add-item"
+                                id="addPackageTemplateInclusion">
+
+                                <i class="fa-solid fa-plus"></i>
+                                Add
+                            </button>
+                        </div>
+
+                        <div
+                            class="package-template-items"
+                            id="packageTemplateInclusions">
+                        </div>
+
+                    </div>
+
+
+                    <div class="package-template-section">
+
+                        <div class="package-template-section-heading">
+                            <div>
+                                <label>Default Exclusions</label>
+                                <small>
+                                    Admin can remove or edit any item after the template is applied.
+                                </small>
+                            </div>
+
+                            <button
+                                type="button"
+                                class="package-template-add-item"
+                                id="addPackageTemplateExclusion">
+
+                                <i class="fa-solid fa-plus"></i>
+                                Add
+                            </button>
+                        </div>
+
+                        <div
+                            class="package-template-items"
+                            id="packageTemplateExclusions">
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="package-template-note">
+
+                    <i class="fa-solid fa-circle-info"></i>
+
+                    <p>
+                        Updating a template affects only packages created or re-applied after this change.
+                        Existing published packages are not changed automatically.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <footer class="package-template-modal-footer">
+
+            <button
+                type="button"
+                class="btn-secondary"
+                id="resetPackageTemplateButton">
+
+                <i class="fa-solid fa-rotate-left"></i>
+                Reset to Starter
+
+            </button>
+
+            <div>
+
+                <button
+                    type="button"
+                    class="btn-secondary"
+                    id="cancelPackageTemplateButton">
+                    Close
+                </button>
+
+                <button
+                    type="button"
+                    class="btn-primary"
+                    id="savePackageTemplateButton">
+
+                    <i class="fa-regular fa-floppy-disk"></i>
+                    Save Template
+
+                </button>
+
+            </div>
+
+        </footer>
+
+    </div>
+
+</div>
+
 
 </body>
 </html>

@@ -2763,3 +2763,2546 @@ button {
         gap: 7px !important;
     }
 }
+
+/* ==========================================================
+   DESTINATION CARDS — MULTIPLE PACKAGE OPTIONS
+========================================================== */
+
+.tour-option-chips {
+    margin-top: 7px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.tour-option-chip {
+    min-height: 22px;
+    padding: 4px 8px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #1767b7;
+    background: #eef6ff;
+
+    border: 1px solid #d8eaff;
+    border-radius: 999px;
+
+    font-size: 7px;
+    font-weight: 700;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.tour-price-from {
+    margin-right: 2px;
+    color: #5d7085;
+    font-size: 8px;
+    font-weight: 600;
+}
+
+
+/* ==========================================================
+   TOUR DETAILS — PACKAGE OPTION SELECTOR
+========================================================== */
+
+.modal-tour-summary-compact {
+    margin-top: 12px;
+}
+
+.modal-tour-heading-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 18px;
+}
+
+.modal-tour-heading-row h3 {
+    margin: 0 0 5px;
+}
+
+.modal-tour-selected-price {
+    flex: 0 0 auto;
+    text-align: right;
+}
+
+.modal-tour-selected-price small {
+    display: block;
+    margin-bottom: 2px;
+    color: #8493a5;
+    font-size: 7px;
+    font-weight: 600;
+}
+
+.modal-tour-selected-price strong {
+    display: inline;
+    color: #0866ff;
+    font-size: 20px;
+    font-weight: 800;
+}
+
+.modal-tour-selected-price > span {
+    color: #8391a2;
+    font-size: 8px;
+}
+
+.modal-package-options-section {
+    margin-top: 18px;
+    padding-top: 16px;
+    border-top: 1px solid #e5ebf2;
+}
+
+.modal-package-options-heading {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+
+.modal-package-options-heading span {
+    display: block;
+    margin-bottom: 2px;
+    color: #0866ff;
+    font-size: 7px;
+    font-weight: 800;
+    letter-spacing: .8px;
+}
+
+.modal-package-options-heading h4 {
+    margin: 0;
+    color: #172b4d;
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.modal-package-options-heading small {
+    color: #8493a5;
+    font-size: 7px;
+    white-space: nowrap;
+}
+
+.modal-package-options {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+}
+
+.modal-package-option {
+    position: relative;
+
+    min-width: 0;
+    min-height: 96px;
+    padding: 12px 10px 10px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    color: #25364b;
+    background: #ffffff;
+
+    border: 1px solid #dbe4ee;
+    border-radius: 10px;
+
+    text-align: center;
+
+    transition:
+        border-color .16s ease,
+        background .16s ease,
+        box-shadow .16s ease,
+        transform .16s ease;
+}
+
+.modal-package-option:hover {
+    border-color: #9fc7ff;
+    background: #fbfdff;
+    transform: translateY(-1px);
+}
+
+.modal-package-option.active {
+    color: #0866ff;
+    background: #f5f9ff;
+    border-color: #0866ff;
+    box-shadow: 0 0 0 2px rgba(8, 102, 255, .08);
+}
+
+.modal-package-option-check {
+    position: absolute;
+    top: 7px;
+    right: 7px;
+
+    width: 18px;
+    height: 18px;
+
+    display: none;
+    place-items: center;
+
+    color: #ffffff;
+    background: #0866ff;
+
+    border-radius: 50%;
+
+    font-size: 8px;
+}
+
+.modal-package-option.active
+.modal-package-option-check {
+    display: grid;
+}
+
+.modal-package-option > strong {
+    color: inherit;
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.modal-package-option-duration {
+    margin-top: 3px;
+    color: #718096;
+    font-size: 7px;
+}
+
+.modal-package-option-price {
+    margin-top: 9px;
+    color: #0866ff;
+    font-size: 15px;
+    font-weight: 800;
+}
+
+.modal-package-option-price small {
+    color: #8795a7;
+    font-size: 7px;
+    font-weight: 500;
+}
+
+.modal-detail-columns {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.modal-detail-card {
+    padding: 12px;
+    border: 1px solid #e5ebf2;
+    border-radius: 10px;
+    background: #fbfcfe;
+}
+
+.modal-exclusions-card .modal-list li i {
+    color: #d97706;
+}
+
+
+/* Compact desktop cards need a little extra body room for chips */
+@media (min-width: 1200px) {
+    .tour-card-body {
+        min-height: 116px !important;
+    }
+
+    .tour-option-chips {
+        margin-top: 5px;
+        gap: 3px;
+    }
+
+    .tour-option-chip {
+        min-height: 18px;
+        padding: 3px 5px;
+        font-size: 5.8px;
+    }
+
+    .tour-price-from {
+        font-size: 6px;
+    }
+}
+
+
+@media (max-width: 899px) {
+
+    .tour-option-chips {
+        gap: 4px;
+    }
+
+    .tour-option-chip {
+        min-height: 20px;
+        padding: 4px 7px;
+        font-size: 6.5px;
+    }
+
+    .modal-tour-heading-row {
+        gap: 10px;
+    }
+
+    .modal-tour-selected-price strong {
+        font-size: 17px;
+    }
+
+    .modal-package-options {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 6px;
+    }
+
+    .modal-package-option {
+        min-height: 86px;
+        padding: 10px 7px 8px;
+    }
+
+    .modal-package-option > strong {
+        font-size: 9px;
+    }
+
+    .modal-package-option-duration {
+        font-size: 6px;
+    }
+
+    .modal-package-option-price {
+        font-size: 12px;
+    }
+
+    .modal-detail-columns {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+@media (max-width: 420px) {
+
+    .modal-package-options {
+        grid-template-columns: 1fr;
+    }
+
+    .modal-package-option {
+        min-height: 72px;
+        align-items: flex-start;
+        text-align: left;
+    }
+
+    .modal-tour-heading-row {
+        flex-direction: column;
+    }
+
+    .modal-tour-selected-price {
+        text-align: left;
+    }
+}
+
+
+/* ==========================================================
+   DESTINATION PACKAGE OPTIONS — FINAL POLISH
+========================================================== */
+
+.modal-package-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+    gap: 8px;
+}
+
+.modal-package-option {
+    min-height: 74px;
+}
+
+.modal-package-option.active {
+    box-shadow:
+        0 0 0 2px rgba(8, 102, 255, .08),
+        0 5px 14px rgba(8, 102, 255, .08);
+}
+
+.modal-package-option-duration:empty {
+    display: none;
+}
+
+@media (max-width: 560px) {
+    .modal-package-options {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .modal-package-option {
+        min-height: 68px;
+    }
+}
+
+@media (max-width: 380px) {
+    .modal-package-options {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+/* ==========================================================
+   TOUR DETAILS MODAL — COMPACT TOP VIEW
+========================================================== */
+
+.tour-modal-panel {
+    width: min(980px, 100%);
+    max-height: 90vh;
+}
+
+.tour-modal-content {
+    padding: 16px;
+}
+
+.modal-tour-top-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.08fr) minmax(290px, .92fr);
+    gap: 16px;
+    align-items: start;
+}
+
+.modal-tour-top-media,
+.modal-tour-top-info {
+    min-width: 0;
+}
+
+.modal-tour-top-media .modal-tour-gallery-main {
+    aspect-ratio: 16 / 10;
+    max-height: 330px;
+}
+
+.modal-tour-top-media .modal-tour-gallery-thumbnails {
+    margin-top: 7px;
+}
+
+.modal-tour-top-info {
+    padding: 2px 2px 0;
+}
+
+.modal-tour-top-info .modal-tour-summary {
+    margin-top: 0;
+}
+
+.modal-tour-heading-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.modal-tour-option-badge {
+    display: inline-flex;
+    align-items: center;
+    margin-top: 8px;
+    padding: 5px 9px;
+
+    color: var(--tours-blue);
+    background: rgba(24, 111, 255, .08);
+
+    border: 1px solid rgba(24, 111, 255, .14);
+    border-radius: 999px;
+
+    font-size: 8px;
+    font-weight: 800;
+}
+
+.modal-tour-selected-price {
+    text-align: right;
+    white-space: nowrap;
+}
+
+.modal-tour-selected-price small {
+    display: block;
+    margin-bottom: 2px;
+
+    color: #8b99aa;
+    font-size: 7px;
+    font-weight: 700;
+}
+
+.modal-tour-selected-price strong {
+    display: block;
+
+    color: var(--tours-blue);
+    font-size: 22px;
+    line-height: 1;
+    font-weight: 900;
+}
+
+.modal-tour-selected-price span {
+    color: #8b99aa;
+    font-size: 7px;
+    font-weight: 600;
+}
+
+.modal-tour-top-info .modal-package-options-section {
+    margin-top: 16px;
+}
+
+.modal-package-options-heading {
+    margin-bottom: 8px;
+}
+
+.modal-package-options {
+    grid-template-columns: 1fr;
+}
+
+.modal-package-option {
+    min-height: 62px;
+    padding: 10px 12px;
+}
+
+.modal-package-option > strong {
+    font-size: 10px;
+}
+
+.modal-package-option-price {
+    font-size: 12px;
+}
+
+.modal-tour-top-info .modal-package-option {
+    position: relative;
+}
+
+.modal-tour-top-info .modal-package-option-check {
+    top: 9px;
+    right: 9px;
+}
+
+.tour-modal-footer {
+    position: relative;
+    z-index: 3;
+    background: #fff;
+}
+
+@media (max-width: 760px) {
+
+    .tour-modal {
+        padding: 10px;
+    }
+
+    .tour-modal-panel {
+        width: 100%;
+        max-height: 94vh;
+    }
+
+    .modal-tour-top-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .modal-tour-top-media .modal-tour-gallery-main {
+        aspect-ratio: 16 / 8.4;
+        max-height: 230px;
+    }
+
+    .modal-tour-top-info .modal-package-options {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .modal-tour-heading-row {
+        align-items: center;
+    }
+}
+
+@media (max-width: 460px) {
+
+    .tour-modal-header {
+        padding: 12px 13px;
+    }
+
+    .tour-modal-content {
+        padding: 12px;
+    }
+
+    .modal-tour-top-media .modal-tour-gallery-main {
+        max-height: 190px;
+    }
+
+    .modal-tour-top-info .modal-package-options {
+        grid-template-columns: 1fr 1fr;
+        gap: 7px;
+    }
+
+    .modal-package-option {
+        min-height: 58px;
+        padding: 9px 10px;
+    }
+
+    .modal-tour-selected-price strong {
+        font-size: 19px;
+    }
+
+    .tour-modal-footer {
+        padding: 9px 11px;
+    }
+}
+
+
+/* ==========================================================
+   PREFERRED TOUR DETAILS SIDE PANEL
+========================================================== */
+
+.tour-modal {
+    align-items: stretch;
+    justify-content: flex-end;
+    padding: 0 !important;
+}
+
+.tour-modal-panel {
+    width: min(520px, 100vw) !important;
+    height: 100vh !important;
+    max-height: 100vh !important;
+    margin: 0 0 0 auto !important;
+    border-radius: 18px 0 0 18px !important;
+    overflow: hidden;
+    box-shadow: -18px 0 55px rgba(18, 43, 75, .22);
+}
+
+.tour-modal-header {
+    display: none !important;
+}
+
+.tour-modal-content {
+    height: calc(100vh - 76px) !important;
+    padding: 0 !important;
+    overflow-y: auto !important;
+    background: #fff;
+}
+
+.tour-modal-footer {
+    min-height: 76px;
+    padding: 12px 14px !important;
+    border-top: 1px solid #e5ebf3;
+    background: #fff;
+}
+
+.tour-modal-footer > button:first-child {
+    display: none !important;
+}
+
+.tour-modal-footer #tourBookNow,
+.tour-modal-footer .primary-btn {
+    width: 100% !important;
+    min-height: 50px;
+    margin: 0 !important;
+    border-radius: 11px !important;
+}
+
+.tw-tour-panel {
+    min-height: 100%;
+}
+
+.tw-tour-hero-wrap {
+    position: relative;
+    height: 290px;
+    overflow: hidden;
+    background: #e9f1fa;
+}
+
+.tw-tour-hero-wrap .modal-tour-gallery,
+.tw-tour-hero-wrap .modal-tour-gallery-main {
+    margin: 0 !important;
+    border-radius: 0 !important;
+}
+
+.tw-tour-hero-wrap .modal-tour-gallery-main {
+    height: 290px !important;
+    max-height: 290px !important;
+    aspect-ratio: auto !important;
+}
+
+.tw-tour-hero-wrap .modal-tour-gallery-main img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.tw-tour-hero-wrap .modal-tour-gallery-thumbnails {
+    position: absolute;
+    left: 16px;
+    right: 16px;
+    bottom: 14px;
+    z-index: 4;
+    display: flex;
+    gap: 6px;
+    margin: 0 !important;
+    overflow: hidden;
+}
+
+.tw-tour-hero-wrap .tour-gallery-thumb,
+.tw-tour-hero-wrap .modal-tour-gallery-thumbnail {
+    width: 65px !important;
+    height: 46px !important;
+    min-width: 65px !important;
+    border: 2px solid rgba(255,255,255,.78) !important;
+    border-radius: 8px !important;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(10, 31, 58, .18);
+}
+
+.tw-tour-hero-copy {
+    position: absolute;
+    top: 19px;
+    left: 18px;
+    right: 62px;
+    z-index: 5;
+    color: #fff;
+    text-shadow: 0 2px 12px rgba(0,0,0,.42);
+}
+
+.tw-tour-hero-copy h3 {
+    margin: 0;
+    color: #fff;
+    font-size: 24px;
+    line-height: 1.08;
+    font-weight: 900;
+}
+
+.tw-tour-hero-copy span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 6px;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.tw-tour-tabbar {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    min-height: 55px;
+    padding: 0 10px;
+    border-bottom: 1px solid #e7edf5;
+    background: #fff;
+}
+
+.tw-tour-tab {
+    position: relative;
+    border: 0;
+    background: transparent;
+    color: #5d6d82;
+    font-size: 10px;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.tw-tour-tab.active {
+    color: #126cff;
+}
+
+.tw-tour-tab.active::after {
+    content: "";
+    position: absolute;
+    left: 18%;
+    right: 18%;
+    bottom: 0;
+    height: 3px;
+    border-radius: 8px 8px 0 0;
+    background: #126cff;
+}
+
+.tw-tour-panel-content {
+    display: none;
+    padding: 20px 16px 24px;
+}
+
+.tw-tour-panel-content.active {
+    display: block;
+}
+
+.tw-tour-section-heading {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.tw-tour-section-heading span {
+    display: block;
+    margin-bottom: 3px;
+    color: #126cff;
+    font-size: 8px;
+    letter-spacing: .12em;
+    font-weight: 900;
+}
+
+.tw-tour-section-heading h4 {
+    margin: 0;
+    color: #17273d;
+    font-size: 18px;
+    line-height: 1.1;
+    font-weight: 900;
+}
+
+.tw-tour-section-heading small {
+    color: #8a98aa;
+    font-size: 8px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.tw-package-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
+    gap: 9px;
+}
+
+.tw-package-option {
+    position: relative;
+    min-height: 108px;
+    padding: 16px 13px 13px;
+    text-align: left;
+    border: 1px solid #dce4ef;
+    border-radius: 11px;
+    background: #fff;
+    cursor: pointer;
+    transition: .18s ease;
+}
+
+.tw-package-option.active {
+    border: 2px solid #126cff;
+    background: #f7fbff;
+    box-shadow: 0 5px 16px rgba(18,108,255,.08);
+}
+
+.tw-package-option-check {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    color: #126cff;
+    font-size: 15px;
+}
+
+.tw-package-option strong {
+    display: block;
+    max-width: calc(100% - 24px);
+    color: #1b2a3e;
+    font-size: 12px;
+    line-height: 1.15;
+    font-weight: 900;
+}
+
+.tw-package-option-duration {
+    display: block;
+    margin-top: 7px;
+    color: #788699;
+    font-size: 8px;
+    font-weight: 700;
+}
+
+.tw-package-option-price {
+    display: block;
+    margin-top: 13px;
+    color: #126cff;
+    font-size: 17px;
+    line-height: 1;
+    font-weight: 900;
+}
+
+.tw-package-option-price small {
+    color: #7c8999;
+    font-size: 8px;
+    font-weight: 700;
+}
+
+.tw-package-highlights {
+    margin-top: 16px;
+    padding: 14px;
+    border: 1px solid #dce8f8;
+    border-radius: 11px;
+    background: #f4f8ff;
+}
+
+.tw-package-highlights-title {
+    color: #24457d;
+    font-size: 11px;
+    font-weight: 900;
+}
+
+.tw-package-highlights-title span {
+    color: #126cff;
+}
+
+.tw-package-highlights-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 11px 14px;
+    margin-top: 12px;
+}
+
+.tw-package-highlight {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    color: #45566b;
+    font-size: 9px;
+    line-height: 1.25;
+    font-weight: 700;
+}
+
+.tw-package-highlight-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 27px;
+    height: 27px;
+    flex: 0 0 27px;
+    border-radius: 8px;
+    color: #126cff;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(34,84,150,.08);
+}
+
+.tw-tab-section-title {
+    margin-bottom: 12px;
+    color: #18283e;
+    font-size: 15px;
+    font-weight: 900;
+}
+
+.tw-itinerary-text {
+    white-space: pre-line;
+    color: #526278;
+    font-size: 11px;
+    line-height: 1.7;
+}
+
+.tw-empty-tab {
+    padding: 22px 15px;
+    border: 1px dashed #d8e1ec;
+    border-radius: 10px;
+    color: #8995a5;
+    text-align: center;
+    font-size: 10px;
+}
+
+.tw-tour-panel-content .modal-list {
+    margin: 0 !important;
+}
+
+@media (max-width: 650px) {
+    .tour-modal-panel {
+        width: 100% !important;
+        border-radius: 0 !important;
+    }
+
+    .tw-tour-hero-wrap,
+    .tw-tour-hero-wrap .modal-tour-gallery-main {
+        height: 235px !important;
+        max-height: 235px !important;
+    }
+
+    .tw-tour-hero-copy h3 {
+        font-size: 21px;
+    }
+}
+
+@media (max-width: 420px) {
+    .tw-tour-hero-wrap,
+    .tw-tour-hero-wrap .modal-tour-gallery-main {
+        height: 210px !important;
+        max-height: 210px !important;
+    }
+
+    .tw-package-options {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .tw-package-highlights-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .tw-tour-panel-content {
+        padding: 17px 12px 21px;
+    }
+}
+
+
+/* ==========================================================
+   CUSTOMER-FIRST PACKAGE COMPARISON MODAL
+========================================================== */
+
+.tour-modal {
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 24px !important;
+}
+
+.tour-modal-panel {
+    width: min(1040px, calc(100vw - 48px)) !important;
+    height: auto !important;
+    max-height: 92vh !important;
+    margin: 0 !important;
+    border-radius: 18px !important;
+    overflow: hidden;
+    box-shadow:
+        0 24px 70px rgba(15, 35, 65, .22),
+        0 4px 16px rgba(15, 35, 65, .08);
+}
+
+.tour-modal-header {
+    display: none !important;
+}
+
+.tour-modal-content {
+    height: auto !important;
+    max-height: calc(92vh - 76px) !important;
+    padding: 0 !important;
+    overflow-y: auto !important;
+    background: #fff;
+}
+
+.tour-modal-footer {
+    min-height: 76px;
+    padding: 12px 16px !important;
+    border-top: 1px solid #e7edf5;
+    background: rgba(255,255,255,.98);
+}
+
+.tour-modal-footer > button:first-child {
+    display: none !important;
+}
+
+.tour-modal-footer #tourBookNow,
+.tour-modal-footer .primary-btn {
+    width: min(460px, 100%) !important;
+    min-height: 50px;
+    margin-left: auto !important;
+    border-radius: 11px !important;
+    font-weight: 800;
+}
+
+.tw-compare-modal {
+    background: #fff;
+}
+
+.tw-compare-hero {
+    padding: 14px 14px 0;
+}
+
+.tw-compare-hero-media {
+    position: relative;
+    height: 220px;
+    overflow: hidden;
+    border-radius: 14px;
+    background: #eaf2fb;
+}
+
+.tw-compare-hero-media .modal-tour-gallery,
+.tw-compare-hero-media .modal-tour-gallery-main {
+    margin: 0 !important;
+    border-radius: 14px !important;
+}
+
+.tw-compare-hero-media .modal-tour-gallery-main {
+    height: 220px !important;
+    max-height: 220px !important;
+    aspect-ratio: auto !important;
+}
+
+.tw-compare-hero-media .modal-tour-gallery-main img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.tw-compare-hero-media .modal-tour-gallery-thumbnails {
+    position: absolute;
+    left: 16px;
+    bottom: 14px;
+    z-index: 4;
+    display: flex;
+    gap: 6px;
+    margin: 0 !important;
+}
+
+.tw-compare-hero-media .tour-gallery-thumb,
+.tw-compare-hero-media .modal-tour-gallery-thumbnail {
+    width: 58px !important;
+    height: 42px !important;
+    min-width: 58px !important;
+    border: 2px solid rgba(255,255,255,.78) !important;
+    border-radius: 8px !important;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(10,31,58,.18);
+}
+
+.tw-compare-hero-copy {
+    position: absolute;
+    top: 18px;
+    left: 18px;
+    right: 65px;
+    z-index: 5;
+    color: #fff;
+    text-shadow: 0 2px 12px rgba(0,0,0,.42);
+}
+
+.tw-compare-tour-type {
+    display: inline-flex;
+    padding: 5px 9px;
+    margin-bottom: 7px;
+    border-radius: 999px;
+    background: rgba(18,108,255,.92);
+    font-size: 8px;
+    font-weight: 900;
+}
+
+.tw-compare-hero-copy h3 {
+    margin: 0;
+    color: #fff;
+    font-size: 27px;
+    line-height: 1.05;
+    font-weight: 900;
+}
+
+.tw-compare-location {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 6px;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.tw-compare-main {
+    padding: 18px 18px 24px;
+}
+
+.tw-compare-heading {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 12px;
+}
+
+.tw-compare-heading small {
+    display: block;
+    margin-bottom: 4px;
+    color: #126cff;
+    font-size: 8px;
+    letter-spacing: .12em;
+    font-weight: 900;
+}
+
+.tw-compare-heading h4 {
+    margin: 0;
+    color: #17273d;
+    font-size: 20px;
+    line-height: 1.1;
+    font-weight: 900;
+}
+
+.tw-compare-heading p {
+    margin: 5px 0 0;
+    color: #7a889a;
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.tw-compare-heading > span {
+    color: #8a98aa;
+    font-size: 9px;
+    font-weight: 700;
+}
+
+.tw-compare-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 10px;
+}
+
+.tw-compare-card {
+    position: relative;
+    min-height: 250px;
+    padding: 16px 15px 14px;
+    text-align: left;
+    border: 1px solid #dbe4ef;
+    border-radius: 13px;
+    background: #fff;
+    cursor: pointer;
+    transition: .18s ease;
+}
+
+.tw-compare-card:hover {
+    transform: translateY(-1px);
+    border-color: #9dc0ff;
+}
+
+.tw-compare-card.active {
+    border: 2px solid #126cff;
+    background: #f8fbff;
+    box-shadow: 0 7px 20px rgba(18,108,255,.08);
+}
+
+.tw-compare-check {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    color: #126cff;
+    font-size: 16px;
+}
+
+.tw-compare-card-top strong {
+    display: block;
+    max-width: calc(100% - 26px);
+    color: #1a2a3e;
+    font-size: 15px;
+    line-height: 1.15;
+    font-weight: 900;
+}
+
+.tw-compare-stay {
+    display: block;
+    margin-top: 5px;
+    color: #6f7f93;
+    font-size: 9px;
+    font-weight: 700;
+}
+
+.tw-compare-price {
+    margin-top: 14px;
+    color: #126cff;
+    font-size: 21px;
+    line-height: 1;
+    font-weight: 900;
+}
+
+.tw-compare-price small {
+    color: #7b899a;
+    font-size: 8px;
+    font-weight: 700;
+}
+
+.tw-compare-divider {
+    height: 1px;
+    margin: 13px 0;
+    background: #e9eef5;
+}
+
+.tw-compare-features {
+    display: grid;
+    gap: 8px;
+}
+
+.tw-compare-features > div {
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
+    color: #506176;
+    font-size: 9px;
+    line-height: 1.35;
+    font-weight: 700;
+}
+
+.tw-compare-features i {
+    margin-top: 1px;
+    color: #1fa36b;
+    font-size: 9px;
+}
+
+.tw-compare-select-label {
+    margin-top: 14px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    color: #126cff;
+    background: #eef5ff;
+    text-align: center;
+    font-size: 9px;
+    font-weight: 900;
+}
+
+.tw-compare-card.active .tw-compare-select-label {
+    color: #fff;
+    background: #126cff;
+}
+
+.tw-selected-package-box {
+    margin-top: 14px;
+    padding: 14px;
+    border: 1px solid #dce7f6;
+    border-radius: 12px;
+    background: #f7faff;
+}
+
+.tw-selected-package-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.tw-selected-package-title small {
+    color: #126cff;
+    font-size: 8px;
+    letter-spacing: .1em;
+    font-weight: 900;
+}
+
+.tw-selected-package-title h5 {
+    margin: 3px 0 0;
+    color: #17305a;
+    font-size: 15px;
+    font-weight: 900;
+}
+
+.tw-selected-package-title > strong {
+    color: #126cff;
+    font-size: 18px;
+    font-weight: 900;
+}
+
+.tw-selected-highlights {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-top: 11px;
+}
+
+.tw-selected-highlight {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    min-width: 0;
+    padding: 9px 10px;
+    border: 1px solid #e1e9f3;
+    border-radius: 9px;
+    background: #fff;
+    color: #516176;
+    font-size: 8px;
+    line-height: 1.25;
+    font-weight: 700;
+}
+
+.tw-selected-highlight i {
+    color: #126cff;
+}
+
+.tw-compare-tabs {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    margin-top: 18px;
+    border-bottom: 1px solid #e6edf5;
+}
+
+.tw-compare-tabs .tw-tour-tab {
+    min-height: 42px;
+    border: 0;
+    background: transparent;
+    color: #607087;
+    font-size: 9px;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.tw-compare-tabs .tw-tour-tab.active {
+    color: #126cff;
+    border-bottom: 3px solid #126cff;
+}
+
+.tw-tour-panel-content {
+    display: none;
+    padding: 14px 0 0;
+}
+
+.tw-tour-panel-content.active {
+    display: block;
+}
+
+.tw-overview-summary {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 9px;
+}
+
+.tw-overview-summary > div {
+    padding: 10px 11px;
+    border: 1px solid #e2e9f2;
+    border-radius: 9px;
+    background: #fff;
+}
+
+.tw-overview-summary small {
+    display: block;
+    margin-bottom: 3px;
+    color: #8a96a5;
+    font-size: 7px;
+    font-weight: 700;
+}
+
+.tw-overview-summary strong {
+    color: #26374d;
+    font-size: 10px;
+    font-weight: 900;
+}
+
+@media (max-width: 760px) {
+    .tour-modal {
+        padding: 10px !important;
+    }
+
+    .tour-modal-panel {
+        width: 100% !important;
+        max-height: 95vh !important;
+    }
+
+    .tw-compare-hero-media,
+    .tw-compare-hero-media .modal-tour-gallery-main {
+        height: 190px !important;
+        max-height: 190px !important;
+    }
+
+    .tw-compare-options {
+        grid-template-columns: 1fr;
+    }
+
+    .tw-compare-card {
+        min-height: auto;
+    }
+
+    .tw-selected-highlights {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .tw-overview-summary {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .tw-compare-main {
+        padding: 15px 12px 20px;
+    }
+
+    .tw-compare-heading h4 {
+        font-size: 17px;
+    }
+
+    .tw-compare-options {
+        gap: 8px;
+    }
+
+    .tw-selected-highlights {
+        grid-template-columns: 1fr;
+    }
+
+    .tw-compare-tabs {
+        overflow-x: auto;
+        grid-template-columns: repeat(4, minmax(82px, 1fr));
+    }
+}
+
+
+/* ==========================================================
+   FINAL CONTINUOUS PACKAGE COMPARISON
+========================================================== */
+
+.tour-modal {
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 22px !important;
+}
+
+.tour-modal-panel {
+    width: min(1120px, calc(100vw - 44px)) !important;
+    height: auto !important;
+    max-height: 94vh !important;
+    margin: 0 !important;
+    border-radius: 18px !important;
+    overflow: hidden !important;
+    box-shadow: 0 24px 70px rgba(15, 35, 65, .22) !important;
+}
+
+.tour-modal-header {
+    display: none !important;
+}
+
+.tour-modal-content {
+    height: auto !important;
+    max-height: calc(94vh - 72px) !important;
+    padding: 0 !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    background: #fff;
+}
+
+.tour-modal-footer {
+    min-height: 72px !important;
+    padding: 11px 16px !important;
+    border-top: 1px solid #e7edf5 !important;
+    background: #fff !important;
+}
+
+.tour-modal-footer > button:first-child {
+    display: none !important;
+}
+
+.tour-modal-footer #tourBookNow,
+.tour-modal-footer .primary-btn {
+    width: min(480px, 100%) !important;
+    min-height: 48px !important;
+    margin-left: auto !important;
+    border-radius: 11px !important;
+}
+
+.tw-continuous-compare {
+    background: #fff;
+}
+
+.tw-continuous-hero {
+    padding: 13px 13px 0;
+}
+
+.tw-continuous-hero-media {
+    position: relative;
+    height: 205px;
+    overflow: hidden;
+    border-radius: 14px;
+    background: #eaf2fb;
+}
+
+.tw-continuous-hero-media .modal-tour-gallery,
+.tw-continuous-hero-media .modal-tour-gallery-main {
+    margin: 0 !important;
+    border-radius: 14px !important;
+}
+
+.tw-continuous-hero-media .modal-tour-gallery-main {
+    height: 205px !important;
+    max-height: 205px !important;
+    aspect-ratio: auto !important;
+}
+
+.tw-continuous-hero-media .modal-tour-gallery-main img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.tw-continuous-hero-media .modal-tour-gallery-thumbnails {
+    position: absolute;
+    left: 15px;
+    bottom: 12px;
+    z-index: 4;
+    display: flex;
+    gap: 6px;
+    margin: 0 !important;
+}
+
+.tw-continuous-hero-media .tour-gallery-thumb,
+.tw-continuous-hero-media .modal-tour-gallery-thumbnail {
+    width: 55px !important;
+    height: 40px !important;
+    min-width: 55px !important;
+    border: 2px solid rgba(255,255,255,.82) !important;
+    border-radius: 8px !important;
+    overflow: hidden;
+}
+
+.tw-continuous-hero-copy {
+    position: absolute;
+    top: 17px;
+    left: 18px;
+    right: 60px;
+    z-index: 5;
+    color: #fff;
+    text-shadow: 0 2px 12px rgba(0,0,0,.4);
+}
+
+.tw-continuous-category {
+    display: inline-flex;
+    padding: 4px 8px;
+    margin-bottom: 6px;
+    border-radius: 999px;
+    background: rgba(18,108,255,.94);
+    font-size: 8px;
+    font-weight: 900;
+}
+
+.tw-continuous-hero-copy h3 {
+    margin: 0;
+    color: #fff;
+    font-size: 26px;
+    line-height: 1.05;
+    font-weight: 900;
+}
+
+.tw-continuous-hero-copy > div {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 6px;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.tw-package-picker {
+    padding: 18px 18px 15px;
+}
+
+.tw-package-picker-heading {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 11px;
+}
+
+.tw-package-picker-heading small {
+    display: block;
+    margin-bottom: 3px;
+    color: #126cff;
+    font-size: 8px;
+    letter-spacing: .12em;
+    font-weight: 900;
+}
+
+.tw-package-picker-heading h4 {
+    margin: 0;
+    color: #17273d;
+    font-size: 19px;
+    line-height: 1.1;
+    font-weight: 900;
+}
+
+.tw-package-picker-heading p {
+    margin: 5px 0 0;
+    color: #7b899a;
+    font-size: 9px;
+    font-weight: 600;
+}
+
+.tw-package-picker-heading > span {
+    color: #8b98a9;
+    font-size: 8px;
+    font-weight: 700;
+}
+
+.tw-package-picker-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 9px;
+}
+
+.tw-package-picker-card {
+    position: relative;
+    min-height: 92px;
+    padding: 14px 13px 12px;
+    text-align: left;
+    border: 1px solid #dce4ef;
+    border-radius: 11px;
+    background: #fff;
+    cursor: pointer;
+    transition: .18s ease;
+}
+
+.tw-package-picker-card:hover {
+    border-color: #9fc1ff;
+}
+
+.tw-package-picker-card.active {
+    border: 2px solid #126cff;
+    background: #f7fbff;
+}
+
+.tw-package-picker-check {
+    position: absolute;
+    top: 11px;
+    right: 11px;
+    color: #126cff;
+    font-size: 15px;
+}
+
+.tw-package-picker-card > strong {
+    display: block;
+    max-width: calc(100% - 24px);
+    color: #1b2a3e;
+    font-size: 13px;
+    font-weight: 900;
+}
+
+.tw-package-picker-stay {
+    display: block;
+    margin-top: 4px;
+    color: #748296;
+    font-size: 8px;
+    font-weight: 700;
+}
+
+.tw-package-picker-price {
+    margin-top: 11px;
+    color: #126cff;
+    font-size: 18px;
+    line-height: 1;
+    font-weight: 900;
+}
+
+.tw-package-picker-price small {
+    color: #7b8999;
+    font-size: 8px;
+    font-weight: 700;
+}
+
+.tw-comparison-accordions {
+    padding: 0 18px 22px;
+}
+
+.tw-comparison-accordion {
+    margin-top: 9px;
+    overflow: hidden;
+    border: 1px solid #e0e7f0;
+    border-radius: 12px;
+    background: #fff;
+}
+
+.tw-comparison-accordion.open {
+    border-color: #c9dcfa;
+    box-shadow: 0 5px 18px rgba(32, 82, 145, .05);
+}
+
+.tw-comparison-accordion-trigger {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    min-height: 62px;
+    padding: 11px 14px;
+    border: 0;
+    background: #fff;
+    text-align: left;
+    cursor: pointer;
+}
+
+.tw-comparison-accordion.open .tw-comparison-accordion-trigger {
+    background: #f8fbff;
+}
+
+.tw-comparison-accordion-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    flex: 0 0 34px;
+    border-radius: 9px;
+    color: #126cff;
+    background: #eef5ff;
+}
+
+.tw-comparison-accordion-copy {
+    display: block;
+    min-width: 0;
+    margin-left: 10px;
+}
+
+.tw-comparison-accordion-copy strong {
+    display: block;
+    color: #1b2b40;
+    font-size: 11px;
+    font-weight: 900;
+}
+
+.tw-comparison-accordion-copy small {
+    display: block;
+    margin-top: 2px;
+    color: #8794a5;
+    font-size: 8px;
+    font-weight: 600;
+}
+
+.tw-comparison-chevron {
+    margin-left: auto;
+    color: #8795a7;
+    font-size: 10px;
+    transition: transform .18s ease;
+}
+
+.tw-comparison-accordion.open .tw-comparison-chevron {
+    transform: rotate(180deg);
+    color: #126cff;
+}
+
+.tw-comparison-accordion-body {
+    display: none;
+    padding: 0 12px 13px;
+    background: #fff;
+}
+
+.tw-comparison-accordion.open .tw-comparison-accordion-body {
+    display: block;
+}
+
+.tw-comparison-columns {
+    display: grid;
+    grid-template-columns: repeat(
+        var(--package-count),
+        minmax(0, 1fr)
+    );
+    gap: 9px;
+}
+
+.tw-comparison-column {
+    min-width: 0;
+    overflow: hidden;
+    border: 1px solid #e1e8f1;
+    border-radius: 10px;
+    background: #fff;
+}
+
+.tw-comparison-column-head {
+    padding: 10px 11px;
+    border-bottom: 1px solid #e7edf5;
+    background: #f8fafc;
+}
+
+.tw-comparison-column-head strong {
+    display: block;
+    color: #1b2b40;
+    font-size: 11px;
+    font-weight: 900;
+}
+
+.tw-comparison-column-head span {
+    display: block;
+    margin-top: 3px;
+    color: #126cff;
+    font-size: 9px;
+    font-weight: 800;
+}
+
+.tw-comparison-column-content {
+    padding: 11px;
+}
+
+.tw-accordion-list {
+    display: grid;
+    gap: 8px;
+}
+
+.tw-accordion-list-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
+    color: #4d5f74;
+    font-size: 9px;
+    line-height: 1.4;
+    font-weight: 650;
+}
+
+.tw-accordion-list-item i {
+    margin-top: 2px;
+    color: #20a46b;
+    font-size: 8px;
+}
+
+.tw-compare-empty {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    min-height: 32px;
+    color: #98a3b1;
+    font-size: 9px;
+    font-weight: 700;
+}
+
+.tw-itinerary-compare-list {
+    display: grid;
+    gap: 9px;
+}
+
+.tw-itinerary-compare-item {
+    padding-bottom: 8px;
+    border-bottom: 1px solid #edf1f5;
+}
+
+.tw-itinerary-compare-item:last-child {
+    padding-bottom: 0;
+    border-bottom: 0;
+}
+
+.tw-itinerary-compare-item strong {
+    display: block;
+    margin-bottom: 3px;
+    color: #26384f;
+    font-size: 9px;
+    font-weight: 900;
+}
+
+.tw-itinerary-compare-item span {
+    display: block;
+    color: #657489;
+    font-size: 8px;
+    line-height: 1.45;
+    font-weight: 600;
+}
+
+@media (max-width: 760px) {
+    .tour-modal {
+        padding: 8px !important;
+    }
+
+    .tour-modal-panel {
+        width: 100% !important;
+        max-height: 96vh !important;
+    }
+
+    .tw-continuous-hero-media,
+    .tw-continuous-hero-media .modal-tour-gallery-main {
+        height: 175px !important;
+        max-height: 175px !important;
+    }
+
+    .tw-package-picker-heading {
+        align-items: flex-start;
+    }
+
+    .tw-package-picker-grid {
+        grid-template-columns: repeat(
+            2,
+            minmax(0, 1fr)
+        );
+    }
+
+    .tw-comparison-columns {
+        display: flex;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        padding-bottom: 4px;
+    }
+
+    .tw-comparison-column {
+        min-width: 82%;
+        scroll-snap-align: start;
+    }
+}
+
+@media (max-width: 460px) {
+    .tw-package-picker,
+    .tw-comparison-accordions {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+
+    .tw-package-picker-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 7px;
+    }
+
+    .tw-package-picker-card {
+        min-height: 86px;
+        padding: 12px 10px 10px;
+    }
+
+    .tw-continuous-hero-copy h3 {
+        font-size: 21px;
+    }
+
+    .tw-comparison-accordion-copy small {
+        max-width: 230px;
+    }
+}
+
+
+/* ==========================================================
+   SHARED ACCOMMODATION + PICKUP SECTIONS
+========================================================== */
+
+.tw-shared-section {
+    padding: 4px 2px 2px;
+}
+
+.tw-shared-section .tw-accordion-list {
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 8px 18px;
+}
+
+.tw-shared-section .tw-accordion-list-item {
+    min-height: 34px;
+    padding: 8px 10px;
+    border: 1px solid #e7edf5;
+    border-radius: 9px;
+    background: #fafcff;
+}
+
+.tw-shared-section .tw-compare-empty {
+    min-height: 50px;
+    padding: 10px 12px;
+    border: 1px dashed #dce5ef;
+    border-radius: 9px;
+    background: #fafcff;
+}
+
+@media (max-width: 560px) {
+    .tw-shared-section .tw-accordion-list {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+/* ==========================================================
+   MULTI-OPEN COMPARISON SECTIONS
+========================================================== */
+
+.tw-comparison-accordion.open + .tw-comparison-accordion.open {
+    margin-top: 10px;
+}
+
+.tw-comparison-accordion.open .tw-comparison-accordion-body {
+    animation: twComparisonOpen .16s ease-out;
+}
+
+@keyframes twComparisonOpen {
+    from {
+        opacity: 0;
+        transform: translateY(-2px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* ==========================================================
+   CLEAN COMPARISON HEADERS
+   Price is shown only in Package Inclusions.
+========================================================== */
+
+.tw-comparison-accordion[data-section="exclusions"] .tw-comparison-column-head,
+.tw-comparison-accordion[data-section="itinerary"] .tw-comparison-column-head {
+    min-height: 48px;
+}
+
+.tw-comparison-accordion[data-section="exclusions"] .tw-comparison-column-head > div,
+.tw-comparison-accordion[data-section="itinerary"] .tw-comparison-column-head > div {
+    display: flex;
+    align-items: center;
+}
+
+
+/* ==========================================================
+   ACCOMMODATION PHOTO CARDS
+========================================================== */
+
+.tw-accommodation-grid {
+    display: grid;
+    grid-template-columns: repeat(
+        auto-fit,
+        minmax(210px, 1fr)
+    );
+    gap: 12px;
+}
+
+.tw-accommodation-card {
+    min-width: 0;
+    overflow: hidden;
+    border: 1px solid #dde6f0;
+    border-radius: 12px;
+    background: #fff;
+}
+
+.tw-accommodation-photo {
+    position: relative;
+    height: 145px;
+    overflow: hidden;
+    background: #edf3f9;
+}
+
+.tw-accommodation-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.tw-accommodation-photo-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    color: #95a5b7;
+    font-size: 28px;
+}
+
+.tw-accommodation-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    display: inline-flex;
+    align-items: center;
+    min-height: 24px;
+    padding: 0 9px;
+    border-radius: 999px;
+    font-size: 8px;
+    font-weight: 900;
+    box-shadow: 0 3px 10px rgba(15,35,65,.12);
+}
+
+.tw-accommodation-badge.standard {
+    color: #126cff;
+    background: rgba(255,255,255,.94);
+    border: 1px solid rgba(18,108,255,.22);
+}
+
+.tw-accommodation-badge.upgrade {
+    color: #fff;
+    background: #1fa36b;
+}
+
+.tw-accommodation-card-body {
+    padding: 12px;
+}
+
+.tw-accommodation-card-body h5 {
+    margin: 0;
+    color: #1b2b40;
+    font-size: 13px;
+    line-height: 1.2;
+    font-weight: 900;
+}
+
+.tw-accommodation-meta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+    color: #66778b;
+    font-size: 9px;
+    font-weight: 700;
+}
+
+.tw-accommodation-meta i {
+    color: #126cff;
+}
+
+.tw-accommodation-features {
+    display: grid;
+    gap: 6px;
+    margin-top: 10px;
+}
+
+.tw-accommodation-features > div {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    color: #53657a;
+    font-size: 8.5px;
+    line-height: 1.35;
+    font-weight: 650;
+}
+
+.tw-accommodation-features i {
+    margin-top: 2px;
+    color: #20a46b;
+    font-size: 8px;
+}
+
+.tw-accommodation-description {
+    margin: 10px 0 0;
+    color: #7a8999;
+    font-size: 8.5px;
+    line-height: 1.45;
+    font-weight: 600;
+}
+
+.tw-accommodation-price {
+    margin-top: 11px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 9px;
+    font-weight: 900;
+}
+
+.tw-accommodation-price.included {
+    color: #126cff;
+    background: #eef5ff;
+}
+
+.tw-accommodation-price.upgrade {
+    color: #08754a;
+    background: #e9f8f1;
+}
+
+.tw-accommodation-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-top: 12px;
+    padding: 10px 12px;
+    border: 1px solid #dce8f8;
+    border-radius: 9px;
+    color: #41658d;
+    background: #f4f8ff;
+    font-size: 8.5px;
+    line-height: 1.4;
+    font-weight: 650;
+}
+
+.tw-accommodation-note i {
+    margin-top: 1px;
+    color: #126cff;
+}
+
+@media (max-width: 760px) {
+    .tw-accommodation-grid {
+        grid-template-columns: repeat(
+            2,
+            minmax(0, 1fr)
+        );
+    }
+
+    .tw-accommodation-photo {
+        height: 125px;
+    }
+}
+
+@media (max-width: 480px) {
+    .tw-accommodation-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .tw-accommodation-photo {
+        height: 170px;
+    }
+}
+
+
+/* ==========================================================
+   PRESELECT ACCOMMODATION + PICKUP
+========================================================== */
+
+.tw-accommodation-card.selected {
+    border: 2px solid #126cff;
+    box-shadow: 0 6px 18px rgba(18,108,255,.09);
+}
+
+.tw-accommodation-select-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    width: 100%;
+    min-height: 36px;
+    margin-top: 9px;
+    border: 1px solid #cbdcf7;
+    border-radius: 8px;
+    color: #126cff;
+    background: #f5f9ff;
+    font-size: 8.5px;
+    font-weight: 900;
+    cursor: pointer;
+}
+
+.tw-accommodation-select-button.selected {
+    color: #fff;
+    border-color: #126cff;
+    background: #126cff;
+}
+
+.tw-pickup-selection-grid {
+    display: grid;
+    grid-template-columns: repeat(
+        auto-fit,
+        minmax(210px, 1fr)
+    );
+    gap: 9px;
+}
+
+.tw-pickup-option {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    min-height: 58px;
+    padding: 10px 12px;
+    border: 1px solid #e0e7f0;
+    border-radius: 9px;
+    background: #fff;
+    text-align: left;
+    cursor: pointer;
+}
+
+.tw-pickup-option.selected {
+    border: 2px solid #126cff;
+    background: #f6faff;
+}
+
+.tw-pickup-radio {
+    color: #126cff;
+    font-size: 15px;
+}
+
+.tw-pickup-option strong {
+    display: block;
+    color: #24354b;
+    font-size: 9px;
+    font-weight: 900;
+}
+
+.tw-pickup-option small {
+    display: block;
+    margin-top: 2px;
+    color: #8491a2;
+    font-size: 7.5px;
+    font-weight: 650;
+}
+
+.tw-selection-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
+    margin-top: 10px;
+    padding: 9px 11px;
+    border: 1px solid #dce8f8;
+    border-radius: 9px;
+    color: #43678f;
+    background: #f4f8ff;
+    font-size: 8px;
+    line-height: 1.4;
+    font-weight: 650;
+}
+
+.tw-selection-note i {
+    margin-top: 1px;
+    color: #126cff;
+}
+
+@media (max-width: 520px) {
+    .tw-pickup-selection-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+/* ==========================================================
+   ACCOMMODATION — SINGLE ROW HORIZONTAL CAROUSEL
+========================================================== */
+
+.tw-accommodation-grid {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    gap: 12px !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    padding: 2px 2px 10px;
+    scroll-snap-type: x proximity;
+    scroll-behavior: smooth;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+}
+
+.tw-accommodation-grid::-webkit-scrollbar { height: 7px; }
+.tw-accommodation-grid::-webkit-scrollbar-track { background: #eef2f7; border-radius: 999px; }
+.tw-accommodation-grid::-webkit-scrollbar-thumb { background: #b8c8dc; border-radius: 999px; }
+.tw-accommodation-grid::-webkit-scrollbar-thumb:hover { background: #8fa8c4; }
+
+.tw-accommodation-card {
+    flex: 0 0 245px !important;
+    width: 245px !important;
+    min-width: 245px !important;
+    scroll-snap-align: start;
+}
+
+.tw-accommodation-photo { height: 145px !important; }
+
+.tw-accommodation-card.selected {
+    border: 2px solid #126cff !important;
+    box-shadow: 0 6px 18px rgba(18,108,255,.10) !important;
+}
+
+@media (max-width: 760px) {
+    .tw-accommodation-grid { padding-bottom: 8px; }
+    .tw-accommodation-card {
+        flex-basis: 78vw !important;
+        width: 78vw !important;
+        min-width: 78vw !important;
+        max-width: 300px;
+    }
+    .tw-accommodation-photo { height: 160px !important; }
+}
+
+@media (max-width: 480px) {
+    .tw-accommodation-card {
+        flex-basis: 84vw !important;
+        width: 84vw !important;
+        min-width: 84vw !important;
+    }
+    .tw-accommodation-photo { height: 165px !important; }
+}
+
+
+/* ==========================================================
+   ACCOMMODATION — FULL CARD SELECTION
+========================================================== */
+
+.tw-accommodation-card {
+    cursor: pointer;
+    transition:
+        border-color .16s ease,
+        box-shadow .16s ease,
+        transform .16s ease;
+}
+
+.tw-accommodation-card:hover {
+    border-color: #9fc1ff;
+    box-shadow: 0 6px 18px rgba(18,108,255,.07);
+    transform: translateY(-1px);
+}
+
+.tw-accommodation-card:focus-visible {
+    outline: 3px solid rgba(18,108,255,.18);
+    outline-offset: 2px;
+}
+
+.tw-accommodation-card.selected:hover {
+    transform: none;
+}
+
+.tw-accommodation-select-button {
+    pointer-events: none;
+    user-select: none;
+}
+
+.tw-accommodation-card:not(.selected)
+.tw-accommodation-select-button {
+    color: #6f8094;
+    border-color: #dde6f0;
+    background: #f8fafc;
+}
+
+.tw-accommodation-card.selected
+.tw-accommodation-select-button {
+    color: #fff;
+    border-color: #126cff;
+    background: #126cff;
+}
+
+
+/* Accommodation upgrade rate unit */
+.tw-accommodation-price.upgrade { white-space: nowrap; }
+
+/* ==========================================================
+   TOURS — FINAL COMPACT CARD LAYOUT
+   Reduce unnecessary white space while preserving all
+   existing Tours features and responsive behavior.
+========================================================== */
+
+@media (min-width: 900px) {
+
+    .tours-main {
+        padding-left: 18px !important;
+        padding-right: 18px !important;
+        padding-bottom: 24px !important;
+    }
+
+    .tour-grid {
+        gap: 10px !important;
+        row-gap: 10px !important;
+    }
+
+    .tour-card {
+        border-radius: 10px !important;
+    }
+
+    .tour-card-image {
+        aspect-ratio: 16 / 9 !important;
+    }
+
+    .tour-card-body {
+        min-height: 0 !important;
+        height: auto !important;
+        padding: 8px 9px 8px !important;
+    }
+
+    .tour-card h3 {
+        font-size: 11px !important;
+        line-height: 1.22 !important;
+    }
+
+    .tour-location {
+        margin-top: 4px !important;
+        gap: 4px !important;
+        font-size: 6.8px !important;
+        line-height: 1.2 !important;
+    }
+
+    .tour-option-chips {
+        margin-top: 6px !important;
+        gap: 4px !important;
+    }
+
+    .tour-option-chip {
+        min-height: 20px !important;
+        padding: 3px 6px !important;
+        font-size: 6.5px !important;
+        line-height: 1 !important;
+    }
+
+    .tour-card-price {
+        margin-top: 7px !important;
+        margin-bottom: 0 !important;
+    }
+
+    .tour-price-inline {
+        gap: 3px !important;
+        line-height: 1 !important;
+    }
+
+    .tour-price-inline strong {
+        font-size: 13px !important;
+    }
+
+    .tour-price-inline span {
+        font-size: 6.5px !important;
+    }
+
+    .tour-price-from {
+        font-size: 6.5px !important;
+    }
+
+    .tour-card-footer {
+        min-height: 32px !important;
+        height: 32px !important;
+        margin-top: 0 !important;
+        padding: 6px 9px !important;
+        gap: 6px !important;
+        font-size: 6.5px !important;
+    }
+
+    .tour-card-footer span {
+        gap: 3px !important;
+        white-space: nowrap;
+    }
+
+    .tour-card-footer i {
+        font-size: 7px !important;
+    }
+
+    .tour-category-badge {
+        top: 7px !important;
+        left: 7px !important;
+        padding: 4px 6px !important;
+        font-size: 6px !important;
+    }
+
+    .tour-favorite-button {
+        top: 6px !important;
+        right: 6px !important;
+        width: 26px !important;
+        height: 26px !important;
+        font-size: 13px !important;
+    }
+
+    .tours-load-more {
+        height: 36px !important;
+        min-width: 170px !important;
+        margin-top: 14px !important;
+    }
+}
+
+/* Keep mobile compact, readable, and without horizontal page swipe. */
+@media (max-width: 899px) {
+
+    .tour-card-body {
+        min-height: 0 !important;
+        height: auto !important;
+    }
+
+    .tour-card-footer {
+        margin-top: 0 !important;
+    }
+}
+

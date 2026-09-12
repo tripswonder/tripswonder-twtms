@@ -13,6 +13,650 @@
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 
     <link rel="stylesheet" href="../../assets/css/customer/booking.css">
+
+    <style>
+        /* =========================================================
+           MOBILE SCHEDULE LAYOUT
+           - Quick Select + Book Another Travel Date show first
+           - Full calendar stays hidden by default
+           - View More toggles the full calendar
+        ========================================================= */
+        @media (max-width: 560px) {
+
+            #travelCalendarShell {
+                display: flex !important;
+                flex-direction: column !important;
+                gap: 12px !important;
+            }
+
+            #travelCalendarShell .calendar-side {
+                order: 1 !important;
+                width: 100% !important;
+            }
+
+            #travelCalendarCard {
+                order: 2 !important;
+                width: 100% !important;
+                display: none !important;
+            }
+
+            #travelCalendarCard.mobile-calendar-open {
+                display: block !important;
+            }
+
+            #travelCalendarShell .quick-schedule-wrap,
+            #travelCalendarShell .selected-schedule-card,
+            #travelCalendarShell .requested-date-option {
+                width: 100% !important;
+            }
+
+            #travelCalendarShell .requested-date-option {
+                margin-top: 10px !important;
+            }
+        }
+    </style>
+
+
+    <style>
+        /* =========================================================
+           CUSTOM DATE — AUTOMATIC TRAVEL PERIOD PREVIEW
+        ========================================================= */
+        .requested-travel-period {
+            grid-column: 1 / -1;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            background: #f3f7ff;
+            border: 1px solid #d8e5f7;
+            border-radius: 11px;
+        }
+
+        .requested-travel-period.hidden {
+            display: none !important;
+        }
+
+        .requested-travel-period-icon {
+            width: 38px;
+            height: 38px;
+            flex: 0 0 38px;
+            display: grid;
+            place-items: center;
+            color: #0560db;
+            background: #ffffff;
+            border-radius: 10px;
+        }
+
+        .requested-travel-period-copy {
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .requested-travel-period-copy small {
+            color: #718096;
+            font-size: 7px;
+            font-weight: 800;
+            letter-spacing: .8px;
+        }
+
+        .requested-travel-period-copy strong {
+            color: #172036;
+            font-size: 12px;
+            line-height: 1.35;
+        }
+
+        .requested-travel-period-copy span {
+            color: #667085;
+            font-size: 8px;
+            font-weight: 600;
+        }
+
+        @media (max-width: 560px) {
+            .requested-travel-period {
+                padding: 10px 11px;
+                gap: 10px;
+            }
+
+            .requested-travel-period-icon {
+                width: 34px;
+                height: 34px;
+                flex-basis: 34px;
+            }
+
+            .requested-travel-period-copy strong {
+                font-size: 10px;
+            }
+
+            .requested-travel-period-copy span {
+                font-size: 7px;
+            }
+        }
+    </style>
+
+
+    <style>
+        /* =========================================================
+           PACKAGE DETAILS MODAL — CLEAN TWO-COLUMN DESKTOP
+        ========================================================= */
+        #packageDetailsModal .package-modal-panel {
+            width: min(860px, calc(100vw - 32px));
+            max-height: min(78vh, 720px);
+            overflow: hidden;
+        }
+
+        #packageDetailsModal .modal-header {
+            padding: 20px 22px 17px;
+        }
+
+        #packageDetailsModal .package-detail-modal-content {
+            padding: 18px 22px 22px;
+            overflow-y: auto;
+            max-height: calc(min(78vh, 720px) - 92px);
+        }
+
+        .package-detail-summary {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .package-detail-summary-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            min-height: 34px;
+            padding: 7px 10px;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            background: #f8fafc;
+            color: #344054;
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .package-detail-summary-item i {
+            color: #0560db;
+            font-size: 10px;
+        }
+
+        .package-detail-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+            align-items: start;
+        }
+
+        .package-detail-section {
+            margin: 0 !important;
+            padding: 15px;
+            border: 1px solid #e7edf5;
+            border-radius: 13px;
+            background: #ffffff;
+        }
+
+        .package-detail-section.package-detail-about {
+            grid-column: 1 / -1;
+        }
+
+        .package-detail-section-heading {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            margin-bottom: 10px;
+        }
+
+        .package-detail-section-icon {
+            width: 30px;
+            height: 30px;
+            flex: 0 0 30px;
+            display: grid;
+            place-items: center;
+            border-radius: 9px;
+            background: #eef5ff;
+            color: #0560db;
+            font-size: 11px;
+        }
+
+        .package-detail-section-heading h3 {
+            margin: 0 !important;
+            color: #172036;
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .package-detail-section p {
+            margin: 0;
+            color: #667085;
+            font-size: 10px;
+            line-height: 1.65;
+        }
+
+        .package-detail-section ul {
+            margin: 0;
+            padding-left: 18px;
+        }
+
+        .package-detail-section li {
+            margin: 4px 0;
+            color: #667085;
+            font-size: 9.5px;
+            line-height: 1.5;
+        }
+
+        .package-itinerary-list {
+            display: grid;
+            gap: 8px;
+        }
+
+        .package-itinerary-day {
+            padding: 10px 11px;
+            border: 1px solid #edf1f6;
+            border-radius: 10px;
+            background: #fbfcfe;
+        }
+
+        .package-itinerary-day strong {
+            display: block;
+            margin-bottom: 4px;
+            color: #172036;
+            font-size: 9.5px;
+        }
+
+        .package-itinerary-day span,
+        .package-itinerary-day li {
+            color: #667085;
+            font-size: 9px;
+            line-height: 1.45;
+        }
+
+        .package-itinerary-day ul {
+            margin: 0;
+            padding-left: 17px;
+        }
+
+        @media (max-width: 700px) {
+            #packageDetailsModal .package-modal-panel {
+                width: calc(100vw - 20px);
+                max-height: 84vh;
+            }
+
+            #packageDetailsModal .modal-header {
+                padding: 16px 16px 14px;
+            }
+
+            #packageDetailsModal .package-detail-modal-content {
+                padding: 14px 16px 18px;
+                max-height: calc(84vh - 82px);
+            }
+
+            .package-detail-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .package-detail-section.package-detail-about {
+                grid-column: auto;
+            }
+
+            .package-detail-summary {
+                gap: 6px;
+            }
+
+            .package-detail-summary-item {
+                font-size: 9px;
+            }
+        }
+    </style>
+
+
+    <style>
+        /* =========================================================
+           PACKAGE DETAILS MODAL — FINAL VISUAL POLISH
+        ========================================================= */
+
+        /* Compact header */
+        #packageDetailsModal .modal-header {
+            padding: 17px 20px 15px;
+        }
+
+        #packageDetailsModal .modal-header .modal-eyebrow {
+            margin-bottom: 4px;
+        }
+
+        #packageDetailsModal .modal-header h2 {
+            line-height: 1.2;
+        }
+
+        #packageDetailsModal .modal-close {
+            width: 38px;
+            height: 38px;
+            border-radius: 11px;
+        }
+
+        /* Smaller summary chips */
+        .package-detail-summary {
+            gap: 7px;
+            margin-bottom: 13px;
+        }
+
+        .package-detail-summary-item {
+            min-height: 30px;
+            padding: 6px 9px;
+            border-color: #e6ebf2;
+            background: #fbfcfe;
+            border-radius: 9px;
+            font-size: 9px;
+        }
+
+        .package-detail-summary-item i {
+            font-size: 9px;
+        }
+
+        /* Lighter, tighter cards */
+        .package-detail-grid {
+            gap: 12px;
+        }
+
+        .package-detail-section {
+            padding: 13px 14px;
+            border-color: #edf1f6;
+            border-radius: 12px;
+            box-shadow: 0 1px 2px rgba(16, 24, 40, .02);
+        }
+
+        .package-detail-section.package-detail-about {
+            padding-top: 12px;
+            padding-bottom: 12px;
+        }
+
+        .package-detail-section-heading {
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .package-detail-section-icon {
+            width: 28px;
+            height: 28px;
+            flex-basis: 28px;
+            border-radius: 8px;
+            font-size: 10px;
+        }
+
+        .package-detail-section-heading h3 {
+            font-size: 11px;
+        }
+
+        .package-detail-section p {
+            font-size: 9.5px;
+            line-height: 1.55;
+        }
+
+        /* Icon lists instead of ordinary bullets */
+        .package-detail-icon-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: grid;
+            gap: 6px;
+        }
+
+        .package-detail-icon-list li {
+            position: relative;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            margin: 0;
+            padding: 0;
+            color: #667085;
+            font-size: 9.5px;
+            line-height: 1.42;
+        }
+
+        .package-detail-list-icon {
+            width: 17px;
+            height: 17px;
+            flex: 0 0 17px;
+            display: grid;
+            place-items: center;
+            margin-top: 1px;
+            border-radius: 50%;
+            font-size: 7px;
+        }
+
+        .package-detail-icon-list.inclusions .package-detail-list-icon {
+            color: #087443;
+            background: #eaf8f1;
+        }
+
+        .package-detail-icon-list.exclusions .package-detail-list-icon {
+            color: #a15c00;
+            background: #fff5df;
+        }
+
+        /* Make paired cards feel balanced without forcing huge empty boxes */
+        @media (min-width: 701px) {
+            .package-detail-grid > .package-detail-section:not(.package-detail-about) {
+                min-height: 100%;
+            }
+        }
+
+        /* Subtle internal scrollbar */
+        #packageDetailsModal .package-detail-modal-content {
+            scrollbar-width: thin;
+            scrollbar-color: #cbd5e1 transparent;
+        }
+
+        #packageDetailsModal .package-detail-modal-content::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        #packageDetailsModal .package-detail-modal-content::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        #packageDetailsModal .package-detail-modal-content::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 999px;
+        }
+
+        #packageDetailsModal .package-detail-modal-content::-webkit-scrollbar-thumb:hover {
+            background: #aeb9c8;
+        }
+
+        @media (max-width: 700px) {
+            #packageDetailsModal .modal-header {
+                padding: 14px 15px 12px;
+            }
+
+            .package-detail-summary {
+                margin-bottom: 11px;
+            }
+
+            .package-detail-summary-item {
+                min-height: 29px;
+                padding: 5px 8px;
+                font-size: 8.5px;
+            }
+
+            .package-detail-section {
+                padding: 12px;
+            }
+
+            .package-detail-icon-list li {
+                font-size: 9px;
+            }
+        }
+    </style>
+
+
+    <style>
+        /* =========================================================
+           PACKAGE DETAILS MODAL — AUTO HEIGHT
+        ========================================================= */
+        #packageDetailsModal .package-modal-panel {
+            height: auto;
+            max-height: min(88vh, 760px);
+        }
+
+        #packageDetailsModal .package-detail-modal-content {
+            height: auto;
+            max-height: calc(min(88vh, 760px) - 76px);
+            overflow-y: auto;
+        }
+
+        @media (max-width: 700px) {
+            #packageDetailsModal .package-modal-panel {
+                max-height: 90vh;
+            }
+
+            #packageDetailsModal .package-detail-modal-content {
+                max-height: calc(90vh - 70px);
+            }
+        }
+    </style>
+
+
+    <style>
+        /* =========================================================
+           TOURS → BOOKING PRE-SELECTION NOTICE
+        ========================================================= */
+        .accommodation-preselection-notice {
+            margin: 0 0 12px;
+            padding: 10px 12px;
+            border: 1px solid #d8e5f7;
+            border-radius: 10px;
+            background: #f3f7ff;
+            color: #315f91;
+            font-size: 9px;
+            font-weight: 650;
+            line-height: 1.5;
+        }
+
+        .accommodation-preselection-notice[data-type="success"] {
+            border-color: #ccebdc;
+            background: #eefaf4;
+            color: #16724f;
+        }
+
+        .accommodation-preselection-notice[data-type="warning"] {
+            border-color: #f0d7a8;
+            background: #fff8eb;
+            color: #9a6612;
+        }
+
+        .accommodation-preselection-notice.hidden {
+            display: none !important;
+        }
+
+        @media (max-width: 560px) {
+            .accommodation-preselection-notice {
+                padding: 9px 10px;
+                font-size: 8.5px;
+            }
+        }
+    </style>
+
+
+    <style>
+        /* =========================================================
+           BOOKING ACCOMMODATION — HORIZONTAL CAROUSEL + SELECTED
+        ========================================================= */
+
+        #accommodationList.accommodation-grid {
+            display: flex !important;
+            flex-wrap: nowrap !important;
+            gap: 12px !important;
+            width: 100%;
+            overflow-x: auto !important;
+            overflow-y: hidden !important;
+            padding: 2px 2px 10px;
+            scroll-snap-type: x proximity;
+            scroll-behavior: smooth;
+            overscroll-behavior-x: contain;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        #accommodationList.accommodation-grid::-webkit-scrollbar {
+            height: 7px;
+        }
+
+        #accommodationList.accommodation-grid::-webkit-scrollbar-track {
+            background: #eef2f7;
+            border-radius: 999px;
+        }
+
+        #accommodationList.accommodation-grid::-webkit-scrollbar-thumb {
+            background: #b8c8dc;
+            border-radius: 999px;
+        }
+
+        #accommodationList.accommodation-grid::-webkit-scrollbar-thumb:hover {
+            background: #8fa8c4;
+        }
+
+        #accommodationList .accommodation-card {
+            flex: 0 0 315px !important;
+            width: 315px !important;
+            min-width: 315px !important;
+            max-width: 315px !important;
+            scroll-snap-align: start;
+            transition:
+                border-color .16s ease,
+                box-shadow .16s ease,
+                transform .16s ease;
+        }
+
+        #accommodationList .accommodation-card.selected {
+            border: 2px solid #0568ff !important;
+            box-shadow:
+                0 0 0 3px rgba(5, 104, 255, .08),
+                0 8px 22px rgba(5, 104, 255, .10) !important;
+            background: #fbfdff;
+        }
+
+        #accommodationList .accommodation-card.selected
+        .select-accommodation-button {
+            border-color: #0568ff !important;
+            background: #0568ff !important;
+            color: #fff !important;
+        }
+
+        #accommodationList .accommodation-card:not(.unavailable):hover {
+            border-color: #8eb9ff;
+            transform: translateY(-1px);
+        }
+
+        #accommodationList .accommodation-card.selected:hover {
+            transform: none;
+        }
+
+        /* Keep the horizontal scroll only inside Accommodation. */
+        .booking-form,
+        .booking-container,
+        .booking-main {
+            overflow-x: hidden;
+        }
+
+        @media (max-width: 760px) {
+            #accommodationList .accommodation-card {
+                flex-basis: 78vw !important;
+                width: 78vw !important;
+                min-width: 78vw !important;
+                max-width: 320px !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            #accommodationList .accommodation-card {
+                flex-basis: 84vw !important;
+                width: 84vw !important;
+                min-width: 84vw !important;
+            }
+        }
+    </style>
+
 </head>
 
 <body>
@@ -263,15 +907,15 @@
                                                     <i class="fa-regular fa-calendar-plus"></i>
                                                 </span>
                                                 <span class="requested-date-toggle-copy">
-                                                    <strong>Request Another Travel Date</strong>
+                                                    <strong>Book Another Travel Date</strong>
                                                     <small id="requestedDateMinimumText">
-                                                        Custom dates are subject to availability.
+                                                        Minimum headcount applies to custom dates.
                                                     </small>
                                                 </span>
                                                 <i class="fa-solid fa-chevron-down requested-date-chevron"></i>
                                             </button>
                         
-                                            <div class="requested-date-panel" id="requestedDatePanel">
+                                            <div class="requested-date-panel hidden" id="requestedDatePanel">
                                                 <div class="requested-date-notice">
                                                     <i class="fa-solid fa-circle-info"></i>
                                                     <div>
@@ -286,18 +930,35 @@
                                                     <div class="form-field">
                                                         <label for="requestedTravelDate">Preferred Travel Date *</label>
                                                         <input type="date" id="requestedTravelDate">
+                                                        <small class="field-help">
+                                                            Select your preferred tour start date. Your return date is calculated automatically based on the package duration.
+                                                        </small>
                                                     </div>
                         
                                                     <div class="form-field">
-                                                        <label>Request Status</label>
+                                                        <label>Booking Status</label>
                                                         <div class="requested-date-status" id="requestedDateStatus">
-                                                            For Availability Check
+                                                            Minimum Headcount Required
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="requested-travel-period hidden"
+                                                         id="requestedTravelPeriod"
+                                                         aria-live="polite">
+                                                        <span class="requested-travel-period-icon">
+                                                            <i class="fa-regular fa-calendar-check"></i>
+                                                        </span>
+
+                                                        <div class="requested-travel-period-copy">
+                                                            <small>YOUR TRAVEL PERIOD</small>
+                                                            <strong id="requestedTravelPeriodDates">—</strong>
+                                                            <span id="requestedTravelPeriodDuration">—</span>
                                                         </div>
                                                     </div>
                                                 </div>
                         
                                                 <small class="requested-date-help">
-                                                    No payment is required yet. Trips Wonder will review the requested date first before payment.
+                                                    Once the minimum headcount is met, select your preferred date and continue directly to booking and payment.
                                                 </small>
                                             </div>
                                         </div>
@@ -481,6 +1142,14 @@
                     <strong>Select a travel schedule first</strong>
                     <span>Accommodation availability depends on your selected date.</span>
                 </div>
+
+                <div
+                    class="accommodation-preselection-notice hidden"
+                    id="accommodationPreselectionNotice"
+                    data-type="info"
+                    role="status"
+                    aria-live="polite"
+                ></div>
 
                 <div class="accommodation-grid" id="accommodationList"></div>
 

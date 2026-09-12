@@ -35,6 +35,11 @@ const state = {
     packages: [],
     selectedPackage: null,
 
+    selectedAccommodationId: "",
+    selectedAccommodationName: "",
+    selectedPickupLocation: "",
+    selectedDestinationKey: "",
+
     search: "",
     category: "all",
     duration: "all",
@@ -412,6 +417,18 @@ function normalizePackage(
             data.duration ||
             "",
 
+        destinationName:
+            data.destinationName ||
+            "",
+
+        destinationGroupKey:
+            data.destinationGroupKey ||
+            "",
+
+        packageOptionLabel:
+            data.packageOptionLabel ||
+            "",
+
         description:
             data.description ||
             "",
@@ -440,6 +457,17 @@ function normalizePackage(
             Array.isArray(data.accommodations)
                 ? data.accommodations
                 : [],
+
+        pickupLocations:
+            Array.isArray(data.pickupLocations)
+                ? data.pickupLocations
+                : Array.isArray(data.pickUpLocations)
+                    ? data.pickUpLocations
+                    : Array.isArray(data.meetupLocations)
+                        ? data.meetupLocations
+                        : Array.isArray(data.meetUpLocations)
+                            ? data.meetUpLocations
+                            : [],
 
         gallery,
 
@@ -570,7 +598,10 @@ function packageMatchesCategoryGroup(
     const haystack =
         [
             packageItem.category,
+            packageItem.destinationName,
             packageItem.name,
+            packageItem.packageOptionLabel,
+            packageItem.duration,
             packageItem.location,
             packageItem.description,
             packageItem.tourType
@@ -1048,6 +1079,479 @@ function getFilteredPackages() {
 }
 
 
+
+/* ==========================================================
+   DESTINATION + PACKAGE OPTION GROUPING
+   One destination card can contain multiple package durations.
+   Existing Firestore package documents remain unchanged.
+========================================================== */
+
+function getBasePackageName(value) {
+
+    let name =
+        String(value || "")
+            .trim();
+
+    const patterns = [
+        /\bday\s*tour\b/gi,
+        /\b1\s*day(?:\s*0?\s*night)?s?\b/gi,
+        /\b2\s*days?\s*1\s*nights?\b/gi,
+        /\b3\s*days?\s*2\s*nights?\b/gi,
+        /\b4\s*days?\s*3\s*nights?\b/gi,
+        /\b5\s*days?\s*4\s*nights?\b/gi,
+        /\b6\s*days?\s*5\s*nights?\b/gi,
+        /\b7\s*days?\s*6\s*nights?\b/gi,
+        /\b\d+\s*d\s*\d+\s*n\b/gi
+    ];
+
+    patterns.forEach(
+        pattern => {
+            name =
+                name.replace(
+                    pattern,
+                    " "
+                );
+        }
+    );
+
+    return name
+        .replace(/\s{2,}/g, " ")
+        .replace(/[-–—|/]+$/g, "")
+        .trim() ||
+        String(value || "").trim() ||
+        "Tour Package";
+}
+
+
+
+
+
+function normalizeDestinationDisplayName(
+    value
+) {
+
+    return String(value || "")
+        .replace(
+            /\s*[-|•:]?\s*(?:day\s*tour|\d+\s*d(?:ays?)?\s*\d+\s*n(?:ights?)?|\d+d\d+n|\d+\s*days?\s*\d+\s*nights?)\s*$/i,
+            ""
+        )
+        .replace(/\s+/g, " ")
+        .trim();
+}
+
+
+function getDestinationName(
+    packageItem
+) {
+
+    const explicit =
+        normalizeDestinationDisplayName(
+            packageItem?.destinationName
+        );
+
+    if (explicit) {
+        return explicit;
+    }
+
+    return normalizeDestinationDisplayName(
+        getBasePackageName(
+            packageItem?.name
+        )
+    );
+}
+
+function getDestinationGroupKey(
+    packageItem
+) {
+
+    const destinationName =
+        getDestinationName(
+            packageItem
+        );
+
+    /*
+      Customer Tours grouping should prioritize the canonical
+      destination name so legacy package records still merge
+      into one destination card even if an older document has
+      a different / missing location or destinationGroupKey.
+    */
+    const canonicalName =
+        normalizeKey(
+            destinationName
+        );
+
+    if (canonicalName) {
+        return canonicalName;
+    }
+
+    const explicit =
+        String(
+            packageItem?.destinationGroupKey ||
+            ""
+        ).trim();
+
+    if (explicit) {
+        return normalizeKey(explicit);
+    }
+
+    return normalizeKey(
+        packageItem?.name
+    );
+}
+
+
+
+function buildPackageComparisonMeta(
+    packageItem
+) {
+
+    const durationText =
+        String(
+            packageItem?.duration ||
+            getOptionLabel(packageItem) ||
+            ""
+        ).trim();
+
+    const durationMatch =
+        durationText.match(
+            /(\d+)\s*d(?:ays?)?\s*(\d+)\s*n(?:ights?)?/i
+        ) ||
+        durationText.match(
+            /(\d+)d\s*(\d+)n/i
+        );
+
+    let stayLabel =
+        "Tour Package";
+
+    if (/day\s*tour/i.test(durationText)) {
+        stayLabel = "No Overnight Stay";
+    } else if (durationMatch) {
+        const nights =
+            Number(durationMatch[2] || 0);
+
+        stayLabel =
+            nights > 0
+                ? `${nights} Night${nights > 1 ? "s" : ""} Stay`
+                : "No Overnight Stay";
+    }
+
+    const inclusionTexts =
+        Array.isArray(packageItem?.inclusions)
+            ? packageItem.inclusions
+                .map(item =>
+                    typeof item === "string"
+                        ? item
+                        : (
+                            item?.name ||
+                            item?.title ||
+                            item?.label ||
+                            ""
+                        )
+                )
+                .filter(Boolean)
+            : [];
+
+    const findMatch = (pattern) =>
+        inclusionTexts.find(text =>
+            pattern.test(String(text))
+        ) || "";
+
+    const meals =
+        findMatch(/meal|breakfast|lunch|dinner/i);
+
+    const tour =
+        findMatch(
+            /island\s*tour|tour\s*guide|tour\b/i
+        );
+
+    const transfer =
+        findMatch(
+            /van|boat|transfer|transport/i
+        );
+
+    const accommodation =
+        findMatch(
+            /accommodation|tent|nipa|room|hotel|stay/i
+        );
+
+    const bullets = [];
+
+    if (accommodation) {
+        bullets.push(accommodation);
+    } else {
+        bullets.push(stayLabel);
+    }
+
+    if (tour) {
+        bullets.push(tour);
+    }
+
+    if (transfer) {
+        bullets.push(transfer);
+    }
+
+    if (meals) {
+        bullets.push(meals);
+    }
+
+    return {
+        stayLabel,
+        bullets: bullets.slice(0, 4)
+    };
+}
+
+
+function getOptionLabel(
+    packageItem
+) {
+
+    const explicit =
+        String(
+            packageItem?.packageOptionLabel ||
+            ""
+        ).trim();
+
+    if (explicit) {
+        return explicit;
+    }
+
+    const group =
+        getDurationGroup(
+            packageItem?.duration
+        );
+
+    if (group === "2d1n") {
+        return "2D1N";
+    }
+
+    if (group === "3d2n") {
+        return "3D2N";
+    }
+
+    if (group === "4d3n+") {
+
+        const raw =
+            String(
+                packageItem?.duration ||
+                ""
+            ).trim();
+
+        return raw || "4D3N+";
+    }
+
+    const raw =
+        normalizeText(
+            packageItem?.duration
+        );
+
+    if (
+        raw.includes("day tour") ||
+        raw === "1day" ||
+        raw === "1 day"
+    ) {
+        return "Day Tour";
+    }
+
+    return (
+        String(
+            packageItem?.duration ||
+            ""
+        ).trim() ||
+        "Tour"
+    );
+}
+
+
+function getAllPackagesForGroup(
+    packageItem
+) {
+
+    const key =
+        getDestinationGroupKey(
+            packageItem
+        );
+
+    return state.packages
+        .filter(
+            item =>
+                getDestinationGroupKey(
+                    item
+                ) === key
+        )
+        .sort(
+            (a, b) =>
+                normalizeNumber(a.price) -
+                normalizeNumber(b.price)
+        );
+}
+
+
+function buildDestinationGroups(
+    filteredPackages
+) {
+
+    const visibleKeys =
+        new Set(
+            filteredPackages.map(
+                getDestinationGroupKey
+            )
+        );
+
+    const groups = [];
+    const seen = new Set();
+
+    state.packages.forEach(
+        packageItem => {
+
+            const key =
+                getDestinationGroupKey(
+                    packageItem
+                );
+
+            if (
+                !visibleKeys.has(key) ||
+                seen.has(key)
+            ) {
+                return;
+            }
+
+            seen.add(key);
+
+            const options =
+                getAllPackagesForGroup(
+                    packageItem
+                );
+
+            const prices =
+                options
+                    .map(
+                        item =>
+                            normalizeNumber(
+                                item.price
+                            )
+                    )
+                    .filter(
+                        value =>
+                            value >= 0
+                    );
+
+            const minPrice =
+                prices.length
+                    ? Math.min(...prices)
+                    : 0;
+
+            const maxPrice =
+                prices.length
+                    ? Math.max(...prices)
+                    : 0;
+
+            groups.push({
+                key,
+                name:
+                    getDestinationName(
+                        packageItem
+                    ),
+                location:
+                    packageItem.location ||
+                    "",
+                category:
+                    packageItem.category ||
+                    "",
+                badge:
+                    packageItem.badge ||
+                    "",
+                image:
+                    getPackageImage(
+                        packageItem
+                    ),
+                representative:
+                    packageItem,
+                options,
+                minPrice,
+                maxPrice,
+                newestValue:
+                    Math.max(
+                        ...options.map(
+                            item =>
+                                dateValue(
+                                    item.updatedAt ||
+                                    item.createdAt
+                                )
+                        ),
+                        0
+                    )
+            });
+        }
+    );
+
+    groups.sort(
+        (a, b) => {
+
+            if (
+                state.sort ===
+                "price-low"
+            ) {
+                return (
+                    a.minPrice -
+                    b.minPrice
+                );
+            }
+
+            if (
+                state.sort ===
+                "price-high"
+            ) {
+                return (
+                    b.minPrice -
+                    a.minPrice
+                );
+            }
+
+            if (
+                state.sort ===
+                "name-az"
+            ) {
+                return a.name.localeCompare(
+                    b.name,
+                    "en",
+                    {
+                        sensitivity:
+                            "base"
+                    }
+                );
+            }
+
+            return (
+                b.newestValue -
+                a.newestValue
+            );
+        }
+    );
+
+    return groups;
+}
+
+
+function createPackageOptionChips(
+    options
+) {
+
+    return options
+        .map(
+            option => `
+                <span class="tour-option-chip">
+                    ${escapeHtml(
+                        getOptionLabel(
+                            option
+                        )
+                    )}
+                </span>
+            `
+        )
+        .join("");
+}
+
+
 /* ==========================================================
    CARD BADGE
 ========================================================== */
@@ -1114,11 +1618,16 @@ function renderPackages() {
     const filteredPackages =
         getFilteredPackages();
 
+    const destinationGroups =
+        buildDestinationGroups(
+            filteredPackages
+        );
+
     tourGrid.innerHTML =
         "";
 
     if (
-        filteredPackages.length ===
+        destinationGroups.length ===
         0
     ) {
 
@@ -1131,7 +1640,7 @@ function renderPackages() {
                 state.packages.length ===
                     0
                     ? "No active packages available."
-                    : "No tours match your filters.";
+                    : "No destinations match your filters.";
         }
 
         if (tourLoadMore) {
@@ -1149,26 +1658,24 @@ function renderPackages() {
     if (tourResultText) {
 
         tourResultText.textContent =
-            `${filteredPackages.length} available ${
-                filteredPackages.length === 1
-                    ? "tour"
-                    : "tours"
+            `${destinationGroups.length} available ${
+                destinationGroups.length === 1
+                    ? "destination"
+                    : "destinations"
             }`;
     }
 
-    const visiblePackages =
-        filteredPackages.slice(
+    const visibleGroups =
+        destinationGroups.slice(
             0,
             state.visibleCount
         );
 
-    visiblePackages.forEach(
-        (packageItem, index) => {
+    visibleGroups.forEach(
+        (group, index) => {
 
-            const image =
-                getPackageImage(
-                    packageItem
-                );
+            const representative =
+                group.representative;
 
             const card =
                 document.createElement(
@@ -1179,7 +1686,7 @@ function renderPackages() {
                 "tour-card";
 
             card.dataset.packageId =
-                packageItem.id;
+                representative.id;
 
             card.tabIndex =
                 0;
@@ -1191,21 +1698,25 @@ function renderPackages() {
 
             card.setAttribute(
                 "aria-label",
-                `View ${packageItem.name || "tour"} details`
+                `View ${group.name} package options`
             );
+
+            const hasMultipleOptions =
+                group.options.length > 1;
 
             card.innerHTML = `
 
                 <div class="tour-card-image">
 
                     ${
-                        image
+                        group.image
                             ? `
                                 <img
-                                    src="${escapeHtml(image)}"
+                                    src="${escapeHtml(
+                                        group.image
+                                    )}"
                                     alt="${escapeHtml(
-                                        packageItem.name ||
-                                        "Tour Package"
+                                        group.name
                                     )}"
                                     loading="lazy"
                                 >
@@ -1220,7 +1731,7 @@ function renderPackages() {
                     <span class="tour-category-badge">
                         ${escapeHtml(
                             packageBadge(
-                                packageItem,
+                                representative,
                                 index
                             )
                         )}
@@ -1230,7 +1741,7 @@ function renderPackages() {
                         type="button"
                         class="tour-favorite-button"
                         data-favorite-tour="${escapeHtml(
-                            packageItem.id
+                            representative.id
                         )}"
                         aria-label="Save tour"
                         title="Save tour"
@@ -1245,20 +1756,8 @@ function renderPackages() {
 
                     <h3>
                         ${escapeHtml(
-                            packageItem.name ||
-                            "Tour Package"
+                            group.name
                         )}
-                        ${
-                            packageItem.duration
-                                ? `
-                                    <span class="tour-card-duration-title">
-                                        ${escapeHtml(
-                                            packageItem.duration
-                                        )}
-                                    </span>
-                                  `
-                                : ""
-                        }
                     </h3>
 
                     <div class="tour-location">
@@ -1267,20 +1766,36 @@ function renderPackages() {
 
                         <span>
                             ${escapeHtml(
-                                packageItem.location ||
+                                group.location ||
                                 "Philippines"
                             )}
                         </span>
 
                     </div>
 
+                    <div class="tour-option-chips">
+                        ${createPackageOptionChips(
+                            group.options
+                        )}
+                    </div>
+
                     <div class="tour-card-price">
 
                         <div class="tour-price-inline">
 
+                            ${
+                                hasMultipleOptions
+                                    ? `
+                                        <span class="tour-price-from">
+                                            From
+                                        </span>
+                                      `
+                                    : ""
+                            }
+
                             <strong>
                                 ₱${formatMoney(
-                                    packageItem.price
+                                    group.minPrice
                                 )}
                             </strong>
 
@@ -1298,19 +1813,17 @@ function renderPackages() {
                 <div class="tour-card-footer">
 
                     <span>
-                        <i class="fa-regular fa-clock"></i>
-                        ${escapeHtml(
-                            packageItem.duration ||
-                            "Tour"
-                        )}
+                        <i class="fa-solid fa-layer-group"></i>
+                        ${
+                            group.options.length === 1
+                                ? "1 Package"
+                                : `${group.options.length} Packages`
+                        }
                     </span>
 
                     <span>
-                        <i class="fa-solid fa-user-group"></i>
-                        ${escapeHtml(
-                            packageItem.tourType ||
-                            "Joiners Tour"
-                        )}
+                        View Details
+                        <i class="fa-solid fa-arrow-right"></i>
                     </span>
 
                 </div>
@@ -1326,10 +1839,9 @@ function renderPackages() {
 
         tourLoadMore.hidden =
             state.visibleCount >=
-            filteredPackages.length;
+            destinationGroups.length;
     }
 }
-
 
 /* ==========================================================
    FILTER STATE SYNC
@@ -1914,6 +2426,523 @@ function createGalleryHtml(
 }
 
 
+
+function normalizeDisplayItems(value) {
+    if (Array.isArray(value)) {
+        return value
+            .map(item => {
+                if (typeof item === "string") return item.trim();
+                if (!item || typeof item !== "object") return "";
+                return String(
+                    item.name ||
+                    item.title ||
+                    item.label ||
+                    item.text ||
+                    item.description ||
+                    ""
+                ).trim();
+            })
+            .filter(Boolean);
+    }
+
+    if (value && typeof value === "object") {
+        return Object.entries(value)
+            .sort(([a], [b]) =>
+                String(a).localeCompare(
+                    String(b),
+                    undefined,
+                    { numeric: true }
+                )
+            )
+            .map(([key, item]) => {
+                if (typeof item === "string") {
+                    return {
+                        title: key,
+                        text: item
+                    };
+                }
+
+                if (item && typeof item === "object") {
+                    return {
+                        title:
+                            item.title ||
+                            item.day ||
+                            item.label ||
+                            key,
+                        text:
+                            item.description ||
+                            item.details ||
+                            item.text ||
+                            item.activities ||
+                            ""
+                    };
+                }
+
+                return null;
+            })
+            .filter(Boolean);
+    }
+
+    if (typeof value === "string" && value.trim()) {
+        return value
+            .split(/\r?\n/)
+            .map(item => item.trim())
+            .filter(Boolean);
+    }
+
+    return [];
+}
+
+
+function getAccommodationComparisonItems(packageItem) {
+    const raw =
+        packageItem?.accommodations ||
+        packageItem?.accommodation ||
+        packageItem?.accommodationOptions ||
+        [];
+
+    return normalizeDisplayItems(raw);
+}
+
+
+
+function getAccommodationRawItems(packageItem) {
+    const raw =
+        packageItem?.accommodations ||
+        packageItem?.accommodation ||
+        packageItem?.accommodationOptions ||
+        [];
+
+    return Array.isArray(raw)
+        ? raw.filter(Boolean)
+        : [];
+}
+
+
+
+function getTourAccommodationId(item, index) {
+    return normalizeText(
+        item?.id ||
+        item?.accommodationId
+    ) || `accommodation-${index + 1}`;
+}
+
+
+function createPickupSelectionHtml(locations) {
+
+    if (
+        !Array.isArray(locations) ||
+        locations.length === 0
+    ) {
+        return `
+            <div class="tw-compare-empty">
+                <i class="fa-solid fa-minus"></i>
+                <span>No pickup location added</span>
+            </div>
+        `;
+    }
+
+    return `
+        <div class="tw-pickup-selection-grid">
+
+            ${locations.map(location => {
+
+                const value =
+                    typeof location === "string"
+                        ? location
+                        : (
+                            location?.name ||
+                            location?.label ||
+                            location?.value ||
+                            ""
+                        );
+
+                const selected =
+                    normalizeText(
+                        state.selectedPickupLocation
+                    ) === normalizeText(value);
+
+                return `
+                    <button
+                        type="button"
+                        class="tw-pickup-option ${
+                            selected ? "selected" : ""
+                        }"
+                        data-tour-pickup="${escapeHtml(value)}"
+                    >
+                        <span class="tw-pickup-radio">
+                            <i class="${
+                                selected
+                                    ? "fa-solid fa-circle-check"
+                                    : "fa-regular fa-circle"
+                            }"></i>
+                        </span>
+
+                        <span>
+                            <strong>${escapeHtml(value)}</strong>
+                            <small>
+                                ${
+                                    selected
+                                        ? "Selected pickup point"
+                                        : "Select this pickup point"
+                                }
+                            </small>
+                        </span>
+                    </button>
+                `;
+            }).join("")}
+
+        </div>
+
+        <div class="tw-selection-note">
+            <i class="fa-solid fa-circle-info"></i>
+            <span>
+                Your selected pickup point will be carried over to the booking page.
+            </span>
+        </div>
+    `;
+}
+
+
+function createAccommodationCardsHtml(accommodations) {
+
+    if (
+        !Array.isArray(accommodations) ||
+        accommodations.length === 0
+    ) {
+        return `
+            <div class="tw-compare-empty tw-accommodation-empty">
+                <i class="fa-solid fa-minus"></i>
+                <span>No accommodation added</span>
+            </div>
+        `;
+    }
+
+    return `
+        <div class="tw-accommodation-grid">
+
+            ${accommodations.map((item, index) => {
+
+                const accommodationId =
+                    getTourAccommodationId(
+                        item,
+                        index
+                    );
+
+                const name =
+                    String(
+                        item?.name ||
+                        item?.title ||
+                        item?.label ||
+                        `Accommodation ${index + 1}`
+                    ).trim();
+
+                const isSelected =
+                    state.selectedAccommodationId ===
+                    accommodationId;
+
+                const type =
+                    normalizeText(
+                        item?.type ||
+                        item?.rateType ||
+                        "included"
+                    );
+
+                const image =
+                    String(
+                        item?.photo ||
+                        item?.image ||
+                        item?.photoUrl ||
+                        item?.imageUrl ||
+                        item?.url ||
+                        ""
+                    ).trim();
+
+                const capacity =
+                    String(
+                        item?.capacity ||
+                        item?.pax ||
+                        item?.guestCapacity ||
+                        ""
+                    ).trim();
+
+                const description =
+                    String(
+                        item?.description ||
+                        item?.details ||
+                        item?.note ||
+                        ""
+                    ).trim();
+
+                const rawPrice =
+                    item?.price ??
+                    item?.upgradePrice ??
+                    item?.additionalFee ??
+                    "";
+
+                const priceText =
+                    String(rawPrice || "").trim();
+
+                const isIncluded =
+                    type === "included" ||
+                    type === "standard" ||
+                    item?.included === true;
+
+                const badge =
+                    isIncluded
+                        ? "Standard"
+                        : "Upgrade";
+
+                const priceLabel =
+                    isIncluded
+                        ? "Included"
+                        : (
+                            priceText &&
+                            normalizeText(priceText) !== "tbd"
+                                ? `+₱${formatMoney(priceText)} / night`
+                                : "Additional Fee"
+                        );
+
+                const amenitiesRaw =
+                    item?.amenities ||
+                    item?.features ||
+                    [];
+
+                const amenities =
+                    normalizeDisplayItems(
+                        amenitiesRaw
+                    ).slice(0, 5);
+
+                return `
+                    <article
+                        class="tw-accommodation-card ${isSelected ? "selected" : ""}"
+                        data-tour-accommodation-card="${escapeHtml(
+                            accommodationId
+                        )}"
+                        data-tour-accommodation-name="${escapeHtml(
+                            name
+                        )}"
+                        role="button"
+                        tabindex="0"
+                        aria-pressed="${isSelected ? "true" : "false"}"
+                    >
+
+                        <div class="tw-accommodation-photo">
+
+                            ${
+                                image
+                                    ? `
+                                        <img
+                                            src="${escapeHtml(image)}"
+                                            alt="${escapeHtml(name)}"
+                                        >
+                                      `
+                                    : `
+                                        <div class="tw-accommodation-photo-placeholder">
+                                            <i class="fa-solid fa-bed"></i>
+                                        </div>
+                                      `
+                            }
+
+                            <span class="tw-accommodation-badge ${
+                                isIncluded
+                                    ? "standard"
+                                    : "upgrade"
+                            }">
+                                ${badge}
+                            </span>
+
+                        </div>
+
+                        <div class="tw-accommodation-card-body">
+
+                            <h5>${escapeHtml(name)}</h5>
+
+                            ${
+                                capacity
+                                    ? `
+                                        <div class="tw-accommodation-meta">
+                                            <i class="fa-solid fa-user-group"></i>
+                                            <span>${escapeHtml(capacity)}</span>
+                                        </div>
+                                      `
+                                    : ""
+                            }
+
+                            ${
+                                amenities.length
+                                    ? `
+                                        <div class="tw-accommodation-features">
+                                            ${amenities.map(text => `
+                                                <div>
+                                                    <i class="fa-solid fa-check"></i>
+                                                    <span>${escapeHtml(
+                                                        typeof text === "string"
+                                                            ? text
+                                                            : (
+                                                                text?.text ||
+                                                                text?.title ||
+                                                                ""
+                                                            )
+                                                    )}</span>
+                                                </div>
+                                            `).join("")}
+                                        </div>
+                                      `
+                                    : ""
+                            }
+
+                            ${
+                                description
+                                    ? `
+                                        <p class="tw-accommodation-description">
+                                            ${escapeHtml(description)}
+                                        </p>
+                                      `
+                                    : ""
+                            }
+
+                            <div class="tw-accommodation-price ${
+                                isIncluded
+                                    ? "included"
+                                    : "upgrade"
+                            }">
+                                ${escapeHtml(priceLabel)}
+                            </div>
+
+                            <div
+                                class="tw-accommodation-select-button ${
+                                    isSelected ? "selected" : ""
+                                }"
+                                aria-hidden="true"
+                            >
+                                <i class="${
+                                    isSelected
+                                        ? "fa-solid fa-circle-check"
+                                        : "fa-regular fa-circle"
+                                }"></i>
+                                ${
+                                    isSelected
+                                        ? "Selected"
+                                        : "Tap anywhere to select"
+                                }
+                            </div>
+
+                        </div>
+
+                    </article>
+                `;
+
+            }).join("")}
+
+        </div>
+
+        <div class="tw-accommodation-note">
+            <i class="fa-solid fa-circle-info"></i>
+            <span>
+                Choose your preferred accommodation now. Availability will be verified after you select your travel date during booking.
+            </span>
+        </div>
+    `;
+}
+
+
+function getPickupComparisonItems(packageItem) {
+    const raw =
+        packageItem?.pickupLocations ||
+        packageItem?.pickUpLocations ||
+        packageItem?.meetupLocations ||
+        packageItem?.meetUpLocations ||
+        [];
+
+    return normalizeDisplayItems(raw);
+}
+
+
+function getItineraryComparisonItems(packageItem) {
+    return normalizeDisplayItems(
+        packageItem?.itinerary || []
+    );
+}
+
+
+function createSimpleComparisonList(items, emptyText = "Not Included") {
+    if (!items || items.length === 0) {
+        return `
+            <div class="tw-compare-empty">
+                <i class="fa-solid fa-minus"></i>
+                <span>${escapeHtml(emptyText)}</span>
+            </div>
+        `;
+    }
+
+    return `
+        <div class="tw-accordion-list">
+            ${items.map(item => `
+                <div class="tw-accordion-list-item">
+                    <i class="fa-solid fa-check"></i>
+                    <span>${escapeHtml(
+                        typeof item === "string"
+                            ? item
+                            : (
+                                item?.text ||
+                                item?.title ||
+                                ""
+                            )
+                    )}</span>
+                </div>
+            `).join("")}
+        </div>
+    `;
+}
+
+
+function createItineraryComparisonList(items) {
+    if (!items || items.length === 0) {
+        return `
+            <div class="tw-compare-empty">
+                <i class="fa-solid fa-minus"></i>
+                <span>No itinerary added</span>
+            </div>
+        `;
+    }
+
+    return `
+        <div class="tw-itinerary-compare-list">
+            ${items.map((item, index) => {
+                const isObject =
+                    item &&
+                    typeof item === "object";
+
+                const title =
+                    isObject
+                        ? (
+                            item.title ||
+                            `Day ${index + 1}`
+                        )
+                        : `Day ${index + 1}`;
+
+                const text =
+                    isObject
+                        ? (
+                            Array.isArray(item.text)
+                                ? item.text.join(" • ")
+                                : item.text
+                        )
+                        : item;
+
+                return `
+                    <div class="tw-itinerary-compare-item">
+                        <strong>${escapeHtml(title)}</strong>
+                        <span>${escapeHtml(text || "")}</span>
+                    </div>
+                `;
+            }).join("")}
+        </div>
+    `;
+}
+
+
 function openTourDetails(
     packageId
 ) {
@@ -1927,135 +2956,445 @@ function openTourDetails(
         return;
     }
 
-    state.selectedPackage =
+    const options =
+        getAllPackagesForGroup(
+            packageItem
+        );
+
+    const selectedOption =
+        options.find(
+            item =>
+                item.id ===
+                packageId
+        ) ||
+        options[0] ||
         packageItem;
+
+    const destinationKey =
+        getDestinationGroupKey(
+            selectedOption
+        );
+
+    if (
+        state.selectedDestinationKey !==
+        destinationKey
+    ) {
+        state.selectedDestinationKey =
+            destinationKey;
+
+        state.selectedAccommodationId = "";
+        state.selectedAccommodationName = "";
+        state.selectedPickupLocation = "";
+
+        const accommodationSource =
+            options.find(
+                option =>
+                    getAccommodationRawItems(
+                        option
+                    ).length > 0
+            ) || selectedOption;
+
+        const accommodations =
+            getAccommodationRawItems(
+                accommodationSource
+            );
+
+        const defaultAccommodationIndex =
+            accommodations.findIndex(item => {
+                const type =
+                    normalizeText(
+                        item?.type ||
+                        item?.optionType ||
+                        item?.category ||
+                        "included"
+                    );
+
+                return (
+                    type === "included" ||
+                    type === "standard" ||
+                    item?.included === true ||
+                    item?.isIncluded === true
+                );
+            });
+
+        if (defaultAccommodationIndex >= 0) {
+            const defaultAccommodation =
+                accommodations[
+                    defaultAccommodationIndex
+                ];
+
+            state.selectedAccommodationId =
+                getTourAccommodationId(
+                    defaultAccommodation,
+                    defaultAccommodationIndex
+                );
+
+            state.selectedAccommodationName =
+                normalizeText(
+                    defaultAccommodation?.name ||
+                    defaultAccommodation?.title
+                );
+        }
+    }
+
+    state.selectedPackage =
+        selectedOption;
+
+    const destinationName =
+        getDestinationName(
+            selectedOption
+        );
 
     if (tourModalTitle) {
         tourModalTitle.textContent =
-            packageItem.name ||
+            destinationName ||
             "Package Details";
+    }
+
+    if (tourBookNow) {
+        tourBookNow.innerHTML = `
+            <i class="fa-solid fa-calendar-check"></i>
+            Book Now — ${escapeHtml(
+                getOptionLabel(
+                    selectedOption
+                )
+            )} (₱${formatMoney(
+                selectedOption.price
+            )})
+        `;
     }
 
     if (tourModalContent) {
 
         tourModalContent.innerHTML = `
 
-            ${createGalleryHtml(
-                packageItem
-            )}
+            <div class="tw-continuous-compare">
 
-            <div class="modal-tour-summary">
+                <section class="tw-continuous-hero">
 
-                <div class="modal-tour-location">
+                    <div class="tw-continuous-hero-media">
 
-                    <i class="fa-solid fa-location-dot"></i>
+                        ${createGalleryHtml(
+                            selectedOption
+                        )}
 
-                    ${escapeHtml(
-                        packageItem.location ||
-                        "Philippines"
-                    )}
+                        <div class="tw-continuous-hero-copy">
 
-                    ${
-                        packageItem.duration
-                            ? ` · ${escapeHtml(
-                                packageItem.duration
-                            )}`
-                            : ""
-                    }
+                            <span class="tw-continuous-category">
+                                ${escapeHtml(
+                                    selectedOption.category ||
+                                    "Tour Package"
+                                )}
+                            </span>
 
-                </div>
+                            <h3>
+                                ${escapeHtml(
+                                    destinationName
+                                )}
+                            </h3>
 
-                <h3>
-                    ${escapeHtml(
-                        packageItem.name ||
-                        "Tour Package"
-                    )}
-                </h3>
+                            <div>
+                                <i class="fa-solid fa-location-dot"></i>
+                                ${escapeHtml(
+                                    selectedOption.location ||
+                                    "Philippines"
+                                )}
+                            </div>
 
-                <div class="modal-tour-price">
+                        </div>
 
-                    ₱${formatMoney(
-                        packageItem.price
-                    )}
+                    </div>
 
-                    <small>
-                        / person
-                    </small>
+                </section>
 
-                </div>
+
+                <section class="tw-package-picker">
+
+                    <div class="tw-package-picker-heading">
+
+                        <div>
+                            <small>CHOOSE YOUR PACKAGE</small>
+                            <h4>Which package fits your trip?</h4>
+                            <p>
+                                Select an option, then open any section below
+                                to compare what each package includes.
+                            </p>
+                        </div>
+
+                        <span>
+                            ${options.length}
+                            ${options.length === 1 ? "option" : "options"}
+                        </span>
+
+                    </div>
+
+
+                    <div class="tw-package-picker-grid">
+
+                        ${options.map(option => {
+
+                            const active =
+                                option.id ===
+                                selectedOption.id;
+
+                            const meta =
+                                buildPackageComparisonMeta(
+                                    option
+                                );
+
+                            return `
+                                <button
+                                    type="button"
+                                    class="tw-package-picker-card ${
+                                        active ? "active" : ""
+                                    }"
+                                    data-package-option="${escapeHtml(
+                                        option.id
+                                    )}"
+                                >
+
+                                    <span class="tw-package-picker-check">
+                                        <i class="${
+                                            active
+                                                ? "fa-solid fa-circle-check"
+                                                : "fa-regular fa-circle"
+                                        }"></i>
+                                    </span>
+
+                                    <strong>
+                                        ${escapeHtml(
+                                            getOptionLabel(option)
+                                        )}
+                                    </strong>
+
+                                    <span class="tw-package-picker-stay">
+                                        ${escapeHtml(
+                                            meta.stayLabel
+                                        )}
+                                    </span>
+
+                                    <div class="tw-package-picker-price">
+                                        ₱${formatMoney(option.price)}
+                                        <small>/ person</small>
+                                    </div>
+
+                                </button>
+                            `;
+
+                        }).join("")}
+
+                    </div>
+
+                </section>
+
+
+                <section class="tw-comparison-accordions">
+
+                    ${[
+                        {
+                            key: "inclusions",
+                            icon: "fa-circle-check",
+                            title: "Package Inclusions",
+                            subtitle: "Compare everything included in each package."
+                        },
+                        {
+                            key: "exclusions",
+                            icon: "fa-circle-xmark",
+                            title: "Exclusions",
+                            subtitle: "Compare what is not included in each package."
+                        },
+                        {
+                            key: "itinerary",
+                            icon: "fa-route",
+                            title: "Itinerary",
+                            subtitle: "Compare the tour flow and number of days."
+                        },
+                        {
+                            key: "accommodation",
+                            icon: "fa-bed",
+                            title: "Accommodation",
+                            subtitle: "See available stays, photos, capacity, and room upgrade options."
+                        },
+                        {
+                            key: "pickup",
+                            icon: "fa-location-dot",
+                            title: "Meet Up & Pick Up",
+                            subtitle: "See the available meet up and pickup locations."
+                        }
+                    ].map((section, sectionIndex) => `
+
+                        <div
+                            class="tw-comparison-accordion ${
+                                sectionIndex === 0 ? "open" : ""
+                            }"
+                            data-comparison-accordion="${section.key}"
+                        >
+
+                            <button
+                                type="button"
+                                class="tw-comparison-accordion-trigger"
+                                aria-expanded="${
+                                    sectionIndex === 0
+                                        ? "true"
+                                        : "false"
+                                }"
+                            >
+
+                                <span class="tw-comparison-accordion-icon">
+                                    <i class="fa-solid ${section.icon}"></i>
+                                </span>
+
+                                <span class="tw-comparison-accordion-copy">
+                                    <strong>${section.title}</strong>
+                                    <small>${section.subtitle}</small>
+                                </span>
+
+                                <i class="fa-solid fa-chevron-down tw-comparison-chevron"></i>
+
+                            </button>
+
+
+                            <div class="tw-comparison-accordion-body">
+
+                                ${["accommodation", "pickup"].includes(section.key) ? `
+
+                                    <div class="tw-shared-section">
+
+                                        ${(() => {
+
+                                            if (section.key === "accommodation") {
+
+                                                const sourceOption =
+                                                    options.find(
+                                                        option =>
+                                                            getAccommodationRawItems(
+                                                                option
+                                                            ).length > 0
+                                                    ) || selectedOption;
+
+                                                return createAccommodationCardsHtml(
+                                                    getAccommodationRawItems(
+                                                        sourceOption
+                                                    )
+                                                );
+                                            }
+
+                                            const sourceOption =
+                                                options.find(
+                                                    option =>
+                                                        getPickupComparisonItems(
+                                                            option
+                                                        ).length > 0
+                                                ) || selectedOption;
+
+                                            const pickupLocations =
+                                                Array.isArray(
+                                                    sourceOption?.pickupLocations
+                                                )
+                                                    ? sourceOption.pickupLocations
+                                                    : getPickupComparisonItems(
+                                                        sourceOption
+                                                    );
+
+                                            return createPickupSelectionHtml(
+                                                pickupLocations
+                                            );
+
+                                        })()}
+
+                                    </div>
+
+                                ` : `
+
+                                    <div
+                                        class="tw-comparison-columns"
+                                        style="--package-count:${Math.max(
+                                            options.length,
+                                            1
+                                        )}"
+                                    >
+
+                                        ${options.map(option => {
+
+                                            let content = "";
+
+                                            if (section.key === "inclusions") {
+                                                content =
+                                                    createSimpleComparisonList(
+                                                        normalizeDisplayItems(
+                                                            option.inclusions
+                                                        ),
+                                                        "Not Included"
+                                                    );
+                                            }
+
+                                            if (section.key === "exclusions") {
+                                                content =
+                                                    createSimpleComparisonList(
+                                                        normalizeDisplayItems(
+                                                            option.exclusions
+                                                        ),
+                                                        "No exclusions added"
+                                                    );
+                                            }
+
+                                            if (section.key === "itinerary") {
+                                                content =
+                                                    createItineraryComparisonList(
+                                                        getItineraryComparisonItems(
+                                                            option
+                                                        )
+                                                    );
+                                            }
+
+                                            return `
+                                                <article class="tw-comparison-column">
+
+                                                    <div class="tw-comparison-column-head">
+
+                                                        <div>
+                                                            <strong>
+                                                                ${escapeHtml(
+                                                                    getOptionLabel(
+                                                                        option
+                                                                    )
+                                                                )}
+                                                            </strong>
+
+                                                            ${section.key === "inclusions" ? `
+                                                                <span>
+                                                                    ₱${formatMoney(
+                                                                        option.price
+                                                                    )}
+                                                                    / person
+                                                                </span>
+                                                            ` : ""}
+                                                        </div>
+
+                                                    </div>
+
+                                                    <div class="tw-comparison-column-content">
+                                                        ${content}
+                                                    </div>
+
+                                                </article>
+                                            `;
+
+                                        }).join("")}
+
+                                    </div>
+
+                                `}
+
+                            </div>
+
+                        </div>
+
+                    `).join("")}
+
+                </section>
 
             </div>
-
-            ${
-                packageItem.description
-                    ? `
-                        <section class="modal-section">
-                            <h4>About This Tour</h4>
-                            <p>
-                                ${escapeHtml(
-                                    packageItem.description
-                                )}
-                            </p>
-                        </section>
-                      `
-                    : ""
-            }
-
-            ${
-                packageItem.inclusions.length > 0
-                    ? `
-                        <section class="modal-section">
-                            <h4>Inclusions</h4>
-                            ${createListHtml(
-                                packageItem.inclusions,
-                                "fa-solid fa-circle-check"
-                            )}
-                        </section>
-                      `
-                    : ""
-            }
-
-            ${
-                packageItem.exclusions.length > 0
-                    ? `
-                        <section class="modal-section">
-                            <h4>Exclusions</h4>
-                            ${createListHtml(
-                                packageItem.exclusions,
-                                "fa-regular fa-circle-xmark"
-                            )}
-                        </section>
-                      `
-                    : ""
-            }
-
-            ${
-                packageItem.accommodations.length > 0
-                    ? `
-                        <section class="modal-section">
-                            <h4>Accommodation Options</h4>
-                            ${createAccommodationsHtml(
-                                packageItem.accommodations
-                            )}
-                        </section>
-                      `
-                    : ""
-            }
-
-            ${
-                packageItem.itinerary
-                    ? `
-                        <section class="modal-section">
-                            <h4>Itinerary</h4>
-                            <p style="white-space:pre-line;">
-                                ${escapeHtml(
-                                    packageItem.itinerary
-                                )}
-                            </p>
-                        </section>
-                      `
-                    : ""
-            }
 
         `;
 
@@ -2105,6 +3444,324 @@ function openTourDetails(
                     );
                 }
             );
+
+        tourModalContent
+            .querySelectorAll(
+                ".tw-tour-tab"
+            )
+            .forEach(
+                tabButton => {
+
+                    tabButton.addEventListener(
+                        "click",
+                        () => {
+
+                            const targetTab =
+                                tabButton.dataset.tourTab ||
+                                "overview";
+
+                            tourModalContent
+                                .querySelectorAll(
+                                    ".tw-tour-tab"
+                                )
+                                .forEach(
+                                    button =>
+                                        button.classList.remove(
+                                            "active"
+                                        )
+                                );
+
+                            tourModalContent
+                                .querySelectorAll(
+                                    ".tw-tour-panel-content"
+                                )
+                                .forEach(
+                                    panel =>
+                                        panel.classList.remove(
+                                            "active"
+                                        )
+                                );
+
+                            tabButton.classList.add(
+                                "active"
+                            );
+
+                            tourModalContent
+                                .querySelector(
+                                    `[data-tour-panel="${targetTab}"]`
+                                )
+                                ?.classList.add(
+                                    "active"
+                                );
+
+                        }
+                    );
+
+                }
+            );
+
+
+        tourModalContent
+            .querySelectorAll(
+                ".tw-comparison-accordion-trigger"
+            )
+            .forEach(trigger => {
+
+                trigger.addEventListener(
+                    "click",
+                    () => {
+
+                        const currentAccordion =
+                            trigger.closest(
+                                ".tw-comparison-accordion"
+                            );
+
+                        const isOpen =
+                            currentAccordion.classList.contains(
+                                "open"
+                            );
+
+                        /*
+                          Independent accordion behavior:
+                          opening Exclusions / Itinerary / Accommodation /
+                          Meet Up & Pick Up no longer closes sections that
+                          are already open. This keeps package comparisons
+                          visible at the same time.
+                        */
+                        currentAccordion.classList.toggle(
+                            "open",
+                            !isOpen
+                        );
+
+                        trigger.setAttribute(
+                            "aria-expanded",
+                            String(!isOpen)
+                        );
+
+                    }
+                );
+
+            });
+
+
+
+        const selectAccommodationCard = (
+            accommodationCard
+        ) => {
+
+            state.selectedAccommodationId =
+                accommodationCard.dataset
+                    .tourAccommodationCard ||
+                "";
+
+            state.selectedAccommodationName =
+                accommodationCard.dataset
+                    .tourAccommodationName ||
+                "";
+
+            /*
+             * Update only the accommodation cards in place.
+             * This keeps the Accommodation section open and
+             * preserves the customer's current scroll position.
+             */
+            tourModalContent
+                .querySelectorAll(
+                    "[data-tour-accommodation-card]"
+                )
+                .forEach(card => {
+
+                    const isSelected =
+                        card.dataset
+                            .tourAccommodationCard ===
+                        state.selectedAccommodationId;
+
+                    card.classList.toggle(
+                        "selected",
+                        isSelected
+                    );
+
+                    card.setAttribute(
+                        "aria-pressed",
+                        String(isSelected)
+                    );
+
+                    const status =
+                        card.querySelector(
+                            ".tw-accommodation-select-button"
+                        );
+
+                    if (status) {
+                        status.classList.toggle(
+                            "selected",
+                            isSelected
+                        );
+
+                        status.innerHTML = `
+                            <i class="${
+                                isSelected
+                                    ? "fa-solid fa-circle-check"
+                                    : "fa-regular fa-circle"
+                            }"></i>
+                            ${
+                                isSelected
+                                    ? "Selected"
+                                    : "Tap anywhere to select"
+                            }
+                        `;
+                    }
+
+                });
+
+        };
+
+
+        tourModalContent
+            .querySelectorAll(
+                "[data-tour-accommodation-card]"
+            )
+            .forEach(accommodationCard => {
+
+                accommodationCard.addEventListener(
+                    "click",
+                    () => {
+                        selectAccommodationCard(
+                            accommodationCard
+                        );
+                    }
+                );
+
+                accommodationCard.addEventListener(
+                    "keydown",
+                    event => {
+
+                        if (
+                            event.key !== "Enter" &&
+                            event.key !== " "
+                        ) {
+                            return;
+                        }
+
+                        event.preventDefault();
+
+                        selectAccommodationCard(
+                            accommodationCard
+                        );
+
+                    }
+                );
+
+            });
+
+
+        const selectPickupOption = (
+            pickupButton
+        ) => {
+
+            state.selectedPickupLocation =
+                pickupButton.dataset.tourPickup ||
+                "";
+
+            /*
+             * Update the pickup choices in place instead of
+             * re-rendering the whole package modal. This keeps
+             * Meet Up & Pick Up open and preserves scroll position.
+             */
+            tourModalContent
+                .querySelectorAll(
+                    "[data-tour-pickup]"
+                )
+                .forEach(button => {
+
+                    const isSelected =
+                        normalizeText(
+                            button.dataset.tourPickup
+                        ) ===
+                        normalizeText(
+                            state.selectedPickupLocation
+                        );
+
+                    button.classList.toggle(
+                        "selected",
+                        isSelected
+                    );
+
+                    const icon =
+                        button.querySelector(
+                            ".tw-pickup-radio i"
+                        );
+
+                    if (icon) {
+                        icon.className =
+                            isSelected
+                                ? "fa-solid fa-circle-check"
+                                : "fa-regular fa-circle";
+                    }
+
+                    const helperText =
+                        button.querySelector(
+                            "small"
+                        );
+
+                    if (helperText) {
+                        helperText.textContent =
+                            isSelected
+                                ? "Selected pickup point"
+                                : "Select this pickup point";
+                    }
+
+                });
+
+        };
+
+
+        tourModalContent
+            .querySelectorAll(
+                "[data-tour-pickup]"
+            )
+            .forEach(button => {
+
+                button.addEventListener(
+                    "click",
+                    () => {
+                        selectPickupOption(
+                            button
+                        );
+                    }
+                );
+
+            });
+
+
+        tourModalContent
+            .querySelectorAll(
+                "[data-package-option]"
+            )
+            .forEach(
+                optionButton => {
+
+                    optionButton.addEventListener(
+                        "click",
+                        () => {
+
+                            const nextPackageId =
+                                optionButton.dataset.packageOption ||
+                                "";
+
+                            if (
+                                !nextPackageId ||
+                                nextPackageId ===
+                                state.selectedPackage?.id
+                            ) {
+                                return;
+                            }
+
+                            openTourDetails(
+                                nextPackageId
+                            );
+                        }
+                    );
+                }
+            );
     }
 
     tourModal?.classList.add(
@@ -2119,7 +3776,6 @@ function openTourDetails(
     document.body.style.overflow =
         "hidden";
 }
-
 
 function closeDetailsModal() {
 
@@ -2137,6 +3793,7 @@ function closeDetailsModal() {
 }
 
 
+/* EXACT OPTION ID is forwarded to Booking so 2D1N / 3D2N stay separate. */
 function bookPackage(
     packageId
 ) {
@@ -2150,10 +3807,37 @@ function bookPackage(
         return;
     }
 
+    const params =
+        new URLSearchParams();
+
+    params.set(
+        "package",
+        packageItem.id
+    );
+
+    if (state.selectedAccommodationId) {
+        params.set(
+            "accommodation",
+            state.selectedAccommodationId
+        );
+    }
+
+    if (state.selectedAccommodationName) {
+        params.set(
+            "accommodationName",
+            state.selectedAccommodationName
+        );
+    }
+
+    if (state.selectedPickupLocation) {
+        params.set(
+            "pickup",
+            state.selectedPickupLocation
+        );
+    }
+
     window.location.href =
-        `booking.html?package=${encodeURIComponent(
-            packageItem.id
-        )}`;
+        `booking.html?${params.toString()}`;
 }
 
 

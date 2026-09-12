@@ -1202,3 +1202,139 @@
         width: 100%;
     }
 }
+
+
+/* =========================================================
+   PHILIPPINE HOLIDAY SETTINGS
+========================================================= */
+
+.holiday-settings-toolbar {
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+}
+
+.holiday-master-toggle {
+    flex: 1;
+    margin: 0;
+}
+
+.holiday-add-button {
+    flex: 0 0 auto;
+    min-height: 42px;
+}
+
+.holiday-settings-list {
+    display: grid;
+    gap: 10px;
+}
+
+.holiday-settings-row {
+    padding: 13px;
+    background: #f8fbff;
+    border: 1px solid #dbe6f5;
+    border-radius: 12px;
+}
+
+.holiday-row-main {
+    display: grid;
+    grid-template-columns:
+        minmax(145px, .85fr)
+        minmax(220px, 1.55fr)
+        minmax(170px, 1fr)
+        minmax(120px, .7fr)
+        42px;
+    align-items: end;
+    gap: 10px;
+}
+
+.holiday-settings-row .form-group {
+    margin: 0;
+}
+
+.holiday-remove-button {
+    width: 42px;
+    height: 42px;
+    display: grid;
+    place-items: center;
+    color: #d92d20;
+    background: #ffffff;
+    border: 1px solid #f2b8b5;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.holiday-remove-button:hover {
+    background: #fff5f4;
+}
+
+.holiday-settings-empty {
+    min-height: 90px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    color: #667085;
+    background: #f8fafc;
+    border: 1px dashed #d4deea;
+    border-radius: 12px;
+}
+
+.holiday-settings-empty[hidden] {
+    display: none !important;
+}
+
+.holiday-settings-empty > i {
+    font-size: 24px;
+    color: #1769ff;
+}
+
+.holiday-settings-empty strong,
+.holiday-settings-empty span {
+    display: block;
+}
+
+.holiday-settings-empty strong {
+    color: #172036;
+    font-size: 13px;
+}
+
+.holiday-settings-empty span {
+    margin-top: 2px;
+    font-size: 11px;
+}
+
+@media (max-width: 900px) {
+    .holiday-row-main {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .holiday-remove-button {
+        grid-column: 2;
+        justify-self: end;
+    }
+}
+
+@media (max-width: 560px) {
+    .holiday-settings-toolbar {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .holiday-add-button {
+        width: 100%;
+    }
+
+    .holiday-row-main {
+        grid-template-columns: 1fr;
+    }
+
+    .holiday-remove-button {
+        grid-column: 1;
+        justify-self: stretch;
+        width: 100%;
+    }
+}

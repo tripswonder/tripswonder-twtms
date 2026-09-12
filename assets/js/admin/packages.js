@@ -80,6 +80,11 @@ document.addEventListener(
 
         let editingPackageId = null;
 
+        let saveAsDraftMode = false;
+
+        let activeBuilderSectionId =
+            "packageSectionBasic";
+
         let packageGalleryFiles = [];
 
         let existingGalleryPhotos = [];
@@ -87,6 +92,24 @@ document.addEventListener(
         let accommodationCount = 0;
 
         let exclusionCount = 0;
+
+        let packageTemplates =
+            new Map();
+
+        let packageTemplateDocIds =
+            new Map();
+
+        let activePackageTemplateCategory =
+            "Beach Tour";
+
+        let categoryTemplateManuallyApplied =
+            false;
+
+        let selectedExistingDestinationKey =
+            "";
+
+        let destinationLookupBlurTimer =
+            null;
 
 
         // ======================================================
@@ -111,6 +134,116 @@ document.addEventListener(
         const statusFilter =
             document.getElementById(
                 "packageStatusFilter"
+            );
+
+        const managePackageTemplatesButton =
+            document.getElementById(
+                "managePackageTemplatesButton"
+            );
+
+        const packageTemplateModal =
+            document.getElementById(
+                "packageTemplateModal"
+            );
+
+        const packageTemplateModalOverlay =
+            document.getElementById(
+                "packageTemplateModalOverlay"
+            );
+
+        const closePackageTemplateModalButton =
+            document.getElementById(
+                "closePackageTemplateModal"
+            );
+
+        const cancelPackageTemplateButton =
+            document.getElementById(
+                "cancelPackageTemplateButton"
+            );
+
+        const savePackageTemplateButton =
+            document.getElementById(
+                "savePackageTemplateButton"
+            );
+
+        const resetPackageTemplateButton =
+            document.getElementById(
+                "resetPackageTemplateButton"
+            );
+
+        const packageTemplateDetails =
+            document.getElementById(
+                "packageTemplateDetails"
+            );
+
+        const packageTemplateInclusions =
+            document.getElementById(
+                "packageTemplateInclusions"
+            );
+
+        const packageTemplateExclusions =
+            document.getElementById(
+                "packageTemplateExclusions"
+            );
+
+        const addPackageTemplateInclusion =
+            document.getElementById(
+                "addPackageTemplateInclusion"
+            );
+
+        const addPackageTemplateExclusion =
+            document.getElementById(
+                "addPackageTemplateExclusion"
+            );
+
+        const packageTemplateEditingCategory =
+            document.getElementById(
+                "packageTemplateEditingCategory"
+            );
+
+        const packageTemplateSourceBadge =
+            document.getElementById(
+                "packageTemplateSourceBadge"
+            );
+
+        const categoryTemplateApplied =
+            document.getElementById(
+                "categoryTemplateApplied"
+            );
+
+        const categoryTemplateAppliedText =
+            document.getElementById(
+                "categoryTemplateAppliedText"
+            );
+
+        const destinationSuggestions =
+            document.getElementById(
+                "destinationSuggestions"
+            );
+
+        const existingDestinationPanel =
+            document.getElementById(
+                "existingDestinationPanel"
+            );
+
+        const existingDestinationName =
+            document.getElementById(
+                "existingDestinationName"
+            );
+
+        const existingDestinationCount =
+            document.getElementById(
+                "existingDestinationCount"
+            );
+
+        const existingDestinationOptions =
+            document.getElementById(
+                "existingDestinationOptions"
+            );
+
+        const packageModalTitle =
+            document.getElementById(
+                "packageModalTitle"
             );
 
         const sortSelect =
@@ -186,6 +319,41 @@ document.addEventListener(
         const packageForm =
             document.getElementById(
                 "packageForm"
+            );
+
+        const packageBuilderContent =
+            document.getElementById(
+                "packageBuilderContent"
+            );
+
+        const packageBuilderSideNav =
+            document.getElementById(
+                "packageBuilderSideNav"
+            );
+
+        const packageBuilderStepLabel =
+            document.getElementById(
+                "packageBuilderStepLabel"
+            );
+
+        const packageBuilderStatus =
+            document.getElementById(
+                "packageBuilderStatus"
+            );
+
+        const savePackageDraftButton =
+            document.getElementById(
+                "savePackageDraftButton"
+            );
+
+        const nextPackageSection =
+            document.getElementById(
+                "nextPackageSection"
+            );
+
+        const savePackageButton =
+            document.getElementById(
+                "savePackageButton"
             );
 
 
@@ -769,6 +937,2153 @@ addPickupLocation?.addEventListener(
             );
 
 
+
+        // ======================================================
+        // PACKAGE BUILDER NAVIGATION / PREVIEW / DRAFT
+        // ======================================================
+
+        const PACKAGE_BUILDER_SECTIONS = [
+            {
+                id: "packageSectionBasic",
+                label: "Basic Information"
+            },
+            {
+                id: "packageSectionPassengerPricing",
+                label: "Package Option"
+            },
+            {
+                id: "packageSectionGallery",
+                label: "Gallery / Photos"
+            },
+            {
+                id: "packageSectionDetails",
+                label: "Details"
+            },
+            {
+                id: "packageSectionInclusions",
+                label: "Inclusions"
+            },
+            {
+                id: "packageSectionExclusions",
+                label: "Exclusions"
+            },
+            {
+                id: "packageSectionAccommodation",
+                label: "Accommodation"
+            },
+            {
+                id: "packageSectionPickup",
+                label: "Pick Up Locations"
+            },
+            {
+                id: "packageSectionSchedule",
+                label: "Tour Pattern"
+            },
+            {
+                id: "packageSectionScheduleAvailability",
+                label: "Travel Dates"
+            },
+            {
+                id: "packageSectionItinerary",
+                label: "Itinerary"
+            }
+        ];
+
+
+        function updatePackageBuilderStatus(
+            status = "draft"
+        ) {
+
+            if (!packageBuilderStatus) {
+                return;
+            }
+
+            const normalized =
+                String(status || "draft")
+                    .toLowerCase();
+
+            packageBuilderStatus.classList.remove(
+                "draft",
+                "active",
+                "hidden"
+            );
+
+            packageBuilderStatus.classList.add(
+                normalized === "active" ||
+                normalized === "hidden"
+                    ? normalized
+                    : "draft"
+            );
+
+            packageBuilderStatus.textContent =
+                normalized === "active"
+                    ? "Active"
+                    : normalized === "hidden"
+                        ? "Hidden"
+                        : "Draft";
+        }
+
+
+        function getBuilderSectionIndex(
+            sectionId
+        ) {
+
+            return Math.max(
+                0,
+                PACKAGE_BUILDER_SECTIONS
+                    .findIndex(
+                        item =>
+                            item.id ===
+                            sectionId
+                    )
+            );
+        }
+
+
+        function setActiveBuilderSection(
+            sectionId,
+            {
+                scroll = false,
+                behavior = "smooth"
+            } = {}
+        ) {
+
+            const target =
+                document.getElementById(
+                    sectionId
+                );
+
+            if (!target) {
+                return;
+            }
+
+            activeBuilderSectionId =
+                sectionId;
+
+            packageBuilderSideNav
+                ?.querySelectorAll(
+                    "[data-builder-section]"
+                )
+                .forEach(
+                    button => {
+
+                        button.classList.toggle(
+                            "active",
+                            button.dataset
+                                .builderSection ===
+                                sectionId
+                        );
+                    }
+                );
+
+            document
+                .querySelectorAll(
+                    ".package-builder-section.builder-section-current"
+                )
+                .forEach(
+                    section =>
+                        section.classList.remove(
+                            "builder-section-current"
+                        )
+                );
+
+            target.classList.add(
+                "builder-section-current"
+            );
+
+            const sectionIndex =
+                getBuilderSectionIndex(
+                    sectionId
+                );
+
+            const sectionMeta =
+                PACKAGE_BUILDER_SECTIONS[
+                    sectionIndex
+                ];
+
+            if (packageBuilderStepLabel) {
+                packageBuilderStepLabel.textContent =
+                    sectionMeta?.label ||
+                    "Package";
+            }
+
+            const isLast =
+                sectionIndex ===
+                PACKAGE_BUILDER_SECTIONS.length -
+                1;
+
+            if (nextPackageSection) {
+                nextPackageSection.hidden =
+                    isLast;
+            }
+
+            if (savePackageButton) {
+                savePackageButton.hidden =
+                    !isLast;
+            }
+
+            if (scroll) {
+
+                target.scrollIntoView({
+                    behavior,
+                    block: "start"
+                });
+            }
+        }
+
+
+        function goToNextBuilderSection() {
+
+            const currentIndex =
+                getBuilderSectionIndex(
+                    activeBuilderSectionId
+                );
+
+            const next =
+                PACKAGE_BUILDER_SECTIONS[
+                    currentIndex + 1
+                ];
+
+            if (!next) {
+                return;
+            }
+
+            setActiveBuilderSection(
+                next.id,
+                {
+                    scroll: true
+                }
+            );
+        }
+
+
+        function syncBuilderSectionFromScroll() {
+
+            if (!packageBuilderContent) {
+                return;
+            }
+
+            const containerTop =
+                packageBuilderContent
+                    .getBoundingClientRect()
+                    .top;
+
+            let bestSection =
+                PACKAGE_BUILDER_SECTIONS[0];
+
+            let bestDistance =
+                Number.POSITIVE_INFINITY;
+
+            PACKAGE_BUILDER_SECTIONS.forEach(
+                item => {
+
+                    const element =
+                        document.getElementById(
+                            item.id
+                        );
+
+                    if (!element) {
+                        return;
+                    }
+
+                    const distance =
+                        Math.abs(
+                            element
+                                .getBoundingClientRect()
+                                .top -
+                            containerTop -
+                            10
+                        );
+
+                    if (
+                        distance <
+                        bestDistance
+                    ) {
+                        bestDistance =
+                            distance;
+
+                        bestSection =
+                            item;
+                    }
+                }
+            );
+
+            if (
+                bestSection?.id &&
+                bestSection.id !==
+                    activeBuilderSectionId
+            ) {
+                setActiveBuilderSection(
+                    bestSection.id
+                );
+            }
+        }
+
+
+        function updateBuilderLivePreview() {
+
+            const name =
+                getInputValue(
+                    "formPackageName"
+                ) ||
+                "Tour Destination";
+
+            const location =
+                getInputValue(
+                    "formLocation"
+                ) ||
+                "Location";
+
+            const duration =
+                getInputValue(
+                    "formDuration"
+                ) ||
+                "Package Option";
+
+            const price =
+                normalizePrice(
+                    getInputValue(
+                        "formPrice"
+                    )
+                );
+
+            const nameElement =
+                document.getElementById(
+                    "builderPreviewName"
+                );
+
+            const locationElement =
+                document.getElementById(
+                    "builderPreviewLocation"
+                );
+
+            const durationElement =
+                document.getElementById(
+                    "builderPreviewDuration"
+                );
+
+            const priceElement =
+                document.getElementById(
+                    "builderPreviewPrice"
+                );
+
+            if (nameElement) {
+                nameElement.textContent =
+                    getBaseDestinationName(
+                        name
+                    );
+            }
+
+            if (locationElement) {
+                locationElement.textContent =
+                    location;
+            }
+
+            if (durationElement) {
+                durationElement.textContent =
+                    duration;
+            }
+
+            if (priceElement) {
+                priceElement.textContent =
+                    price > 0
+                        ? `₱${price.toLocaleString(
+                            "en-PH"
+                        )}`
+                        : "Price TBA";
+            }
+
+            const previewImage =
+                document.getElementById(
+                    "builderPreviewImage"
+                );
+
+            if (previewImage) {
+
+                const imageUrl =
+                    existingGalleryPhotos?.[0]?.url ||
+                    "";
+
+                if (imageUrl) {
+
+                    previewImage.innerHTML = `
+                        <img
+                            src="${escapeHtml(imageUrl)}"
+                            alt="${escapeHtml(name)}"
+                        >
+                    `;
+
+                } else if (
+                    packageGalleryFiles?.[0]
+                ) {
+
+                    const previewUrl =
+                        URL.createObjectURL(
+                            packageGalleryFiles[0]
+                        );
+
+                    previewImage.innerHTML = `
+                        <img
+                            src="${previewUrl}"
+                            alt="${escapeHtml(name)}"
+                        >
+                    `;
+
+                } else {
+
+                    previewImage.innerHTML = `
+                        <i class="fa-regular fa-image"></i>
+                    `;
+                }
+            }
+        }
+
+
+        packageBuilderSideNav
+            ?.addEventListener(
+                "click",
+                event => {
+
+                    const button =
+                        event.target.closest(
+                            "[data-builder-section]"
+                        );
+
+                    if (!button) {
+                        return;
+                    }
+
+                    setActiveBuilderSection(
+                        button.dataset
+                            .builderSection,
+                        {
+                            scroll: true
+                        }
+                    );
+                }
+            );
+
+
+        nextPackageSection
+            ?.addEventListener(
+                "click",
+                goToNextBuilderSection
+            );
+
+
+        packageBuilderContent
+            ?.addEventListener(
+                "scroll",
+                () => {
+
+                    window.requestAnimationFrame(
+                        syncBuilderSectionFromScroll
+                    );
+                },
+                {
+                    passive: true
+                }
+            );
+
+
+        [
+            "formPackageName",
+            "formLocation",
+            "formDuration",
+            "formPrice"
+        ].forEach(
+            inputId => {
+
+                document
+                    .getElementById(
+                        inputId
+                    )
+                    ?.addEventListener(
+                        "input",
+                        updateBuilderLivePreview
+                    );
+            }
+        );
+
+
+
+        document
+            .querySelectorAll(
+                "[data-package-duration]"
+            )
+            .forEach(
+                button => {
+
+                    button.addEventListener(
+                        "click",
+                        () => {
+
+                            const value =
+                                button.dataset
+                                    .packageDuration ||
+                                "";
+
+                            const durationDays =
+                                Math.max(
+                                    1,
+                                    Number(
+                                        button.dataset
+                                            .durationDays
+                                    ) || 1
+                                );
+
+                            setInputValue(
+                                "formDuration",
+                                value
+                            );
+
+                            setInputValue(
+                                "regularDurationDays",
+                                durationDays
+                            );
+
+                            document
+                                .querySelectorAll(
+                                    "[data-package-duration]"
+                                )
+                                .forEach(
+                                    item =>
+                                        item.classList.toggle(
+                                            "active",
+                                            item === button
+                                        )
+                                );
+
+                            updateRegularSchedulePreview();
+
+                            updateBuilderLivePreview();
+                        }
+                    );
+                }
+            );
+
+
+        document
+            .getElementById(
+                "formDuration"
+            )
+            ?.addEventListener(
+                "input",
+                event => {
+
+                    const value =
+                        String(
+                            event.target.value ||
+                            ""
+                        ).trim().toLowerCase();
+
+                    document
+                        .querySelectorAll(
+                            "[data-package-duration]"
+                        )
+                        .forEach(
+                            button =>
+                                button.classList.toggle(
+                                    "active",
+                                    String(
+                                        button.dataset
+                                            .packageDuration ||
+                                        ""
+                                    )
+                                        .trim()
+                                        .toLowerCase() ===
+                                    value
+                                )
+                        );
+                }
+            );
+
+
+        savePackageDraftButton
+            ?.addEventListener(
+                "click",
+                () => {
+
+                    if (!packageForm) {
+                        return;
+                    }
+
+                    saveAsDraftMode =
+                        true;
+
+                    const previousNoValidate =
+                        packageForm.noValidate;
+
+                    packageForm.noValidate =
+                        true;
+
+                    packageForm.requestSubmit();
+
+                    window.setTimeout(
+                        () => {
+                            packageForm.noValidate =
+                                previousNoValidate;
+                        },
+                        0
+                    );
+                }
+            );
+
+
+
+
+        // ======================================================
+        // EXISTING DESTINATION LOOKUP / OPTION REUSE
+        // ======================================================
+
+        function normalizeDestinationLookupName(
+            value
+        ) {
+
+            return getBaseDestinationName(
+                String(
+                    value ||
+                    ""
+                )
+            )
+                .trim()
+                .toLowerCase()
+                .replace(
+                    /\s+/g,
+                    " "
+                );
+        }
+
+
+        function getDestinationLookupGroups() {
+
+            return groupPackagesByDestination(
+                packages
+            )
+                .map(
+                    group => ({
+                        ...group,
+
+                        lookupName:
+                            normalizeDestinationLookupName(
+                                group.name
+                            )
+                    })
+                )
+                .sort(
+                    (a, b) =>
+                        a.name.localeCompare(
+                            b.name
+                        )
+                );
+        }
+
+
+        function findExistingDestinationByName(
+            value
+        ) {
+
+            const lookup =
+                normalizeDestinationLookupName(
+                    value
+                );
+
+            if (!lookup) {
+                return null;
+            }
+
+            return (
+                getDestinationLookupGroups()
+                    .find(
+                        group =>
+                            group.lookupName ===
+                            lookup
+                    ) ||
+                null
+            );
+        }
+
+
+        function hideDestinationSuggestions() {
+
+            if (!destinationSuggestions) {
+                return;
+            }
+
+            destinationSuggestions.hidden =
+                true;
+
+            destinationSuggestions.innerHTML =
+                "";
+        }
+
+
+        function hideExistingDestinationPanel() {
+
+            selectedExistingDestinationKey =
+                "";
+
+            if (existingDestinationPanel) {
+                existingDestinationPanel.hidden =
+                    true;
+            }
+
+            if (existingDestinationOptions) {
+                existingDestinationOptions.innerHTML =
+                    "";
+            }
+        }
+
+
+        function renderDestinationSuggestions(
+            searchValue
+        ) {
+
+            if (!destinationSuggestions) {
+                return;
+            }
+
+            const query =
+                normalizeDestinationLookupName(
+                    searchValue
+                );
+
+            if (!query) {
+                hideDestinationSuggestions();
+                return;
+            }
+
+            const groups =
+                getDestinationLookupGroups();
+
+            const matches =
+                groups
+                    .filter(
+                        group =>
+                            group.lookupName.includes(
+                                query
+                            ) ||
+                            String(
+                                group.location ||
+                                ""
+                            )
+                                .toLowerCase()
+                                .includes(
+                                    query
+                                )
+                    )
+                    .slice(
+                        0,
+                        7
+                    );
+
+            if (!matches.length) {
+
+                destinationSuggestions.innerHTML = `
+                    <div class="destination-suggestion-empty">
+                        <i class="fa-solid fa-circle-plus"></i>
+                        <span>
+                            No existing destination found. This will be created as a new destination.
+                        </span>
+                    </div>
+                `;
+
+                destinationSuggestions.hidden =
+                    false;
+
+                return;
+            }
+
+            destinationSuggestions.innerHTML =
+                matches
+                    .map(
+                        group => {
+
+                            const optionLabels =
+                                group.packages
+                                    .map(
+                                        item =>
+                                            getPackageOptionLabel(
+                                                item
+                                            )
+                                    )
+                                    .filter(Boolean)
+                                    .slice(
+                                        0,
+                                        4
+                                    );
+
+                            return `
+                                <button
+                                    type="button"
+                                    class="destination-suggestion-item"
+                                    data-existing-destination-key="${escapeHtml(group.key)}">
+
+                                    <span class="destination-suggestion-main">
+                                        <strong>
+                                            ${escapeHtml(group.name)}
+                                        </strong>
+
+                                        <span>
+                                            ${escapeHtml(group.category || "Other")}
+                                            ${group.location ? " • " + escapeHtml(group.location) : ""}
+                                            • ${group.packages.length} option${group.packages.length === 1 ? "" : "s"}
+                                        </span>
+                                    </span>
+
+                                    <span class="destination-suggestion-options">
+                                        ${optionLabels
+                                            .map(
+                                                label =>
+                                                    `<span>${escapeHtml(label)}</span>`
+                                            )
+                                            .join("")}
+                                    </span>
+
+                                </button>
+                            `;
+                        }
+                    )
+                    .join("");
+
+            destinationSuggestions.hidden =
+                false;
+        }
+
+
+        function renderExistingDestinationOptions(
+            group
+        ) {
+
+            if (
+                !existingDestinationPanel ||
+                !existingDestinationOptions
+            ) {
+                return;
+            }
+
+            selectedExistingDestinationKey =
+                group.key;
+
+            if (existingDestinationName) {
+                existingDestinationName.textContent =
+                    group.name;
+            }
+
+            if (existingDestinationCount) {
+                existingDestinationCount.textContent =
+                    `${group.packages.length} Option${group.packages.length === 1 ? "" : "s"}`;
+            }
+
+            existingDestinationOptions.innerHTML =
+                group.packages
+                    .map(
+                        item => {
+
+                            const duration =
+                                getPackageOptionLabel(
+                                    item
+                                );
+
+                            const price =
+                                normalizePrice(
+                                    item.price
+                                );
+
+                            return `
+                                <div class="existing-option-row">
+
+                                    <div class="existing-option-info">
+                                        <span class="existing-option-duration">
+                                            ${escapeHtml(duration)}
+                                        </span>
+
+                                        <span class="existing-option-price">
+                                            ${price > 0 ? `₱${price.toLocaleString("en-PH")}` : "Price TBA"}
+                                        </span>
+                                    </div>
+
+                                    <button
+                                        type="button"
+                                        class="existing-option-load"
+                                        data-copy-package-option="${escapeHtml(item.id)}">
+
+                                        <i class="fa-regular fa-copy"></i>
+                                        Load Details
+
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        class="existing-option-edit"
+                                        data-edit-existing-option="${escapeHtml(item.id)}">
+
+                                        <i class="fa-regular fa-pen-to-square"></i>
+                                        Edit Existing
+
+                                    </button>
+
+                                </div>
+                            `;
+                        }
+                    )
+                    .join("");
+
+            existingDestinationPanel.hidden =
+                false;
+        }
+
+
+        function selectExistingDestination(
+            group
+        ) {
+
+            if (!group) {
+                return;
+            }
+
+            setInputValue(
+                "formPackageName",
+                group.name
+            );
+
+            setInputValue(
+                "formCategory",
+                group.category
+            );
+
+            setInputValue(
+                "formLocation",
+                group.location
+            );
+
+            renderExistingDestinationOptions(
+                group
+            );
+
+            hideDestinationSuggestions();
+
+            updateBuilderLivePreview();
+        }
+
+
+        function copyExistingPackageOption(
+            packageId
+        ) {
+
+            const sourcePackage =
+                packages.find(
+                    item =>
+                        item.id ===
+                        packageId
+                );
+
+            if (!sourcePackage) {
+                return;
+            }
+
+            /*
+             * Reuse the existing complete editor loader so Gallery,
+             * Details, Inclusions, Exclusions, Accommodation,
+             * Pick Up, schedules and itinerary are all copied using
+             * the same field mapping as normal Edit Package.
+             */
+            editPackage(
+                packageId
+            );
+
+            /*
+             * Convert the loaded record into a NEW package option.
+             * The source document remains untouched.
+             */
+            editingPackageId =
+                null;
+
+            saveAsDraftMode =
+                false;
+
+            if (packageModalTitle) {
+                packageModalTitle.textContent =
+                    "Add Package Option";
+            }
+
+            updatePackageBuilderStatus(
+                "draft"
+            );
+
+            setInputValue(
+                "formStatus",
+                "active"
+            );
+
+            const group =
+                findExistingDestinationByName(
+                    sourcePackage.name
+                );
+
+            if (group) {
+                selectedExistingDestinationKey =
+                    group.key;
+
+                window.setTimeout(
+                    () =>
+                        renderExistingDestinationOptions(
+                            group
+                        ),
+                    80
+                );
+            }
+
+            window.setTimeout(
+                () => {
+
+                    setActiveBuilderSection(
+                        "packageSectionBasic",
+                        {
+                            scroll: true,
+                            behavior: "auto"
+                        }
+                    );
+
+                    document
+                        .getElementById(
+                            "formDuration"
+                        )
+                        ?.focus();
+                },
+                100
+            );
+        }
+
+
+        document
+            .getElementById(
+                "formPackageName"
+            )
+            ?.addEventListener(
+                "input",
+                event => {
+
+                    const value =
+                        event.target.value;
+
+                    const exact =
+                        findExistingDestinationByName(
+                            value
+                        );
+
+                    if (
+                        exact &&
+                        exact.key !==
+                            selectedExistingDestinationKey
+                    ) {
+                        renderExistingDestinationOptions(
+                            exact
+                        );
+                    } else if (!exact) {
+                        hideExistingDestinationPanel();
+                    }
+
+                    renderDestinationSuggestions(
+                        value
+                    );
+                }
+            );
+
+
+        document
+            .getElementById(
+                "formPackageName"
+            )
+            ?.addEventListener(
+                "focus",
+                event => {
+
+                    if (
+                        String(
+                            event.target.value ||
+                            ""
+                        ).trim()
+                    ) {
+                        renderDestinationSuggestions(
+                            event.target.value
+                        );
+                    }
+                }
+            );
+
+
+        document
+            .getElementById(
+                "formPackageName"
+            )
+            ?.addEventListener(
+                "blur",
+                () => {
+
+                    window.clearTimeout(
+                        destinationLookupBlurTimer
+                    );
+
+                    destinationLookupBlurTimer =
+                        window.setTimeout(
+                            hideDestinationSuggestions,
+                            180
+                        );
+                }
+            );
+
+
+        destinationSuggestions
+            ?.addEventListener(
+                "mousedown",
+                event => {
+
+                    const button =
+                        event.target.closest(
+                            "[data-existing-destination-key]"
+                        );
+
+                    if (!button) {
+                        return;
+                    }
+
+                    event.preventDefault();
+
+                    const group =
+                        getDestinationLookupGroups()
+                            .find(
+                                item =>
+                                    item.key ===
+                                    button.dataset
+                                        .existingDestinationKey
+                            );
+
+                    selectExistingDestination(
+                        group
+                    );
+                }
+            );
+
+
+        existingDestinationOptions
+            ?.addEventListener(
+                "click",
+                event => {
+
+                    const copyButton =
+                        event.target.closest(
+                            "[data-copy-package-option]"
+                        );
+
+                    if (copyButton) {
+
+                        copyExistingPackageOption(
+                            copyButton.dataset
+                                .copyPackageOption
+                        );
+
+                        return;
+                    }
+
+                    const editButton =
+                        event.target.closest(
+                            "[data-edit-existing-option]"
+                        );
+
+                    if (editButton) {
+
+                        editPackage(
+                            editButton.dataset
+                                .editExistingOption
+                        );
+
+                        return;
+                    }
+                }
+            );
+
+
+        // ======================================================
+        // CATEGORY PACKAGE TEMPLATES
+        // ======================================================
+
+        const STARTER_PACKAGE_TEMPLATES = {
+
+            "Beach Tour": {
+                details:
+                    "Enjoy a relaxing beach getaway with coordinated transportation, accommodation and tour assistance. Final activities and inclusions may vary depending on the destination and selected package option.",
+
+                inclusions: [
+                    "Roundtrip Van Transfer",
+                    "Driver's Meal, Accommodation and Expenses",
+                    "Transportation Expenses",
+                    "Accommodation",
+                    "Tour Coordinator"
+                ],
+
+                exclusions: [
+                    "Other Meals not stated in the package",
+                    "Entrance / Environmental Fees unless stated as included",
+                    "Optional Water Activities",
+                    "Personal Expenses"
+                ]
+            },
+
+            "Island Tour": {
+                details:
+                    "Experience an island getaway with coordinated land and boat transfers, accommodation and tour assistance. Final island activities depend on the destination and selected package option.",
+
+                inclusions: [
+                    "Roundtrip Van Transfer",
+                    "Boat Transfer / Island Tour as stated in the package",
+                    "Driver's Meal, Accommodation and Expenses",
+                    "Accommodation",
+                    "Tour Coordinator"
+                ],
+
+                exclusions: [
+                    "Other Meals not stated in the package",
+                    "Entrance / Environmental Fees unless stated as included",
+                    "Optional Island Activities",
+                    "Personal Expenses"
+                ]
+            },
+
+            "City Tour": {
+                details:
+                    "Explore the destination through a coordinated city tour with transportation, accommodation and tour assistance. Attractions and meal inclusions may vary depending on the selected package option.",
+
+                inclusions: [
+                    "Roundtrip Van Transfer",
+                    "Driver's Meal, Accommodation and Expenses",
+                    "Transportation Expenses",
+                    "Hotel Accommodation",
+                    "Tour Coordinator"
+                ],
+
+                exclusions: [
+                    "Other Meals not stated in the package",
+                    "Entrance Fees unless stated as included",
+                    "Optional Activities",
+                    "Personal Expenses"
+                ]
+            },
+
+            "Land Tour": {
+                details:
+                    "Enjoy a coordinated land tour covering the destination's featured attractions with transportation and tour assistance. Exact stops depend on the package itinerary.",
+
+                inclusions: [
+                    "Roundtrip Van Transfer",
+                    "Driver's Meal, Accommodation and Expenses",
+                    "Transportation Expenses",
+                    "Accommodation as stated in the package",
+                    "Tour Coordinator"
+                ],
+
+                exclusions: [
+                    "Other Meals not stated in the package",
+                    "Entrance Fees unless stated as included",
+                    "Optional Activities",
+                    "Personal Expenses"
+                ]
+            },
+
+            "Hiking": {
+                details:
+                    "A coordinated hiking experience with transportation and tour assistance. Trail fees, guide requirements and equipment inclusions depend on the destination.",
+
+                inclusions: [
+                    "Roundtrip Transportation",
+                    "Tour Coordinator",
+                    "Local Guide when stated in the package"
+                ],
+
+                exclusions: [
+                    "Meals not stated in the package",
+                    "Personal Hiking Gear",
+                    "Porter Fees unless stated as included",
+                    "Personal Expenses"
+                ]
+            },
+
+            "Chill Camp": {
+                details:
+                    "A relaxed camping getaway with coordinated transportation and basic tour assistance. Camping inclusions depend on the selected destination and package.",
+
+                inclusions: [
+                    "Roundtrip Transportation",
+                    "Camping Area / Accommodation as stated",
+                    "Tour Coordinator"
+                ],
+
+                exclusions: [
+                    "Meals not stated in the package",
+                    "Personal Camping Gear unless stated as included",
+                    "Optional Activities",
+                    "Personal Expenses"
+                ]
+            },
+
+            "Home Stay": {
+                details:
+                    "A local stay experience with coordinated transportation, accommodation and tour assistance. Exact inclusions depend on the destination and package option.",
+
+                inclusions: [
+                    "Roundtrip Transportation",
+                    "Home Stay Accommodation",
+                    "Tour Coordinator"
+                ],
+
+                exclusions: [
+                    "Meals not stated in the package",
+                    "Entrance Fees unless stated as included",
+                    "Optional Activities",
+                    "Personal Expenses"
+                ]
+            },
+
+            "Domestic": {
+                details:
+                    "A domestic travel package with coordinated transportation, accommodation and tour assistance. Flight, transfer and activity inclusions depend on the selected package.",
+
+                inclusions: [
+                    "Accommodation as stated in the package",
+                    "Tour Coordinator / Local Assistance"
+                ],
+
+                exclusions: [
+                    "Airfare unless stated as included",
+                    "Meals not stated in the package",
+                    "Optional Activities",
+                    "Personal Expenses"
+                ]
+            },
+
+            "Other": {
+                details: "",
+                inclusions: [],
+                exclusions: []
+            }
+        };
+
+
+        function cloneTemplateData(
+            template
+        ) {
+
+            return {
+                details:
+                    String(
+                        template?.details ||
+                        ""
+                    ),
+
+                inclusions:
+                    Array.isArray(
+                        template?.inclusions
+                    )
+                        ? [
+                            ...template
+                                .inclusions
+                        ]
+                        : [],
+
+                exclusions:
+                    Array.isArray(
+                        template?.exclusions
+                    )
+                        ? [
+                            ...template
+                                .exclusions
+                        ]
+                        : []
+            };
+        }
+
+
+        function getPackageTemplate(
+            category
+        ) {
+
+            const saved =
+                packageTemplates.get(
+                    category
+                );
+
+            if (saved) {
+                return cloneTemplateData(
+                    saved
+                );
+            }
+
+            return cloneTemplateData(
+                STARTER_PACKAGE_TEMPLATES[
+                    category
+                ] ||
+                STARTER_PACKAGE_TEMPLATES
+                    .Other
+            );
+        }
+
+
+        async function loadPackageTemplates() {
+
+            try {
+
+                const snapshot =
+                    await getDocs(
+                        collection(
+                            db,
+                            "packageTemplates"
+                        )
+                    );
+
+                packageTemplates.clear();
+                packageTemplateDocIds.clear();
+
+                snapshot.forEach(
+                    templateDoc => {
+
+                        const data =
+                            templateDoc.data() ||
+                            {};
+
+                        const category =
+                            String(
+                                data.category ||
+                                ""
+                            ).trim();
+
+                        if (!category) {
+                            return;
+                        }
+
+                        packageTemplates.set(
+                            category,
+                            cloneTemplateData(
+                                data
+                            )
+                        );
+
+                        packageTemplateDocIds.set(
+                            category,
+                            templateDoc.id
+                        );
+                    }
+                );
+
+            } catch (error) {
+
+                console.warn(
+                    "PACKAGE TEMPLATE LOAD WARNING:",
+                    error
+                );
+            }
+        }
+
+
+        function packageFormTemplateHasContent() {
+
+            const details =
+                getInputValue(
+                    "formAbout"
+                ).trim();
+
+            const inclusions =
+                collectInclusions()
+                    .filter(Boolean);
+
+            const exclusions =
+                collectExclusions()
+                    .filter(Boolean);
+
+            return Boolean(
+                details ||
+                inclusions.length ||
+                exclusions.length
+            );
+        }
+
+
+        function showCategoryTemplateApplied(
+            category
+        ) {
+
+            if (
+                !categoryTemplateApplied ||
+                !categoryTemplateAppliedText
+            ) {
+                return;
+            }
+
+            categoryTemplateAppliedText.textContent =
+                `${category} defaults applied`;
+
+            categoryTemplateApplied.hidden =
+                false;
+
+            window.clearTimeout(
+                showCategoryTemplateApplied
+                    .timer
+            );
+
+            showCategoryTemplateApplied.timer =
+                window.setTimeout(
+                    () => {
+                        categoryTemplateApplied.hidden =
+                            true;
+                    },
+                    3500
+                );
+        }
+
+
+        function applyPackageTemplate(
+            category,
+            {
+                force = false,
+                confirmReplace = true
+            } = {}
+        ) {
+
+            const normalizedCategory =
+                String(
+                    category ||
+                    ""
+                ).trim();
+
+            if (!normalizedCategory) {
+                return false;
+            }
+
+            const hasCurrentContent =
+                packageFormTemplateHasContent();
+
+            if (
+                hasCurrentContent &&
+                !force &&
+                confirmReplace
+            ) {
+
+                const shouldReplace =
+                    window.confirm(
+                        `Apply the ${normalizedCategory} template?\n\nThis will replace the current Details, Inclusions and Exclusions.`
+                    );
+
+                if (!shouldReplace) {
+                    return false;
+                }
+            }
+
+            const template =
+                getPackageTemplate(
+                    normalizedCategory
+                );
+
+            setInputValue(
+                "formAbout",
+                template.details
+            );
+
+            if (inclusionsList) {
+
+                inclusionsList.innerHTML =
+                    "";
+
+                if (
+                    template.inclusions.length
+                ) {
+
+                    template.inclusions.forEach(
+                        item =>
+                            addInclusionRow(
+                                item
+                            )
+                    );
+
+                } else {
+
+                    addInclusionRow();
+                }
+            }
+
+            if (exclusionsList) {
+
+                exclusionsList.innerHTML =
+                    "";
+
+                if (
+                    template.exclusions.length
+                ) {
+
+                    template.exclusions.forEach(
+                        item =>
+                            addExclusionRow(
+                                item
+                            )
+                    );
+
+                } else {
+
+                    addExclusionRow();
+                }
+
+                updateExclusionNumbers();
+            }
+
+            categoryTemplateManuallyApplied =
+                true;
+
+            showCategoryTemplateApplied(
+                normalizedCategory
+            );
+
+            return true;
+        }
+
+
+        function addPackageTemplateItemRow(
+            container,
+            value = ""
+        ) {
+
+            if (!container) {
+                return;
+            }
+
+            const row =
+                document.createElement(
+                    "div"
+                );
+
+            row.className =
+                "package-template-item";
+
+            row.innerHTML = `
+                <input
+                    type="text"
+                    value="${escapeHtml(value)}"
+                    placeholder="Enter default item"
+                >
+
+                <button
+                    type="button"
+                    aria-label="Remove item"
+                    title="Remove item">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            `;
+
+            row
+                .querySelector(
+                    "button"
+                )
+                ?.addEventListener(
+                    "click",
+                    () => {
+                        row.remove();
+
+                        if (
+                            container.children
+                                .length === 0
+                        ) {
+                            addPackageTemplateItemRow(
+                                container
+                            );
+                        }
+                    }
+                );
+
+            container.appendChild(
+                row
+            );
+        }
+
+
+        function collectPackageTemplateItems(
+            container
+        ) {
+
+            if (!container) {
+                return [];
+            }
+
+            return [
+                ...container
+                    .querySelectorAll(
+                        "input"
+                    )
+            ]
+                .map(
+                    input =>
+                        input.value.trim()
+                )
+                .filter(Boolean);
+        }
+
+
+        function renderPackageTemplateEditor(
+            category
+        ) {
+
+            activePackageTemplateCategory =
+                category;
+
+            document
+                .querySelectorAll(
+                    "[data-template-category]"
+                )
+                .forEach(
+                    button =>
+                        button.classList.toggle(
+                            "active",
+                            button.dataset
+                                .templateCategory ===
+                                category
+                        )
+                );
+
+            if (
+                packageTemplateEditingCategory
+            ) {
+                packageTemplateEditingCategory
+                    .textContent =
+                    category;
+            }
+
+            const isSaved =
+                packageTemplates.has(
+                    category
+                );
+
+            if (
+                packageTemplateSourceBadge
+            ) {
+
+                packageTemplateSourceBadge
+                    .classList.toggle(
+                        "saved",
+                        isSaved
+                    );
+
+                packageTemplateSourceBadge
+                    .textContent =
+                    isSaved
+                        ? "Saved Template"
+                        : "Starter Template";
+            }
+
+            const template =
+                getPackageTemplate(
+                    category
+                );
+
+            if (packageTemplateDetails) {
+                packageTemplateDetails.value =
+                    template.details;
+            }
+
+            if (packageTemplateInclusions) {
+
+                packageTemplateInclusions.innerHTML =
+                    "";
+
+                const items =
+                    template.inclusions.length
+                        ? template.inclusions
+                        : [""];
+
+                items.forEach(
+                    item =>
+                        addPackageTemplateItemRow(
+                            packageTemplateInclusions,
+                            item
+                        )
+                );
+            }
+
+            if (packageTemplateExclusions) {
+
+                packageTemplateExclusions.innerHTML =
+                    "";
+
+                const items =
+                    template.exclusions.length
+                        ? template.exclusions
+                        : [""];
+
+                items.forEach(
+                    item =>
+                        addPackageTemplateItemRow(
+                            packageTemplateExclusions,
+                            item
+                        )
+                );
+            }
+        }
+
+
+        function openPackageTemplateModal() {
+
+            if (!packageTemplateModal) {
+                return;
+            }
+
+            renderPackageTemplateEditor(
+                activePackageTemplateCategory ||
+                "Beach Tour"
+            );
+
+            packageTemplateModal
+                .classList.add(
+                    "active"
+                );
+
+            packageTemplateModal
+                .setAttribute(
+                    "aria-hidden",
+                    "false"
+                );
+
+            document.body.classList.add(
+                "modal-open"
+            );
+        }
+
+
+        function closePackageTemplateModal() {
+
+            if (!packageTemplateModal) {
+                return;
+            }
+
+            packageTemplateModal
+                .classList.remove(
+                    "active"
+                );
+
+            packageTemplateModal
+                .setAttribute(
+                    "aria-hidden",
+                    "true"
+                );
+
+            if (
+                !packageModal?.classList
+                    .contains("active")
+            ) {
+                document.body.classList.remove(
+                    "modal-open"
+                );
+            }
+        }
+
+
+        async function saveCurrentPackageTemplate() {
+
+            const category =
+                activePackageTemplateCategory;
+
+            if (!category) {
+                return;
+            }
+
+            const templateData = {
+                category,
+
+                details:
+                    packageTemplateDetails
+                        ?.value
+                        .trim() ||
+                    "",
+
+                inclusions:
+                    collectPackageTemplateItems(
+                        packageTemplateInclusions
+                    ),
+
+                exclusions:
+                    collectPackageTemplateItems(
+                        packageTemplateExclusions
+                    ),
+
+                updatedAt:
+                    new Date()
+            };
+
+            const originalHtml =
+                savePackageTemplateButton
+                    ?.innerHTML ||
+                "Save Template";
+
+            try {
+
+                if (savePackageTemplateButton) {
+                    savePackageTemplateButton.disabled =
+                        true;
+
+                    savePackageTemplateButton.innerHTML = `
+                        <i class="fa-solid fa-spinner fa-spin"></i>
+                        Saving...
+                    `;
+                }
+
+                const existingDocId =
+                    packageTemplateDocIds.get(
+                        category
+                    );
+
+                if (existingDocId) {
+
+                    await updateDoc(
+                        doc(
+                            db,
+                            "packageTemplates",
+                            existingDocId
+                        ),
+                        templateData
+                    );
+
+                } else {
+
+                    const created =
+                        await addDoc(
+                            collection(
+                                db,
+                                "packageTemplates"
+                            ),
+                            {
+                                ...templateData,
+                                createdAt:
+                                    new Date()
+                            }
+                        );
+
+                    packageTemplateDocIds.set(
+                        category,
+                        created.id
+                    );
+                }
+
+                packageTemplates.set(
+                    category,
+                    cloneTemplateData(
+                        templateData
+                    )
+                );
+
+                renderPackageTemplateEditor(
+                    category
+                );
+
+                alert(
+                    `${category} template saved successfully.`
+                );
+
+            } catch (error) {
+
+                console.error(
+                    "SAVE PACKAGE TEMPLATE ERROR:",
+                    error
+                );
+
+                alert(
+                    "Unable to save the package template. Please check Firestore permissions and try again."
+                );
+
+            } finally {
+
+                if (savePackageTemplateButton) {
+                    savePackageTemplateButton.disabled =
+                        false;
+
+                    savePackageTemplateButton.innerHTML =
+                        originalHtml;
+                }
+            }
+        }
+
+
+        managePackageTemplatesButton
+            ?.addEventListener(
+                "click",
+                openPackageTemplateModal
+            );
+
+
+        packageTemplateModalOverlay
+            ?.addEventListener(
+                "click",
+                closePackageTemplateModal
+            );
+
+
+        closePackageTemplateModalButton
+            ?.addEventListener(
+                "click",
+                closePackageTemplateModal
+            );
+
+
+        cancelPackageTemplateButton
+            ?.addEventListener(
+                "click",
+                closePackageTemplateModal
+            );
+
+
+        document
+            .querySelectorAll(
+                "[data-template-category]"
+            )
+            .forEach(
+                button => {
+
+                    button.addEventListener(
+                        "click",
+                        () => {
+
+                            renderPackageTemplateEditor(
+                                button.dataset
+                                    .templateCategory
+                            );
+                        }
+                    );
+                }
+            );
+
+
+        addPackageTemplateInclusion
+            ?.addEventListener(
+                "click",
+                () =>
+                    addPackageTemplateItemRow(
+                        packageTemplateInclusions
+                    )
+            );
+
+
+        addPackageTemplateExclusion
+            ?.addEventListener(
+                "click",
+                () =>
+                    addPackageTemplateItemRow(
+                        packageTemplateExclusions
+                    )
+            );
+
+
+        savePackageTemplateButton
+            ?.addEventListener(
+                "click",
+                saveCurrentPackageTemplate
+            );
+
+
+        resetPackageTemplateButton
+            ?.addEventListener(
+                "click",
+                () => {
+
+                    const category =
+                        activePackageTemplateCategory;
+
+                    const starter =
+                        cloneTemplateData(
+                            STARTER_PACKAGE_TEMPLATES[
+                                category
+                            ] ||
+                            STARTER_PACKAGE_TEMPLATES
+                                .Other
+                        );
+
+                    if (packageTemplateDetails) {
+                        packageTemplateDetails.value =
+                            starter.details;
+                    }
+
+                    if (packageTemplateInclusions) {
+                        packageTemplateInclusions.innerHTML =
+                            "";
+
+                        (
+                            starter.inclusions.length
+                                ? starter.inclusions
+                                : [""]
+                        ).forEach(
+                            item =>
+                                addPackageTemplateItemRow(
+                                    packageTemplateInclusions,
+                                    item
+                                )
+                        );
+                    }
+
+                    if (packageTemplateExclusions) {
+                        packageTemplateExclusions.innerHTML =
+                            "";
+
+                        (
+                            starter.exclusions.length
+                                ? starter.exclusions
+                                : [""]
+                        ).forEach(
+                            item =>
+                                addPackageTemplateItemRow(
+                                    packageTemplateExclusions,
+                                    item
+                                )
+                        );
+                    }
+
+                    if (packageTemplateSourceBadge) {
+                        packageTemplateSourceBadge
+                            .classList.remove(
+                                "saved"
+                            );
+
+                        packageTemplateSourceBadge
+                            .textContent =
+                            "Starter Template";
+                    }
+                }
+            );
+
+
+        document
+            .getElementById(
+                "formCategory"
+            )
+            ?.addEventListener(
+                "change",
+                event => {
+
+                    const category =
+                        event.target.value;
+
+                    if (!category) {
+                        return;
+                    }
+
+                    const hasContent =
+                        packageFormTemplateHasContent();
+
+                    applyPackageTemplate(
+                        category,
+                        {
+                            force:
+                                !hasContent,
+
+                            confirmReplace:
+                                hasContent
+                        }
+                    );
+                }
+            );
+
+
         // ======================================================
         // LOAD PACKAGES
         // ======================================================
@@ -814,8 +3129,27 @@ addPickupLocation?.addEventListener(
                                     docSnapshot.id,
 
                                 name:
+                                    data.destinationName ||
                                     data.name ||
                                     "",
+
+                                destinationName:
+                                    data.destinationName ||
+                                    data.name ||
+                                    "",
+
+                                packageOptionLabel:
+                                    data.packageOptionLabel ||
+                                    data.duration ||
+                                    "",
+
+                                destinationGroupKey:
+                                    data.destinationGroupKey ||
+                                    "",
+
+                                draftLastSection:
+                                    data.draftLastSection ||
+                                    "packageSectionBasic",
 
                                 category:
                                     data.category ||
@@ -871,7 +3205,19 @@ addPickupLocation?.addEventListener(
                                         data.pickupLocations
                                     )
                                         ? data.pickupLocations
-                                        : [],
+                                        : Array.isArray(
+                                            data.pickUpLocations
+                                        )
+                                            ? data.pickUpLocations
+                                            : Array.isArray(
+                                                data.meetupLocations
+                                            )
+                                                ? data.meetupLocations
+                                                : Array.isArray(
+                                                    data.meetUpLocations
+                                                )
+                                                    ? data.meetUpLocations
+                                                    : [],
 
                                 accommodations:
                                     Array.isArray(
@@ -1072,6 +3418,211 @@ addPickupLocation?.addEventListener(
         }
 
 
+
+        // ======================================================
+        // DESTINATION / PACKAGE OPTION GROUPING
+        // ======================================================
+
+        function getBaseDestinationName(value) {
+
+            let name =
+                String(value || "").trim();
+
+            const patterns = [
+                /\bday\s*tour\b/gi,
+                /\b1\s*day(?:\s*0?\s*night)?s?\b/gi,
+                /\b2\s*days?\s*1\s*nights?\b/gi,
+                /\b3\s*days?\s*2\s*nights?\b/gi,
+                /\b4\s*days?\s*3\s*nights?\b/gi,
+                /\b5\s*days?\s*4\s*nights?\b/gi,
+                /\b6\s*days?\s*5\s*nights?\b/gi,
+                /\b7\s*days?\s*6\s*nights?\b/gi,
+                /\b\d+\s*d\s*\d+\s*n\b/gi
+            ];
+
+            patterns.forEach(pattern => {
+                name = name.replace(pattern, " ");
+            });
+
+            return name
+                .replace(/\s{2,}/g, " ")
+                .replace(/[-–—|/]+$/g, "")
+                .trim() ||
+                String(value || "").trim() ||
+                "Tour Destination";
+        }
+
+
+        function getDestinationGroupKey(packageItem) {
+
+            return [
+                getBaseDestinationName(
+                    packageItem?.name
+                ).toLowerCase(),
+                String(
+                    packageItem?.location || ""
+                ).trim().toLowerCase()
+            ].join("::");
+        }
+
+
+        function getPackageOptionLabel(packageItem) {
+
+            return (
+                String(
+                    packageItem?.duration || ""
+                ).trim() ||
+                "Tour Option"
+            );
+        }
+
+
+        function groupPackagesByDestination(packageItems) {
+
+            const map = new Map();
+
+            packageItems.forEach(packageItem => {
+
+                const key =
+                    getDestinationGroupKey(
+                        packageItem
+                    );
+
+                if (!map.has(key)) {
+                    map.set(key, {
+                        key,
+                        name:
+                            getBaseDestinationName(
+                                packageItem.name
+                            ),
+                        location:
+                            packageItem.location || "",
+                        category:
+                            packageItem.category || "Other",
+                        packages: []
+                    });
+                }
+
+                map.get(key)
+                    .packages
+                    .push(packageItem);
+            });
+
+            return Array.from(
+                map.values()
+            ).map(group => {
+
+                group.packages.sort(
+                    (a, b) =>
+                        normalizePrice(a.price) -
+                        normalizePrice(b.price)
+                );
+
+                return group;
+            });
+        }
+
+
+        function openNewPackageOption(basePackageId) {
+
+            const sourcePackage =
+                packages.find(
+                    item =>
+                        item.id ===
+                        basePackageId
+                );
+
+            if (!sourcePackage) {
+                openNewPackageModal();
+                return;
+            }
+
+            resetPackageForm();
+
+            setInputValue(
+                "formPackageName",
+                getBaseDestinationName(
+                    sourcePackage.name
+                )
+            );
+
+            setInputValue(
+                "formCategory",
+                sourcePackage.category
+            );
+
+            setInputValue(
+                "formLocation",
+                sourcePackage.location
+            );
+
+            const destinationGroup =
+                findExistingDestinationByName(
+                    sourcePackage.name
+                );
+
+            if (destinationGroup) {
+                renderExistingDestinationOptions(
+                    destinationGroup
+                );
+            }
+
+            setInputValue(
+                "formStatus",
+                "active"
+            );
+
+            setInputValue(
+                "formDuration",
+                ""
+            );
+
+            setInputValue(
+                "formPrice",
+                ""
+            );
+
+            updatePackageBuilderStatus(
+                "draft"
+            );
+
+            updateBuilderLivePreview();
+
+            openPackageModal();
+
+            window.setTimeout(
+                () => {
+
+                    setActiveBuilderSection(
+                        "packageSectionBasic",
+                        {
+                            scroll: true,
+                            behavior: "auto"
+                        }
+                    );
+
+                    document
+                        .querySelectorAll(
+                            "[data-package-duration]"
+                        )
+                        .forEach(
+                            button =>
+                                button.classList.remove(
+                                    "active"
+                                )
+                        );
+
+                    document
+                        .getElementById(
+                            "formDuration"
+                        )
+                        ?.focus();
+                },
+                120
+            );
+        }
+
+
         // ======================================================
         // RENDER PACKAGES
         // ======================================================
@@ -1082,15 +3633,7 @@ addPickupLocation?.addEventListener(
                 return;
             }
 
-
-            // Always show actual Firestore totals.
-
             updatePackageSummary();
-
-
-            // ==================================================
-            // FILTER VALUES
-            // ==================================================
 
             const searchValue =
                 searchInput?.value
@@ -1098,47 +3641,32 @@ addPickupLocation?.addEventListener(
                     .toLowerCase() ||
                 "";
 
-
             const selectedCategory =
                 categoryFilter?.value ||
                 "all";
-
 
             const selectedStatus =
                 statusFilter?.value ||
                 "all";
 
-
             const selectedSort =
                 sortSelect?.value ||
                 "newest";
-
-
-            // ==================================================
-            // SEARCH / FILTER
-            // ==================================================
 
             let filteredPackages =
                 packages.filter(
                     packageItem => {
 
-
                         const searchableText =
                             [
-
                                 packageItem.name,
-
                                 packageItem.category,
-
                                 packageItem.location,
-
                                 packageItem.duration
-
                             ]
                                 .filter(Boolean)
                                 .join(" ")
                                 .toLowerCase();
-
 
                         const matchesSearch =
                             !searchValue ||
@@ -1146,590 +3674,391 @@ addPickupLocation?.addEventListener(
                                 searchValue
                             );
 
-
                         const matchesCategory =
-                            selectedCategory ===
-                                "all" ||
+                            selectedCategory === "all" ||
                             packageItem.category ===
                                 selectedCategory;
-
 
                         const packageStatus =
                             packageItem.status ||
                             "active";
 
-
                         const matchesStatus =
-                            selectedStatus ===
-                                "all" ||
+                            selectedStatus === "all" ||
                             packageStatus ===
                                 selectedStatus;
-
 
                         return (
                             matchesSearch &&
                             matchesCategory &&
                             matchesStatus
                         );
-
                     }
                 );
-
-
-            // ==================================================
-            // SORT
-            // ==================================================
 
             filteredPackages =
-                [
-                    ...filteredPackages
-                ].sort(
-                    (
-                        a,
-                        b
-                    ) => {
+                [...filteredPackages].sort(
+                    (a, b) => {
 
-                        switch (
-                            selectedSort
-                        ) {
-
-
-                            // ----------------------------------
-                            // OLDEST FIRST
-                            // ----------------------------------
+                        switch (selectedSort) {
 
                             case "oldest":
-
                                 return (
-                                    getTimestamp(
-                                        a.createdAt
-                                    ) -
-                                    getTimestamp(
-                                        b.createdAt
-                                    )
+                                    getTimestamp(a.createdAt) -
+                                    getTimestamp(b.createdAt)
                                 );
-
-
-                            // ----------------------------------
-                            // NAME A-Z
-                            // ----------------------------------
 
                             case "name-asc":
-
                                 return (
-                                    a.name ||
-                                    ""
+                                    a.name || ""
                                 ).localeCompare(
-                                    b.name ||
-                                    "",
+                                    b.name || "",
                                     undefined,
-                                    {
-                                        sensitivity:
-                                            "base"
-                                    }
+                                    { sensitivity: "base" }
                                 );
-
-
-                            // ----------------------------------
-                            // NAME Z-A
-                            // ----------------------------------
 
                             case "name-desc":
-
                                 return (
-                                    b.name ||
-                                    ""
+                                    b.name || ""
                                 ).localeCompare(
-                                    a.name ||
-                                    "",
+                                    a.name || "",
                                     undefined,
-                                    {
-                                        sensitivity:
-                                            "base"
-                                    }
+                                    { sensitivity: "base" }
                                 );
-
-
-                            // ----------------------------------
-                            // PRICE LOW-HIGH
-                            // ----------------------------------
 
                             case "price-low":
-
                                 return (
-                                    normalizePrice(
-                                        a.price
-                                    ) -
-                                    normalizePrice(
-                                        b.price
-                                    )
+                                    normalizePrice(a.price) -
+                                    normalizePrice(b.price)
                                 );
-
-
-                            // ----------------------------------
-                            // PRICE HIGH-LOW
-                            // ----------------------------------
 
                             case "price-high":
-
                                 return (
-                                    normalizePrice(
-                                        b.price
-                                    ) -
-                                    normalizePrice(
-                                        a.price
-                                    )
+                                    normalizePrice(b.price) -
+                                    normalizePrice(a.price)
                                 );
-
-
-                            // ----------------------------------
-                            // NEWEST FIRST
-                            // ----------------------------------
 
                             case "newest":
-
                             default:
-
                                 return (
-                                    getTimestamp(
-                                        b.createdAt
-                                    ) -
-                                    getTimestamp(
-                                        a.createdAt
-                                    )
+                                    getTimestamp(b.createdAt) -
+                                    getTimestamp(a.createdAt)
                                 );
-
                         }
-
                     }
                 );
 
+            const destinationGroups =
+                groupPackagesByDestination(
+                    filteredPackages
+                );
 
-            // ==================================================
-            // RESULT COUNT
-            // ==================================================
+            if (packageResultText) {
 
-            if (
-                packageResultText
-            ) {
-
-                if (
-                    filteredPackages.length ===
-                    packages.length
-                ) {
-
-                    packageResultText
-                        .textContent =
-                        `Showing all ${
-                            packages.length
-                        } ${
-                            packages.length ===
-                            1
-                                ? "package"
-                                : "packages"
-                        }`;
-
-                } else {
-
-                    packageResultText
-                        .textContent =
-                        `Showing ${
-                            filteredPackages.length
-                        } of ${
-                            packages.length
-                        } packages`;
-
-                }
-
+                packageResultText.textContent =
+                    `${destinationGroups.length} ${
+                        destinationGroups.length === 1
+                            ? "destination"
+                            : "destinations"
+                    } • ${filteredPackages.length} ${
+                        filteredPackages.length === 1
+                            ? "package option"
+                            : "package options"
+                    }`;
             }
 
-
-            // ==================================================
-            // CLEAR PACKAGE GRID
-            // ==================================================
-
-            packageGrid.innerHTML =
-                "";
-
-
-            // ==================================================
-            // EMPTY STATE
-            // ==================================================
+            packageGrid.innerHTML = "";
 
             if (
-                filteredPackages.length ===
+                destinationGroups.length ===
                 0
             ) {
 
                 packageGrid.innerHTML = `
-
-                    <div
-                        class="package-empty-state"
-                    >
-
-                        <div
-                            class="package-empty-icon"
-                        >
-
-                            <i
-                                class="fa-solid fa-suitcase-rolling"
-                            ></i>
-
+                    <div class="package-empty-state">
+                        <div class="package-empty-icon">
+                            <i class="fa-solid fa-suitcase-rolling"></i>
                         </div>
-
-
-                        <strong>
-                            No packages found
-                        </strong>
-
-
+                        <strong>No packages found</strong>
                         <span>
                             Try changing your search,
                             category, status or sort.
                         </span>
-
                     </div>
-
                 `;
 
-
                 return;
-
             }
 
+            destinationGroups.forEach(
+                group => {
 
-            // ==================================================
-            // CREATE PACKAGE CARDS
-            // ==================================================
+                    const representative =
+                        group.packages[0];
 
-            filteredPackages.forEach(
-                packageItem => {
+                    const image =
+                        group.packages
+                            .map(
+                                item =>
+                                    item.gallery?.[0]?.url ||
+                                    item.image ||
+                                    ""
+                            )
+                            .find(Boolean) ||
+                        "";
 
+                    const validPrices =
+                        group.packages
+                            .map(
+                                item =>
+                                    normalizePrice(
+                                        item.price
+                                    )
+                            )
+                            .filter(
+                                price =>
+                                    price > 0
+                            );
+
+                    const lowestPrice =
+                        validPrices.length
+                            ? Math.min(
+                                ...validPrices
+                            )
+                            : 0;
+
+                    const activeCount =
+                        group.packages.filter(
+                            item =>
+                                (
+                                    item.status ||
+                                    "active"
+                                ) === "active"
+                        ).length;
 
                     const card =
                         document.createElement(
                             "article"
                         );
 
-
                     card.className =
-                        "package-card";
-
-
-                    const image =
-                        packageItem
-                            .gallery?.[0]?.url ||
-                        packageItem.image ||
-                        "";
-
-
-                    const category =
-                        packageItem.category ||
-                        "Other";
-
-
-                    const location =
-                        packageItem.location ||
-                        "Location not specified";
-
-
-                    const price =
-                        packageItem.price ||
-                        "TBD";
-
-
-                    const duration =
-                        packageItem.duration ||
-                        "";
-
-
-                    const status =
-                        packageItem.status ||
-                        "active";
-
-
-                    const priceDuration =
-                        duration
-                            ? `
-
-                                <span
-                                    class="package-price-main"
-                                >
-
-                                    From ₱${escapeHtml(
-                                        price
-                                    )}
-
-                                </span>
-
-
-                                <span
-                                    class="duration"
-                                >
-
-                                    / ${escapeHtml(
-                                        duration
-                                    )}
-
-                                </span>
-
-                              `
-                            : `
-
-                                <span
-                                    class="package-price-main"
-                                >
-
-                                    From ₱${escapeHtml(
-                                        price
-                                    )}
-
-                                </span>
-
-                              `;
-
+                        "package-card package-destination-card";
 
                     card.innerHTML = `
 
-                        <div
-                            class="package-card-image"
-                        >
+                        <div class="package-card-image">
 
                             ${
                                 image
                                     ? `
-
                                         <img
-                                            src="${escapeHtml(
-                                                image
-                                            )}"
-                                            alt="${escapeHtml(
-                                                packageItem.name
-                                            )}"
+                                            src="${escapeHtml(image)}"
+                                            alt="${escapeHtml(group.name)}"
                                         >
-
                                       `
                                     : `
-
-                                        <div
-                                            class="package-card-image-placeholder"
-                                        >
-
-                                            <i
-                                                class="fa-solid fa-image"
-                                            ></i>
-
+                                        <div class="package-card-image-placeholder">
+                                            <i class="fa-solid fa-image"></i>
                                         </div>
-
                                       `
                             }
 
+                            <span class="package-category">
+                                ${escapeHtml(group.category)}
+                            </span>
 
-                            <span
-                                class="package-category"
-                            >
-
-                                ${escapeHtml(
-                                    category
-                                )}
-
+                            <span class="package-option-count-badge">
+                                <i class="fa-solid fa-layer-group"></i>
+                                ${group.packages.length}
+                                ${
+                                    group.packages.length === 1
+                                        ? "Option"
+                                        : "Options"
+                                }
                             </span>
 
                         </div>
 
 
-                        <div
-                            class="package-card-body"
-                        >
+                        <div class="package-card-body">
 
                             <h3>
-
-                                ${escapeHtml(
-                                    packageItem.name
-                                )}
-
+                                ${escapeHtml(group.name)}
                             </h3>
 
-
-                            <div
-                                class="package-location"
-                            >
-
-                                <i
-                                    class="fa-solid fa-location-dot"
-                                ></i>
-
-
+                            <div class="package-location">
+                                <i class="fa-solid fa-location-dot"></i>
                                 <span>
-
                                     ${escapeHtml(
-                                        location
+                                        group.location ||
+                                        "Location not specified"
                                     )}
-
                                 </span>
+                            </div>
 
+                            <div class="package-destination-price">
+                                ${
+                                    lowestPrice > 0
+                                        ? `
+                                            <small>
+                                                ${
+                                                    group.packages.length > 1
+                                                        ? "Starting from"
+                                                        : "Package price"
+                                                }
+                                            </small>
+                                            <strong>
+                                                ₱${escapeHtml(
+                                                    lowestPrice.toLocaleString(
+                                                        "en-PH"
+                                                    )
+                                                )}
+                                            </strong>
+                                        `
+                                        : `
+                                            <strong class="price-tba">
+                                                Price TBA
+                                            </strong>
+                                        `
+                                }
                             </div>
 
 
-                            <div
-                                class="package-price"
-                            >
-
-                                ${priceDuration}
-
-                            </div>
-
-                        </div>
-
-
-                        <div
-                            class="package-card-footer"
-                        >
-
-                            <span
-                                class="status ${status}"
-                            >
-
-                                <span
-                                    class="status-dot"
-                                ></span>
-
+                            <div class="package-option-list">
 
                                 ${
-                                    status ===
-                                    "active"
-                                        ? "Active"
-                                        : "Hidden"
+                                    group.packages
+                                        .map(
+                                            option => {
+
+                                                const status =
+                                                    option.status ||
+                                                    "active";
+
+                                                const price =
+                                                    normalizePrice(
+                                                        option.price
+                                                    );
+
+                                                return `
+                                                    <div class="package-option-row">
+
+                                                        <div class="package-option-row-main">
+
+                                                            <span class="package-option-name">
+                                                                ${escapeHtml(
+                                                                    getPackageOptionLabel(
+                                                                        option
+                                                                    )
+                                                                )}
+                                                            </span>
+
+                                                            <span class="package-option-row-status ${escapeHtml(status)}">
+                                                                ${
+                                                                    status === "active"
+                                                                        ? "Active"
+                                                                        : status === "draft"
+                                                                            ? "Draft"
+                                                                            : "Hidden"
+                                                                }
+                                                            </span>
+
+                                                        </div>
+
+                                                        <div class="package-option-row-bottom">
+
+                                                            <strong>
+                                                                ${
+                                                                    price > 0
+                                                                        ? `₱${escapeHtml(
+                                                                            price.toLocaleString(
+                                                                                "en-PH"
+                                                                            )
+                                                                        )}`
+                                                                        : "Price TBA"
+                                                                }
+                                                            </strong>
+
+                                                            <div class="package-option-actions">
+
+                                                                <button
+                                                                    type="button"
+                                                                    class="package-option-icon-btn edit-package-btn"
+                                                                    data-id="${escapeHtml(option.id)}"
+                                                                    title="Edit ${escapeHtml(
+                                                                        getPackageOptionLabel(
+                                                                            option
+                                                                        )
+                                                                    )}"
+                                                                    aria-label="Edit package option"
+                                                                >
+                                                                    <i class="fa-regular fa-pen-to-square"></i>
+                                                                </button>
+
+                                                                <button
+                                                                    type="button"
+                                                                    class="package-option-icon-btn package-menu-status"
+                                                                    data-id="${escapeHtml(option.id)}"
+                                                                    data-status="${escapeHtml(status)}"
+                                                                    title="${
+                                                                        status === "active"
+                                                                            ? "Hide option"
+                                                                            : status === "draft"
+                                                                                ? "Continue draft"
+                                                                                : "Show option"
+                                                                    }"
+                                                                    aria-label="Change package option status"
+                                                                >
+                                                                    <i class="fa-regular ${
+                                                                        status === "active"
+                                                                            ? "fa-eye-slash"
+                                                                            : status === "draft"
+                                                                                ? "fa-pen-to-square"
+                                                                                : "fa-eye"
+                                                                    }"></i>
+                                                                </button>
+
+                                                            </div>
+
+                                                        </div>
+
+                                                    </div>
+                                                `;
+                                            }
+                                        )
+                                        .join("")
                                 }
-
-                            </span>
-
-
-                            <div
-                                class="package-actions"
-                            >
-
-
-                                <button
-                                    class="package-edit-btn edit-package-btn"
-                                    type="button"
-                                    title="Edit Package"
-                                    aria-label="Edit ${escapeHtml(
-                                        packageItem.name
-                                    )}"
-                                    data-id="${packageItem.id}"
-                                >
-
-                                    <i
-                                        class="fa-regular fa-pen-to-square"
-                                    ></i>
-
-
-                                    <span>
-                                        Edit
-                                    </span>
-
-                                </button>
-
-
-                                <div
-                                    class="package-more-wrap"
-                                >
-
-
-                                    <button
-                                        class="package-more-btn"
-                                        type="button"
-                                        title="More Options"
-                                        aria-label="More options for ${escapeHtml(
-                                            packageItem.name
-                                        )}"
-                                        aria-expanded="false"
-                                        data-id="${packageItem.id}"
-                                    >
-
-                                        <i
-                                            class="fa-solid fa-ellipsis"
-                                        ></i>
-
-                                    </button>
-
-
-                                    <div
-                                        class="package-more-menu"
-                                        role="menu"
-                                    >
-
-
-                                        <button
-                                            type="button"
-                                            class="package-more-menu-item package-menu-edit"
-                                            role="menuitem"
-                                            data-id="${packageItem.id}"
-                                        >
-
-                                            <i
-                                                class="fa-regular fa-pen-to-square"
-                                            ></i>
-
-
-                                            <span>
-                                                Edit package
-                                            </span>
-
-                                        </button>
-
-
-                                        <button
-                                            type="button"
-                                            class="package-more-menu-item package-menu-status"
-                                            role="menuitem"
-                                            data-id="${packageItem.id}"
-                                            data-status="${status}"
-                                        >
-
-                                            <i
-                                                class="fa-regular ${
-                                                    status ===
-                                                    "active"
-                                                        ? "fa-eye-slash"
-                                                        : "fa-eye"
-                                                }"
-                                            ></i>
-
-
-                                            <span>
-
-                                                ${
-                                                    status ===
-                                                    "active"
-                                                        ? "Hide package"
-                                                        : "Show package"
-                                                }
-
-                                            </span>
-
-                                        </button>
-
-
-                                    </div>
-
-                                </div>
 
                             </div>
 
                         </div>
 
-                    `;
 
+                        <div class="package-destination-footer">
+
+                            <span>
+                                <span class="status-dot"></span>
+                                ${activeCount}/${group.packages.length}
+                                active
+                            </span>
+
+                            <button
+                                type="button"
+                                class="package-add-option-btn add-package-option-btn"
+                                data-id="${escapeHtml(representative.id)}"
+                            >
+                                <i class="fa-solid fa-plus"></i>
+                                Add Option
+                            </button>
+
+                        </div>
+                    `;
 
                     packageGrid.appendChild(
                         card
                     );
-
                 }
             );
-
         }
 
                 // ======================================================
@@ -1807,6 +4136,32 @@ addPickupLocation?.addEventListener(
 
             editingPackageId =
                 null;
+
+            saveAsDraftMode =
+                false;
+
+            activeBuilderSectionId =
+                "packageSectionBasic";
+
+            categoryTemplateManuallyApplied =
+                false;
+
+            if (categoryTemplateApplied) {
+                categoryTemplateApplied.hidden =
+                    true;
+            }
+
+            selectedExistingDestinationKey =
+                "";
+
+            hideDestinationSuggestions();
+
+            hideExistingDestinationPanel();
+
+            if (packageModalTitle) {
+                packageModalTitle.textContent =
+                    "Add New Package";
+            }
 
 
             if (
@@ -1993,57 +4348,17 @@ addPickupLocation?.addEventListener(
             }
 
             // ==================================================
-// RESET PICK UP LOCATIONS
-// ==================================================
-
-if (pickupLocationList) {
-
-    pickupLocationList.innerHTML = "";
-
-    addPickupLocationRow();
-
-}
-
+            // RESET PICK UP LOCATIONS
             // ==================================================
-// PICK UP LOCATIONS
-// ==================================================
 
-if (
-    pickupLocationList
-) {
+            if (pickupLocationList) {
 
-    pickupLocationList.innerHTML =
-        "";
+                pickupLocationList.innerHTML =
+                    "";
 
-    const pickupLocations =
-        Array.isArray(
-            packageItem.pickupLocations
-        )
-            ? packageItem.pickupLocations
-            : [];
-
-    if (
-        pickupLocations.length >
-        0
-    ) {
-
-        pickupLocations.forEach(
-            value => {
-
-                addPickupLocationRow(
-                    value
-                );
+                addPickupLocationRow();
 
             }
-        );
-
-    } else {
-
-        addPickupLocationRow();
-
-    }
-
-}
 
 
             // ==============================================
@@ -4723,6 +7038,11 @@ if (
             editingPackageId =
                 packageId;
 
+            if (packageModalTitle) {
+                packageModalTitle.textContent =
+                    "Edit Package";
+            }
+
 
             // ==================================================
             // BASIC INFORMATION
@@ -4754,6 +7074,7 @@ if (
 
             setInputValue(
                 "formDuration",
+                packageItem.packageOptionLabel ||
                 packageItem.duration
             );
 
@@ -4772,8 +7093,18 @@ if (
 
             setInputValue(
                 "formStatus",
+                packageItem.status ===
+                    "draft"
+                    ? "active"
+                    : (
+                        packageItem.status ||
+                        "active"
+                    )
+            );
+
+            updatePackageBuilderStatus(
                 packageItem.status ||
-                "active"
+                "draft"
             );
 
 
@@ -5070,6 +7401,87 @@ if (
 
 
             // ==================================================
+            // PICK UP LOCATIONS
+            // ==================================================
+
+            if (
+                pickupLocationList
+            ) {
+
+                pickupLocationList.innerHTML =
+                    "";
+
+                const pickupLocations =
+                    Array.isArray(
+                        packageItem.pickupLocations
+                    )
+                        ? packageItem.pickupLocations
+                        : Array.isArray(
+                            packageItem.pickUpLocations
+                        )
+                            ? packageItem.pickUpLocations
+                            : Array.isArray(
+                                packageItem.meetupLocations
+                            )
+                                ? packageItem.meetupLocations
+                                : Array.isArray(
+                                    packageItem.meetUpLocations
+                                )
+                                    ? packageItem.meetUpLocations
+                                    : [];
+
+                if (
+                    pickupLocations.length >
+                    0
+                ) {
+
+                    pickupLocations.forEach(
+                        value => {
+
+                            const pickupValue =
+                                typeof value ===
+                                "string"
+                                    ? value
+                                    : (
+                                        value?.name ||
+                                        value?.label ||
+                                        value?.value ||
+                                        ""
+                                    );
+
+                            if (
+                                String(
+                                    pickupValue ||
+                                    ""
+                                ).trim()
+                            ) {
+                                addPickupLocationRow(
+                                    String(
+                                        pickupValue
+                                    ).trim()
+                                );
+                            }
+
+                        }
+                    );
+
+                }
+
+                if (
+                    pickupLocationList
+                        .querySelectorAll(
+                            ".pickup-location-row"
+                        ).length === 0
+                ) {
+
+                    addPickupLocationRow();
+
+                }
+
+            }
+
+
+            // ==================================================
             // ACCOMMODATIONS
             // ==================================================
 
@@ -5116,8 +7528,41 @@ if (
 
             renderPackageGallery();
 
+            const existingDestinationGroup =
+                findExistingDestinationByName(
+                    packageItem.name
+                );
+
+            if (existingDestinationGroup) {
+                renderExistingDestinationOptions(
+                    existingDestinationGroup
+                );
+            }
+
 
             openPackageModal();
+
+            updateBuilderLivePreview();
+
+            window.setTimeout(
+                () => {
+                    setActiveBuilderSection(
+                        packageItem.status ===
+                            "draft"
+                            ? (
+                                packageItem
+                                    .draftLastSection ||
+                                "packageSectionBasic"
+                            )
+                            : "packageSectionBasic",
+                        {
+                            scroll: true,
+                            behavior: "auto"
+                        }
+                    );
+                },
+                60
+            );
 
         }
 
@@ -5179,6 +7624,27 @@ if (
         packageGrid?.addEventListener(
             "click",
             async event => {
+
+
+                // ----------------------------------------------
+                // ADD PACKAGE OPTION
+                // ----------------------------------------------
+
+                const addOptionButton =
+                    event.target.closest(
+                        ".add-package-option-btn"
+                    );
+
+                if (addOptionButton) {
+
+                    closeAllPackageMenus();
+
+                    openNewPackageOption(
+                        addOptionButton.dataset.id
+                    );
+
+                    return;
+                }
 
 
                 // ----------------------------------------------
@@ -5294,6 +7760,20 @@ if (
                             .dataset
                             .status ||
                         "active";
+
+                    if (
+                        currentStatus ===
+                        "draft"
+                    ) {
+
+                        closeAllPackageMenus();
+
+                        editPackage(
+                            packageId
+                        );
+
+                        return;
+                    }
 
 
                     const nextStatus =
@@ -6350,12 +8830,46 @@ function collectPickupLocations() {
                 // BASIC INFORMATION
                 // ==============================================
 
+                const rawDestinationName =
+                    getInputValue(
+                        "formPackageName"
+                    );
+
+                const destinationName =
+                    getBaseDestinationName(
+                        rawDestinationName ||
+                        (
+                            saveAsDraftMode
+                                ? "Untitled Package"
+                                : ""
+                        )
+                    );
+
+                const packageOptionLabel =
+                    getInputValue(
+                        "formDuration"
+                    );
+
                 const packageData = {
 
                     name:
-                        getInputValue(
-                            "formPackageName"
-                        ),
+                        destinationName,
+
+                    destinationName,
+
+                    packageOptionLabel,
+
+                    destinationGroupKey:
+                        [
+                            destinationName
+                                .trim()
+                                .toLowerCase(),
+                            getInputValue(
+                                "formLocation"
+                            )
+                                .trim()
+                                .toLowerCase()
+                        ].join("::"),
 
                     category:
                         document.getElementById(
@@ -6389,10 +8903,18 @@ function collectPickupLocations() {
                         ),
 
                     status:
-                        document.getElementById(
-                            "formStatus"
-                        )?.value ||
-                        "active",
+                        saveAsDraftMode
+                            ? "draft"
+                            : (
+                                document.getElementById(
+                                    "formStatus"
+                                )?.value ||
+                                "active"
+                            ),
+
+                    draftLastSection:
+                        activeBuilderSectionId ||
+                        "packageSectionBasic",
 
                     passengerPricing: {
 
@@ -6578,84 +9100,54 @@ function collectPickupLocations() {
                 };
 
 
+
+                /*
+                 * If the typed destination already exists, always reuse
+                 * the canonical destination name/category/location.
+                 * This prevents a typo in location or capitalization from
+                 * creating another destination card/page.
+                 */
+                const matchingExistingDestination =
+                    findExistingDestinationByName(
+                        packageData.name
+                    );
+
+                if (matchingExistingDestination) {
+
+                    packageData.name =
+                        matchingExistingDestination.name;
+
+                    packageData.destinationName =
+                        matchingExistingDestination.name;
+
+                    packageData.category =
+                        matchingExistingDestination.category;
+
+                    packageData.location =
+                        matchingExistingDestination.location;
+
+                    packageData.destinationGroupKey =
+                        matchingExistingDestination.key;
+                }
+
+
                 // ==============================================
                 // VALIDATION
                 // ==============================================
 
-                if (
-                    !packageData.name
-                ) {
 
-                    alert(
-                        "Please enter a package name."
-                    );
-
-                    document
-                        .getElementById(
-                            "formPackageName"
-                        )
-                        ?.focus();
-
-                    return;
-
-                }
-
-
-                if (
-                    !packageData.category
-                ) {
-
-                    alert(
-                        "Please select a package category."
-                    );
-
-                    document
-                        .getElementById(
-                            "formCategory"
-                        )
-                        ?.focus();
-
-                    return;
-
-                }
-
-
-                if (
-                    !packageData.location
-                ) {
-
-                    alert(
-                        "Please enter the destination or location."
-                    );
-
-                    document
-                        .getElementById(
-                            "formLocation"
-                        )
-                        ?.focus();
-
-                    return;
-
-                }
-
-
-
-                if (
-                    packageData.passengerPricing.kidsPricingEnabled
-                ) {
-
+                if (!saveAsDraftMode) {
                     if (
-                        packageData.passengerPricing.childDiscountMinAge <=
-                        packageData.passengerPricing.childFreeMaxAge
+                        !packageData.name
                     ) {
 
                         alert(
-                            "Discounted child starting age must be higher than the FREE child maximum age."
+                            "Please enter a package name."
                         );
 
                         document
                             .getElementById(
-                                "childDiscountMinAge"
+                                "formPackageName"
                             )
                             ?.focus();
 
@@ -6665,43 +9157,16 @@ function collectPickupLocations() {
 
 
                     if (
-                        packageData.passengerPricing.childDiscountMaxAge <
-                        packageData.passengerPricing.childDiscountMinAge
+                        !packageData.category
                     ) {
 
                         alert(
-                            "Discounted child maximum age cannot be lower than the starting age."
+                            "Please select a package category."
                         );
 
                         document
                             .getElementById(
-                                "childDiscountMaxAge"
-                            )
-                            ?.focus();
-
-                        return;
-
-                    }
-
-                }
-
-
-                if (
-                    packageData.exclusiveTour.enabled
-                ) {
-
-                    if (
-                        packageData.exclusiveTour.freeStartsAt <
-                        packageData.exclusiveTour.minimumPayingPax
-                    ) {
-
-                        alert(
-                            "Free Pax Starts At cannot be lower than Minimum Paying Pax."
-                        );
-
-                        document
-                            .getElementById(
-                                "exclusiveFreeStartsAt"
+                                "formCategory"
                             )
                             ?.focus();
 
@@ -6711,17 +9176,16 @@ function collectPickupLocations() {
 
 
                     if (
-                        packageData.exclusiveTour.freePax >
-                        packageData.exclusiveTour.maxFreePax
+                        !packageData.location
                     ) {
 
                         alert(
-                            "Free Pax cannot be higher than Maximum Free Pax."
+                            "Please enter the destination or location."
                         );
 
                         document
                             .getElementById(
-                                "exclusiveFreePax"
+                                "formLocation"
                             )
                             ?.focus();
 
@@ -6729,13 +9193,164 @@ function collectPickupLocations() {
 
                     }
 
+
+
+                    if (
+                        !packageData.duration
+                    ) {
+
+                        alert(
+                            "Please enter the package option / duration."
+                        );
+
+                        document
+                            .getElementById(
+                                "formDuration"
+                            )
+                            ?.focus();
+
+                        return;
+                    }
+
+
+                    const duplicateOption =
+                        packages.find(
+                            item =>
+                                item.id !==
+                                    editingPackageId &&
+                                getDestinationGroupKey(
+                                    item
+                                ) ===
+                                packageData
+                                    .destinationGroupKey &&
+                                String(
+                                    item.duration ||
+                                    item.packageOptionLabel ||
+                                    ""
+                                )
+                                    .trim()
+                                    .toLowerCase() ===
+                                String(
+                                    packageData.duration ||
+                                    ""
+                                )
+                                    .trim()
+                                    .toLowerCase()
+                        );
+
+                    if (duplicateOption) {
+
+                        alert(
+                            `${packageData.duration} already exists for ${packageData.name}. Please edit the existing option instead.`
+                        );
+
+                        document
+                            .getElementById(
+                                "formDuration"
+                            )
+                            ?.focus();
+
+                        return;
+                    }
+
+
+                    if (
+                        packageData.passengerPricing.kidsPricingEnabled
+                    ) {
+
+                        if (
+                            packageData.passengerPricing.childDiscountMinAge <=
+                            packageData.passengerPricing.childFreeMaxAge
+                        ) {
+
+                            alert(
+                                "Discounted child starting age must be higher than the FREE child maximum age."
+                            );
+
+                            document
+                                .getElementById(
+                                    "childDiscountMinAge"
+                                )
+                                ?.focus();
+
+                            return;
+
+                        }
+
+
+                        if (
+                            packageData.passengerPricing.childDiscountMaxAge <
+                            packageData.passengerPricing.childDiscountMinAge
+                        ) {
+
+                            alert(
+                                "Discounted child maximum age cannot be lower than the starting age."
+                            );
+
+                            document
+                                .getElementById(
+                                    "childDiscountMaxAge"
+                                )
+                                ?.focus();
+
+                            return;
+
+                        }
+
+                    }
+
+
+                    if (
+                        packageData.exclusiveTour.enabled
+                    ) {
+
+                        if (
+                            packageData.exclusiveTour.freeStartsAt <
+                            packageData.exclusiveTour.minimumPayingPax
+                        ) {
+
+                            alert(
+                                "Free Pax Starts At cannot be lower than Minimum Paying Pax."
+                            );
+
+                            document
+                                .getElementById(
+                                    "exclusiveFreeStartsAt"
+                                )
+                                ?.focus();
+
+                            return;
+
+                        }
+
+
+                        if (
+                            packageData.exclusiveTour.freePax >
+                            packageData.exclusiveTour.maxFreePax
+                        ) {
+
+                            alert(
+                                "Free Pax cannot be higher than Maximum Free Pax."
+                            );
+
+                            document
+                                .getElementById(
+                                    "exclusiveFreePax"
+                                )
+                                ?.focus();
+
+                            return;
+
+                        }
+
+                    }
+
+
+                    if (!validateAccommodationCards()) {
+                        return;
+                    }
+
                 }
-
-
-                if (!validateAccommodationCards()) {
-                    return;
-                }
-
 
                 // ==============================================
                 // LOCK SAVE BUTTON
@@ -6743,18 +9358,23 @@ function collectPickupLocations() {
 
                 const originalSaveText =
                     saveButton?.innerHTML ||
-                    "Save Package";
+                    "Publish Package";
+
+                const activeSaveButton =
+                    saveAsDraftMode
+                        ? savePackageDraftButton
+                        : saveButton;
 
 
                 if (
-                    saveButton
+                    activeSaveButton
                 ) {
 
-                    saveButton.disabled =
+                    activeSaveButton.disabled =
                         true;
 
 
-                    saveButton.innerHTML = `
+                    activeSaveButton.innerHTML = `
 
                         <span
                             class="save-loading-spinner"
@@ -7258,9 +9878,13 @@ function collectPickupLocations() {
                     // ==========================================
 
                     alert(
-                        editingPackageId
-                            ? "Package updated successfully!"
-                            : "Package created successfully!"
+                        saveAsDraftMode
+                            ? "Draft saved successfully!"
+                            : (
+                                editingPackageId
+                                    ? "Package updated successfully!"
+                                    : "Package published successfully!"
+                            )
                     );
 
 
@@ -7337,7 +9961,12 @@ function collectPickupLocations() {
         syncAccommodationEmptyState();
         syncTravelScheduleEmptyState();
 
-        loadPackages();
+        loadPackageTemplates()
+            .finally(
+                () => {
+                    loadPackages();
+                }
+            );
 
     }
 );
