@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1.0">
+        <meta name="description" content="Trips Wonder Travel Management System - Van Rental Rates">
+        <title>Van Rental | Trips Wonder Admin</title>
+        <link rel="icon" type="image/jpeg" href="../../favicon.jpg">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+        <link rel="stylesheet" href="../../assets/css/admin/van-rental.css">
+        <link rel="stylesheet" href="/assets/css/shared/admin-nav.css">
+    </head>
+    <body class="admin-shared-nav-page">
+        <div class="admin-wrapper">
+            <aside id="adminSidebar" class="admin-sidebar">
+            </aside>
+            <main class="main">
+                <section class="content">
+                    <header class="page-header">
+                        <div>
+                            <button class="back-link" id="backToPackages" type="button">
+                                <i class="fa-solid fa-arrow-left">
+                                </i> Packages</button>
+                                <h1>Van Rental Rates</h1>
+                                <p>Manage operator rates used as the source for Package Cost &amp; Pricing.</p>
+                            </div>
+                            <button class="btn-primary" id="addRateButton" type="button">
+                                <i class="fa-solid fa-plus">
+                                </i> Add Rate</button>
+                            </header>
+                            <section class="summary-grid">
+                                <article>
+                                    <span class="summary-icon">
+                                        <i class="fa-solid fa-van-shuttle">
+                                        </i>
+                                    </span>
+                                    <div>
+                                        <small>Total Destinations</small>
+                                        <strong id="totalRates">0</strong>
+                                        <p>Saved operator routes</p>
+                                    </div>
+                                </article>
+                                <article>
+                                    <span class="summary-icon north">
+                                        <i class="fa-solid fa-arrow-up">
+                                        </i>
+                                    </span>
+                                    <div>
+                                        <small>Northbound</small>
+                                        <strong id="northCount">0</strong>
+                                        <p>Destination rates</p>
+                                    </div>
+                                </article>
+                                <article>
+                                    <span class="summary-icon south">
+                                        <i class="fa-solid fa-arrow-down">
+                                        </i>
+                                    </span>
+                                    <div>
+                                        <small>Southbound</small>
+                                        <strong id="southCount">0</strong>
+                                        <p>Destination rates</p>
+                                    </div>
+                                </article>
+                                <article>
+                                    <span class="summary-icon mountain">
+                                        <i class="fa-solid fa-mountain-sun">
+                                        </i>
+                                    </span>
+                                    <div>
+                                        <small>Mountaineer</small>
+                                        <strong id="mountainCount">0</strong>
+                                        <p>Destination rates</p>
+                                    </div>
+                                </article>
+                            </section>
+                            <section class="rate-rules">
+                                <div class="rule-title">
+                                    <span>
+                                        <i class="fa-solid fa-sliders">
+                                        </i>
+                                    </span>
+                                    <div>
+                                        <strong>Van Unit Rate Rules</strong>
+                                        <small>High Roof is the operator base rate.</small>
+                                    </div>
+                                </div>
+                                <div class="rule-items">
+                                    <div>
+                                        <small>Low Roof</small>
+                                        <strong>10–12 pax</strong>
+                                        <b>− ₱2,000</b>
+                                    </div>
+                                    <div class="base">
+                                        <small>High Roof</small>
+                                        <strong>13–15 pax</strong>
+                                        <b>Base Rate</b>
+                                    </div>
+                                    <div>
+                                        <small>XL Van</small>
+                                        <strong>18 pax</strong>
+                                        <b>+ ₱3,000</b>
+                                    </div>
+                                </div>
+                            </section>
+                            <section class="toolbar">
+                                <div class="search-wrap">
+                                    <i class="fa-solid fa-magnifying-glass">
+                                    </i>
+                                    <input id="rateSearch" type="search" placeholder="Search destination...">
+                                </div>
+                                <select id="categoryFilter">
+                                    <option value="all">All Categories</option>
+                                    <option>Northbound</option>
+                                    <option>Southbound</option>
+                                    <option>Mountaineer</option>
+                                </select>
+                                <select id="unitFilter">
+                                    <option value="high">High Roof · 13–15 pax</option>
+                                    <option value="low">Low Roof · 10–12 pax</option>
+                                    <option value="xl">XL Van · 18 pax</option>
+                                </select>
+                            </section>
+                            <div class="list-head">
+                                <div>
+                                    <h2>Operator Rates</h2>
+                                    <span id="resultText">Loading rates...</span>
+                                </div>
+                                <div class="legend">
+                                    <i class="fa-solid fa-circle-info">
+                                    </i> Rates shown update automatically by selected van type.</div>
+                                </div>
+                                <section class="rate-table-card">
+                                    <div class="rate-table-wrap">
+                                        <table>
+                                            <thead>
+                                                <tr>
+                                                    <th>Destination</th>
+                                                    <th>Category</th>
+                                                    <th>Day Tour</th>
+                                                    <th>2D1N</th>
+                                                    <th>3D2N</th>
+                                                    <th>Notes</th>
+                                                    <th>
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="rateTableBody">
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="empty-state" id="emptyState" hidden>
+                                        <i class="fa-solid fa-van-shuttle">
+                                        </i>
+                                        <strong>No rates found</strong>
+                                        <span>Try another search or category.</span>
+                                    </div>
+                                </section>
+                            </section>
+                        </main>
+                    </div>
+                    <div class="modal" id="rateModal" aria-hidden="true">
+                        <div class="modal-overlay" data-close-rate-modal>
+                        </div>
+                        <div class="modal-box" role="dialog" aria-modal="true">
+                            <header>
+                                <div>
+                                    <small>VAN RENTAL</small>
+                                    <h2 id="rateModalTitle">Add Operator Rate</h2>
+                                    <p>Save the High Roof base operator rate.</p>
+                                </div>
+                                <button type="button" class="icon-btn" data-close-rate-modal>
+                                    <i class="fa-solid fa-xmark">
+                                    </i>
+                                </button>
+                            </header>
+                            <form id="rateForm">
+                                <div class="form-grid">
+                                    <label class="full">Destination / Route<input id="rateDestination" required placeholder="e.g. Real, Quezon">
+                                    </label>
+                                    <label>Category<select id="rateCategory" required>
+                                        <option>Northbound</option>
+                                        <option>Southbound</option>
+                                        <option>Mountaineer</option>
+                                    </select>
+                                </label>
+                                <label>Status<select id="rateStatus">
+                                    <option value="active">Active</option>
+                                    <option value="inactive">Inactive</option>
+                                </select>
+                            </label>
+                            <label>Day Tour<input id="rateDayTour" type="number" min="0" step="500" placeholder="₱ 0">
+                            </label>
+                            <label>2D1N<input id="rate2D1N" type="number" min="0" step="500" placeholder="₱ 0">
+                            </label>
+                            <label>3D2N<input id="rate3D2N" type="number" min="0" step="500" placeholder="₱ 0">
+                            </label>
+                            <label class="full">Notes<input id="rateNotes" placeholder="e.g. Excluding RORO / Drop-off ₱9,000">
+                            </label>
+                        </div>
+                        <div class="modal-note">
+                            <i class="fa-solid fa-circle-info">
+                            </i>
+                            <span>Enter High Roof base rates only. Low Roof and XL Van are calculated automatically.</span>
+                        </div>
+                        <footer>
+                            <button type="button" class="btn-secondary" data-close-rate-modal>Cancel</button>
+                            <button type="submit" class="btn-primary" id="saveRateButton">
+                                <i class="fa-solid fa-floppy-disk">
+                                </i> Save Rate</button>
+                            </footer>
+                        </form>
+                    </div>
+                </div>
+                <script type="module" src="../../assets/js/admin/van-rental.js">
+                </script>
+                <script type="module" src="/assets/js/shared/admin-nav.js">
+                </script>
+            </body>
+        </html>

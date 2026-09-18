@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="description"
+        content="Trips Wonder Travel Management System - Package Breakdown">
+
+    <title>Package Breakdown | Trips Wonder Admin</title>
+
+    <link
+        rel="icon"
+        type="image/jpeg"
+        href="../../favicon.jpg">
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com">
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+    <link
+        rel="stylesheet"
+        href="../../assets/css/admin/package-breakdown.css">
+
+    <link
+        rel="stylesheet"
+        href="/assets/css/shared/admin-nav.css">
+
+    <link
+        rel="stylesheet"
+        href="../../assets/css/shared/loading-screen.css">
+</head>
+
+<body class="twtms-page-loading admin-shared-nav-page">
+
+<div class="admin-wrapper">
+
+    <aside id="adminSidebar" class="admin-sidebar"></aside>
+
+    <main class="main">
+
+        <section class="content package-breakdown-content">
+
+            <header class="breakdown-header">
+
+                <div class="breakdown-title-wrap">
+
+                    <button
+                        type="button"
+                        class="back-packages-button"
+                        id="backToPackagesButton">
+
+                        <i class="fa-solid fa-arrow-left"></i>
+                        <span>Back to Packages</span>
+
+                    </button>
+
+                    <h1>Package Breakdown</h1>
+
+                    <p>
+                        Build the actual operating cost and suggested selling price for each Private / Exclusive Tour package.
+                    </p>
+
+                </div>
+
+                <div
+                    class="breakdown-save-state"
+                    id="breakdownSaveState">
+
+                    <i class="fa-regular fa-circle-check"></i>
+                    <span>Select a package</span>
+
+                </div>
+
+            </header>
+
+
+
+            <section class="breakdown-selector-card global-defaults-card">
+
+                <div class="breakdown-selector-heading global-defaults-heading">
+
+                    <div>
+                        <span class="section-eyebrow">GLOBAL PRICING DEFAULTS</span>
+                        <h2>Default Exclusive Tour Settings</h2>
+                        <p>
+                            Packages set to “Use Global Default” will update automatically when these defaults change.
+                        </p>
+                    </div>
+
+                    <button
+                        type="button"
+                        class="btn-secondary compact"
+                        id="saveGlobalPricingDefaultsButton">
+
+                        <i class="fa-regular fa-floppy-disk"></i>
+                        <span>Save Defaults</span>
+
+                    </button>
+
+                </div>
+
+                <div class="global-defaults-grid">
+
+                    <div class="form-group">
+
+                        <label for="globalMinimumPayingPax">
+                            Default Minimum Paying Pax
+                        </label>
+
+                        <input
+                            type="number"
+                            id="globalMinimumPayingPax"
+                            min="1"
+                            step="1"
+                            value="12">
+
+                        <small class="field-help">
+                            Used by package breakdowns that inherit the global headcount.
+                        </small>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label for="globalDefaultTransportUnit">
+                            Default Transportation Unit
+                        </label>
+
+                        <select id="globalDefaultTransportUnit">
+                            <option value="">No default unit</option>
+                        </select>
+
+                        <small class="field-help">
+                            Packages using the global unit will follow its latest capacity and rates.
+                        </small>
+
+                    </div>
+
+                </div>
+
+                <div class="global-transport-library-head">
+
+                    <div>
+                        <strong>Transportation Unit Library</strong>
+                        <span>
+                            Maintain shared units here so pricing changes can flow to every package that uses them.
+                        </span>
+                    </div>
+
+                    <button
+                        type="button"
+                        class="btn-secondary compact"
+                        id="addGlobalTransportUnitButton">
+
+                        <i class="fa-solid fa-plus"></i>
+                        <span>Add Default Unit</span>
+
+                    </button>
+
+                </div>
+
+                <div
+                    class="transport-unit-list global-transport-unit-list"
+                    id="globalTransportUnitList">
+                </div>
+
+            </section>
+
+            <section class="breakdown-selector-card">
+
+                <div class="breakdown-selector-heading">
+
+                    <div>
+                        <span class="section-eyebrow">PACKAGE SELECTION</span>
+                        <h2>Select Package Option</h2>
+                        <p>
+                            Choose the destination and exact package option you want to configure.
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <div class="breakdown-selector-grid">
+
+                    <div class="form-group">
+
+                        <label for="breakdownDestination">
+                            Destination
+                        </label>
+
+                        <select id="breakdownDestination">
+                            <option value="">Select destination</option>
+                        </select>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="breakdownPackageOption">
+                            Package Option
+                        </label>
+
+                        <select
+                            id="breakdownPackageOption"
+                            disabled>
+
+                            <option value="">Select package option</option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    class="selected-package-summary"
+                    id="selectedPackageSummary"
+                    hidden>
+
+                    <div class="selected-package-icon">
+                        <i class="fa-solid fa-suitcase"></i>
+                    </div>
+
+                    <div class="selected-package-copy">
+                        <strong id="selectedPackageName">—</strong>
+                        <span id="selectedPackageMeta">—</span>
+                    </div>
+
+                    <div class="selected-package-price">
+                        <span>Regular Package Price</span>
+                        <strong id="selectedPackagePrice">₱0</strong>
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <div
+                class="breakdown-empty-state"
+                id="breakdownEmptyState">
+
+                <div class="breakdown-empty-icon">
+                    <i class="fa-solid fa-calculator"></i>
+                </div>
+
+                <h2>Select a package to start</h2>
+
+                <p>
+                    The breakdown will be linked to the selected package option using its package ID.
+                </p>
+
+            </div>
+
+
+            <form
+                id="packageBreakdownForm"
+                class="package-breakdown-form"
+                autocomplete="off"
+                hidden>
+
+
+                <section class="breakdown-card">
+
+                    <div class="breakdown-card-heading">
+
+                        <div class="breakdown-card-title">
+
+                            <span class="breakdown-step">01</span>
+
+                            <div>
+                                <h2>Pricing Rules</h2>
+                                <p>
+                                    Set the minimum chargeable headcount and Trips Wonder profit / markup.
+                                </p>
+                            </div>
+
+                        </div>
+
+                        <label class="toggle-control">
+
+                            <input
+                                type="checkbox"
+                                id="privateTourEnabled">
+
+                            <span class="toggle-slider"></span>
+
+                            <span class="toggle-label">
+                                Available for Private Tour
+                            </span>
+
+                        </label>
+
+                    </div>
+
+
+                    <div class="breakdown-fields-grid">
+
+                        <div class="form-group">
+
+                            <label class="inherit-toggle-label">
+                                <input
+                                    type="checkbox"
+                                    id="useGlobalMinimumPax"
+                                    checked>
+                                <span>Use Global Minimum Paying Pax</span>
+                            </label>
+
+                            <label for="minimumPayingPax">
+                                Minimum Paying Pax
+                            </label>
+
+                            <input
+                                type="number"
+                                id="minimumPayingPax"
+                                min="1"
+                                step="1"
+                                value="12"
+                                disabled>
+
+                            <small class="field-help" id="minimumPayingPaxHelp">
+                                Using global default.
+                            </small>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="markupPerPaxPerDay">
+                                Trips Wonder Profit / Markup — Per Pax / Day
+                            </label>
+
+                            <div class="input-prefix-wrap">
+
+                                <span class="input-prefix">₱</span>
+
+                                <input
+                                    type="number"
+                                    id="markupPerPaxPerDay"
+                                    min="0"
+                                    step="0.01"
+                                    value="500">
+
+                            </div>
+
+                            <small class="field-help">
+                                Formula: Markup × Chargeable Pax × Number of Tour Days.
+                            </small>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <section class="breakdown-card">
+
+                    <div class="breakdown-card-heading">
+
+                        <div class="breakdown-card-title">
+
+                            <span class="breakdown-step">02</span>
+
+                            <div>
+                                <h2>Transportation Units</h2>
+                                <p>
+                                    Add actual unit types and destination-specific rates.
+                                </p>
+                            </div>
+
+                        </div>
+
+                        <button
+                            type="button"
+                            class="btn-secondary compact"
+                            id="addTransportUnitButton">
+
+                            <i class="fa-solid fa-plus"></i>
+                            <span>Add Unit Type</span>
+
+                        </button>
+
+                    </div>
+
+
+                    <div class="package-default-unit-control">
+
+                        <label class="inherit-toggle-label">
+                            <input
+                                type="checkbox"
+                                id="useGlobalTransportUnit"
+                                checked>
+                            <span>Use Global Default Transportation Unit</span>
+                        </label>
+
+                        <div
+                            class="global-unit-preview"
+                            id="globalUnitPreview">
+
+                            <i class="fa-solid fa-van-shuttle"></i>
+                            <span>No global default unit selected.</span>
+
+                        </div>
+
+                    </div>
+
+                    <div
+                        class="transport-unit-list"
+                        id="transportUnitList">
+                    </div>
+
+
+                    <div class="breakdown-info-note">
+
+                        <i class="fa-solid fa-circle-info"></i>
+
+                        <span>
+                            Unit trip rate = Base / Day Tour Rate + (Additional Day Rate × extra tour days).
+                        </span>
+
+                    </div>
+
+                </section>
+
+
+                <section class="breakdown-card">
+
+                    <div class="breakdown-card-heading">
+
+                        <div class="breakdown-card-title">
+
+                            <span class="breakdown-step">03</span>
+
+                            <div>
+                                <h2>Operating Expenses</h2>
+                                <p>
+                                    Add Food, Accommodation, Coordinator, Activities / Entrance, Driver Expenses, Boat / Local Transport, and other actual tour costs.
+                                </p>
+                            </div>
+
+                        </div>
+
+                        <div class="expense-header-actions">
+
+                            <button
+                                type="button"
+                                class="btn-secondary compact"
+                                id="manageExpenseCategoriesButton">
+
+                                <i class="fa-solid fa-tags"></i>
+                                <span>Manage Categories</span>
+
+                            </button>
+
+                            <button
+                                type="button"
+                                class="btn-secondary compact"
+                                id="addExpenseButton">
+
+                                <i class="fa-solid fa-plus"></i>
+                                <span>Add Expense</span>
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        class="expense-list"
+                        id="expenseList">
+                    </div>
+
+
+                    <div class="expense-basis-guide">
+
+                        <span>Fixed / Trip</span>
+                        <span>Per Day</span>
+                        <span>Per Night</span>
+                        <span>Per Pax</span>
+                        <span>Per Pax / Day</span>
+                        <span>Per Pax / Night</span>
+                        <span>Per Room / Night</span>
+                        <span>Per Unit / Day</span>
+                        <span>Per Unit / Trip</span>
+                        <span>Per Meal / Pax</span>
+                        <span>Custom Basis</span>
+
+                    </div>
+
+                </section>
+
+
+                <section class="breakdown-card">
+
+                    <div class="breakdown-card-heading">
+
+                        <div class="breakdown-card-title">
+
+                            <span class="breakdown-step">04</span>
+
+                            <div>
+                                <h2>Pricing Preview</h2>
+                                <p>
+                                    See the operating cost, Trips Wonder profit, suggested selling price, and suggested price per pax before saving.
+                                </p>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="preview-input-grid">
+
+                        <div class="form-group">
+
+                            <label for="previewPax">
+                                Sample Pax
+                            </label>
+
+                            <input
+                                type="number"
+                                id="previewPax"
+                                min="1"
+                                step="1"
+                                value="12">
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="previewTransportUnit">
+                                Transportation Unit
+                            </label>
+
+                            <select id="previewTransportUnit">
+                                <option value="">No unit selected</option>
+                            </select>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="cost-preview-grid">
+
+                        <article class="cost-preview-card">
+                            <span>Trip Duration</span>
+                            <strong id="previewDuration">—</strong>
+                        </article>
+
+                        <article class="cost-preview-card">
+                            <span>Chargeable Pax</span>
+                            <strong id="previewChargeablePax">—</strong>
+                        </article>
+
+                        <article class="cost-preview-card">
+                            <span>Transportation Cost</span>
+                            <strong id="previewTransportation">₱0</strong>
+                        </article>
+
+                        <article class="cost-preview-card">
+                            <span>Operating Expenses</span>
+                            <strong id="previewExpenses">₱0</strong>
+                        </article>
+
+                        <article class="cost-preview-card operating-total">
+                            <span>Total Operating Cost</span>
+                            <strong id="previewOperatingCost">₱0</strong>
+                        </article>
+
+                        <article class="cost-preview-card profit">
+                            <span>Trips Wonder Profit</span>
+                            <strong id="previewMarkup">₱0</strong>
+                        </article>
+
+                        <article class="cost-preview-card total">
+                            <span>Suggested Selling Price</span>
+                            <strong id="previewGrandTotal">₱0</strong>
+                        </article>
+
+                        <article class="cost-preview-card per-pax">
+                            <span>Suggested Price / Pax</span>
+                            <strong id="previewPricePerPax">₱0</strong>
+                        </article>
+
+                    </div>
+
+
+                    <p class="preview-disclaimer">
+                        Internal admin costing only. Customers will eventually see only the final Exclusive / Private Tour price, not the internal expense or profit breakdown.
+                    </p>
+
+                </section>
+
+
+                <div class="breakdown-footer">
+
+                    <div class="breakdown-footer-copy">
+                        <strong id="breakdownFooterPackage">
+                            Package Breakdown
+                        </strong>
+                        <span>
+                            Save before switching to another package.
+                        </span>
+                    </div>
+
+                    <button
+                        type="submit"
+                        class="btn-primary"
+                        id="savePackageBreakdownButton">
+
+                        <i class="fa-regular fa-floppy-disk"></i>
+                        <span>Save Breakdown</span>
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+
+<!-- =========================================================
+     EXPENSE CATEGORY MANAGER
+========================================================= -->
+
+<div
+    class="category-manager-modal"
+    id="expenseCategoryModal"
+    aria-hidden="true">
+
+    <div
+        class="category-manager-overlay"
+        id="expenseCategoryModalOverlay">
+    </div>
+
+    <div
+        class="category-manager-box"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="expenseCategoryModalTitle">
+
+        <div class="category-manager-header">
+
+            <div>
+                <span class="section-eyebrow">OPERATING EXPENSES</span>
+                <h2 id="expenseCategoryModalTitle">Manage Categories</h2>
+                <p>
+                    Add your own expense categories. Custom categories will be available across Package Breakdown.
+                </p>
+            </div>
+
+            <button
+                type="button"
+                class="category-manager-close"
+                id="closeExpenseCategoryModal"
+                aria-label="Close category manager">
+
+                <i class="fa-solid fa-xmark"></i>
+
+            </button>
+
+        </div>
+
+        <div class="category-manager-add">
+
+            <div class="form-group">
+                <label for="newExpenseCategoryName">New Category</label>
+
+                <input
+                    type="text"
+                    id="newExpenseCategoryName"
+                    maxlength="60"
+                    placeholder="e.g. Meals, Habal, Parking / Toll">
+            </div>
+
+            <button
+                type="button"
+                class="btn-primary"
+                id="addExpenseCategoryButton">
+
+                <i class="fa-solid fa-plus"></i>
+                <span>Add Category</span>
+
+            </button>
+
+        </div>
+
+        <div class="category-manager-section">
+
+            <div class="category-manager-section-head">
+                <strong>Built-in Categories</strong>
+                <span>Default categories cannot be deleted.</span>
+            </div>
+
+            <div
+                class="category-chip-list"
+                id="builtInExpenseCategoryList">
+            </div>
+
+        </div>
+
+        <div class="category-manager-section">
+
+            <div class="category-manager-section-head">
+                <strong>Custom Categories</strong>
+                <span>These are saved and reused across package breakdowns.</span>
+            </div>
+
+            <div
+                class="custom-category-list"
+                id="customExpenseCategoryList">
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<template id="transportUnitTemplate">
+
+    <article class="transport-unit-row">
+
+        <div class="row-number transport-row-number">01</div>
+
+        <div class="mini-form-group unit-name-field">
+
+            <label>Unit Type / Model</label>
+
+            <input
+                type="text"
+                class="transport-unit-name"
+                placeholder="e.g. Nissan Premium High Roof">
+
+        </div>
+
+        <div class="mini-form-group">
+
+            <label>Capacity</label>
+
+            <input
+                type="number"
+                class="transport-unit-capacity"
+                min="1"
+                step="1"
+                placeholder="14">
+
+        </div>
+
+        <div class="mini-form-group">
+
+            <label>Base / Day Tour Rate</label>
+
+            <input
+                type="number"
+                class="transport-unit-base-rate"
+                min="0"
+                step="0.01"
+                placeholder="13000">
+
+        </div>
+
+        <div class="mini-form-group">
+
+            <label>Additional Day Rate</label>
+
+            <input
+                type="number"
+                class="transport-unit-additional-day-rate"
+                min="0"
+                step="0.01"
+                placeholder="5000">
+
+        </div>
+
+        <button
+            type="button"
+            class="remove-row-button remove-transport-unit"
+            aria-label="Remove transportation unit">
+
+            <i class="fa-solid fa-trash"></i>
+
+        </button>
+
+    </article>
+
+</template>
+
+
+<template id="expenseTemplate">
+
+    <article class="expense-row">
+
+        <div class="row-number expense-row-number">01</div>
+
+        <div class="mini-form-group expense-name-field">
+
+            <label>Expense Name</label>
+
+            <input
+                type="text"
+                class="expense-name"
+                placeholder="e.g. Food">
+
+        </div>
+
+        <div class="mini-form-group">
+
+            <label>Category</label>
+
+            <select class="expense-category">
+                <option value="Food">Food</option>
+            </select>
+
+        </div>
+
+        <div class="mini-form-group">
+
+            <label>Amount</label>
+
+            <input
+                type="number"
+                class="expense-amount"
+                min="0"
+                step="0.01"
+                placeholder="0">
+
+        </div>
+
+        <div class="mini-form-group">
+
+            <label>Computation Basis</label>
+
+            <select class="expense-basis">
+                <option value="fixed_trip">Fixed / Trip</option>
+                <option value="per_day">Per Day</option>
+                <option value="per_night">Per Night</option>
+                <option value="per_pax">Per Pax</option>
+                <option value="per_pax_day">Per Pax / Day</option>
+                <option value="per_pax_night">Per Pax / Night</option>
+                <option value="per_room_night">Per Room / Night</option>
+                <option value="per_unit_day">Per Unit / Day</option>
+                <option value="per_unit_trip">Per Unit / Trip</option>
+                <option value="per_meal_pax">Per Meal / Pax</option>
+                <option value="custom">Custom Basis</option>
+            </select>
+
+        </div>
+
+        <div class="expense-basis-details" hidden></div>
+
+        <button
+            type="button"
+            class="remove-row-button remove-expense"
+            aria-label="Remove expense">
+
+            <i class="fa-solid fa-trash"></i>
+
+        </button>
+
+    </article>
+
+</template>
+
+
+<script
+    type="module"
+    src="../../assets/js/admin/package-breakdown.js">
+</script>
+
+<script
+    type="module"
+    src="/assets/js/shared/admin-nav.js">
+</script>
+
+</body>
+</html>

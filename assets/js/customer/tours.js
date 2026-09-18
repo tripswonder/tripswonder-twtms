@@ -489,6 +489,18 @@ function normalizePackage(
             data.bookingType ||
             "Joiners Tour",
 
+        passengerPricing:
+            data.passengerPricing || {},
+
+        exclusiveTour:
+            data.exclusiveTour || {
+                enabled: false,
+                minimumPayingPax: 12,
+                vanCapacity: 14,
+                includedVanUnits: 1,
+                additionalVanRate: 0
+            },
+
         createdAt:
             data.createdAt ||
             "",
@@ -1603,9 +1615,348 @@ function resetVisibleCount() {
 }
 
 
+
+const CUSTOM_PRIVATE_FALLBACK_RULES = {
+    minimumExclusivePax: 12,
+    vanCapacity: 14,
+    includedVanUnits: 1,
+    additionalVanRate: 0
+};
+
+function getCustomPrivateRules(packageItem) {
+    const rule = packageItem?.exclusiveTour || {};
+    return {
+        enabled: rule.enabled === true,
+        minimumExclusivePax: Math.max(1, normalizeNumber(rule.minimumPayingPax) || CUSTOM_PRIVATE_FALLBACK_RULES.minimumExclusivePax),
+        vanCapacity: Math.max(1, normalizeNumber(rule.vanCapacity) || CUSTOM_PRIVATE_FALLBACK_RULES.vanCapacity),
+        includedVanUnits: Math.max(0, normalizeNumber(rule.includedVanUnits) || CUSTOM_PRIVATE_FALLBACK_RULES.includedVanUnits),
+        additionalVanRate: Math.max(0, normalizeNumber(rule.additionalVanRate) || 0)
+    };
+}
+
+function calculateCustomPrivateQuote(packageItem, adults, children, transportType) {
+    const rules = getCustomPrivateRules(packageItem);
+    const actualPax = Math.max(0, normalizeNumber(adults)) + Math.max(0, normalizeNumber(children));
+    const packageBillablePax = Math.max(actualPax, rules.minimumExclusivePax);
+    const packageRate = Math.max(0, normalizeNumber(packageItem?.price));
+    const packageSubtotal = packageBillablePax * packageRate;
+    const usesVan = transportType !== "Without Van / DIY";
+    const vanUnits = usesVan && actualPax > 0 ? Math.max(1, Math.ceil(actualPax / rules.vanCapacity)) : 0;
+    const additionalVanUnits = usesVan ? Math.max(0, vanUnits - rules.includedVanUnits) : 0;
+    const additionalVanTotal = additionalVanUnits * rules.additionalVanRate;
+    const estimatedTotal = packageSubtotal + additionalVanTotal;
+
+    return { ...rules, actualPax, packageBillablePax, packageRate, packageSubtotal, usesVan, vanUnits, additionalVanUnits, additionalVanTotal, estimatedTotal };
+}
+
+function renderCustomPrivateTourBuilder() {
+    if (!tourGrid) return;
+
+    tourEmpty?.classList.add("hidden");
+    tourError?.classList.add("hidden");
+    if (tourLoadMore) tourLoadMore.hidden = true;
+    if (tourResultText) tourResultText.textContent = "Build a tour around your group";
+    tourGrid.classList.add("custom-private-mode");
+
+    const eligiblePackages = state.packages.filter(item => item?.exclusiveTour?.enabled === true);
+    const destinationGroups = buildDestinationGroups(eligiblePackages);
+    const destinationCards = destinationGroups.slice(0, 5);
+
+    tourGrid.innerHTML = `
+        <section class="tw-custom-builder" aria-label="Custom and private tour quotation">
+            <div class="tw-custom-hero"><div class="tw-custom-hero-overlay"></div><div class="tw-custom-hero-content">
+                <span class="tw-custom-kicker">CUSTOM &amp; PRIVATE TOURS</span><h2>Plan Your Private Tour</h2>
+                <p>Select an available package and see your estimated private-tour quotation instantly.</p>
+                <div class="tw-custom-trust-row"><span><i class="fa-regular fa-calendar-check"></i><b>Flexible Itinerary</b><small>Your trip, your way.</small></span><span><i class="fa-solid fa-user-group"></i><b>Perfect for Groups</b><small>Family, friends, corporate.</small></span><span><i class="fa-solid fa-calculator"></i><b>Live Estimate</b><small>Based on saved package rates.</small></span></div>
+            </div></div>
+
+            <div class="tw-custom-layout">
+                <form class="tw-custom-form" id="customPrivateTourForm">
+                    <section class="tw-custom-section tw-custom-destination">
+                        <div class="tw-custom-section-head"><span>1</span><div><h3>Choose Destination &amp; Package</h3><p>Only packages with Exclusive Tour enabled are shown.</p></div></div>
+                        ${eligiblePackages.length ? `
+                        <div class="tw-custom-popular" id="customDestinationCards">
+                            ${destinationCards.map(group => `<button type="button" class="tw-custom-destination-card" data-custom-destination-key="${escapeHtml(group.key)}"><i class="fa-solid fa-location-dot"></i><strong>${escapeHtml(group.name)}</strong><small>${escapeHtml(group.location || `${group.options.length} package option${group.options.length === 1 ? "" : "s"}`)}</small></button>`).join("")}
+                        </div>
+                        <div class="tw-custom-fields-grid tw-private-package-fields">
+                            <label class="tw-custom-field"><span>Destination</span><select id="customDestination"><option value="">Select destination</option>${destinationGroups.map(group => `<option value="${escapeHtml(group.key)}">${escapeHtml(group.name)}</option>`).join("")}</select></label>
+                            <label class="tw-custom-field"><span>Package Option</span><select id="customPackageOption" disabled><option value="">Select destination first</option></select></label>
+                        </div>
+                        <div class="tw-selected-private-package" id="customSelectedPackage" hidden></div>` : `
+                        <div class="tw-private-no-package"><i class="fa-solid fa-circle-info"></i><div><b>No private-tour package is enabled yet.</b><span>Enable Exclusive Tour Benefit in Admin Packages for the package options you want to offer here.</span></div></div>`}
+                    </section>
+
+                    <div class="tw-custom-two-col">
+                        <section class="tw-custom-section"><div class="tw-custom-section-head"><span>2</span><div><h3>Tour Type</h3><p>What kind of trip is this?</p></div></div><div class="tw-custom-choice-grid" data-custom-choice-group="tourType"><button type="button" class="selected" data-value="Private / Exclusive"><i class="fa-solid fa-user-group"></i>Private / Exclusive</button><button type="button" data-value="Family / Barkada"><i class="fa-solid fa-people-group"></i>Family / Barkada</button><button type="button" data-value="Company / Corporate"><i class="fa-solid fa-building"></i>Company / Corporate</button><button type="button" data-value="School / Organization"><i class="fa-solid fa-graduation-cap"></i>School / Organization</button></div></section>
+                        <section class="tw-custom-section"><div class="tw-custom-section-head"><span>3</span><div><h3>Travel Details</h3><p>When do you plan to travel?</p></div></div>
+                            <div class="tw-custom-fields-grid"><label class="tw-custom-field"><span>Preferred Date</span><input id="customTravelDate" type="date"></label><label class="tw-custom-field"><span>Adults</span><input id="customAdults" type="number" min="1" value="12"></label><label class="tw-custom-field"><span>Children</span><input id="customChildren" type="number" min="0" value="0"></label></div>
+                            <label class="tw-custom-toggle"><input id="customFlexible" type="checkbox"><span></span><b>Flexible dates</b><small>I'm open to other dates.</small></label>
+                            <div class="tw-private-pricing-box" id="customPricingBox" aria-live="polite">
+                                <div class="tw-private-pricing-head"><div><span class="tw-private-pricing-kicker">ESTIMATED PRIVATE TOUR</span><strong id="customPricingTitle">Select a package</strong></div><span class="tw-private-pricing-badge" id="customVanBadge">—</span></div>
+                                <div class="tw-private-pricing-grid"><div><small>Actual Guests</small><b id="customActualPax">12 pax</b></div><div><small>Package Basis</small><b id="customBillablePax">—</b></div><div><small>Van Units</small><b id="customVanUnits">—</b></div><div><small>Additional Van</small><b id="customExtraVan">—</b></div></div>
+                                <div class="tw-private-money-grid"><div><small>Package Subtotal</small><b id="customPackageSubtotal">—</b></div><div><small>Additional Van Cost</small><b id="customExtraVanCost">—</b></div><div class="total"><small>Estimated Total</small><b id="customEstimatedTotal">—</b></div></div>
+                                <p class="tw-private-pricing-note" id="customPricingNote">Choose a destination and package option to load its private-tour settings.</p>
+                            </div>
+                        </section>
+                    </div>
+
+                    <div class="tw-custom-three-col">
+                        <section class="tw-custom-section"><div class="tw-custom-section-head compact"><span>4</span><div><h3>Transportation</h3><p>How will you go?</p></div></div><div class="tw-custom-radio-list" data-custom-choice-group="transport"><button type="button" class="selected" data-value="With Van Transfer"><b>With Van Transfer</b><small>Uses the package's saved van settings</small></button><button type="button" data-value="Without Van / DIY"><b>Without Van (DIY)</b><small>Land arrangement only</small></button><button type="button" data-value="Custom Pick Up"><b>Custom Pick Up</b><small>Van transfer with preferred pickup point</small></button></div><div class="tw-van-policy" id="customVanPolicy"><i class="fa-solid fa-van-shuttle"></i><div><b>Van Policy</b><span>Select a package to load its van capacity and additional van rate.</span></div></div></section>
+                        <section class="tw-custom-section"><div class="tw-custom-section-head compact"><span>5</span><div><h3>Accommodation</h3><p>What do you prefer?</p></div></div><div class="tw-custom-radio-list" data-custom-choice-group="accommodation"><button type="button" class="selected" data-value="Standard / Included"><b>Standard / Included</b><small>Use package standard arrangement</small></button><button type="button" data-value="Room Upgrade"><b>Room Upgrade</b><small>Subject to quotation</small></button><button type="button" data-value="Private Room"><b>Private Room</b><small>Subject to availability</small></button><button type="button" data-value="Recommend for me"><b>Recommend for me</b><small>Let the team suggest</small></button></div></section>
+                        <section class="tw-custom-section"><div class="tw-custom-section-head compact"><span>6</span><div><h3>Special Requests</h3><p>Anything else we should know?</p></div></div><textarea id="customSpecialRequest" maxlength="500" placeholder="e.g. side trips, activities, meals, room arrangement, celebration, special requirements, etc."></textarea><div class="tw-custom-char-count"><span id="customRequestCount">0</span>/500</div></section>
+                    </div>
+                </form>
+
+                <aside class="tw-custom-aside"><div class="tw-custom-aside-card tw-custom-photo-card"><div><strong>Private tours made simple</strong><span>Package rate + actual group size + required extra van.</span></div></div><div class="tw-custom-quote"><i class="fa-solid fa-quote-left"></i><p>Your estimate automatically follows the settings saved by Trips Wonder.</p><small>— Trips Wonder Team</small></div><div class="tw-custom-aside-card tw-private-rule-card" id="customRuleCard"><h4>Private Tour Pricing</h4><ul><li>Select a package to view its pricing rules.</li></ul></div><button type="submit" form="customPrivateTourForm" class="tw-custom-submit" ${eligiblePackages.length ? "" : "disabled"}><i class="fa-solid fa-paper-plane"></i><span>Request Quotation<small>We'll review your trip details.</small></span></button><p class="tw-custom-safe"><i class="fa-solid fa-lock"></i> Estimated amount is subject to final verification.</p></aside>
+            </div>
+        </section>`;
+
+    if (!eligiblePackages.length) return;
+
+    const form = document.getElementById("customPrivateTourForm");
+    const destinationSelect = document.getElementById("customDestination");
+    const packageSelect = document.getElementById("customPackageOption");
+    const adultsInput = document.getElementById("customAdults");
+    const childrenInput = document.getElementById("customChildren");
+    const special = document.getElementById("customSpecialRequest");
+    const count = document.getElementById("customRequestCount");
+    let selectedPrivatePackage = null;
+
+    const selectedChoice = groupName => tourGrid.querySelector(`[data-custom-choice-group="${groupName}"] .selected`)?.dataset.value || "";
+    const getGroup = key => destinationGroups.find(group => group.key === key);
+
+    const findEligiblePackageById = packageId => {
+        const targetId = String(packageId || "").trim();
+        if (!targetId) return null;
+
+        return eligiblePackages.find(
+            item => String(item?.id || "").trim() === targetId
+        ) || null;
+    };
+
+    const renderSelectedPackageCard = () => {
+        const card = document.getElementById("customSelectedPackage");
+        if (!card) return;
+
+        if (!selectedPrivatePackage) {
+            card.hidden = true;
+            card.innerHTML = "";
+            return;
+        }
+
+        const r = getCustomPrivateRules(selectedPrivatePackage);
+        card.hidden = false;
+        card.innerHTML = `<div><small>SELECTED PACKAGE</small><strong>${escapeHtml(getDestinationName(selectedPrivatePackage))} • ${escapeHtml(getOptionLabel(selectedPrivatePackage))}</strong><span>₱${formatMoney(selectedPrivatePackage.price)}/pax</span></div><div><small>Private Minimum</small><b>${r.minimumExclusivePax} pax</b></div><div><small>Van Capacity</small><b>${r.vanCapacity} pax</b></div><div><small>Extra Van</small><b>₱${formatMoney(r.additionalVanRate)}</b></div>`;
+    };
+
+    // Resolve the package directly from the current controls every time.
+    // This avoids relying on a local variable that can be cleared when the
+    // destination/package <select> is rebuilt or restored by the browser.
+    const resolveSelectedPrivatePackage = () => {
+        const destinationKey = String(destinationSelect?.value || "").trim();
+        const group = getGroup(destinationKey);
+
+        if (!group || !group.options?.length) {
+            selectedPrivatePackage = null;
+            renderSelectedPackageCard();
+            return null;
+        }
+
+        const packageId = String(packageSelect?.value || "").trim();
+        let matchedPackage = findEligiblePackageById(packageId);
+
+        // Safety fallback: match inside the currently selected destination.
+        if (!matchedPackage && packageId) {
+            matchedPackage = group.options.find(
+                item => String(item?.id || "").trim() === packageId
+            ) || null;
+        }
+
+        // If a destination is selected but the browser restored only the
+        // visible option text (or the value was temporarily blank), use the
+        // currently selected option index.
+        if (!matchedPackage && packageSelect?.selectedIndex > 0) {
+            const selectedOption = packageSelect.options[packageSelect.selectedIndex];
+            const selectedText = String(selectedOption?.textContent || "").trim();
+            matchedPackage = group.options.find(item => {
+                const expectedText = `${getOptionLabel(item)} — ₱${formatMoney(item.price)}/pax`;
+                return expectedText === selectedText;
+            }) || null;
+        }
+
+        // Final fallback: once a destination is chosen, always keep a valid
+        // package selected. This prevents the quotation panel from staying
+        // blank while the Package Option control visibly shows a package.
+        if (!matchedPackage) {
+            matchedPackage = group.options[0] || null;
+            if (matchedPackage && packageSelect) {
+                packageSelect.value = String(matchedPackage.id || "");
+            }
+        }
+
+        selectedPrivatePackage = matchedPackage;
+        renderSelectedPackageCard();
+        return selectedPrivatePackage;
+    };
+
+    const renderPackageOptions = (key, preferredPackageId = "") => {
+        const group = getGroup(key);
+        selectedPrivatePackage = null;
+
+        if (!group || !group.options?.length) {
+            packageSelect.innerHTML = `<option value="">Select destination first</option>`;
+            packageSelect.disabled = true;
+            renderSelectedPackageCard();
+            updatePrivatePricing();
+            return;
+        }
+
+        packageSelect.innerHTML = group.options
+            .map(item => `<option value="${escapeHtml(String(item.id || ""))}">${escapeHtml(getOptionLabel(item))} — ₱${formatMoney(item.price)}/pax</option>`)
+            .join("");
+        packageSelect.disabled = false;
+
+        const preferredId = String(preferredPackageId || "").trim();
+        const preferredExists = preferredId && group.options.some(
+            item => String(item?.id || "").trim() === preferredId
+        );
+
+        // Always select a real package once a destination has been chosen.
+        packageSelect.value = preferredExists
+            ? preferredId
+            : String(group.options[0]?.id || "");
+
+        resolveSelectedPrivatePackage();
+        updatePrivatePricing();
+    };
+
+    const selectPackage = packageId => {
+        const matchedPackage = findEligiblePackageById(packageId);
+
+        if (matchedPackage && packageSelect) {
+            packageSelect.value = String(matchedPackage.id || "");
+        }
+
+        resolveSelectedPrivatePackage();
+        updatePrivatePricing();
+    };
+
+    const updatePrivatePricing = () => {
+        // Source of truth is always the visible Destination + Package Option.
+        // Re-resolve on every computation so the UI can never show a selected
+        // package while the estimate still says "Select a package".
+        const activePackage = resolveSelectedPrivatePackage();
+        const actual = Math.max(0, normalizeNumber(adultsInput?.value)) + Math.max(0, normalizeNumber(childrenInput?.value));
+        document.getElementById("customActualPax").textContent = `${actual} pax`;
+
+        if (!activePackage) {
+            ["customBillablePax","customVanUnits","customExtraVan","customPackageSubtotal","customExtraVanCost","customEstimatedTotal"].forEach(id => { const el=document.getElementById(id); if(el) el.textContent="—"; });
+            document.getElementById("customPricingTitle").textContent = "Select a package";
+            document.getElementById("customVanBadge").textContent = "—";
+            document.getElementById("customPricingNote").textContent = "Choose a destination and package option to load its private-tour settings.";
+            const ruleCard=document.getElementById("customRuleCard");
+            if(ruleCard) ruleCard.innerHTML=`<h4>Private Tour Pricing</h4><ul><li>Select a package to view its pricing rules.</li></ul>`;
+            return;
+        }
+
+        const result = calculateCustomPrivateQuote(activePackage, adultsInput?.value, childrenInput?.value, selectedChoice("transport") || "With Van Transfer");
+        document.getElementById("customBillablePax").textContent = `${result.packageBillablePax} pax`;
+        document.getElementById("customVanUnits").textContent = result.usesVan ? `${result.vanUnits} van${result.vanUnits===1?"":"s"}` : "DIY";
+        document.getElementById("customExtraVan").textContent = result.additionalVanUnits ? `+${result.additionalVanUnits} van${result.additionalVanUnits===1?"":"s"}` : "None";
+        document.getElementById("customPackageSubtotal").textContent = `₱${formatMoney(result.packageSubtotal)}`;
+        document.getElementById("customExtraVanCost").textContent = result.usesVan ? `₱${formatMoney(result.additionalVanTotal)}` : "₱0";
+        document.getElementById("customEstimatedTotal").textContent = `₱${formatMoney(result.estimatedTotal)}`;
+        document.getElementById("customPricingTitle").textContent = result.usesVan ? (result.additionalVanUnits ? `${result.vanUnits} Vans Required` : `${result.includedVanUnits} Van Included`) : "DIY Transportation";
+        document.getElementById("customVanBadge").textContent = result.usesVan ? `${result.vanCapacity} pax / van` : "No van";
+        const note = result.actualPax < result.minimumExclusivePax ? `Your group has ${result.actualPax} guest${result.actualPax===1?"":"s"}. Package pricing uses the minimum ${result.minimumExclusivePax} paying pax.` : result.additionalVanUnits ? `${result.actualPax} guests need ${result.vanUnits} vans. Package stays based on actual guests; ${result.additionalVanUnits} extra van cost${result.additionalVanUnits===1?"":"s"} ₱${formatMoney(result.additionalVanTotal)}.` : `Package pricing uses ${result.actualPax} actual guests. No additional van charge.`;
+        document.getElementById("customPricingNote").textContent = note;
+        document.getElementById("customPricingBox")?.classList.toggle("has-extra-van", result.additionalVanUnits > 0);
+        document.getElementById("customPricingBox")?.classList.toggle("below-minimum", result.actualPax > 0 && result.actualPax < result.minimumExclusivePax);
+        const policy=document.querySelector("#customVanPolicy span"); if(policy) policy.textContent=`${result.includedVanUnits} van included • ${result.vanCapacity} pax capacity per van • ₱${formatMoney(result.additionalVanRate)} per additional van.`;
+        const ruleCard=document.getElementById("customRuleCard"); if(ruleCard) ruleCard.innerHTML=`<h4>Private Tour Pricing</h4><ul><li>Package rate: <b>₱${formatMoney(result.packageRate)}/pax</b></li><li>Minimum paying pax: <b>${result.minimumExclusivePax}</b></li><li>Van capacity: <b>${result.vanCapacity} pax</b></li><li>Included van: <b>${result.includedVanUnits}</b></li><li>Additional van: <b>₱${formatMoney(result.additionalVanRate)} / unit</b></li></ul>`;
+    };
+
+    destinationSelect?.addEventListener("change", () => {
+        renderPackageOptions(destinationSelect.value);
+        tourGrid.querySelectorAll("[data-custom-destination-key]").forEach(
+            btn => btn.classList.toggle(
+                "selected",
+                btn.dataset.customDestinationKey === destinationSelect.value
+            )
+        );
+    });
+
+    packageSelect?.addEventListener("change", () => {
+        selectPackage(packageSelect.value);
+    });
+
+    tourGrid.querySelectorAll("[data-custom-destination-key]").forEach(
+        button => button.addEventListener("click", () => {
+            destinationSelect.value = button.dataset.customDestinationKey;
+            destinationSelect.dispatchEvent(new Event("change"));
+            packageSelect?.focus();
+        })
+    );
+    special?.addEventListener("input",()=>{if(count)count.textContent=String(special.value.length)});
+    adultsInput?.addEventListener("input",updatePrivatePricing); childrenInput?.addEventListener("input",updatePrivatePricing);
+    tourGrid.querySelectorAll("[data-custom-choice-group]").forEach(group=>group.querySelectorAll("button").forEach(button=>button.addEventListener("click",()=>{group.querySelectorAll("button").forEach(x=>x.classList.remove("selected"));button.classList.add("selected");if(group.dataset.customChoiceGroup==="transport")updatePrivatePricing()})));
+
+    form?.addEventListener("submit", event => {
+        event.preventDefault();
+        if (!destinationSelect?.value) { destinationSelect?.focus(); return; }
+        selectedPrivatePackage = resolveSelectedPrivatePackage();
+        if (!selectedPrivatePackage) { packageSelect?.focus(); return; }
+        const date=document.getElementById("customTravelDate")?.value; if(!date && !document.getElementById("customFlexible")?.checked){document.getElementById("customTravelDate")?.focus();return;}
+        const result=calculateCustomPrivateQuote(selectedPrivatePackage,adultsInput?.value,childrenInput?.value,selectedChoice("transport")||"With Van Transfer"); if(result.actualPax<=0){adultsInput?.focus();return;}
+        alert(`Quotation request ready.\n\nDestination: ${getDestinationName(selectedPrivatePackage)}\nPackage: ${getOptionLabel(selectedPrivatePackage)}\nActual guests: ${result.actualPax}\nPackage basis: ${result.packageBillablePax} pax\nPackage subtotal: ₱${formatMoney(result.packageSubtotal)}\nAdditional van: ₱${formatMoney(result.additionalVanTotal)}\nEstimated total: ₱${formatMoney(result.estimatedTotal)}\n\nNext step: save this request to the admin quotation workflow.`);
+    });
+
+    // Initial reconciliation. This also handles browser-restored select values.
+    const initializePrivatePackageSelection = () => {
+        const restoredDestinationKey = String(destinationSelect?.value || "").trim();
+        const restoredPackageId = String(packageSelect?.value || "").trim();
+
+        if (restoredDestinationKey) {
+            renderPackageOptions(restoredDestinationKey, restoredPackageId);
+        } else {
+            updatePrivatePricing();
+        }
+    };
+
+    initializePrivatePackageSelection();
+
+    // Some browsers restore form controls after the current JS task.
+    // Reconcile one more time on the next frame without changing user input.
+    requestAnimationFrame(() => {
+        const destinationKey = String(destinationSelect?.value || "").trim();
+        const packageId = String(packageSelect?.value || "").trim();
+
+        if (destinationKey) {
+            const currentGroup = getGroup(destinationKey);
+            const packageStillAvailable = currentGroup?.options?.some(
+                item => String(item?.id || "").trim() === packageId
+            );
+
+            if (packageStillAvailable) {
+                selectPackage(packageId);
+            } else if (!selectedPrivatePackage) {
+                renderPackageOptions(destinationKey);
+            }
+        } else {
+            updatePrivatePricing();
+        }
+    });
+}
+
+
 function renderPackages() {
 
     hideLoadingState();
+
+    if (normalizeKey(state.category) === "custom-private") {
+        renderCustomPrivateTourBuilder();
+        return;
+    }
 
     tourError?.classList.add(
         "hidden"
@@ -1614,6 +1965,8 @@ function renderPackages() {
     if (!tourGrid) {
         return;
     }
+
+    tourGrid.classList.remove("custom-private-mode");
 
     const filteredPackages =
         getFilteredPackages();

@@ -30,12 +30,22 @@ import {
     getDocs,
     query,
     setDoc,
+    updateDoc,
     where
 } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
 import {
-    onAuthStateChanged
+    GoogleAuthProvider,
+    onAuthStateChanged,
+    sendPasswordResetEmail,
+    signInWithEmailAndPassword,
+    signInWithPopup,
+    signOut
 } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
+
+import {
+    loginWithFacebook
+} from "../firebase/firebase-auth.js";
 
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -144,6 +154,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let selectedPackage = null;
     let selectedSchedule = null;
     let selectedAccommodation = null;
+    let selectedTourType = "joiner";
 
     /*
      * Optional pre-selections passed from Tours page.
@@ -176,6 +187,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let currentCustomer = null;
     let currentCustomerProfile = null;
+
+    let lastSubmittedBookingId = "";
+    let lastSubmittedBookingNumber = "";
+    let lastSubmittedBookingEmail = "";
 
     let galleryPhotos = [];
     let galleryIndex = 0;
@@ -242,6 +257,18 @@ document.addEventListener("DOMContentLoaded", () => {
     const customerFacebook = $("customerFacebook");
     const numberOfGuests = $("numberOfGuests");
 
+    const tourTypeInputs =
+        document.querySelectorAll('input[name="tourType"]');
+    const tourTypeJoinerChoice = $("tourTypeJoinerChoice");
+    const tourTypeExclusiveChoice = $("tourTypeExclusiveChoice");
+    const exclusiveChoiceModal = $("exclusiveChoiceModal");
+    const exclusiveChoiceModalBackdrop = $("exclusiveChoiceModalBackdrop");
+    const exclusiveChoiceModalClose = $("exclusiveChoiceModalClose");
+    const exclusiveChoiceModalContinue = $("exclusiveChoiceModalContinue");
+    const tourTypeStatus = $("tourTypeStatus");
+    const tourTypeStatusTitle = $("tourTypeStatusTitle");
+    const tourTypeStatusText = $("tourTypeStatusText");
+
     const children0To3 = $("children0To3");
     const children4To8 = $("children4To8");
     const childrenFreeField = $("childrenFreeField");
@@ -293,6 +320,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const summaryChildDiscountRow = $("summaryChildDiscountRow");
     const summaryChildDiscount = $("summaryChildDiscount");
     const summaryExclusiveRow = $("summaryExclusiveRow");
+    const summaryExclusiveLabel = $("summaryExclusiveLabel");
+    const summaryExclusiveNote = $("summaryExclusiveNote");
     const summaryExclusiveDiscount = $("summaryExclusiveDiscount");
 
     const summaryPromoRow = $("summaryPromoRow");
@@ -400,6 +429,19 @@ document.addEventListener("DOMContentLoaded", () => {
     const successPaymentStatus = $("successPaymentStatus");
     const successBookingStatus = $("successBookingStatus");
     const successDoneButton = $("successDoneButton");
+
+    const postBookingAccountAccess = $("postBookingAccountAccess");
+    const postBookingAccountSignedIn = $("postBookingAccountSignedIn");
+    const postBookingAccountGuest = $("postBookingAccountGuest");
+    const postBookingAccountEmail = $("postBookingAccountEmail");
+    const postBookingPassword = $("postBookingPassword");
+    const postBookingPasswordToggle = $("postBookingPasswordToggle");
+    const postBookingForgotPassword = $("postBookingForgotPassword");
+    const postBookingSignInButton = $("postBookingSignInButton");
+    const postBookingGoogleButton = $("postBookingGoogleButton");
+    const postBookingFacebookButton = $("postBookingFacebookButton");
+    const postBookingCreateAccountButton = $("postBookingCreateAccountButton");
+    const postBookingAccountError = $("postBookingAccountError");
 
 
     /* =====================================================
@@ -1118,11 +1160,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function getSelectedPaymentAmount(calculation = calculateBooking()) {
         const minimumDeposit =
-            Math.min(
-                calculation.total,
-                DEPOSIT_PER_PAX *
-                calculation.payablePax
-            );
+            getRequiredDeposit(
+                calculation
+            ).requiredDeposit;
 
         const halfPayment =
             Math.min(
@@ -1244,7 +1284,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 await getDoc(
                     doc(
                         db,
-                        "customers",
+                        "users",
                         user.uid
                     )
                 );
@@ -1498,6 +1538,73 @@ document.addEventListener("DOMContentLoaded", () => {
                     typeof data.exclusiveTour === "object"
                         ? data.exclusiveTour
                         : {},
+
+                /*
+                 * Package-specific downpayment rules from Admin Packages.
+                 * Structure:
+                 * downpaymentRules.joiner
+                 * downpaymentRules.exclusive
+                 */
+                downpaymentRules:
+                    data.downpaymentRules &&
+                    typeof data.downpaymentRules === "object"
+                        ? {
+                            joiner:
+                                data.downpaymentRules.joiner &&
+                                typeof data.downpaymentRules.joiner === "object"
+                                    ? {
+                                        type:
+                                            normalizeLower(
+                                                data.downpaymentRules.joiner.type
+                                            ) === "fixed"
+                                                ? "fixed"
+                                                : "per_paying_pax",
+                                        amount:
+                                            Math.max(
+                                                0,
+                                                normalizeNumber(
+                                                    data.downpaymentRules.joiner.amount ?? 500
+                                                )
+                                            )
+                                    }
+                                    : {
+                                        type: "per_paying_pax",
+                                        amount: 500
+                                    },
+
+                            exclusive:
+                                data.downpaymentRules.exclusive &&
+                                typeof data.downpaymentRules.exclusive === "object"
+                                    ? {
+                                        type:
+                                            normalizeLower(
+                                                data.downpaymentRules.exclusive.type
+                                            ) === "fixed"
+                                                ? "fixed"
+                                                : "per_paying_pax",
+                                        amount:
+                                            Math.max(
+                                                0,
+                                                normalizeNumber(
+                                                    data.downpaymentRules.exclusive.amount ?? 500
+                                                )
+                                            )
+                                    }
+                                    : {
+                                        type: "per_paying_pax",
+                                        amount: 500
+                                    }
+                        }
+                        : {
+                            joiner: {
+                                type: "per_paying_pax",
+                                amount: 500
+                            },
+                            exclusive: {
+                                type: "per_paying_pax",
+                                amount: 500
+                            }
+                        },
 
                 scheduleSettings:
                     data.scheduleSettings &&
@@ -1935,21 +2042,275 @@ document.addEventListener("DOMContentLoaded", () => {
     function getPackageExclusiveTour() {
         const config = selectedPackage?.exclusiveTour || {};
 
+        const legacyCapacity =
+            Math.max(1, normalizeNumber(config.vanCapacity ?? 14));
+
+        let vanType =
+            normalizeLower(config.vanType);
+
+        if (!["low", "high", "xl"].includes(vanType)) {
+            vanType =
+                legacyCapacity >= 18
+                    ? "xl"
+                    : legacyCapacity <= 12
+                        ? "low"
+                        : "high";
+        }
+
+        const vanTypeLabel =
+            vanType === "low"
+                ? "Low Roof · 10–12 pax"
+                : vanType === "xl"
+                    ? "XL Van · 18 pax"
+                    : "High Roof · 13–15 pax";
+
+        /*
+         * Backward compatibility:
+         * Some saved package documents may not yet contain the explicit
+         * enabled flag even though their Exclusive Tour rule fields exist.
+         * Treat a configured minimum/van rule as enabled so the client
+         * pricing summary can apply the saved exclusive minimum.
+         */
+        const hasConfiguredExclusiveRule =
+            Object.prototype.hasOwnProperty.call(
+                config,
+                "minimumPayingPax"
+            ) ||
+            Object.prototype.hasOwnProperty.call(
+                config,
+                "vanType"
+            ) ||
+            Object.prototype.hasOwnProperty.call(
+                config,
+                "includedVanUnits"
+            );
+
         return {
-            enabled: config.enabled === true,
-
+            enabled:
+                config.enabled === true ||
+                (
+                    config.enabled !== false &&
+                    hasConfiguredExclusiveRule
+                ),
             minimumPayingPax:
-                Math.max(1, normalizeNumber(config.minimumPayingPax ?? 12)),
-
-            freeStartsAt:
-                Math.max(1, normalizeNumber(config.freeStartsAt ?? 13)),
-
-            freePax:
-                Math.max(0, normalizeNumber(config.freePax ?? 1)),
-
-            maxFreePax:
-                Math.max(0, normalizeNumber(config.maxFreePax ?? 1))
+                Math.max(1, normalizeNumber(config.minimumPayingPax ?? 10)),
+            vanType,
+            vanTypeLabel,
+            includedVanUnits:
+                Math.max(1, normalizeNumber(config.includedVanUnits ?? 1))
         };
+    }
+
+    function getPackageDownpaymentRule() {
+        const rules =
+            selectedPackage?.downpaymentRules ||
+            {};
+
+        const isExclusive =
+            selectedTourType === "exclusive";
+
+        const savedRule =
+            isExclusive
+                ? (rules.exclusive || {})
+                : (rules.joiner || {});
+
+        const type =
+            normalizeLower(savedRule.type) === "fixed"
+                ? "fixed"
+                : "per_paying_pax";
+
+        /*
+         * Backward compatibility:
+         * Older packages without downpaymentRules continue to use
+         * the existing ₱500-per-paying-pax default.
+         */
+        const fallbackAmount =
+            Math.max(
+                0,
+                normalizeNumber(
+                    DEPOSIT_PER_PAX || 500
+                )
+            ) || 500;
+
+        const amount =
+            savedRule.amount === 0
+                ? 0
+                : Math.max(
+                    0,
+                    normalizeNumber(
+                        savedRule.amount ?? fallbackAmount
+                    )
+                );
+
+        return {
+            tourType:
+                isExclusive
+                    ? "exclusive"
+                    : "joiner",
+            type,
+            amount,
+            label:
+                isExclusive
+                    ? "Private / Exclusive Tour"
+                    : "Joiner Tour"
+        };
+    }
+
+
+    function getRequiredDeposit(calculation = calculateBooking()) {
+        const rule =
+            getPackageDownpaymentRule();
+
+        const rawDeposit =
+            rule.type === "fixed"
+                ? rule.amount
+                : rule.amount *
+                    calculation.payablePax;
+
+        return {
+            ...rule,
+            requiredDeposit:
+                Math.min(
+                    calculation.total,
+                    Math.max(0, rawDeposit)
+                )
+        };
+    }
+
+
+    function getDepositBreakdownText(calculation = calculateBooking()) {
+        const deposit =
+            getRequiredDeposit(calculation);
+
+        if (deposit.type === "fixed") {
+            return `${deposit.label} • Fixed required DP ₱${formatMoney(deposit.amount)}`;
+        }
+
+        return `${deposit.label} • ₱${formatMoney(deposit.amount)} × ${calculation.payablePax} paying pax`;
+    }
+
+
+    function openExclusiveChoiceModal() {
+        if (!exclusiveChoiceModal) {
+            return;
+        }
+
+        exclusiveChoiceModal.classList.remove("hidden");
+        exclusiveChoiceModal.setAttribute("aria-hidden", "false");
+        document.body.classList.add("exclusive-choice-modal-open");
+
+        requestAnimationFrame(() => {
+            exclusiveChoiceModalContinue?.focus();
+        });
+    }
+
+    function closeExclusiveChoiceModal() {
+        if (!exclusiveChoiceModal) {
+            return;
+        }
+
+        exclusiveChoiceModal.classList.add("hidden");
+        exclusiveChoiceModal.setAttribute("aria-hidden", "true");
+        document.body.classList.remove("exclusive-choice-modal-open");
+    }
+
+    function getSelectedTourType() {
+        const checked =
+            document.querySelector('input[name="tourType"]:checked');
+
+        return checked?.value === "exclusive"
+            ? "exclusive"
+            : "joiner";
+    }
+
+    function syncTourTypeUI() {
+        selectedTourType =
+            getSelectedTourType();
+
+        const config =
+            getPackageExclusiveTour();
+
+        const passenger =
+            getPassengerBreakdown();
+
+        const isExclusiveSelected =
+            selectedTourType === "exclusive";
+
+        tourTypeJoinerChoice
+            ?.classList.toggle(
+                "active",
+                !isExclusiveSelected
+            );
+
+        tourTypeExclusiveChoice
+            ?.classList.toggle(
+                "active",
+                isExclusiveSelected
+            );
+
+        if (!tourTypeStatus) {
+            return;
+        }
+
+        if (!isExclusiveSelected) {
+            tourTypeStatus.classList.add("hidden");
+            return;
+        }
+
+        tourTypeStatus.classList.remove("hidden");
+
+        if (!config.enabled) {
+            tourTypeStatus.dataset.status = "warning";
+
+            if (tourTypeStatusTitle) {
+                tourTypeStatusTitle.textContent =
+                    "Private / Exclusive Tour is by request";
+            }
+
+            if (tourTypeStatusText) {
+                tourTypeStatusText.textContent =
+                    "This package has no automatic exclusive-pax rule. Trips Wonder will review the request.";
+            }
+
+            return;
+        }
+
+        const payingPax =
+            passenger.payingPaxBeforeExclusive;
+
+        if (payingPax >= config.minimumPayingPax) {
+            tourTypeStatus.dataset.status = "success";
+
+            if (tourTypeStatusTitle) {
+                tourTypeStatusTitle.textContent =
+                    "Qualified for Private / Exclusive Tour";
+            }
+
+            if (tourTypeStatusText) {
+                tourTypeStatusText.textContent =
+                    `Your group meets the minimum of ${config.minimumPayingPax} paying guests. ${config.includedVanUnits} ${config.vanTypeLabel} unit${config.includedVanUnits > 1 ? "s" : ""} included under this package rule.`;
+            }
+
+            return;
+        }
+
+        const remaining =
+            Math.max(
+                0,
+                config.minimumPayingPax - payingPax
+            );
+
+        tourTypeStatus.dataset.status = "warning";
+
+        if (tourTypeStatusTitle) {
+            tourTypeStatusTitle.textContent =
+                `Minimum ${config.minimumPayingPax} paying guests for included exclusive setup`;
+        }
+
+        if (tourTypeStatusText) {
+            tourTypeStatusText.textContent =
+                `${remaining} more paying guest${remaining === 1 ? "" : "s"} needed to qualify. You may still request a Private / Exclusive Tour, but an additional charge may apply and will be reviewed by Trips Wonder.`;
+        }
     }
 
     function hasChildrenSelected() {
@@ -2134,26 +2495,24 @@ document.addEventListener("DOMContentLoaded", () => {
                 : totalPax;
 
         const isExclusive =
+            selectedTourType === "exclusive";
+
+        const exclusiveQualified =
+            isExclusive &&
             exclusiveConfig.enabled &&
             payingPaxBeforeExclusive >=
                 exclusiveConfig.minimumPayingPax;
 
-        const exclusiveFreePax =
-            exclusiveConfig.enabled &&
-            payingPaxBeforeExclusive >= exclusiveConfig.freeStartsAt
-
-                ? Math.min(
-                    exclusiveConfig.freePax,
-                    exclusiveConfig.maxFreePax,
-                    payingPaxBeforeExclusive
-                )
-
-                : 0;
+        /*
+         * Exclusive Tour is now a transportation / private-group benefit,
+         * not a free-pax discount. Keep the package payable pax unchanged.
+         */
+        const exclusiveFreePax = 0;
 
         const payablePax =
             Math.max(
                 0,
-                payingPaxBeforeExclusive - exclusiveFreePax
+                payingPaxBeforeExclusive
             );
 
         return {
@@ -2168,7 +2527,9 @@ document.addEventListener("DOMContentLoaded", () => {
             childDiscountPerPax: passengerPricing.childDiscountAmount,
             payingPaxBeforeExclusive,
             exclusiveTourEnabled: exclusiveConfig.enabled,
+            tourType: selectedTourType,
             isExclusive,
+            exclusiveQualified,
             exclusiveFreePax,
             payablePax,
             passengerPricing,
@@ -5015,18 +5376,60 @@ document.addEventListener("DOMContentLoaded", () => {
             childDiscountPerPax *
             passenger.discountedChildPax;
 
-        const exclusiveDiscountAmount =
-            packageRate *
-            passenger.exclusiveFreePax;
+        const exclusiveDiscountAmount = 0;
 
-        const packageSubtotal =
+        const regularPackageSubtotal =
             Math.max(
                 0,
                 grossPackageAmount -
                 childFreeAmount -
-                childDiscountAmount -
-                exclusiveDiscountAmount
+                childDiscountAmount
             );
+
+        /*
+         * PRIVATE / EXCLUSIVE PRICING
+         *
+         * Qualified:
+         *   regular package subtotal only.
+         *
+         * Below the admin-set Minimum Paying Pax:
+         *   charge the package minimum:
+         *   Package Rate × Minimum Paying Pax.
+         *
+         * The adjustment tops up the regular subtotal to that
+         * minimum total. This also keeps child pricing from reducing
+         * an Exclusive booking below the configured minimum charge.
+         */
+        const exclusiveMinimumPax =
+            passenger.isExclusive &&
+            passenger.exclusiveTourEnabled
+                ? Math.max(
+                    1,
+                    passenger.exclusiveConfig.minimumPayingPax
+                )
+                : 0;
+
+        const exclusiveMinimumPackageAmount =
+            passenger.isExclusive &&
+            passenger.exclusiveTourEnabled
+                ? packageRate * exclusiveMinimumPax
+                : 0;
+
+        const exclusiveMinimumAdjustment =
+            passenger.isExclusive &&
+            passenger.exclusiveTourEnabled &&
+            passenger.payingPaxBeforeExclusive <
+                exclusiveMinimumPax
+                ? Math.max(
+                    0,
+                    exclusiveMinimumPackageAmount -
+                    regularPackageSubtotal
+                )
+                : 0;
+
+        const packageSubtotal =
+            regularPackageSubtotal +
+            exclusiveMinimumAdjustment;
 
         const accommodationAmount =
             Math.max(
@@ -5065,11 +5468,16 @@ document.addEventListener("DOMContentLoaded", () => {
                 discountAmount
             );
 
+        const downpaymentRule =
+            getPackageDownpaymentRule();
+
         const deposit =
             Math.min(
                 total,
-                DEPOSIT_PER_PAX *
-                passenger.payablePax
+                downpaymentRule.type === "fixed"
+                    ? downpaymentRule.amount
+                    : downpaymentRule.amount *
+                        passenger.payablePax
             );
 
         const remainingBalance =
@@ -5084,12 +5492,17 @@ document.addEventListener("DOMContentLoaded", () => {
             childDiscountPerPax,
             childDiscountAmount,
             exclusiveDiscountAmount,
+            regularPackageSubtotal,
+            exclusiveMinimumPax,
+            exclusiveMinimumPackageAmount,
+            exclusiveMinimumAdjustment,
             packageSubtotal,
             accommodationAmount,
             originalTotal,
             promoEligibleAmount,
             discountAmount,
             total,
+            downpaymentRule,
             deposit,
             remainingBalance
         };
@@ -5112,12 +5525,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         if (summaryTotalPackage) {
-            const totalPackageBeforeDiscounts =
-                calculation.packageRate *
-                calculation.payablePax;
-
             summaryTotalPackage.textContent =
-                `₱${formatMoney(totalPackageBeforeDiscounts)}`;
+                `₱${formatMoney(
+                    calculation.packageSubtotal
+                )}`;
         }
 
         if (summarySubtotal) {
@@ -5152,14 +5563,44 @@ document.addEventListener("DOMContentLoaded", () => {
             summaryChildDiscountRow?.classList.add("hidden");
         }
 
-        if (calculation.exclusiveFreePax > 0) {
+        if (
+            calculation.isExclusive &&
+            calculation.exclusiveTourEnabled
+        ) {
             summaryExclusiveRow?.classList.remove("hidden");
 
-            if (summaryExclusiveDiscount) {
-                summaryExclusiveDiscount.textContent =
-                    `${calculation.exclusiveFreePax} FREE pax (-₱${formatMoney(
-                        calculation.exclusiveDiscountAmount
-                    )})`;
+            if (calculation.exclusiveMinimumAdjustment > 0) {
+                if (summaryExclusiveLabel) {
+                    summaryExclusiveLabel.textContent =
+                        "Exclusive Minimum Adjustment";
+                }
+
+                if (summaryExclusiveNote) {
+                    summaryExclusiveNote.textContent =
+                        `Minimum ${calculation.exclusiveMinimumPax} paying pax`;
+                }
+
+                if (summaryExclusiveDiscount) {
+                    summaryExclusiveDiscount.textContent =
+                        `+₱${formatMoney(
+                            calculation.exclusiveMinimumAdjustment
+                        )}`;
+                }
+            } else {
+                if (summaryExclusiveLabel) {
+                    summaryExclusiveLabel.textContent =
+                        "Private / Exclusive Tour";
+                }
+
+                if (summaryExclusiveNote) {
+                    summaryExclusiveNote.textContent =
+                        `Qualified • Minimum ${calculation.exclusiveMinimumPax} paying pax`;
+                }
+
+                if (summaryExclusiveDiscount) {
+                    summaryExclusiveDiscount.textContent =
+                        "No additional charge";
+                }
             }
         } else {
             summaryExclusiveRow?.classList.add("hidden");
@@ -5275,8 +5716,9 @@ document.addEventListener("DOMContentLoaded", () => {
         if (depositBreakdown) {
             if (selectedPaymentAmountOption === "minimum") {
                 depositBreakdown.textContent =
-                    `Minimum ₱${formatMoney(DEPOSIT_PER_PAX)} × ` +
-                    `${calculation.payablePax} payable pax`;
+                    getDepositBreakdownText(
+                        calculation
+                    );
             } else if (selectedPaymentAmountOption === "half") {
                 depositBreakdown.textContent =
                     "50% of total booking amount";
@@ -5384,7 +5826,9 @@ document.addEventListener("DOMContentLoaded", () => {
         if (gcashDepositBreakdown) {
             gcashDepositBreakdown.textContent =
                 selectedPaymentAmountOption === "minimum"
-                    ? `Minimum ₱${formatMoney(DEPOSIT_PER_PAX)} × ${calculation.payablePax} payable pax`
+                    ? getDepositBreakdownText(
+                        calculation
+                    )
                     : selectedPaymentAmountOption === "half"
                         ? "50% of total booking amount"
                         : "Full booking payment";
@@ -5935,15 +6379,54 @@ document.addEventListener("DOMContentLoaded", () => {
                     calculation.childDiscountPerPax
             },
 
+            tourType:
+                calculation.tourType,
+
+            exclusiveQualification:
+                calculation.isExclusive
+                    ? (
+                        calculation.exclusiveQualified
+                            ? "minimum_pax"
+                            : (
+                                calculation.exclusiveTourEnabled
+                                    ? "minimum_charge_applied"
+                                    : "review_required"
+                            )
+                    )
+                    : "not_applicable",
+
             exclusiveTourSnapshot: {
                 enabled:
                     calculation.exclusiveTourEnabled,
 
-                isExclusive:
+                selected:
                     calculation.isExclusive,
 
-                freePax:
-                    calculation.exclusiveFreePax
+                qualified:
+                    calculation.exclusiveQualified,
+
+                minimumPayingPax:
+                    calculation.exclusiveConfig.minimumPayingPax,
+
+                payingPaxAtBooking:
+                    calculation.payingPaxBeforeExclusive,
+
+                vanType:
+                    calculation.exclusiveConfig.vanType,
+
+                vanTypeLabel:
+                    calculation.exclusiveConfig.vanTypeLabel,
+
+                includedVanUnits:
+                    calculation.exclusiveConfig.includedVanUnits,
+
+                minimumPackageAmount:
+                    calculation.exclusiveMinimumPackageAmount,
+
+                minimumAdjustment:
+                    calculation.exclusiveMinimumAdjustment,
+
+                freePax: 0
             },
 
             /* TRAVEL DETAILS */
@@ -6093,11 +6576,34 @@ document.addEventListener("DOMContentLoaded", () => {
                 calculation.total,
 
             requiredDeposit:
-                Math.min(
-                    calculation.total,
-                    DEPOSIT_PER_PAX *
-                    calculation.payablePax
-                ),
+                getRequiredDeposit(
+                    calculation
+                ).requiredDeposit,
+
+            downpaymentRuleSnapshot: {
+                tourType:
+                    getRequiredDeposit(
+                        calculation
+                    ).tourType,
+
+                type:
+                    getRequiredDeposit(
+                        calculation
+                    ).type,
+
+                amount:
+                    getRequiredDeposit(
+                        calculation
+                    ).amount,
+
+                payingPaxAtBooking:
+                    calculation.payablePax,
+
+                requiredDeposit:
+                    getRequiredDeposit(
+                        calculation
+                    ).requiredDeposit
+            },
 
             selectedPaymentAmount:
                 getSelectedPaymentAmount(
@@ -6108,7 +6614,23 @@ document.addEventListener("DOMContentLoaded", () => {
                 selectedPaymentAmountOption,
 
             depositPerPax:
-                DEPOSIT_PER_PAX,
+                getRequiredDeposit(
+                    calculation
+                ).type === "per_paying_pax"
+                    ? getRequiredDeposit(
+                        calculation
+                    ).amount
+                    : 0,
+
+            depositType:
+                getRequiredDeposit(
+                    calculation
+                ).type,
+
+            depositConfiguredAmount:
+                getRequiredDeposit(
+                    calculation
+                ).amount,
 
             amountPaid:
                 0,
@@ -6260,6 +6782,19 @@ document.addEventListener("DOMContentLoaded", () => {
                 bookingData
             );
 
+            lastSubmittedBookingId =
+                bookingDocRef.id;
+
+            lastSubmittedBookingNumber =
+                bookingNumber;
+
+            lastSubmittedBookingEmail =
+                normalizeLower(
+                    bookingData.customerEmail ||
+                    customerEmail?.value ||
+                    ""
+                );
+
             showSuccessModal(bookingNumber);
 
         } catch (error) {
@@ -6294,6 +6829,432 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    function showPostBookingAccountError(message = "") {
+        if (!postBookingAccountError) {
+            return;
+        }
+
+        postBookingAccountError.classList.remove("success");
+
+        postBookingAccountError.textContent =
+            normalizeText(message);
+
+        postBookingAccountError.hidden =
+            !normalizeText(message);
+    }
+
+    function getPostBookingEmail() {
+        return normalizeLower(
+            lastSubmittedBookingEmail ||
+            customerEmail?.value ||
+            ""
+        );
+    }
+
+    function syncPostBookingAccountAccess() {
+        if (!postBookingAccountAccess) {
+            return;
+        }
+
+        const user =
+            auth.currentUser ||
+            currentCustomer;
+
+        const bookingEmail =
+            getPostBookingEmail();
+
+        if (postBookingAccountEmail) {
+            postBookingAccountEmail.value =
+                bookingEmail;
+        }
+
+        if (user) {
+            postBookingAccountSignedIn?.classList.remove("hidden");
+            postBookingAccountGuest?.classList.add("hidden");
+
+            if (successDoneButton) {
+                successDoneButton.textContent =
+                    "View My Trip";
+            }
+
+            return;
+        }
+
+        postBookingAccountSignedIn?.classList.add("hidden");
+        postBookingAccountGuest?.classList.remove("hidden");
+
+        if (successDoneButton) {
+            successDoneButton.textContent =
+                "Done";
+        }
+    }
+
+    async function linkSubmittedBookingToUser(user) {
+        if (
+            !user ||
+            !lastSubmittedBookingId
+        ) {
+            return false;
+        }
+
+        const bookingEmail =
+            getPostBookingEmail();
+
+        const authenticatedEmail =
+            normalizeLower(
+                user.email ||
+                ""
+            );
+
+        if (
+            !bookingEmail ||
+            !authenticatedEmail ||
+            bookingEmail !== authenticatedEmail
+        ) {
+            await signOut(auth);
+
+            throw new Error(
+                "BOOKING_EMAIL_MISMATCH"
+            );
+        }
+
+        await updateDoc(
+            doc(
+                db,
+                "bookings",
+                lastSubmittedBookingId
+            ),
+            {
+                customerUid:
+                    user.uid,
+
+                customerEmail:
+                    bookingEmail
+            }
+        );
+
+        currentCustomer =
+            user;
+
+        return true;
+    }
+
+    async function sendPostBookingPasswordReset() {
+        const email = getPostBookingEmail();
+
+        showPostBookingAccountError("");
+
+        if (!email) {
+            showPostBookingAccountError("Booking email was not found.");
+            return;
+        }
+
+        const originalText =
+            postBookingForgotPassword?.textContent ||
+            "Forgot Password?";
+
+        if (postBookingForgotPassword) {
+            postBookingForgotPassword.disabled = true;
+            postBookingForgotPassword.textContent = "Sending...";
+        }
+
+        try {
+            await sendPasswordResetEmail(auth, email);
+
+            if (postBookingAccountError) {
+                postBookingAccountError.classList.add("success");
+                postBookingAccountError.textContent =
+                    "Password reset email sent. Please check your inbox or spam folder.";
+                postBookingAccountError.hidden = false;
+            }
+
+        } catch (error) {
+            console.error("POST BOOKING PASSWORD RESET ERROR:", error);
+
+            let message =
+                "Unable to send the password reset email. Please try again.";
+
+            if (error?.code === "auth/too-many-requests") {
+                message =
+                    "Too many requests. Please wait a moment and try again.";
+            }
+
+            if (error?.code === "auth/network-request-failed") {
+                message =
+                    "Network error. Please check your connection and try again.";
+            }
+
+            showPostBookingAccountError(message);
+
+        } finally {
+            if (postBookingForgotPassword) {
+                postBookingForgotPassword.disabled = false;
+                postBookingForgotPassword.textContent = originalText;
+            }
+        }
+    }
+
+
+    async function signInPostBookingWithEmail() {
+        const email =
+            getPostBookingEmail();
+
+        const password =
+            String(
+                postBookingPassword?.value ||
+                ""
+            );
+
+        showPostBookingAccountError("");
+
+        if (!email) {
+            showPostBookingAccountError(
+                "Booking email was not found."
+            );
+            return;
+        }
+
+        if (!password) {
+            showPostBookingAccountError(
+                "Please enter your password."
+            );
+            postBookingPassword?.focus();
+            return;
+        }
+
+        const originalHTML =
+            postBookingSignInButton?.innerHTML ||
+            "Sign In";
+
+        if (postBookingSignInButton) {
+            postBookingSignInButton.disabled =
+                true;
+
+            postBookingSignInButton.innerHTML =
+                '<i class="fa-solid fa-spinner fa-spin"></i><span>Signing in...</span>';
+        }
+
+        try {
+            const credential =
+                await signInWithEmailAndPassword(
+                    auth,
+                    email,
+                    password
+                );
+
+            await linkSubmittedBookingToUser(
+                credential.user
+            );
+
+            syncPostBookingAccountAccess();
+
+        } catch (error) {
+            console.error(
+                "POST BOOKING EMAIL SIGN IN ERROR:",
+                error
+            );
+
+            let message =
+                "Unable to sign in. Please check your password and try again.";
+
+            if (
+                error?.message ===
+                "BOOKING_EMAIL_MISMATCH"
+            ) {
+                message =
+                    "Please sign in using the same email address used for this booking.";
+            }
+
+            if (
+                error?.code ===
+                "auth/too-many-requests"
+            ) {
+                message =
+                    "Too many attempts. Please wait a moment and try again.";
+            }
+
+            if (
+                error?.code ===
+                "auth/network-request-failed"
+            ) {
+                message =
+                    "Network error. Please check your connection and try again.";
+            }
+
+            showPostBookingAccountError(
+                message
+            );
+
+        } finally {
+            if (postBookingSignInButton) {
+                postBookingSignInButton.disabled =
+                    false;
+
+                postBookingSignInButton.innerHTML =
+                    originalHTML;
+            }
+        }
+    }
+
+    async function signInPostBookingWithGoogle() {
+        showPostBookingAccountError("");
+
+        const originalHTML =
+            postBookingGoogleButton?.innerHTML ||
+            "Continue with Google";
+
+        if (postBookingGoogleButton) {
+            postBookingGoogleButton.disabled =
+                true;
+
+            postBookingGoogleButton.innerHTML =
+                '<i class="fa-solid fa-spinner fa-spin"></i><span>Connecting...</span>';
+        }
+
+        try {
+            const provider =
+                new GoogleAuthProvider();
+
+            provider.setCustomParameters({
+                prompt: "select_account"
+            });
+
+            const credential =
+                await signInWithPopup(
+                    auth,
+                    provider
+                );
+
+            await linkSubmittedBookingToUser(
+                credential.user
+            );
+
+            syncPostBookingAccountAccess();
+
+        } catch (error) {
+            if (
+                error?.code === "auth/popup-closed-by-user" ||
+                error?.code === "auth/cancelled-popup-request"
+            ) {
+                return;
+            }
+
+            console.error(
+                "POST BOOKING GOOGLE SIGN IN ERROR:",
+                error
+            );
+
+            let message =
+                error?.message === "BOOKING_EMAIL_MISMATCH"
+                    ? "Please use the Google account with the same email address used for this booking."
+                    : "Unable to sign in with Google. Please try again.";
+
+            if (error?.code === "auth/account-exists-with-different-credential") {
+                message =
+                    "This email already uses another sign-in method. Use Forgot Password to recover your existing account first.";
+            }
+
+            showPostBookingAccountError(
+                message
+            );
+
+        } finally {
+            if (postBookingGoogleButton) {
+                postBookingGoogleButton.disabled =
+                    false;
+
+                postBookingGoogleButton.innerHTML =
+                    originalHTML;
+            }
+        }
+    }
+
+    async function signInPostBookingWithFacebook() {
+        showPostBookingAccountError("");
+
+        const originalHTML =
+            postBookingFacebookButton?.innerHTML ||
+            "Continue with Facebook";
+
+        if (postBookingFacebookButton) {
+            postBookingFacebookButton.disabled =
+                true;
+
+            postBookingFacebookButton.innerHTML =
+                '<i class="fa-solid fa-spinner fa-spin"></i><span>Connecting...</span>';
+        }
+
+        try {
+            const credential =
+                await loginWithFacebook();
+
+            await linkSubmittedBookingToUser(
+                credential.user
+            );
+
+            syncPostBookingAccountAccess();
+
+        } catch (error) {
+            if (
+                error?.code === "auth/popup-closed-by-user" ||
+                error?.code === "auth/cancelled-popup-request"
+            ) {
+                return;
+            }
+
+            console.error(
+                "POST BOOKING FACEBOOK SIGN IN ERROR:",
+                error
+            );
+
+            let message =
+                error?.message === "BOOKING_EMAIL_MISMATCH"
+                    ? "Please use the Facebook account with the same email address used for this booking."
+                    : "Unable to sign in with Facebook. Please try again.";
+
+            if (error?.code === "auth/account-exists-with-different-credential") {
+                message =
+                    "This email already uses another sign-in method. Recover or sign in to your existing account first.";
+            }
+
+            showPostBookingAccountError(
+                message
+            );
+
+        } finally {
+            if (postBookingFacebookButton) {
+                postBookingFacebookButton.disabled =
+                    false;
+
+                postBookingFacebookButton.innerHTML =
+                    originalHTML;
+            }
+        }
+    }
+
+    function openPostBookingRegistration() {
+        const params =
+            new URLSearchParams();
+
+        params.set(
+            "email",
+            getPostBookingEmail()
+        );
+
+        params.set(
+            "booking",
+            lastSubmittedBookingNumber
+        );
+
+        params.set(
+            "from",
+            "booking"
+        );
+
+        window.location.href =
+            `../../register.html?${params.toString()}`;
+    }
+
     function showSuccessModal(bookingNumber) {
         if (bookingRequestReference) {
             bookingRequestReference.textContent = bookingNumber;
@@ -6324,6 +7285,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 "Pending Confirmation";
         }
 
+        showPostBookingAccountError("");
+        syncPostBookingAccountAccess();
         setModalState(bookingSuccessModal, true);
     }
 
@@ -6333,7 +7296,17 @@ document.addEventListener("DOMContentLoaded", () => {
             false
         );
 
-        window.location.href = "home.html";
+        if (
+            auth.currentUser ||
+            currentCustomer
+        ) {
+            window.location.href =
+                "my-trip.html";
+            return;
+        }
+
+        window.location.href =
+            "home.html";
     }
 
 
@@ -6628,6 +7601,52 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     );
 
+    tourTypeInputs.forEach(input => {
+        input.addEventListener("change", () => {
+            selectedTourType =
+                getSelectedTourType();
+
+            if (selectedTourType === "exclusive") {
+                openExclusiveChoiceModal();
+            } else {
+                closeExclusiveChoiceModal();
+            }
+
+            clearAppliedPromo();
+            syncTourTypeUI();
+            updateBookingSummary();
+            updateProgress();
+        });
+    });
+
+    exclusiveChoiceModalClose
+        ?.addEventListener(
+            "click",
+            closeExclusiveChoiceModal
+        );
+
+    exclusiveChoiceModalContinue
+        ?.addEventListener(
+            "click",
+            closeExclusiveChoiceModal
+        );
+
+    exclusiveChoiceModalBackdrop
+        ?.addEventListener(
+            "click",
+            closeExclusiveChoiceModal
+        );
+
+    document.addEventListener("keydown", event => {
+        if (
+            event.key === "Escape" &&
+            exclusiveChoiceModal &&
+            !exclusiveChoiceModal.classList.contains("hidden")
+        ) {
+            closeExclusiveChoiceModal();
+        }
+    });
+
     numberOfGuests
         ?.addEventListener("input", () => {
             syncChildrenAvailability();
@@ -6651,6 +7670,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             syncRequestedDateEligibility();
+            syncTourTypeUI();
 
             if (isRequestedDateMode && requestedTravelDate?.value) {
                 selectRequestedTravelDate();
@@ -6688,7 +7708,8 @@ document.addEventListener("DOMContentLoaded", () => {
                     clearAppliedPromo();
                 }
 
-                updateBookingSummary();
+                syncTourTypeUI();
+    updateBookingSummary();
                 updateProgress();
             });
     });
@@ -6709,6 +7730,71 @@ document.addEventListener("DOMContentLoaded", () => {
         ?.addEventListener(
             "submit",
             submitBooking
+        );
+
+    postBookingPasswordToggle
+        ?.addEventListener(
+            "click",
+            () => {
+                if (!postBookingPassword) {
+                    return;
+                }
+
+                const isVisible =
+                    postBookingPassword.type ===
+                    "text";
+
+                postBookingPassword.type =
+                    isVisible
+                        ? "password"
+                        : "text";
+
+                postBookingPasswordToggle.innerHTML =
+                    isVisible
+                        ? '<i class="fa-regular fa-eye"></i>'
+                        : '<i class="fa-regular fa-eye-slash"></i>';
+            }
+        );
+
+    postBookingPassword
+        ?.addEventListener(
+            "keydown",
+            event => {
+                if (event.key === "Enter") {
+                    event.preventDefault();
+                    signInPostBookingWithEmail();
+                }
+            }
+        );
+
+    postBookingForgotPassword
+        ?.addEventListener(
+            "click",
+            sendPostBookingPasswordReset
+        );
+
+    postBookingSignInButton
+        ?.addEventListener(
+            "click",
+            signInPostBookingWithEmail
+        );
+
+    postBookingGoogleButton
+        ?.addEventListener(
+            "click",
+            signInPostBookingWithGoogle
+        );
+
+    postBookingFacebookButton
+        ?.addEventListener(
+            "click",
+            signInPostBookingWithFacebook
+        );
+
+    postBookingCreateAccountButton
+        ?.addEventListener(
+            "click",
+            openPostBookingRegistration
         );
 
     successDoneButton

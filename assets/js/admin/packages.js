@@ -141,6 +141,19 @@ document.addEventListener(
                 "managePackageTemplatesButton"
             );
 
+        const manageVanRentalButton =
+            document.getElementById(
+                "manageVanRentalButton"
+            );
+
+        manageVanRentalButton?.addEventListener(
+            "click",
+            () => {
+                window.location.href =
+                    "van-rental.html";
+            }
+        );
+
         const packageTemplateModal =
             document.getElementById(
                 "packageTemplateModal"
@@ -240,6 +253,41 @@ document.addEventListener(
             document.getElementById(
                 "existingDestinationOptions"
             );
+
+        const searchDestinationButton =
+            document.getElementById("searchDestinationButton");
+
+        const existingPackageDurationSelect =
+            document.getElementById("existingPackageDurationSelect");
+
+        const destinationPackageSelector =
+            document.getElementById("destinationPackageSelector");
+
+        const existingDestinationMeta =
+            document.getElementById("existingDestinationMeta");
+
+        const existingDestinationThumb =
+            document.getElementById("existingDestinationThumb");
+
+        const clearDestinationSearch =
+            document.getElementById("clearDestinationSearch");
+
+        const changeDestinationButton =
+            document.getElementById("changeDestinationButton");
+
+        const packageEditConfirm =
+            document.getElementById("packageEditConfirm");
+
+        const packageEditConfirmMessage =
+            document.getElementById("packageEditConfirmMessage");
+
+        const confirmExistingPackageEdit =
+            document.getElementById("confirmExistingPackageEdit");
+
+        const cancelExistingPackageEdit =
+            document.getElementById("cancelExistingPackageEdit");
+
+        let pendingExistingPackageId = "";
 
         const packageModalTitle =
             document.getElementById(
@@ -626,8 +674,47 @@ addPickupLocation?.addEventListener(
                 return;
             }
 
-            element.value =
-                value ?? "";
+            let nextValue = value ?? "";
+
+            if (id === "formLocation") {
+                const locationAliases = {
+                    "quezon prov.": "Quezon",
+                    "quezon province": "Quezon",
+                    "ncr": "Metro Manila",
+                    "metro manila / ncr": "Metro Manila",
+                    "national capital region": "Metro Manila",
+                    "mt. province": "Mountain Province",
+                    "mountain prov.": "Mountain Province"
+                };
+
+                const normalizedLocation =
+                    String(nextValue).trim().toLowerCase();
+
+                nextValue =
+                    locationAliases[normalizedLocation] ??
+                    nextValue;
+
+                // If an older saved value is not in the standardized list,
+                // keep the field usable instead of silently clearing it.
+                if (
+                    element.tagName === "SELECT" &&
+                    nextValue &&
+                    !Array.from(element.options).some(
+                        option => option.value === nextValue
+                    )
+                ) {
+                    const legacyOption =
+                        document.createElement("option");
+
+                    legacyOption.value = nextValue;
+                    legacyOption.textContent =
+                        `${nextValue} (Saved value)`;
+
+                    element.appendChild(legacyOption);
+                }
+            }
+
+            element.value = nextValue;
 
         }
 
@@ -726,7 +813,6 @@ addPickupLocation?.addEventListener(
                     "exclusiveTourEnabled"
                 )?.checked === true;
 
-
             const kidsFields =
                 document.getElementById(
                     "kidsPricingFields"
@@ -736,7 +822,6 @@ addPickupLocation?.addEventListener(
                 document.getElementById(
                     "exclusiveTourFields"
                 );
-
 
             kidsFields?.classList.toggle(
                 "rule-disabled",
@@ -748,8 +833,30 @@ addPickupLocation?.addEventListener(
                 !exclusiveEnabled
             );
 
-        }
+            const child3to7Enabled =
+                document.getElementById("child3to7Enabled");
 
+            const child8to11Enabled =
+                document.getElementById("child8to11Enabled");
+
+            const child3to7Rate =
+                document.getElementById("child3to7Rate");
+
+            const child8to11Rate =
+                document.getElementById("child8to11Rate");
+
+            if (child3to7Rate) {
+                child3to7Rate.disabled =
+                    !kidsEnabled ||
+                    child3to7Enabled?.checked !== true;
+            }
+
+            if (child8to11Rate) {
+                child8to11Rate.disabled =
+                    !kidsEnabled ||
+                    child8to11Enabled?.checked !== true;
+            }
+        }
 
 
         // ======================================================
@@ -936,6 +1043,20 @@ addPickupLocation?.addEventListener(
                 updatePackageRuleVisibility
             );
 
+        document
+            .getElementById("child3to7Enabled")
+            ?.addEventListener(
+                "change",
+                updatePackageRuleVisibility
+            );
+
+        document
+            .getElementById("child8to11Enabled")
+            ?.addEventListener(
+                "change",
+                updatePackageRuleVisibility
+            );
+
 
 
         // ======================================================
@@ -943,50 +1064,13 @@ addPickupLocation?.addEventListener(
         // ======================================================
 
         const PACKAGE_BUILDER_SECTIONS = [
-            {
-                id: "packageSectionBasic",
-                label: "Basic Information"
-            },
-            {
-                id: "packageSectionPassengerPricing",
-                label: "Package Option"
-            },
-            {
-                id: "packageSectionGallery",
-                label: "Gallery / Photos"
-            },
-            {
-                id: "packageSectionDetails",
-                label: "Details"
-            },
-            {
-                id: "packageSectionInclusions",
-                label: "Inclusions"
-            },
-            {
-                id: "packageSectionExclusions",
-                label: "Exclusions"
-            },
-            {
-                id: "packageSectionAccommodation",
-                label: "Accommodation"
-            },
-            {
-                id: "packageSectionPickup",
-                label: "Pick Up Locations"
-            },
-            {
-                id: "packageSectionSchedule",
-                label: "Tour Pattern"
-            },
-            {
-                id: "packageSectionScheduleAvailability",
-                label: "Travel Dates"
-            },
-            {
-                id: "packageSectionItinerary",
-                label: "Itinerary"
-            }
+            { id: "packageSectionBasic", label: "Basic Info", sections: ["packageSectionBasic"] },
+            { id: "packageSectionGallery", label: "Package Details", sections: ["packageSectionGallery","packageSectionInclusions","packageSectionExclusions","packageSectionPickup"] },
+            { id: "packageSectionAccommodation", label: "Accommodation", sections: ["packageSectionAccommodation"] },
+            { id: "packageSectionSchedule", label: "Schedule & Itinerary", sections: ["packageSectionSchedule","packageSectionScheduleAvailability","packageSectionItinerary"] },
+            { id: "packageSectionPassengerPricing", label: "Pricing Rules", sections: ["packageSectionPassengerPricing"] },
+            { id: "packageSectionCostPricing", label: "Cost & Pricing", sections: ["packageSectionCostPricing"] },
+            { id: "packageSectionReview", label: "Review & Publish", sections: ["packageSectionReview"] }
         ];
 
 
@@ -1030,12 +1114,10 @@ addPickupLocation?.addEventListener(
 
             return Math.max(
                 0,
-                PACKAGE_BUILDER_SECTIONS
-                    .findIndex(
-                        item =>
-                            item.id ===
-                            sectionId
-                    )
+                PACKAGE_BUILDER_SECTIONS.findIndex(item =>
+                    item.id === sectionId ||
+                    (Array.isArray(item.sections) && item.sections.includes(sectionId))
+                )
             );
         }
 
@@ -1048,17 +1130,15 @@ addPickupLocation?.addEventListener(
             } = {}
         ) {
 
-            const target =
-                document.getElementById(
-                    sectionId
-                );
-
-            if (!target) {
-                return;
+            const stepIndex = getBuilderSectionIndex(sectionId);
+            const stepMeta = PACKAGE_BUILDER_SECTIONS[stepIndex];
+            const target = document.getElementById(stepMeta?.id || sectionId);
+            if (!target || !stepMeta) return;
+            activeBuilderSectionId = stepMeta.id;
+            packageBuilderContent?.classList.add("package-step-mode");
+            if (packageBuilderContent) {
+                packageBuilderContent.dataset.activeStep = String(stepIndex + 1);
             }
-
-            activeBuilderSectionId =
-                sectionId;
 
             packageBuilderSideNav
                 ?.querySelectorAll(
@@ -1069,9 +1149,7 @@ addPickupLocation?.addEventListener(
 
                         button.classList.toggle(
                             "active",
-                            button.dataset
-                                .builderSection ===
-                                sectionId
+                            button.dataset.builderSection === stepMeta.id
                         );
                     }
                 );
@@ -1087,9 +1165,25 @@ addPickupLocation?.addEventListener(
                         )
                 );
 
-            target.classList.add(
-                "builder-section-current"
-            );
+            (stepMeta.sections || [stepMeta.id]).forEach(id => {
+                document.getElementById(id)?.classList.add("builder-section-current");
+            });
+
+            // Review & Publish must always reflect the latest live form/costing state.
+            // Run after Step 7 becomes active so direct tab clicks and Next both refresh it.
+            if (stepMeta.id === "packageSectionReview") {
+                if (typeof calculatePackageCosting === "function") {
+                    calculatePackageCosting();
+                } else if (typeof updatePackageReview === "function") {
+                    updatePackageReview();
+                }
+
+                window.requestAnimationFrame(() => {
+                    if (typeof updatePackageReview === "function") {
+                        updatePackageReview();
+                    }
+                });
+            }
 
             const sectionIndex =
                 getBuilderSectionIndex(
@@ -1118,17 +1212,43 @@ addPickupLocation?.addEventListener(
             }
 
             if (savePackageButton) {
-                savePackageButton.hidden =
-                    !isLast;
+                savePackageButton.hidden = !isLast;
             }
 
-            if (scroll) {
+            if (cancelPackage) {
+                cancelPackage.innerHTML = sectionIndex > 0
+                    ? '<i class="fa-solid fa-arrow-left"></i> Back'
+                    : 'Cancel';
+            }
 
-                target.scrollIntoView({
-                    behavior,
-                    block: "start"
+            // Each builder step behaves like its own screen.
+            // Reset every possible INNER builder scroll container when switching tabs.
+            // Do not scroll the browser/window; keep the package header + step navigation fixed.
+            const builderScrollContainers = [
+                packageBuilderContent,
+                packageBuilderContent?.closest(".package-builder-form"),
+                packageForm?.querySelector(".package-builder-form")
+            ].filter((element, index, list) =>
+                element && list.indexOf(element) === index
+            );
+
+            builderScrollContainers.forEach(container => {
+                if (behavior === "smooth" && scroll) {
+                    container.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+                } else {
+                    container.scrollTop = 0;
+                    container.scrollLeft = 0;
+                }
+            });
+
+            // Run once more after the selected step has been painted.
+            // This prevents the browser from restoring the previous tab's inner scroll position.
+            window.requestAnimationFrame(() => {
+                builderScrollContainers.forEach(container => {
+                    container.scrollTop = 0;
+                    container.scrollLeft = 0;
                 });
-            }
+            });
         }
 
 
@@ -1339,6 +1459,45 @@ addPickupLocation?.addEventListener(
         }
 
 
+        // ======================================================
+        // COST & PRICING
+        // ======================================================
+        const COST_FIELD_IDS = ["costTransportation","costAccommodation","costMeals","costTourGuide","costBoatFerry","costOtherExpenses"];
+        const money = value => `₱${Number(value || 0).toLocaleString("en-PH", {minimumFractionDigits:2, maximumFractionDigits:2})}`;
+
+        
+
+        function updatePackageReview(){
+            const expectedPax = Math.max(1,getNumberInputValue("costExpectedPax",12));
+            const duration = typeof getCostingDuration === "function" ? getCostingDuration() : {days:1,nights:0};
+            const totalCost = Array.isArray(dynamicCostItemsState)
+                ? dynamicCostItemsState.reduce((sum,item)=>sum + Math.max(0,Number(item.rate||0)) * costMultiplier(item.type,expectedPax,duration,item.qty),0)
+                : 0;
+
+            const finalRate = Math.max(0,getNumberInputValue("costFinalSellingRate",0));
+            const costPerPax = totalCost / expectedPax;
+            const profitPerPax = finalRate - costPerPax;
+            const estimatedTourProfit = profitPerPax * expectedPax;
+            const profitMargin = finalRate > 0 ? (profitPerPax / finalRate) * 100 : 0;
+
+            const setText=(id,v)=>{const el=document.getElementById(id); if(el) el.textContent=v;};
+
+            setText("reviewDestination",getInputValue("formPackageName")||"—");
+            setText("reviewDuration",getInputValue("formDuration")||"—");
+            setText("reviewLocation",getInputValue("formLocation")||"—");
+            setText("reviewStatus",document.getElementById("formStatus")?.value||"Draft");
+
+            setText("reviewTotalCost",money(totalCost));
+            setText("reviewCostPerPax",money(costPerPax));
+            setText("reviewExpectedPax",`${expectedPax} pax`);
+            setText("reviewFinalRate",`${money(finalRate)} / pax`);
+            setText("reviewProfitMargin",`${profitMargin.toFixed(2)}%`);
+            setText("reviewTourProfit",money(estimatedTourProfit));
+        }
+
+        ["costExpectedPax","costMarkup","costFinalSellingRate",...COST_FIELD_IDS].forEach(id=>document.getElementById(id)?.addEventListener("input",calculatePackageCosting));
+        ["formPackageName","formDuration","formLocation","formStatus"].forEach(id=>document.getElementById(id)?.addEventListener("input",updatePackageReview));
+
         packageBuilderSideNav
             ?.addEventListener(
                 "click",
@@ -1371,19 +1530,8 @@ addPickupLocation?.addEventListener(
             );
 
 
-        packageBuilderContent
-            ?.addEventListener(
-                "scroll",
-                () => {
-
-                    window.requestAnimationFrame(
-                        syncBuilderSectionFromScroll
-                    );
-                },
-                {
-                    passive: true
-                }
-            );
+        // Do not change tabs from scrolling.
+        // The active step changes only through the step buttons, Back, or Next.
 
 
         [
@@ -1628,6 +1776,12 @@ addPickupLocation?.addEventListener(
                     true;
             }
 
+            // Keep Package Option / Duration visible at all times.
+            // Only its dropdown state changes depending on the selected destination.
+            if (destinationPackageSelector) {
+                destinationPackageSelector.hidden = false;
+            }
+
             if (existingDestinationOptions) {
                 existingDestinationOptions.innerHTML =
                     "";
@@ -1751,86 +1905,108 @@ addPickupLocation?.addEventListener(
         }
 
 
+        function showExistingPackageOptionMode() {
+            const durationInput = document.getElementById("formDuration");
+            const durationHelp = document.getElementById("packageDurationHelp");
+
+            if (existingPackageDurationSelect) {
+                existingPackageDurationSelect.hidden = false;
+            }
+
+            if (durationInput) {
+                durationInput.hidden = true;
+            }
+
+            if (durationHelp) {
+                durationHelp.textContent =
+                    "Choose an existing duration to edit its saved package details.";
+            }
+        }
+
+
+        function showNewPackageOptionMode() {
+            const durationInput = document.getElementById("formDuration");
+            const durationHelp = document.getElementById("packageDurationHelp");
+
+            if (existingPackageDurationSelect) {
+                existingPackageDurationSelect.hidden = true;
+            }
+
+            if (durationInput) {
+                durationInput.hidden = false;
+                durationInput.disabled = false;
+            }
+
+            if (durationHelp) {
+                durationHelp.textContent =
+                    "Enter the duration for this new package, e.g. Day Tour, 2D1N or 3D2N.";
+            }
+        }
+
+
         function renderExistingDestinationOptions(
             group
         ) {
 
-            if (
-                !existingDestinationPanel ||
-                !existingDestinationOptions
-            ) {
+            if (!existingDestinationPanel) {
                 return;
             }
 
-            selectedExistingDestinationKey =
-                group.key;
+            selectedExistingDestinationKey = group.key;
+            showExistingPackageOptionMode();
 
             if (existingDestinationName) {
-                existingDestinationName.textContent =
-                    group.name;
+                existingDestinationName.textContent = group.name;
+            }
+
+            if (existingDestinationMeta) {
+                existingDestinationMeta.innerHTML = `
+                    <span><i class="fa-regular fa-image"></i>${escapeHtml(group.category || "Tour Package")}</span>
+                    <span><i class="fa-solid fa-location-dot"></i>${escapeHtml(group.location || "Location TBA")}</span>
+                `;
             }
 
             if (existingDestinationCount) {
-                existingDestinationCount.textContent =
-                    `${group.packages.length} Option${group.packages.length === 1 ? "" : "s"}`;
+                existingDestinationCount.innerHTML =
+                    `<i class="fa-solid fa-box-open"></i> ${group.packages.length} Package Option${group.packages.length === 1 ? "" : "s"}`;
             }
 
-            existingDestinationOptions.innerHTML =
-                group.packages
-                    .map(
-                        item => {
+            if (existingDestinationThumb) {
+                const imageUrl = group.packages
+                    .map(item => item?.gallery?.[0]?.url || "")
+                    .find(Boolean) || "";
 
-                            const duration =
-                                getPackageOptionLabel(
-                                    item
-                                );
+                existingDestinationThumb.innerHTML = imageUrl
+                    ? `<img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(group.name)}">`
+                    : `<i class="fa-solid fa-umbrella-beach"></i>`;
+            }
 
-                            const price =
-                                normalizePrice(
-                                    item.price
-                                );
+            if (existingPackageDurationSelect) {
+                existingPackageDurationSelect.disabled = false;
+                existingPackageDurationSelect.innerHTML =
+                    `<option value="">Select package option to edit</option>` +
+                    group.packages
+                        .map(item => {
+                            const duration = getPackageOptionLabel(item);
+                            return `<option value="${escapeHtml(item.id)}">${escapeHtml(duration)}</option>`;
+                        })
+                        .join("");
+            }
 
-                            return `
-                                <div class="existing-option-row">
+            if (existingDestinationOptions) {
+                existingDestinationOptions.innerHTML = `
+                    <button type="button" class="existing-option-add" data-add-package-option>
+                        <i class="fa-solid fa-plus"></i>
+                        <span>Add New Package Option</span>
+                    </button>
+                `;
+            }
 
-                                    <div class="existing-option-info">
-                                        <span class="existing-option-duration">
-                                            ${escapeHtml(duration)}
-                                        </span>
+            if (destinationPackageSelector) {
+                destinationPackageSelector.hidden = false;
+            }
 
-                                        <span class="existing-option-price">
-                                            ${price > 0 ? `₱${price.toLocaleString("en-PH")}` : "Price TBA"}
-                                        </span>
-                                    </div>
-
-                                    <button
-                                        type="button"
-                                        class="existing-option-load"
-                                        data-copy-package-option="${escapeHtml(item.id)}">
-
-                                        <i class="fa-regular fa-copy"></i>
-                                        Load Details
-
-                                    </button>
-
-                                    <button
-                                        type="button"
-                                        class="existing-option-edit"
-                                        data-edit-existing-option="${escapeHtml(item.id)}">
-
-                                        <i class="fa-regular fa-pen-to-square"></i>
-                                        Edit Existing
-
-                                    </button>
-
-                                </div>
-                            `;
-                        }
-                    )
-                    .join("");
-
-            existingDestinationPanel.hidden =
-                false;
+            existingDestinationPanel.hidden = true;
         }
 
 
@@ -1847,15 +2023,12 @@ addPickupLocation?.addEventListener(
                 group.name
             );
 
-            setInputValue(
-                "formCategory",
-                group.category
-            );
-
-            setInputValue(
-                "formLocation",
-                group.location
-            );
+            if (group.location) {
+                setInputValue(
+                    "formLocation",
+                    group.location
+                );
+            }
 
             renderExistingDestinationOptions(
                 group
@@ -1956,61 +2129,78 @@ addPickupLocation?.addEventListener(
         }
 
 
-        document
-            .getElementById(
-                "formPackageName"
-            )
-            ?.addEventListener(
-                "input",
-                event => {
-
-                    const value =
-                        event.target.value;
-
-                    const exact =
-                        findExistingDestinationByName(
-                            value
-                        );
-
-                    if (
-                        exact &&
-                        exact.key !==
-                            selectedExistingDestinationKey
-                    ) {
-                        renderExistingDestinationOptions(
-                            exact
-                        );
-                    } else if (!exact) {
-                        hideExistingDestinationPanel();
-                    }
-
-                    renderDestinationSuggestions(
-                        value
-                    );
-                }
-            );
-
+        let destinationAutoDetectTimer = null;
 
         document
-            .getElementById(
-                "formPackageName"
-            )
-            ?.addEventListener(
-                "focus",
-                event => {
+            .getElementById("formPackageName")
+            ?.addEventListener("input", () => {
+                hideDestinationSuggestions();
+                hideExistingDestinationPanel();
 
-                    if (
-                        String(
-                            event.target.value ||
-                            ""
-                        ).trim()
-                    ) {
-                        renderDestinationSuggestions(
-                            event.target.value
-                        );
-                    }
+                window.clearTimeout(destinationAutoDetectTimer);
+
+                const value = getInputValue("formPackageName").trim();
+
+                showExistingPackageOptionMode();
+
+                if (existingPackageDurationSelect) {
+                    existingPackageDurationSelect.value = "";
+                    existingPackageDurationSelect.disabled = true;
+                    existingPackageDurationSelect.innerHTML =
+                        `<option value="">${value ? "Detecting package options..." : "Select destination first"}</option>`;
                 }
-            );
+
+                setInputValue("formDuration", "");
+                selectedExistingDestinationKey = "";
+
+                if (!value) {
+                    return;
+                }
+
+                destinationAutoDetectTimer = window.setTimeout(() => {
+                    const groups = getDestinationLookupGroups();
+                    const normalizedValue = normalizeDestinationLookupName(value);
+                    const exact = groups.find(group => group.key === normalizedValue);
+
+                    if (exact) {
+                        selectExistingDestination(exact);
+                        return;
+                    }
+
+                    showNewPackageOptionMode();
+                    setInputValue("formDuration", "");
+
+                    renderDestinationSuggestions(value);
+                }, 220);
+            });
+
+
+
+        clearDestinationSearch
+            ?.addEventListener("click", () => {
+                setInputValue("formPackageName", "");
+                hideDestinationSuggestions();
+                hideExistingDestinationPanel();
+                selectedExistingDestinationKey = "";
+                showExistingPackageOptionMode();
+                if (existingPackageDurationSelect) {
+                    existingPackageDurationSelect.disabled = true;
+                    existingPackageDurationSelect.innerHTML =
+                        `<option value="">Select destination first</option>`;
+                }
+                setInputValue("formDuration", "");
+                document.getElementById("formPackageName")?.focus();
+            });
+
+
+        changeDestinationButton
+            ?.addEventListener("click", () => {
+                hideExistingDestinationPanel();
+                selectedExistingDestinationKey = "";
+                const input = document.getElementById("formPackageName");
+                input?.focus();
+                input?.select();
+            });
 
 
         document
@@ -2066,42 +2256,154 @@ addPickupLocation?.addEventListener(
             );
 
 
+        function startNewPackageOptionForSelectedDestination() {
+            const selectedGroup = getDestinationLookupGroups()
+                .find(item => item.key === selectedExistingDestinationKey);
+
+            if (!selectedGroup) {
+                document.getElementById("formPackageName")?.focus();
+                return;
+            }
+
+            editingPackageId = null;
+            saveAsDraftMode = false;
+
+            if (packageModalTitle) {
+                packageModalTitle.textContent = "Add Package Option";
+            }
+
+            updatePackageBuilderStatus("draft");
+            setInputValue("formCategory", selectedGroup.category);
+            setInputValue("formLocation", selectedGroup.location);
+            showNewPackageOptionMode();
+            setInputValue("formDuration", "");
+            setInputValue("formPrice", "");
+            setInputValue("formStatus", "active");
+            updateBuilderLivePreview();
+            document.getElementById("formDuration")?.focus();
+        }
+
+        document
+            .getElementById("basicInfoNewOptionButton")
+            ?.addEventListener("click", startNewPackageOptionForSelectedDestination);
+
+
         existingDestinationOptions
-            ?.addEventListener(
-                "click",
-                event => {
+            ?.addEventListener("click", event => {
+                const addButton = event.target.closest("[data-add-package-option]");
 
-                    const copyButton =
-                        event.target.closest(
-                            "[data-copy-package-option]"
-                        );
+                if (!addButton) {
+                    return;
+                }
 
-                    if (copyButton) {
+                startNewPackageOptionForSelectedDestination();
+            });
 
-                        copyExistingPackageOption(
-                            copyButton.dataset
-                                .copyPackageOption
-                        );
 
-                        return;
+        function closePackageEditConfirmation() {
+            pendingExistingPackageId = "";
+
+            if (packageEditConfirm) {
+                packageEditConfirm.hidden = true;
+            }
+
+            if (existingPackageDurationSelect) {
+                existingPackageDurationSelect.value = "";
+            }
+        }
+
+
+        existingPackageDurationSelect
+            ?.addEventListener("change", event => {
+                const packageId = String(event.target.value || "").trim();
+
+                if (!packageId) {
+                    return;
+                }
+
+                const packageItem = packages.find(item => item.id === packageId);
+
+                if (!packageItem) {
+                    event.target.value = "";
+                    return;
+                }
+
+                pendingExistingPackageId = packageId;
+
+                const selectedFinalRate = normalizePrice(
+                    packageItem?.costing?.finalSellingRate ??
+                    packageItem?.price ??
+                    0
+                );
+
+                setInputValue(
+                    "formPrice",
+                    selectedFinalRate > 0 ? selectedFinalRate : ""
+                );
+                updateBuilderLivePreview();
+
+                const duration = getPackageOptionLabel(packageItem);
+                const destination = getBaseDestinationName(packageItem.name || getInputValue("formPackageName"));
+
+                if (packageEditConfirmMessage) {
+                    packageEditConfirmMessage.innerHTML =
+                        `You selected the <strong>${escapeHtml(duration)} – ${escapeHtml(destination)}</strong> package.<br>Are you sure you want to edit this package?`;
+                }
+
+                if (packageEditConfirm) {
+                    packageEditConfirm.hidden = false;
+                }
+            });
+
+
+        confirmExistingPackageEdit
+            ?.addEventListener("click", () => {
+                const packageId = pendingExistingPackageId;
+
+                if (!packageId) {
+                    closePackageEditConfirmation();
+                    return;
+                }
+
+                pendingExistingPackageId = "";
+
+                if (packageEditConfirm) {
+                    packageEditConfirm.hidden = true;
+                }
+
+                editPackage(packageId);
+
+                const editedPackage = packages.find(item => item.id === packageId);
+                const selectedGroup = editedPackage
+                    ? findExistingDestinationByName(editedPackage.name)
+                    : null;
+
+                if (selectedGroup) {
+                    selectedExistingDestinationKey = selectedGroup.key;
+                    renderExistingDestinationOptions(selectedGroup);
+                    if (existingPackageDurationSelect) {
+                        existingPackageDurationSelect.value = packageId;
                     }
-
-                    const editButton =
-                        event.target.closest(
-                            "[data-edit-existing-option]"
-                        );
-
-                    if (editButton) {
-
-                        editPackage(
-                            editButton.dataset
-                                .editExistingOption
-                        );
-
-                        return;
+                    if (destinationPackageSelector) {
+                        destinationPackageSelector.hidden = false;
+                    }
+                    if (existingDestinationPanel) {
+                        existingDestinationPanel.hidden = false;
                     }
                 }
-            );
+            });
+
+
+        cancelExistingPackageEdit
+            ?.addEventListener("click", closePackageEditConfirmation);
+
+
+        packageEditConfirm
+            ?.addEventListener("click", event => {
+                if (event.target.closest("[data-package-edit-cancel]")) {
+                    closePackageEditConfirmation();
+                }
+            });
 
 
         // ======================================================
@@ -3205,19 +3507,7 @@ addPickupLocation?.addEventListener(
                                         data.pickupLocations
                                     )
                                         ? data.pickupLocations
-                                        : Array.isArray(
-                                            data.pickUpLocations
-                                        )
-                                            ? data.pickUpLocations
-                                            : Array.isArray(
-                                                data.meetupLocations
-                                            )
-                                                ? data.meetupLocations
-                                                : Array.isArray(
-                                                    data.meetUpLocations
-                                                )
-                                                    ? data.meetUpLocations
-                                                    : [],
+                                        : [],
 
                                 accommodations:
                                     Array.isArray(
@@ -3229,6 +3519,32 @@ addPickupLocation?.addEventListener(
                                 itinerary:
                                     data.itinerary ||
                                     { day0: [], day1: [], day2: [], day3: [], notes: "" },
+
+                                // Cost & Pricing must be carried into the in-memory package object.
+                                // Without this, Firestore saves costing correctly but Edit Package
+                                // receives packageItem.costing as undefined after loadPackages().
+                                costing:
+                                    data.costing ||
+                                    {},
+
+                                pricingOptions:
+                                    data.pricingOptions ||
+                                    {},
+
+                                // Keep saved Required Downpayment settings
+                                // available after refresh / Edit Package.
+                                downpaymentRules:
+                                    data.downpaymentRules ||
+                                    {
+                                        joiner: {
+                                            type: "per_paying_pax",
+                                            amount: 500
+                                        },
+                                        exclusive: {
+                                            type: "per_paying_pax",
+                                            amount: 500
+                                        }
+                                    },
 
                                 passengerPricing:
                                     data.passengerPricing ||
@@ -3244,10 +3560,11 @@ addPickupLocation?.addEventListener(
                                     data.exclusiveTour ||
                                     {
                                         enabled: false,
-                                        minimumPayingPax: 12,
-                                        freeStartsAt: 13,
-                                        freePax: 1,
-                                        maxFreePax: 1
+                                        minimumPayingPax: 10,
+                                        vanType: "high",
+                                        vanCapacity: 15,
+                                        includedVanUnits: 1,
+                                        additionalVanRate: 0
                                     },
 
                                 scheduleSettings:
@@ -3468,12 +3785,28 @@ addPickupLocation?.addEventListener(
 
         function getPackageOptionLabel(packageItem) {
 
-            return (
-                String(
-                    packageItem?.duration || ""
-                ).trim() ||
-                "Tour Option"
-            );
+            const rawDuration = String(
+                packageItem?.duration || ""
+            ).trim();
+
+            if (!rawDuration) {
+                return "Tour Option";
+            }
+
+            // Normalize older saved formats such as:
+            // "2Days 1Night" -> "2D1N"
+            // "3 Days 2 Nights" -> "3D2N"
+            const normalized = rawDuration
+                .replace(
+                    /\b(\d+)\s*days?\s*(\d+)\s*nights?\b/i,
+                    "$1D$2N"
+                )
+                .replace(
+                    /\b(\d+)\s*d\s*(\d+)\s*n\b/i,
+                    "$1D$2N"
+                );
+
+            return normalized;
         }
 
 
@@ -3520,6 +3853,84 @@ addPickupLocation?.addEventListener(
 
                 return group;
             });
+        }
+
+
+        function openDestinationPackageOptions(basePackageId) {
+
+            const sourcePackage =
+                packages.find(
+                    item =>
+                        item.id === basePackageId
+                );
+
+            if (!sourcePackage) {
+                return;
+            }
+
+            const destinationGroup =
+                findExistingDestinationByName(
+                    sourcePackage.name
+                );
+
+            if (!destinationGroup) {
+                return;
+            }
+
+            resetPackageForm();
+
+            setInputValue(
+                "formPackageName",
+                getBaseDestinationName(
+                    sourcePackage.name
+                )
+            );
+
+            setInputValue(
+                "formCategory",
+                sourcePackage.category || ""
+            );
+
+            setInputValue(
+                "formLocation",
+                sourcePackage.location || ""
+            );
+
+            renderExistingDestinationOptions(
+                destinationGroup
+            );
+
+            setInputValue(
+                "formStatus",
+                sourcePackage.status || "active"
+            );
+
+            updateBuilderLivePreview();
+
+            openPackageModal();
+
+            setActiveBuilderSection(
+                "packageSectionBasic",
+                {
+                    scroll: false,
+                    behavior: "auto"
+                }
+            );
+
+            window.requestAnimationFrame(() => {
+
+                setActiveBuilderSection(
+                    "packageSectionBasic",
+                    {
+                        scroll: false,
+                        behavior: "auto"
+                    }
+                );
+
+                existingPackageDurationSelect?.focus();
+
+            });
+
         }
 
 
@@ -3571,6 +3982,14 @@ addPickupLocation?.addEventListener(
                 "formStatus",
                 "active"
             );
+
+            // A new option starts with a clean Cost & Pricing table.
+            dynamicCostItemsState = [];
+            setInputValue("costExpectedPax", 12);
+            setInputValue("costMarkup", 15);
+            setInputValue("costFinalSellingRate", "");
+            renderDynamicCostItems();
+            calculatePackageCosting();
 
             setInputValue(
                 "formDuration",
@@ -3844,6 +4263,9 @@ addPickupLocation?.addEventListener(
                     card.className =
                         "package-card package-destination-card";
 
+                    card.dataset.packageId =
+                        representative.id;
+
                     card.innerHTML = `
 
                         <div class="package-card-image">
@@ -3886,17 +4308,18 @@ addPickupLocation?.addEventListener(
                                 ${escapeHtml(group.name)}
                             </h3>
 
-                            <div class="package-location">
-                                <i class="fa-solid fa-location-dot"></i>
-                                <span>
-                                    ${escapeHtml(
-                                        group.location ||
-                                        "Location not specified"
-                                    )}
-                                </span>
-                            </div>
+                            <div class="package-card-compact-meta">
+                                <div class="package-location">
+                                    <i class="fa-solid fa-location-dot"></i>
+                                    <span>
+                                        ${escapeHtml(
+                                            group.location ||
+                                            "Location not specified"
+                                        )}
+                                    </span>
+                                </div>
 
-                            <div class="package-destination-price">
+                                <div class="package-destination-price">
                                 ${
                                     lowestPrice > 0
                                         ? `
@@ -3921,120 +4344,10 @@ addPickupLocation?.addEventListener(
                                             </strong>
                                         `
                                 }
+                                </div>
                             </div>
 
-
-                            <div class="package-option-list">
-
-                                ${
-                                    group.packages
-                                        .map(
-                                            option => {
-
-                                                const status =
-                                                    option.status ||
-                                                    "active";
-
-                                                const price =
-                                                    normalizePrice(
-                                                        option.price
-                                                    );
-
-                                                return `
-                                                    <div class="package-option-row">
-
-                                                        <div class="package-option-row-main">
-
-                                                            <span class="package-option-name">
-                                                                ${escapeHtml(
-                                                                    getPackageOptionLabel(
-                                                                        option
-                                                                    )
-                                                                )}
-                                                            </span>
-
-                                                            <span class="package-option-row-status ${escapeHtml(status)}">
-                                                                ${
-                                                                    status === "active"
-                                                                        ? "Active"
-                                                                        : status === "draft"
-                                                                            ? "Draft"
-                                                                            : "Hidden"
-                                                                }
-                                                            </span>
-
-                                                        </div>
-
-                                                        <div class="package-option-row-bottom">
-
-                                                            <strong>
-                                                                ${
-                                                                    price > 0
-                                                                        ? `₱${escapeHtml(
-                                                                            price.toLocaleString(
-                                                                                "en-PH"
-                                                                            )
-                                                                        )}`
-                                                                        : "Price TBA"
-                                                                }
-                                                            </strong>
-
-                                                            <div class="package-option-actions">
-
-                                                                <button
-                                                                    type="button"
-                                                                    class="package-option-icon-btn edit-package-btn"
-                                                                    data-id="${escapeHtml(option.id)}"
-                                                                    title="Edit ${escapeHtml(
-                                                                        getPackageOptionLabel(
-                                                                            option
-                                                                        )
-                                                                    )}"
-                                                                    aria-label="Edit package option"
-                                                                >
-                                                                    <i class="fa-regular fa-pen-to-square"></i>
-                                                                </button>
-
-                                                                <button
-                                                                    type="button"
-                                                                    class="package-option-icon-btn package-menu-status"
-                                                                    data-id="${escapeHtml(option.id)}"
-                                                                    data-status="${escapeHtml(status)}"
-                                                                    title="${
-                                                                        status === "active"
-                                                                            ? "Hide option"
-                                                                            : status === "draft"
-                                                                                ? "Continue draft"
-                                                                                : "Show option"
-                                                                    }"
-                                                                    aria-label="Change package option status"
-                                                                >
-                                                                    <i class="fa-regular ${
-                                                                        status === "active"
-                                                                            ? "fa-eye-slash"
-                                                                            : status === "draft"
-                                                                                ? "fa-pen-to-square"
-                                                                                : "fa-eye"
-                                                                    }"></i>
-                                                                </button>
-
-                                                            </div>
-
-                                                        </div>
-
-                                                    </div>
-                                                `;
-                                            }
-                                        )
-                                        .join("")
-                                }
-
-                            </div>
-
-                        </div>
-
-
-                        <div class="package-destination-footer">
+                            <div class="package-destination-footer">
 
                             <span>
                                 <span class="status-dot"></span>
@@ -4221,24 +4534,93 @@ addPickupLocation?.addEventListener(
                 500
             );
 
+            const child3to7Enabled =
+                document.getElementById(
+                    "child3to7Enabled"
+                );
+
+            const child8to11Enabled =
+                document.getElementById(
+                    "child8to11Enabled"
+                );
+
+            if (child3to7Enabled) {
+                child3to7Enabled.checked = true;
+            }
+
+            if (child8to11Enabled) {
+                child8to11Enabled.checked = true;
+            }
+
+            setInputValue(
+                "child3to7Rate",
+                50
+            );
+
+            setInputValue(
+                "child8to11Rate",
+                75
+            );
+
+            setInputValue(
+                "infantPricingType",
+                "free"
+            );
+
+            setInputValue(
+                "singleSupplement",
+                0
+            );
+
+            setInputValue(
+                "defaultRoomUpgrade",
+                0
+            );
+
+            setInputValue(
+                "packagePromoDiscount",
+                0
+            );
+
+            setInputValue(
+                "joinerDownpaymentType",
+                "per_paying_pax"
+            );
+
+            setInputValue(
+                "joinerDownpaymentAmount",
+                500
+            );
+
+            setInputValue(
+                "exclusiveDownpaymentType",
+                "per_paying_pax"
+            );
+
+            setInputValue(
+                "exclusiveDownpaymentAmount",
+                500
+            );
+
+
             setInputValue(
                 "exclusiveMinimumPayingPax",
-                12
+                10
             );
 
             setInputValue(
-                "exclusiveFreeStartsAt",
-                13
+                "exclusiveVanType",
+                "high"
             );
 
             setInputValue(
-                "exclusiveFreePax",
+                "exclusiveIncludedVanUnits",
                 1
             );
 
             setInputValue(
-                "exclusiveMaxFreePax",
-                1
+                "exclusiveAdditionalVanRate",
+                0
             );
 
 
@@ -4348,17 +4730,52 @@ addPickupLocation?.addEventListener(
             }
 
             // ==================================================
-            // RESET PICK UP LOCATIONS
+// RESET PICK UP LOCATIONS
+// ==================================================
+
+if (pickupLocationList) {
+
+    pickupLocationList.innerHTML = "";
+
+    addPickupLocationRow();
+
+}
+
             // ==================================================
+// PICK UP LOCATIONS
+// ==================================================
 
-            if (pickupLocationList) {
+if (
+    pickupLocationList
+) {
 
-                pickupLocationList.innerHTML =
-                    "";
+    pickupLocationList.innerHTML =
+        "";
 
-                addPickupLocationRow();
+    const pickupLocations = [];
+
+    if (
+        pickupLocations.length >
+        0
+    ) {
+
+        pickupLocations.forEach(
+            value => {
+
+                addPickupLocationRow(
+                    value
+                );
 
             }
+        );
+
+    } else {
+
+        addPickupLocationRow();
+
+    }
+
+}
 
 
             // ==============================================
@@ -4411,6 +4828,18 @@ addPickupLocation?.addEventListener(
 
             renderPackageGallery();
 
+            // New packages must always start with a clean costing table.
+            // Existing package expenses are restored by editPackage().
+            dynamicCostItemsState = [];
+            const resetCostPax = document.getElementById("costExpectedPax");
+            const resetCostMarkup = document.getElementById("costMarkup");
+            const resetCostFinalRate = document.getElementById("costFinalSellingRate");
+            if (resetCostPax) resetCostPax.value = 12;
+            if (resetCostMarkup) resetCostMarkup.value = 15;
+            if (resetCostFinalRate) resetCostFinalRate.value = "";
+            renderDynamicCostItems();
+            calculatePackageCosting();
+
         }
 
 
@@ -4423,6 +4852,32 @@ addPickupLocation?.addEventListener(
             resetPackageForm();
 
             openPackageModal();
+
+            // Always initialize the builder on the first screen immediately.
+            // This is required on a fresh page load because resetPackageForm()
+            // only resets the state variable; it does not apply the step-mode
+            // classes that isolate the active section.
+            setActiveBuilderSection(
+                "packageSectionBasic",
+                {
+                    scroll: false,
+                    behavior: "auto"
+                }
+            );
+
+            // Re-apply after the modal has been painted so the browser cannot
+            // restore a stale/continuous scroll layout on the first open.
+            window.requestAnimationFrame(() => {
+
+                setActiveBuilderSection(
+                    "packageSectionBasic",
+                    {
+                        scroll: false,
+                        behavior: "auto"
+                    }
+                );
+
+            });
 
         }
 
@@ -7170,28 +7625,83 @@ addPickupLocation?.addEventListener(
                     .childDiscountAmount ?? 500
             );
 
+            const child3to7Enabled = document.getElementById("child3to7Enabled");
+            if (child3to7Enabled) child3to7Enabled.checked = passengerPricing.child3to7Enabled === true;
+            setInputValue("child3to7Rate", passengerPricing.child3to7RatePercent ?? 50);
+
+            const child8to11Enabled = document.getElementById("child8to11Enabled");
+            if (child8to11Enabled) child8to11Enabled.checked = passengerPricing.child8to11Enabled === true;
+            setInputValue("child8to11Rate", passengerPricing.child8to11RatePercent ?? 75);
+            setInputValue("infantPricingType", passengerPricing.infantPricingType ?? "free");
+
+            const pricingOptions = packageItem.pricingOptions || {};
+            setInputValue("singleSupplement", pricingOptions.singleSupplement ?? 0);
+            setInputValue("defaultRoomUpgrade", pricingOptions.defaultRoomUpgrade ?? 0);
+            setInputValue("packagePromoDiscount", pricingOptions.promoDiscount ?? 0);
+
+            const downpaymentRules =
+                packageItem.downpaymentRules ||
+                {};
+
+            const joinerDownpayment =
+                downpaymentRules.joiner ||
+                {};
+
+            const exclusiveDownpayment =
+                downpaymentRules.exclusive ||
+                {};
+
+            setInputValue(
+                "joinerDownpaymentType",
+                joinerDownpayment.type ||
+                "per_paying_pax"
+            );
+
+            setInputValue(
+                "joinerDownpaymentAmount",
+                joinerDownpayment.amount ?? 500
+            );
+
+            setInputValue(
+                "exclusiveDownpaymentType",
+                exclusiveDownpayment.type ||
+                "per_paying_pax"
+            );
+
+            setInputValue(
+                "exclusiveDownpaymentAmount",
+                exclusiveDownpayment.amount ?? 500
+            );
+
             setInputValue(
                 "exclusiveMinimumPayingPax",
                 exclusiveTour
-                    .minimumPayingPax ?? 12
+                    .minimumPayingPax ?? 10
+            );
+
+            const savedExclusiveVanType =
+                exclusiveTour.vanType ||
+                (Number(exclusiveTour.vanCapacity) >= 18
+                    ? "xl"
+                    : Number(exclusiveTour.vanCapacity) <= 12
+                        ? "low"
+                        : "high");
+
+            setInputValue(
+                "exclusiveVanType",
+                savedExclusiveVanType
             );
 
             setInputValue(
-                "exclusiveFreeStartsAt",
+                "exclusiveIncludedVanUnits",
                 exclusiveTour
-                    .freeStartsAt ?? 13
+                    .includedVanUnits ?? 1
             );
 
             setInputValue(
-                "exclusiveFreePax",
+                "exclusiveAdditionalVanRate",
                 exclusiveTour
-                    .freePax ?? 1
-            );
-
-            setInputValue(
-                "exclusiveMaxFreePax",
-                exclusiveTour
-                    .maxFreePax ?? 1
+                    .additionalVanRate ?? 0
             );
 
 
@@ -7401,87 +7911,6 @@ addPickupLocation?.addEventListener(
 
 
             // ==================================================
-            // PICK UP LOCATIONS
-            // ==================================================
-
-            if (
-                pickupLocationList
-            ) {
-
-                pickupLocationList.innerHTML =
-                    "";
-
-                const pickupLocations =
-                    Array.isArray(
-                        packageItem.pickupLocations
-                    )
-                        ? packageItem.pickupLocations
-                        : Array.isArray(
-                            packageItem.pickUpLocations
-                        )
-                            ? packageItem.pickUpLocations
-                            : Array.isArray(
-                                packageItem.meetupLocations
-                            )
-                                ? packageItem.meetupLocations
-                                : Array.isArray(
-                                    packageItem.meetUpLocations
-                                )
-                                    ? packageItem.meetUpLocations
-                                    : [];
-
-                if (
-                    pickupLocations.length >
-                    0
-                ) {
-
-                    pickupLocations.forEach(
-                        value => {
-
-                            const pickupValue =
-                                typeof value ===
-                                "string"
-                                    ? value
-                                    : (
-                                        value?.name ||
-                                        value?.label ||
-                                        value?.value ||
-                                        ""
-                                    );
-
-                            if (
-                                String(
-                                    pickupValue ||
-                                    ""
-                                ).trim()
-                            ) {
-                                addPickupLocationRow(
-                                    String(
-                                        pickupValue
-                                    ).trim()
-                                );
-                            }
-
-                        }
-                    );
-
-                }
-
-                if (
-                    pickupLocationList
-                        .querySelectorAll(
-                            ".pickup-location-row"
-                        ).length === 0
-                ) {
-
-                    addPickupLocationRow();
-
-                }
-
-            }
-
-
-            // ==================================================
             // ACCOMMODATIONS
             // ==================================================
 
@@ -7527,6 +7956,11 @@ addPickupLocation?.addEventListener(
 
 
             renderPackageGallery();
+
+            // Load Cost & Pricing for this existing package.
+            // New-format packages restore their exact dynamic items.
+            // Legacy packages are migrated into sensible editable cost items.
+            loadPackageCostingForEditor(packageItem);
 
             const existingDestinationGroup =
                 findExistingDestinationByName(
@@ -7830,6 +8264,25 @@ addPickupLocation?.addEventListener(
                 }
 
 
+                // ----------------------------------------------
+                // OPEN DESTINATION PACKAGE OPTIONS
+                // ----------------------------------------------
+
+                const destinationCard =
+                    event.target.closest(
+                        ".package-destination-card"
+                    );
+
+                if (destinationCard) {
+
+                    openDestinationPackageOptions(
+                        destinationCard.dataset.packageId
+                    );
+
+                    return;
+                }
+
+
                 closeAllPackageMenus();
 
             }
@@ -7948,7 +8401,17 @@ addPickupLocation?.addEventListener(
 
         cancelPackage?.addEventListener(
             "click",
-            closeModal
+            () => {
+                const currentIndex = getBuilderSectionIndex(activeBuilderSectionId);
+                if (currentIndex > 0) {
+                    const previous = PACKAGE_BUILDER_SECTIONS[currentIndex - 1];
+                    if (previous) {
+                        setActiveBuilderSection(previous.id, { scroll: true });
+                        return;
+                    }
+                }
+                closeModal();
+            }
         );
 
 
@@ -8883,9 +9346,7 @@ function collectPickupLocations() {
                         ),
 
                     price:
-                        getInputValue(
-                            "formPrice"
-                        ),
+                        getInputValue("costFinalSellingRate"),
 
                     duration:
                         getInputValue(
@@ -8915,6 +9376,8 @@ function collectPickupLocations() {
                     draftLastSection:
                         activeBuilderSectionId ||
                         "packageSectionBasic",
+
+                    costing: getDynamicCostingPayload(),
 
                     passengerPricing: {
 
@@ -8955,10 +9418,60 @@ function collectPickupLocations() {
                                 0,
                                 getNumberInputValue(
                                     "childDiscountAmount",
-                                    500
+                                    0
                                 )
-                            )
+                            ),
 
+                        child3to7Enabled: document.getElementById("child3to7Enabled")?.checked === true,
+                        child3to7RatePercent: Math.max(0, getNumberInputValue("child3to7Rate", 50)),
+                        child8to11Enabled: document.getElementById("child8to11Enabled")?.checked === true,
+                        child8to11RatePercent: Math.max(0, getNumberInputValue("child8to11Rate", 75)),
+                        infantPricingType: document.getElementById("infantPricingType")?.value || "free"
+
+                    },
+
+                    pricingOptions: {
+                        singleSupplement: Math.max(0, getNumberInputValue("singleSupplement", 0)),
+                        defaultRoomUpgrade: Math.max(0, getNumberInputValue("defaultRoomUpgrade", 0)),
+                        promoDiscount: Math.max(0, getNumberInputValue("packagePromoDiscount", 0))
+                    },
+
+                    downpaymentRules: {
+                        joiner: {
+                            type:
+                                document.getElementById(
+                                    "joinerDownpaymentType"
+                                )?.value === "fixed"
+                                    ? "fixed"
+                                    : "per_paying_pax",
+
+                            amount:
+                                Math.max(
+                                    0,
+                                    getNumberInputValue(
+                                        "joinerDownpaymentAmount",
+                                        500
+                                    )
+                                )
+                        },
+
+                        exclusive: {
+                            type:
+                                document.getElementById(
+                                    "exclusiveDownpaymentType"
+                                )?.value === "fixed"
+                                    ? "fixed"
+                                    : "per_paying_pax",
+
+                            amount:
+                                Math.max(
+                                    0,
+                                    getNumberInputValue(
+                                        "exclusiveDownpaymentAmount",
+                                        500
+                                    )
+                                )
+                        }
                     },
 
                     exclusiveTour: {
@@ -8973,34 +9486,38 @@ function collectPickupLocations() {
                                 1,
                                 getNumberInputValue(
                                     "exclusiveMinimumPayingPax",
-                                    12
+                                    10
                                 )
                             ),
 
-                        freeStartsAt:
-                            Math.max(
-                                1,
-                                getNumberInputValue(
-                                    "exclusiveFreeStartsAt",
-                                    13
-                                )
-                            ),
+                        vanType:
+                            document.getElementById(
+                                "exclusiveVanType"
+                            )?.value || "high",
 
-                        freePax:
+                        // Keep capacity as a compatibility snapshot for older booking/admin code.
+                        vanCapacity:
+                            ({ low: 12, high: 15, xl: 18 })[
+                                document.getElementById(
+                                    "exclusiveVanType"
+                                )?.value || "high"
+                            ] || 15,
+
+                        includedVanUnits:
                             Math.max(
                                 0,
                                 getNumberInputValue(
-                                    "exclusiveFreePax",
+                                    "exclusiveIncludedVanUnits",
                                     1
                                 )
                             ),
 
-                        maxFreePax:
+                        additionalVanRate:
                             Math.max(
                                 0,
                                 getNumberInputValue(
-                                    "exclusiveMaxFreePax",
-                                    1
+                                    "exclusiveAdditionalVanRate",
+                                    0
                                 )
                             )
 
@@ -9305,37 +9822,16 @@ function collectPickupLocations() {
                     ) {
 
                         if (
-                            packageData.exclusiveTour.freeStartsAt <
-                            packageData.exclusiveTour.minimumPayingPax
+                            packageData.exclusiveTour.includedVanUnits < 1
                         ) {
 
                             alert(
-                                "Free Pax Starts At cannot be lower than Minimum Paying Pax."
+                                "Included Van Units must be at least 1 when Exclusive Tour is enabled."
                             );
 
                             document
                                 .getElementById(
-                                    "exclusiveFreeStartsAt"
-                                )
-                                ?.focus();
-
-                            return;
-
-                        }
-
-
-                        if (
-                            packageData.exclusiveTour.freePax >
-                            packageData.exclusiveTour.maxFreePax
-                        ) {
-
-                            alert(
-                                "Free Pax cannot be higher than Maximum Free Pax."
-                            );
-
-                            document
-                                .getElementById(
-                                    "exclusiveFreePax"
+                                    "exclusiveIncludedVanUnits"
                                 )
                                 ?.focus();
 
@@ -9970,3 +10466,295 @@ function collectPickupLocations() {
 
     }
 );
+
+
+// =========================================================
+// DYNAMIC COST & PRICING
+// =========================================================
+function dynamicCostEscape(value){
+  return String(value ?? "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+const DYNAMIC_COST_TYPES=[["fixed","Fixed"],["perHead","Per Head"],["perDay","Per Day"],["perNight","Per Night"],["perHeadDay","Per Head / Day"],["perHeadNight","Per Head / Night"],["perHeadUnit","Per Head / Unit"]];
+let dynamicCostItemsState=[];
+let vanRentalRatesCache=[];
+let vanRentalRatesLoaded=false;
+
+const VAN_RENTAL_COLLECTION="vanRentalRates";
+const VAN_UNIT_ADJUSTMENTS={high:0,low:-2000,xl:3000};
+const VAN_UNIT_LABELS={high:"High Roof · 13–15 pax",low:"Low Roof · 10–12 pax",xl:"XL Van · 18 pax"};
+
+async function ensureVanRentalRatesLoaded(){
+  if(vanRentalRatesLoaded)return vanRentalRatesCache;
+  const snapshot=await getDocs(collection(db,VAN_RENTAL_COLLECTION));
+  vanRentalRatesCache=snapshot.docs
+    .map(docSnap=>({id:docSnap.id,...docSnap.data()}))
+    .filter(rate=>rate.status!=="inactive")
+    .sort((a,b)=>String(a.destination||"").localeCompare(String(b.destination||"")));
+  vanRentalRatesLoaded=true;
+  return vanRentalRatesCache;
+}
+function getVanRentalDurationKey(){
+  const typed=String(document.getElementById("formDuration")?.value||"").trim();
+  const selected=String(document.getElementById("existingPackageDurationSelect")?.selectedOptions?.[0]?.textContent||"").trim();
+  const raw=typed||selected;
+  if(/day\s*tour/i.test(raw))return "dayTour";
+  if(/2\s*D\s*1\s*N/i.test(raw))return "twoDOneN";
+  if(/3\s*D\s*2\s*N/i.test(raw))return "threeDTwoN";
+  return "";
+}
+function getVanRentalRate(item){
+  const route=vanRentalRatesCache.find(rate=>rate.id===item.vanRateId);
+  const durationKey=getVanRentalDurationKey();
+  if(!route||!durationKey)return 0;
+  const base=Number(route[durationKey]||0);
+  if(!Number.isFinite(base)||base<=0)return 0;
+  return Math.max(0,base+(VAN_UNIT_ADJUSTMENTS[item.vanUnit]??0));
+}
+function syncVanRentalItemRate(item){
+  if(item?.source!=="vanRental")return;
+  item.name="Van Rental";
+  item.type="fixed";
+  if(vanRentalRatesLoaded)item.rate=getVanRentalRate(item);
+  item.qty=Math.max(1,Number(item.qty||1));
+}
+
+function getCostingDuration(){
+  const typed=String(document.getElementById("formDuration")?.value||"").trim();
+  const selected=String(document.getElementById("existingPackageDurationSelect")?.selectedOptions?.[0]?.textContent||"").trim();
+  const raw=typed||selected;
+  const m=raw.match(/(\d+)\s*D\s*(\d+)\s*N/i);
+  if(m) return {days:Math.max(1,+m[1]||1),nights:Math.max(0,+m[2]||0)};
+  if(/day\s*tour/i.test(raw)) return {days:1,nights:0};
+  return {days:1,nights:0};
+}
+function costPeso(v){return `₱${Number(v||0).toLocaleString("en-PH",{minimumFractionDigits:2,maximumFractionDigits:2})}`;}
+function costMultiplier(type,pax,d,qty){
+  qty=Math.max(0,+qty||0);
+  if(type==="perHead")return pax;
+  if(type==="perDay")return d.days;
+  if(type==="perNight")return d.nights;
+  if(type==="perHeadDay")return pax*d.days;
+  if(type==="perHeadNight")return pax*d.nights;
+  if(type==="perHeadUnit")return pax*qty;
+  return qty||1;
+}
+function getDynamicCostBasisLabel(type){
+  const pax=Math.max(1,+document.getElementById("costExpectedPax")?.value||1);
+  const d=getCostingDuration();
+  if(type==="perHead") return `${pax} pax`;
+  if(type==="perDay") return `${d.days} day${d.days===1?"":"s"}`;
+  if(type==="perNight") return `${d.nights} night${d.nights===1?"":"s"}`;
+  if(type==="perHeadDay") return `${pax} × ${d.days} days`;
+  if(type==="perHeadNight") return `${pax} × ${d.nights} nights`;
+  return "1";
+}
+function renderDynamicCostItems(){
+  const host=document.getElementById("dynamicCostItems"); if(!host)return;
+  if(!dynamicCostItemsState.length){host.innerHTML='<div style="padding:18px;text-align:center">No cost items yet. Click <strong>+ Add Cost Item</strong> or <strong>+ Van Rental</strong>.</div>';return;}
+  host.innerHTML=dynamicCostItemsState.map((x,index)=>{
+    if(x.source==="vanRental"){
+      syncVanRentalItemRate(x);
+      const routeOptions=vanRentalRatesCache.map(rate=>`<option value="${dynamicCostEscape(rate.id)}" ${x.vanRateId===rate.id?"selected":""}>${dynamicCostEscape(rate.destination)}</option>`).join("");
+      return `<div class="dynamic-cost-row dynamic-cost-row-van" data-id="${x.id}">
+        <span class="dynamic-cost-row-number">${String(index+1).padStart(2,"0")}</span>
+        <select class="dc-van-route" title="Van rental route"><option value="">Select van route</option>${routeOptions}</select>
+        <select class="dc-van-unit" title="Van type">${Object.entries(VAN_UNIT_LABELS).map(([value,label])=>`<option value="${value}" ${x.vanUnit===value?"selected":""}>${label}</option>`).join("")}</select>
+        <input class="dc-rate" type="number" min="0" step=".01" value="${x.rate||0}" readonly aria-label="Van rental rate">
+        <input class="dc-qty" type="number" min="1" step="1" value="${x.qty??1}" title="Number of vans">
+        <strong class="dynamic-cost-computed">₱0.00</strong>
+        <button type="button" class="remove-dynamic-cost" title="Remove expense" aria-label="Remove expense">🗑</button></div>`;
+    }
+    return `<div class="dynamic-cost-row" data-id="${x.id}">
+      <span class="dynamic-cost-row-number">${String(index+1).padStart(2,"0")}</span>
+      <input class="dc-name" type="text" value="${dynamicCostEscape(x.name)}" placeholder="e.g. Van Rental">
+      <select class="dc-type">${DYNAMIC_COST_TYPES.map(([v,l])=>`<option value="${v}" ${x.type===v?"selected":""}>${l}</option>`).join("")}</select>
+      <input class="dc-rate" type="number" min="0" step=".01" value="${x.rate||0}">
+      ${["fixed","perHeadUnit"].includes(x.type)
+        ? `<input class="dc-qty" type="number" min="0" step="1" value="${x.qty??1}">`
+        : `<div class="dynamic-cost-basis">${getDynamicCostBasisLabel(x.type)}</div>`}
+      <strong class="dynamic-cost-computed">₱0.00</strong>
+      <button type="button" class="remove-dynamic-cost" title="Remove expense" aria-label="Remove expense">🗑</button></div>`;
+  }).join("");
+  host.querySelectorAll(".dynamic-cost-row").forEach(row=>{
+    const x=dynamicCostItemsState.find(v=>v.id===row.dataset.id); if(!x)return;
+    if(x.source==="vanRental"){
+      row.querySelector(".dc-van-route").onchange=e=>{x.vanRateId=e.target.value;syncVanRentalItemRate(x);renderDynamicCostItems();calculatePackageCosting();};
+      row.querySelector(".dc-van-unit").onchange=e=>{x.vanUnit=e.target.value;syncVanRentalItemRate(x);renderDynamicCostItems();calculatePackageCosting();};
+      row.querySelector(".dc-qty").oninput=e=>{x.qty=Math.max(1,+e.target.value||1);calculatePackageCosting();};
+    }else{
+      row.querySelector(".dc-name").oninput=e=>x.name=e.target.value;
+      row.querySelector(".dc-type").onchange=e=>{x.type=e.target.value;renderDynamicCostItems();calculatePackageCosting();};
+      row.querySelector(".dc-rate").oninput=e=>{x.rate=+e.target.value||0;calculatePackageCosting();};
+      const qtyInput=row.querySelector(".dc-qty"); if(qtyInput) qtyInput.oninput=e=>{x.qty=+e.target.value||0;calculatePackageCosting();};
+    }
+    row.querySelector(".remove-dynamic-cost").onclick=()=>{dynamicCostItemsState=dynamicCostItemsState.filter(v=>v.id!==x.id);renderDynamicCostItems();calculatePackageCosting();};
+  });
+}
+function addDynamicCostItem(data={}){
+  dynamicCostItemsState.push({id:`dc_${Date.now()}_${Math.random().toString(36).slice(2,6)}`,source:data.source||"custom",name:data.name||"",type:data.type||"fixed",rate:+data.rate||0,qty:data.qty??1,...data});
+  renderDynamicCostItems();calculatePackageCosting();
+}
+function refreshDynamicCostBasis(){
+  document.querySelectorAll("#dynamicCostItems .dynamic-cost-row").forEach(row=>{
+    const x=dynamicCostItemsState.find(v=>v.id===row.dataset.id);
+    const basis=row.querySelector(".dynamic-cost-basis");
+    if(x&&basis) basis.textContent=getDynamicCostBasisLabel(x.type);
+  });
+}
+function calculatePackageCosting(){
+  const pax=Math.max(1,+document.getElementById("costExpectedPax")?.value||1);
+  const d=getCostingDuration();
+  refreshDynamicCostBasis();
+  const duration=document.getElementById("costDurationSummary");
+  if(duration)duration.textContent=`${d.days} Day${d.days===1?"":"s"} / ${d.nights} Night${d.nights===1?"":"s"}`;
+  let total=0;
+  document.querySelectorAll("#dynamicCostItems .dynamic-cost-row").forEach(row=>{
+    const x=dynamicCostItemsState.find(v=>v.id===row.dataset.id); if(!x)return;
+    if(x.source==="vanRental"){
+      syncVanRentalItemRate(x);
+      const rateInput=row.querySelector(".dc-rate");
+      if(rateInput)rateInput.value=x.rate||0;
+    }
+    const amount=Math.max(0,x.rate)*costMultiplier(x.type,pax,d,x.qty); total+=amount;
+    row.querySelector(".dynamic-cost-computed").textContent=costPeso(amount);
+  });
+  const perPax=total/pax;
+  const markup=Math.max(0,+document.getElementById("costMarkup")?.value||0);
+  const recommended=perPax*(1+markup/100);
+  const finalRate=Math.max(0,+document.getElementById("costFinalSellingRate")?.value||0);
+  const profitPerPax=finalRate-perPax;
+  const totalProfit=profitPerPax*pax;
+  const margin=finalRate?(profitPerPax/finalRate)*100:0;
+  [["costTotalTour",costPeso(total)],["costPerPax",costPeso(perPax)],["costRecommendedRate",costPeso(recommended)],["costProfitPerPax",costPeso(profitPerPax)],["costPackageProfit",costPeso(totalProfit)],["costProfitMargin",`${margin.toFixed(2)}%`]].forEach(([id,val])=>{const el=document.getElementById(id);if(el)el.textContent=val;});
+  const basicPrice=document.getElementById("formPrice");
+  if(basicPrice) basicPrice.value=finalRate>0?finalRate:"";
+  if(typeof updateBuilderLivePreview==="function") updateBuilderLivePreview();
+  if(typeof updatePackageReview==="function") updatePackageReview();
+}
+function getDynamicCostingPayload(){
+  return {expectedPax:Math.max(1,+document.getElementById("costExpectedPax")?.value||1),markup:+document.getElementById("costMarkup")?.value||0,finalSellingRate:+document.getElementById("costFinalSellingRate")?.value||0,items:dynamicCostItemsState.map(x=>({...x}))};
+}
+
+function getPackageDurationTextForCosting(packageItem={}){
+  const candidates=[
+    packageItem.packageOptionLabel,
+    packageItem.duration,
+    packageItem.packageDuration,
+    packageItem.option,
+    packageItem.optionLabel,
+    packageItem.title,
+    document.getElementById("formDuration")?.value,
+    document.getElementById("existingPackageDurationSelect")?.selectedOptions?.[0]?.textContent
+  ];
+  for(const value of candidates){
+    const text=String(value||"").trim();
+    if(/^\s*\d+\s*D\s*\d+\s*N\s*$/i.test(text)||/day\s*tour/i.test(text)) return text;
+    const match=text.match(/(\d+\s*D\s*\d+\s*N)/i);
+    if(match) return match[1];
+  }
+  return "";
+}
+
+function migrateLegacyCostingItems(costing={}){
+  const items=[];
+  const add=(name,type,rate,qty=1)=>{
+    rate=Math.max(0,Number(rate||0));
+    if(rate>0) items.push({id:`legacy_${name.toLowerCase().replace(/[^a-z0-9]+/g,"_")}`,name,type,rate,qty});
+  };
+  // Legacy fields were stored as total group costs, so Fixed preserves the
+  // exact old computation instead of guessing a per-head/per-night rule.
+  add("Transportation","fixed",costing.transportation);
+  add("Accommodation","fixed",costing.accommodation);
+  add("Meals","fixed",costing.meals);
+  add("Tour Guide / Coordinator","fixed",costing.tourGuide);
+  add("Boat / Ferry","fixed",costing.boatFerry);
+  add("Other Expenses","fixed",costing.otherExpenses);
+  return items;
+}
+
+function loadPackageCostingForEditor(packageItem={}){
+  const costing=packageItem.costing||{};
+  const durationText=getPackageDurationTextForCosting(packageItem);
+
+  // Keep the actual option duration available to the costing calculator even
+  // when Edit mode is displaying the existing-option selector.
+  if(durationText){
+    const durationInput=document.getElementById("formDuration");
+    if(durationInput) durationInput.value=durationText;
+  }
+
+  const savedItems=Array.isArray(costing.items)&&costing.items.length
+    ? costing.items
+    : migrateLegacyCostingItems(costing);
+
+  dynamicCostItemsState=savedItems.map((item,index)=>({
+    id:item.id||`loaded_${Date.now()}_${index}`,
+    source:item.source||"custom",
+    name:String(item.name||item.label||"Expense"),
+    type:DYNAMIC_COST_TYPES.some(([value])=>value===item.type)?item.type:"fixed",
+    rate:Math.max(0,Number(item.rate||0)),
+    qty:Math.max(0,Number(item.qty??1)),
+    vanRateId:String(item.vanRateId||""),
+    vanUnit:String(item.vanUnit||"high")
+  }));
+
+  // No saved expenses = clean empty table.
+  // Admin adds only the cost items that actually apply to this package.
+  if(!dynamicCostItemsState.length){
+    dynamicCostItemsState=[];
+  }
+
+  const pax=document.getElementById("costExpectedPax");
+  const markup=document.getElementById("costMarkup");
+  const finalRate=document.getElementById("costFinalSellingRate");
+  if(pax) pax.value=Math.max(1,Number(costing.expectedPax||12));
+  if(markup) markup.value=Math.max(0,Number(costing.markup ?? costing.markupPercent ?? 15));
+  if(finalRate) finalRate.value=Math.max(0,Number(costing.finalSellingRate ?? packageItem.price ?? 0));
+
+  renderDynamicCostItems();
+  calculatePackageCosting();
+
+  if(dynamicCostItemsState.some(item=>item.source==="vanRental")){
+    ensureVanRentalRatesLoaded()
+      .then(()=>{renderDynamicCostItems();calculatePackageCosting();})
+      .catch(error=>console.error("VAN RENTAL COST LOAD ERROR:",error));
+  }
+}
+
+function initDynamicCosting(){
+  if(!dynamicCostItemsState.length){
+    dynamicCostItemsState=[];
+    renderDynamicCostItems();
+  }
+  document.getElementById("addCostItemBtn")?.addEventListener("click",()=>addDynamicCostItem());
+  document.getElementById("addCostItemBtnTable")?.addEventListener("click",()=>addDynamicCostItem());
+  document.getElementById("addVanRentalCostBtn")?.addEventListener("click",async()=>{
+    const button=document.getElementById("addVanRentalCostBtn");
+    try{
+      if(button){button.disabled=true;button.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Loading...';}
+      await ensureVanRentalRatesLoaded();
+      if(!vanRentalRatesCache.length){alert("No active van rental rates found. Add rates in Van Rental first.");return;}
+      const item={id:`dc_${Date.now()}_${Math.random().toString(36).slice(2,6)}`,source:"vanRental",name:"Van Rental",type:"fixed",rate:0,qty:1,vanRateId:"",vanUnit:"high"};
+      dynamicCostItemsState.push(item);
+      renderDynamicCostItems();
+      calculatePackageCosting();
+      document.querySelector(`[data-id="${item.id}"] .dc-van-route`)?.focus();
+    }catch(error){
+      console.error("VAN RENTAL COST LOAD ERROR:",error);
+      alert("Unable to load Van Rental rates. Please check Firestore access and try again.");
+    }finally{
+      if(button){button.disabled=false;button.innerHTML='<i class="fa-solid fa-van-shuttle"></i> + Van Rental';}
+    }
+  });
+  ["costExpectedPax","costMarkup","costFinalSellingRate","formDuration","existingPackageDurationSelect"].forEach(id=>{
+    document.getElementById(id)?.addEventListener("input",calculatePackageCosting);
+    document.getElementById(id)?.addEventListener("change",calculatePackageCosting);
+  });
+  calculatePackageCosting();
+}
+document.addEventListener("DOMContentLoaded",initDynamicCosting);

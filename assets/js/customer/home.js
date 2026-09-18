@@ -19,7 +19,8 @@ import {
 
 import {
 
-    onAuthStateChanged
+    onAuthStateChanged,
+    signOut
 
 } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
 
@@ -821,9 +822,12 @@ async function loadCurrentProfile(
         !profileSnapshot.exists()
     ) {
 
-        throw new Error(
-            "Customer profile was not found."
+        console.warn(
+            "HOME: Customer profile was not found for authenticated user:",
+            user.uid
         );
+
+        return null;
 
     }
 
@@ -6304,6 +6308,26 @@ onAuthStateChanged(
                 await loadCurrentProfile(
                     user
                 );
+
+
+            /*
+             * If Firebase Auth still has a session but the matching
+             * users/{uid} customer profile no longer exists, this is not
+             * a valid customer session for the website.
+             *
+             * Sign out here. onAuthStateChanged will run again with
+             * user === null and the normal Guest View will initialize.
+             */
+            if (!currentProfile) {
+
+                console.warn(
+                    "HOME: Missing customer profile. Returning to Guest View."
+                );
+
+                await signOut(auth);
+                return;
+
+            }
 
 
             /* Show the actual customer's first name in the Home profile */

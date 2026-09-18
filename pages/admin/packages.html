@@ -110,6 +110,17 @@
 
                     <button
                         type="button"
+                        class="btn-secondary van-rental-manage-btn"
+                        id="manageVanRentalButton">
+
+                        <i class="fa-solid fa-van-shuttle"></i>
+                        <span>Van Rental</span>
+
+                    </button>
+
+
+                    <button
+                        type="button"
                         class="btn-primary"
                         id="addPackageButton">
 
@@ -364,12 +375,6 @@
 
             <div class="package-builder-header-actions">
 
-                <span
-                    class="package-builder-status draft"
-                    id="packageBuilderStatus">
-                    Draft
-                </span>
-
                 <button
                     type="button"
                     class="modal-close"
@@ -400,63 +405,29 @@
                     <nav
                         class="package-builder-side-nav"
                         id="packageBuilderSideNav"
-                        aria-label="Package sections">
+                        aria-label="Package builder steps">
 
                         <button type="button" class="package-builder-side-item active" data-builder-section="packageSectionBasic">
-                            <i class="fa-regular fa-file-lines"></i>
-                            <span>Basic Information</span>
+                            <span class="builder-step-no">1</span><i class="fa-regular fa-file-lines"></i><span>Basic Info</span>
                         </button>
-
-                        <button type="button" class="package-builder-side-item" data-builder-section="packageSectionPassengerPricing">
-                            <i class="fa-solid fa-layer-group"></i>
-                            <span>Package Option</span>
-                        </button>
-
                         <button type="button" class="package-builder-side-item" data-builder-section="packageSectionGallery">
-                            <i class="fa-regular fa-image"></i>
-                            <span>Gallery / Photos</span>
+                            <span class="builder-step-no">2</span><i class="fa-regular fa-rectangle-list"></i><span>Package Details</span>
                         </button>
-
-                        <button type="button" class="package-builder-side-item" data-builder-section="packageSectionDetails">
-                            <i class="fa-regular fa-rectangle-list"></i>
-                            <span>Details</span>
-                        </button>
-
-                        <button type="button" class="package-builder-side-item" data-builder-section="packageSectionInclusions">
-                            <i class="fa-regular fa-circle-check"></i>
-                            <span>Inclusions</span>
-                        </button>
-
-                        <button type="button" class="package-builder-side-item" data-builder-section="packageSectionExclusions">
-                            <i class="fa-solid fa-circle-minus"></i>
-                            <span>Exclusions</span>
-                        </button>
-
                         <button type="button" class="package-builder-side-item" data-builder-section="packageSectionAccommodation">
-                            <i class="fa-solid fa-bed"></i>
-                            <span>Accommodation</span>
+                            <span class="builder-step-no">3</span><i class="fa-solid fa-bed"></i><span>Accommodation</span>
                         </button>
-
-                        <button type="button" class="package-builder-side-item" data-builder-section="packageSectionPickup">
-                            <i class="fa-solid fa-location-dot"></i>
-                            <span>Pick Up Locations</span>
-                        </button>
-
                         <button type="button" class="package-builder-side-item" data-builder-section="packageSectionSchedule">
-                            <i class="fa-regular fa-calendar-days"></i>
-                            <span>Tour Pattern</span>
+                            <span class="builder-step-no">4</span><i class="fa-regular fa-calendar-days"></i><span>Schedule & Itinerary</span>
                         </button>
-
-                        <button type="button" class="package-builder-side-item" data-builder-section="packageSectionScheduleAvailability">
-                            <i class="fa-solid fa-calendar-days"></i>
-                            <span>Travel Dates</span>
+                        <button type="button" class="package-builder-side-item" data-builder-section="packageSectionPassengerPricing">
+                            <span class="builder-step-no">5</span><i class="fa-solid fa-tags"></i><span>Pricing Rules</span>
                         </button>
-
-                        <button type="button" class="package-builder-side-item" data-builder-section="packageSectionItinerary">
-                            <i class="fa-regular fa-map"></i>
-                            <span>Itinerary</span>
+                        <button type="button" class="package-builder-side-item" data-builder-section="packageSectionCostPricing">
+                            <span class="builder-step-no">6</span><i class="fa-solid fa-calculator"></i><span>Cost & Pricing</span>
                         </button>
-
+                        <button type="button" class="package-builder-side-item" data-builder-section="packageSectionReview">
+                            <span class="builder-step-no">7</span><i class="fa-regular fa-circle-check"></i><span>Review & Publish</span>
+                        </button>
                     </nav>
 
                 </aside>
@@ -477,16 +448,24 @@
                 class="form-section package-builder-section"
                 id="packageSectionBasic">
 
-                <div class="form-section-title">
+                <div class="form-section-title basic-info-title-row">
 
                     <span>01</span>
 
-                    <div>
+                    <div class="basic-info-title-copy">
                         <h3>Basic Information</h3>
                         <p>
                             Main details customers will see first.
                         </p>
                     </div>
+
+                    <button
+                        type="button"
+                        class="basic-info-new-option-button"
+                        id="basicInfoNewOptionButton">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>New Option</span>
+                    </button>
 
                 </div>
 
@@ -500,66 +479,109 @@
                             <span class="field-required">*</span>
                         </label>
 
-                        <div class="destination-lookup-wrap">
+                        <div class="primary-package-selector-grid upper-package-selector-grid">
 
-                            <input
-                                type="text"
-                                id="formPackageName"
-                                placeholder="Type destination, e.g. Jomalig Island"
-                                autocomplete="off"
-                                required>
+                            <div class="primary-selector-column destination-selector-column">
+                                <div class="destination-lookup-wrap">
+                                    <i class="fa-solid fa-magnifying-glass destination-input-icon" aria-hidden="true"></i>
 
-                            <div
-                                class="destination-suggestions"
-                                id="destinationSuggestions"
-                                hidden>
+                                    <input
+                                        type="text"
+                                        id="formPackageName"
+                                        placeholder="Enter destination, e.g. Jomalig Island"
+                                        autocomplete="off"
+                                        required>
+
+                                    <button type="button" class="destination-clear-button" id="clearDestinationSearch" aria-label="Clear destination">
+                                        <i class="fa-solid fa-xmark"></i>
+                                    </button>
+
+                                    <div class="destination-suggestions" id="destinationSuggestions" hidden></div>
+                                </div>
+
+                                <small class="field-help">Existing package options are detected automatically.</small>
+                            </div>
+
+                            <div class="primary-selector-column package-duration-selector" id="destinationPackageSelector">
+                                <label class="inline-package-duration-label" for="existingPackageDurationSelect">
+                                    Package Option / Duration
+                                </label>
+
+                                <select id="existingPackageDurationSelect" disabled>
+                                    <option value="">Select destination first</option>
+                                </select>
+
+                                <input
+                                    type="text"
+                                    id="formDuration"
+                                    list="packageDurationSuggestions"
+                                    placeholder="e.g. Day Tour, 2D1N, 3D2N"
+                                    autocomplete="off"
+                                    hidden>
+
+                                <datalist id="packageDurationSuggestions">
+                                    <option value="Day Tour"></option>
+                                    <option value="2D1N"></option>
+                                    <option value="3D2N"></option>
+                                    <option value="4D3N"></option>
+                                </datalist>
+
+                                <small class="field-help" id="packageDurationHelp">Choose an existing duration to edit its saved package details.</small>
+                            </div>
+
+                            <div class="primary-selector-column package-price-selector">
+                                <label for="formPrice">Package Price</label>
+
+                                <div class="input-prefix-wrap package-price-readonly-wrap">
+                                    <span class="input-prefix">₱</span>
+                                    <input
+                                        type="number"
+                                        id="formPrice"
+                                        min="0"
+                                        step="0.01"
+                                        placeholder="Not calculated yet"
+                                        readonly
+                                        aria-readonly="true">
+                                </div>
+
+                                <small class="field-help">Auto-filled from Cost &amp; Pricing.</small>
                             </div>
 
                         </div>
 
-                        <small class="field-help">
-                            Existing destinations will appear while you type. Select one to reuse its package data and avoid duplicate destination pages.
-                        </small>
-
-
                         <div
-                            class="existing-destination-panel"
+                            class="existing-destination-panel destination-search-result selected-package-summary"
                             id="existingDestinationPanel"
                             hidden>
 
-                            <div class="existing-destination-panel-head">
-
-                                <div>
-                                    <span>Existing Destination</span>
-                                    <strong id="existingDestinationName">
-                                        Destination
-                                    </strong>
+                            <div class="destination-result-card">
+                                <div class="destination-result-thumb" id="existingDestinationThumb">
+                                    <i class="fa-solid fa-umbrella-beach"></i>
                                 </div>
 
-                                <span
-                                    class="existing-destination-count"
-                                    id="existingDestinationCount">
-                                    0 Options
-                                </span>
+                                <div class="destination-result-content">
+                                    <div class="destination-result-title-row">
+                                        <span class="destination-result-check"><i class="fa-solid fa-check"></i></span>
+                                        <strong id="existingDestinationName">Destination</strong>
+                                    </div>
+                                    <div class="destination-result-meta" id="existingDestinationMeta"></div>
+                                </div>
 
+                                <span class="existing-destination-count" id="existingDestinationCount">0 Package Options</span>
+
+                                <button type="button" class="change-destination-button" id="changeDestinationButton">
+                                    <i class="fa-solid fa-rotate"></i>
+                                    <span>Change Destination</span>
+                                </button>
                             </div>
-
-                            <p>
-                                Select an existing option to load its details as your starting point.
-                                You can then change the duration, price, meals, itinerary or other differences.
-                            </p>
-
-                            <div
-                                class="existing-destination-options"
-                                id="existingDestinationOptions">
-                            </div>
-
                         </div>
+
+                        <div class="existing-destination-options" id="existingDestinationOptions" hidden></div>
 
                     </div>
 
 
-                    <div class="form-group">
+                    <div class="form-group basic-info-secondary-field basic-info-category-field">
 
                         <label for="formCategory">
                             Category
@@ -602,97 +624,105 @@
                     </div>
 
 
-                    <div class="form-group">
+                    <div class="form-group basic-info-secondary-field basic-info-location-field">
 
                         <label for="formLocation">
                             Destination / Location
                             <span class="field-required">*</span>
                         </label>
 
-                        <input
-                            type="text"
-                            id="formLocation"
-                            placeholder="e.g. Jomalig, Quezon"
-                            required>
+                        <select id="formLocation" required>
+                            <option value="">Select province / area</option>
+                            <option value="Metro Manila">Metro Manila / NCR</option>
+                            <option value="Abra">Abra</option>
+                            <option value="Agusan del Norte">Agusan del Norte</option>
+                            <option value="Agusan del Sur">Agusan del Sur</option>
+                            <option value="Aklan">Aklan</option>
+                            <option value="Albay">Albay</option>
+                            <option value="Antique">Antique</option>
+                            <option value="Apayao">Apayao</option>
+                            <option value="Aurora">Aurora</option>
+                            <option value="Basilan">Basilan</option>
+                            <option value="Bataan">Bataan</option>
+                            <option value="Batanes">Batanes</option>
+                            <option value="Batangas">Batangas</option>
+                            <option value="Benguet">Benguet</option>
+                            <option value="Biliran">Biliran</option>
+                            <option value="Bohol">Bohol</option>
+                            <option value="Bukidnon">Bukidnon</option>
+                            <option value="Bulacan">Bulacan</option>
+                            <option value="Cagayan">Cagayan</option>
+                            <option value="Camarines Norte">Camarines Norte</option>
+                            <option value="Camarines Sur">Camarines Sur</option>
+                            <option value="Camiguin">Camiguin</option>
+                            <option value="Capiz">Capiz</option>
+                            <option value="Catanduanes">Catanduanes</option>
+                            <option value="Cavite">Cavite</option>
+                            <option value="Cebu">Cebu</option>
+                            <option value="Cotabato">Cotabato</option>
+                            <option value="Davao de Oro">Davao de Oro</option>
+                            <option value="Davao del Norte">Davao del Norte</option>
+                            <option value="Davao del Sur">Davao del Sur</option>
+                            <option value="Davao Occidental">Davao Occidental</option>
+                            <option value="Davao Oriental">Davao Oriental</option>
+                            <option value="Dinagat Islands">Dinagat Islands</option>
+                            <option value="Eastern Samar">Eastern Samar</option>
+                            <option value="Guimaras">Guimaras</option>
+                            <option value="Ifugao">Ifugao</option>
+                            <option value="Ilocos Norte">Ilocos Norte</option>
+                            <option value="Ilocos Sur">Ilocos Sur</option>
+                            <option value="Iloilo">Iloilo</option>
+                            <option value="Isabela">Isabela</option>
+                            <option value="Kalinga">Kalinga</option>
+                            <option value="La Union">La Union</option>
+                            <option value="Laguna">Laguna</option>
+                            <option value="Lanao del Norte">Lanao del Norte</option>
+                            <option value="Lanao del Sur">Lanao del Sur</option>
+                            <option value="Leyte">Leyte</option>
+                            <option value="Maguindanao del Norte">Maguindanao del Norte</option>
+                            <option value="Maguindanao del Sur">Maguindanao del Sur</option>
+                            <option value="Marinduque">Marinduque</option>
+                            <option value="Masbate">Masbate</option>
+                            <option value="Misamis Occidental">Misamis Occidental</option>
+                            <option value="Misamis Oriental">Misamis Oriental</option>
+                            <option value="Mountain Province">Mountain Province</option>
+                            <option value="Negros Occidental">Negros Occidental</option>
+                            <option value="Negros Oriental">Negros Oriental</option>
+                            <option value="Northern Samar">Northern Samar</option>
+                            <option value="Nueva Ecija">Nueva Ecija</option>
+                            <option value="Nueva Vizcaya">Nueva Vizcaya</option>
+                            <option value="Occidental Mindoro">Occidental Mindoro</option>
+                            <option value="Oriental Mindoro">Oriental Mindoro</option>
+                            <option value="Palawan">Palawan</option>
+                            <option value="Pampanga">Pampanga</option>
+                            <option value="Pangasinan">Pangasinan</option>
+                            <option value="Quezon">Quezon</option>
+                            <option value="Quirino">Quirino</option>
+                            <option value="Rizal">Rizal</option>
+                            <option value="Romblon">Romblon</option>
+                            <option value="Samar">Samar</option>
+                            <option value="Sarangani">Sarangani</option>
+                            <option value="Siquijor">Siquijor</option>
+                            <option value="Sorsogon">Sorsogon</option>
+                            <option value="South Cotabato">South Cotabato</option>
+                            <option value="Southern Leyte">Southern Leyte</option>
+                            <option value="Sultan Kudarat">Sultan Kudarat</option>
+                            <option value="Sulu">Sulu</option>
+                            <option value="Surigao del Norte">Surigao del Norte</option>
+                            <option value="Surigao del Sur">Surigao del Sur</option>
+                            <option value="Tarlac">Tarlac</option>
+                            <option value="Tawi-Tawi">Tawi-Tawi</option>
+                            <option value="Zambales">Zambales</option>
+                            <option value="Zamboanga del Norte">Zamboanga del Norte</option>
+                            <option value="Zamboanga del Sur">Zamboanga del Sur</option>
+                            <option value="Zamboanga Sibugay">Zamboanga Sibugay</option>
+                            <option value="Multiple Provinces">Multiple Provinces / Destinations</option>
+                        </select>
 
                     </div>
 
 
-                    <div class="form-group">
-
-                        <label for="formPrice">
-                            Package Option Price
-                        </label>
-
-                        <div class="input-prefix-wrap">
-
-                            <span class="input-prefix">
-                                ₱
-                            </span>
-
-                            <input
-                                type="number"
-                                id="formPrice"
-                                min="0"
-                                step="0.01"
-                                placeholder="4799">
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label for="formDuration">
-                            Package Option / Duration
-                            <span class="field-required">*</span>
-                        </label>
-
-                        <input
-                            type="text"
-                            id="formDuration"
-                            list="packageDurationOptions"
-                            placeholder="e.g. Day Tour, 2D1N, 3D2N"
-                            required>
-
-                        <datalist id="packageDurationOptions">
-                            <option value="Day Tour"></option>
-                            <option value="2D1N"></option>
-                            <option value="3D2N"></option>
-                            <option value="4D3N"></option>
-                            <option value="5D4N"></option>
-                        </datalist>
-
-                        <small class="field-help">
-                            This becomes the selectable package option on the customer Tours page.
-                        </small>
-
-                        <div class="package-option-quick-select">
-                            <span class="package-option-quick-label">
-                                Quick select
-                            </span>
-
-                            <div class="package-option-quick-buttons">
-                                <button type="button" data-package-duration="Day Tour" data-duration-days="1">
-                                    Day Tour
-                                </button>
-                                <button type="button" data-package-duration="2D1N" data-duration-days="2">
-                                    2D1N
-                                </button>
-                                <button type="button" data-package-duration="3D2N" data-duration-days="3">
-                                    3D2N
-                                </button>
-                                <button type="button" data-package-duration="4D3N" data-duration-days="4">
-                                    4D3N
-                                </button>
-                            </div>
-                        </div>
-
-                    </div>
-
-
-                    <div class="form-group">
+                    <div class="form-group basic-info-secondary-field basic-info-status-field">
 
                         <label for="formStatus">
                             Package Status
@@ -739,289 +769,143 @@
                  PASSENGER PRICING & EXCLUSIVE TOUR
             ================================================== -->
 
-            <section
-                class="form-section package-builder-section"
-                id="packageSectionPassengerPricing">
-
+            <section class="form-section package-builder-section pricing-rules-screen" id="packageSectionPassengerPricing">
                 <div class="form-section-title">
-
-                    <span>
-                        <i class="fa-solid fa-users"></i>
-                    </span>
-
+                    <span><i class="fa-solid fa-tags"></i></span>
                     <div>
-                        <h3>Passenger Pricing & Exclusive Tour</h3>
-                        <p>
-                            Configure seasonal child pricing and exclusive group benefits for this package.
-                        </p>
+                        <h3>Pricing Rules</h3>
+                        <p>Configure child rates, exclusive tour settings and optional package charges.</p>
                     </div>
-
                 </div>
 
+                <div class="pricing-rules-layout">
+                    <div class="pricing-rules-column">
+                        <article class="pricing-rule-panel">
+                            <div class="pricing-rule-panel-head">
+                                <div><strong>Kids Pricing</strong><small>Set the package rate based on the passenger age group.</small></div>
+                                <label class="package-toggle"><input type="checkbox" id="kidsPricingEnabled"><span class="package-toggle-slider"></span></label>
+                            </div>
+                            <div class="pricing-rule-panel-body" id="kidsPricingFields">
+                                <div class="pricing-age-row">
+                                    <div><strong>Infant / 0–2 Years Old</strong><small>Choose whether infants are free or charged the regular rate.</small></div>
+                                    <select id="infantPricingType"><option value="free">FREE</option><option value="regular">Regular Rate</option></select>
+                                </div>
+                                <div class="pricing-age-row">
+                                    <label class="pricing-check-label"><input type="checkbox" id="child3to7Enabled"><span><strong>3–7 Years Old</strong><small>Apply a percentage of the regular package rate.</small></span></label>
+                                    <select id="child3to7Rate"><option value="50">50% Rate</option><option value="75">75% Rate</option><option value="100">Regular Rate</option></select>
+                                </div>
+                                <div class="pricing-age-row">
+                                    <label class="pricing-check-label"><input type="checkbox" id="child8to11Enabled"><span><strong>8–11 Years Old</strong><small>Apply a percentage of the regular package rate.</small></span></label>
+                                    <select id="child8to11Rate"><option value="75">75% Rate</option><option value="50">50% Rate</option><option value="100">Regular Rate</option></select>
+                                </div>
+                                <div class="package-rule-note"><i class="fa-solid fa-child-reaching"></i><span>12 years old and above use the regular package rate.</span></div>
+                                <input type="hidden" id="childFreeMaxAge" value="2">
+                                <input type="hidden" id="childDiscountMinAge" value="3">
+                                <input type="hidden" id="childDiscountMaxAge" value="11">
+                                <input type="hidden" id="childDiscountAmount" value="0">
+                            </div>
+                        </article>
 
-                <div class="package-rule-grid">
-
-
-                    <!-- KIDS PRICING -->
-
-                    <div class="package-rule-card">
-
-                        <div class="package-rule-card-head">
-
-                            <div>
-
-                                <strong>
-                                    Kids Discount
-                                </strong>
-
-                                <small>
-                                    Turn this OFF during off-season or when all passengers should pay the regular rate.
-                                </small>
-
+                        <article class="pricing-rule-panel">
+                            <div class="pricing-rule-panel-head simple">
+                                <div>
+                                    <strong>Required Downpayment</strong>
+                                    <small>Set the required initial payment separately for Joiner and Private / Exclusive bookings.</small>
+                                </div>
                             </div>
 
+                            <div class="pricing-rule-panel-body">
+                                <div class="downpayment-rule-grid">
 
-                            <label class="package-toggle">
+                                    <div class="downpayment-rule-card">
+                                        <div class="downpayment-rule-card-head">
+                                            <strong>Joiner Tour DP</strong>
+                                            <small>Required downpayment for regular joiner bookings.</small>
+                                        </div>
 
-                                <input
-                                    type="checkbox"
-                                    id="kidsPricingEnabled">
+                                        <div class="downpayment-rule-fields">
+                                            <div class="form-group">
+                                                <label for="joinerDownpaymentType">DP Type</label>
+                                                <select id="joinerDownpaymentType">
+                                                    <option value="per_paying_pax" selected>Per Paying Pax</option>
+                                                    <option value="fixed">Fixed Amount</option>
+                                                </select>
+                                            </div>
 
-                                <span class="package-toggle-slider"></span>
-
-                            </label>
-
-                        </div>
-
-
-                        <div
-                            class="package-rule-fields"
-                            id="kidsPricingFields">
-
-
-                            <div class="package-rule-note">
-
-                                <i class="fa-solid fa-child-reaching"></i>
-
-                                <span>
-                                    9 years old and above always use the regular package rate.
-                                </span>
-
-                            </div>
-
-
-                            <div class="form-grid">
-
-
-                                <div class="form-group">
-
-                                    <label for="childFreeMaxAge">
-                                        FREE Child Maximum Age
-                                    </label>
-
-                                    <input
-                                        type="number"
-                                        id="childFreeMaxAge"
-                                        min="0"
-                                        max="17"
-                                        value="3">
-
-                                    <small class="field-help">
-                                        Default: 0–3 yrs FREE package.
-                                    </small>
-
-                                </div>
-
-
-                                <div class="form-group">
-
-                                    <label for="childDiscountMinAge">
-                                        Discounted Child From Age
-                                    </label>
-
-                                    <input
-                                        type="number"
-                                        id="childDiscountMinAge"
-                                        min="0"
-                                        max="17"
-                                        value="4">
-
-                                </div>
-
-
-                                <div class="form-group">
-
-                                    <label for="childDiscountMaxAge">
-                                        Discounted Child Until Age
-                                    </label>
-
-                                    <input
-                                        type="number"
-                                        id="childDiscountMaxAge"
-                                        min="0"
-                                        max="17"
-                                        value="8">
-
-                                </div>
-
-
-                                <div class="form-group">
-
-                                    <label for="childDiscountAmount">
-                                        Discount per Child
-                                    </label>
-
-                                    <div class="input-prefix-wrap">
-
-                                        <span class="input-prefix">
-                                            ₱
-                                        </span>
-
-                                        <input
-                                            type="number"
-                                            id="childDiscountAmount"
-                                            min="0"
-                                            step="1"
-                                            value="500">
-
+                                            <div class="form-group">
+                                                <label for="joinerDownpaymentAmount">Amount</label>
+                                                <div class="input-prefix-wrap">
+                                                    <span class="input-prefix">₱</span>
+                                                    <input type="number" id="joinerDownpaymentAmount" min="0" step="0.01" value="500">
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
 
-                                    <small class="field-help">
-                                        Example: change ₱500 to ₱300 anytime.
-                                    </small>
+                                    <div class="downpayment-rule-card">
+                                        <div class="downpayment-rule-card-head">
+                                            <strong>Private / Exclusive Tour DP</strong>
+                                            <small>Required downpayment when the client chooses a Private / Exclusive Tour.</small>
+                                        </div>
+
+                                        <div class="downpayment-rule-fields">
+                                            <div class="form-group">
+                                                <label for="exclusiveDownpaymentType">DP Type</label>
+                                                <select id="exclusiveDownpaymentType">
+                                                    <option value="per_paying_pax" selected>Per Paying Pax</option>
+                                                    <option value="fixed">Fixed Amount</option>
+                                                </select>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label for="exclusiveDownpaymentAmount">Amount</label>
+                                                <div class="input-prefix-wrap">
+                                                    <span class="input-prefix">₱</span>
+                                                    <input type="number" id="exclusiveDownpaymentAmount" min="0" step="0.01" value="500">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
 
                                 </div>
 
-
+                                <div class="package-rule-note">
+                                    <i class="fa-solid fa-wallet"></i>
+                                    <span>Both amounts are editable per package. Existing packages without saved DP settings will use ₱500 per paying pax.</span>
+                                </div>
                             </div>
+                        </article>
 
-                        </div>
-
+                        <article class="pricing-rule-panel">
+                            <div class="pricing-rule-panel-head">
+                                <div><strong>Exclusive Tour Benefit</strong><small>Configure the minimum group and included transportation benefit.</small></div>
+                                <label class="package-toggle"><input type="checkbox" id="exclusiveTourEnabled"><span class="package-toggle-slider"></span></label>
+                            </div>
+                            <div class="pricing-rule-panel-body" id="exclusiveTourFields">
+                                <div class="pricing-field-grid">
+                                    <div class="form-group"><label for="exclusiveMinimumPayingPax">Minimum Pax for Exclusive</label><input type="number" id="exclusiveMinimumPayingPax" min="1" value="10"><small class="field-help">Admin sets how many paying guests are required to qualify for a Private / Exclusive Tour.</small></div>
+                                    <div class="form-group"><label for="exclusiveVanType">Van Type</label><select id="exclusiveVanType"><option value="low">Low Roof · 10–12 Pax</option><option value="high" selected>High Roof · 13–15 Pax</option><option value="xl">XL Van · 18 Pax</option></select><small class="field-help">Transportation assigned when the group qualifies for the exclusive benefit.</small></div>
+                                    <div class="form-group"><label for="exclusiveIncludedVanUnits">Included Van Units</label><input type="number" id="exclusiveIncludedVanUnits" min="1" value="1"><small class="field-help">Number of exclusive vans included at the regular package rate.</small></div>
+                                </div>
+                                <input type="hidden" id="exclusiveAdditionalVanRate" value="0">
+                                <div class="package-rule-note"><i class="fa-solid fa-people-group"></i><span>When the booking reaches the admin-set minimum pax, the group qualifies for Private / Exclusive Tour at the regular package rate. Below the minimum, the client may request a paid exclusive upgrade during booking.</span></div>
+                            </div>
+                        </article>
                     </div>
 
-
-                    <!-- EXCLUSIVE TOUR -->
-
-                    <div class="package-rule-card">
-
-                        <div class="package-rule-card-head">
-
-                            <div>
-
-                                <strong>
-                                    Exclusive Tour Benefit
-                                </strong>
-
-                                <small>
-                                    Enable or disable the automatic exclusive group pricing rule.
-                                </small>
-
+                    <div class="pricing-rules-column">
+                        <article class="pricing-rule-panel pricing-options-panel">
+                            <div class="pricing-rule-panel-head simple"><div><strong>Other Pricing Options</strong><small>Optional charges or package-level discount settings.</small></div></div>
+                            <div class="pricing-rule-panel-body">
+                                <div class="pricing-option-row"><div><strong>Single Supplement</strong><small>Additional charge for a guest requesting single occupancy.</small></div><div class="input-prefix-wrap compact"><span class="input-prefix">₱</span><input type="number" id="singleSupplement" min="0" step="0.01" value="0"></div></div>
+                                <div class="pricing-option-row"><div><strong>Room Upgrade</strong><small>Default room upgrade charge for this package.</small></div><div class="input-prefix-wrap compact"><span class="input-prefix">₱</span><input type="number" id="defaultRoomUpgrade" min="0" step="0.01" value="0"></div></div>
+                                <div class="pricing-option-row"><div><strong>Discount / Promo</strong><small>Default package discount when a promo is applied.</small></div><div class="input-prefix-wrap compact"><span class="input-prefix">₱</span><input type="number" id="packagePromoDiscount" min="0" step="0.01" value="0"></div></div>
+                                <div class="pricing-rules-tip"><i class="fa-solid fa-lightbulb"></i><div><strong>Tip</strong><span>Keep optional charges at ₱0 when they do not apply to this package.</span></div></div>
                             </div>
-
-
-                            <label class="package-toggle">
-
-                                <input
-                                    type="checkbox"
-                                    id="exclusiveTourEnabled">
-
-                                <span class="package-toggle-slider"></span>
-
-                            </label>
-
-                        </div>
-
-
-                        <div
-                            class="package-rule-fields"
-                            id="exclusiveTourFields">
-
-
-                            <div class="package-rule-note">
-
-                                <i class="fa-solid fa-people-group"></i>
-
-                                <span>
-                                    Exactly 12 paying pax = exclusive but no free pax. Free pax benefit starts at 13.
-                                </span>
-
-                            </div>
-
-
-                            <div class="form-grid">
-
-
-                                <div class="form-group">
-
-                                    <label for="exclusiveMinimumPayingPax">
-                                        Minimum Paying Pax
-                                    </label>
-
-                                    <input
-                                        type="number"
-                                        id="exclusiveMinimumPayingPax"
-                                        min="1"
-                                        value="12">
-
-                                </div>
-
-
-                                <div class="form-group">
-
-                                    <label for="exclusiveFreeStartsAt">
-                                        Free Pax Starts At
-                                    </label>
-
-                                    <input
-                                        type="number"
-                                        id="exclusiveFreeStartsAt"
-                                        min="1"
-                                        value="13">
-
-                                </div>
-
-
-                                <div class="form-group">
-
-                                    <label for="exclusiveFreePax">
-                                        Free Pax
-                                    </label>
-
-                                    <input
-                                        type="number"
-                                        id="exclusiveFreePax"
-                                        min="0"
-                                        value="1">
-
-                                </div>
-
-
-                                <div class="form-group">
-
-                                    <label for="exclusiveMaxFreePax">
-                                        Maximum Free Pax
-                                    </label>
-
-                                    <input
-                                        type="number"
-                                        id="exclusiveMaxFreePax"
-                                        min="0"
-                                        value="1">
-
-                                </div>
-
-
-                            </div>
-
-                        </div>
-
+                        </article>
                     </div>
-
-
                 </div>
-
             </section>
-
 
 
             <!-- =================================================
@@ -1101,46 +985,6 @@
             </section>
 
 
-            <!-- =================================================
-                 03 TOUR DETAILS
-            ================================================== -->
-
-            <section
-                class="form-section package-builder-section"
-                id="packageSectionDetails">
-
-                <div class="form-section-title">
-
-                    <span>03</span>
-
-                    <div>
-                        <h3>About the Tour</h3>
-                        <p>
-                            Add a longer overview and important highlights.
-                        </p>
-                    </div>
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label for="formAbout">
-                        Tour Overview
-                    </label>
-
-                    <textarea
-                        id="formAbout"
-                        rows="6"
-                        placeholder="Describe the destination, experience, tour highlights and what guests can expect..."></textarea>
-
-                    <small class="field-help">
-                        This section is ready for the customer-facing package details page.
-                    </small>
-
-                </div>
-
-            </section>
 
 
             <!-- =================================================
@@ -1969,8 +1813,90 @@
                 </div>
             </section>
 
+            <!-- =================================================
+                 11 COST & PRICING
+            ================================================== -->
+            <section class="form-section package-builder-section" id="packageSectionCostPricing">
+  <div class="cost-pricing-grid dynamic-cost-pricing-grid">
+    <div class="costing-card">
+      <div class="costing-card-head dynamic-cost-head">
+        <div><strong>Costing Details</strong><small>Add only the expenses that apply to this package.</small></div>
+        <button type="button" class="btn btn-secondary cost-add-legacy-btn" id="addCostItemBtn" hidden>+ Add Cost Item</button>
+      </div>
 
+      <div class="dynamic-cost-context">
+        <div class="form-group">
+          <label for="costExpectedPax">Expected Pax <span class="required">*</span></label>
+          <input type="number" id="costExpectedPax" min="1" step="1" value="12">
+        </div>
+        <div class="cost-duration-box">
+          <span>Package Duration</span>
+          <strong id="costDurationSummary">—</strong>
+          <small>Auto-based on Package Option / Duration.</small>
+        </div>
+      </div>
 
+      <div class="dynamic-cost-table">
+        <div class="dynamic-cost-table-toolbar">
+          <div><strong>Package Expenses</strong><small>Calculation updates automatically from pax and duration.</small></div>
+          <div class="dynamic-cost-table-actions">
+            <button type="button" class="btn btn-secondary compact-add-cost-btn" id="addVanRentalCostBtn"><i class="fa-solid fa-van-shuttle"></i> + Van Rental</button>
+            <button type="button" class="btn btn-primary compact-add-cost-btn" id="addCostItemBtnTable">+ Add Cost Item</button>
+          </div>
+        </div>
+        <div class="dynamic-cost-table-head">
+          <span class="cost-row-number-head">#</span>
+          <span>Expense</span><span>Calculation</span><span>Rate (₱)</span>
+          <span>Basis / Qty</span><span class="computed-head">Computed Cost</span><span></span>
+        </div>
+        <div id="dynamicCostItems"></div>
+      </div>
+
+      <div class="dynamic-cost-summary">
+        <div><span>Total Package Cost</span><strong id="costTotalTour">₱0.00</strong></div>
+        <div><span>Cost Per Pax</span><strong id="costPerPax">₱0.00</strong></div>
+      </div>
+    </div>
+
+    <div class="costing-card">
+      <div class="costing-card-head"><div><strong>Package Pricing</strong><small>Recommended and final customer rate.</small></div></div>
+
+      <div class="form-group">
+        <label for="costMarkup">Markup Percentage</label>
+        <div class="input-suffix-wrap"><input type="number" id="costMarkup" min="0" step="0.01" value="15"><span class="input-suffix">%</span></div>
+      </div>
+
+      <div class="recommended-rate-card">
+        <span>Recommended Selling Rate / Pax</span>
+        <strong id="costRecommendedRate">₱0.00</strong>
+      </div>
+
+      <div class="form-group">
+        <label for="costFinalSellingRate">Final Selling Rate <span class="required">*</span></label>
+        <div class="input-prefix-wrap"><span class="input-prefix">₱</span><input type="number" id="costFinalSellingRate" min="0" step="0.01" placeholder="0"></div>
+        <small class="field-help">This becomes the Package Price in Basic Info.</small>
+      </div>
+
+      <div class="dynamic-profit-grid">
+        <div><span>Profit / Pax</span><strong id="costProfitPerPax">₱0.00</strong></div>
+        <div><span>Estimated Total Profit</span><strong id="costPackageProfit">₱0.00</strong></div>
+        <div><span>Profit Margin</span><strong id="costProfitMargin">0.00%</strong></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+            <!-- =================================================
+                 12 REVIEW & PUBLISH
+            ================================================== -->
+            <section class="form-section package-builder-section" id="packageSectionReview">
+                <div class="form-section-title"><span>7</span><div><h3>Review & Publish</h3><p>Review the important package details before publishing.</p></div></div>
+                <div class="package-review-grid">
+                    <article class="review-summary-card"><h4>Package Summary</h4><dl><div><dt>Destination</dt><dd id="reviewDestination">—</dd></div><div><dt>Package Option</dt><dd id="reviewDuration">—</dd></div><div><dt>Location</dt><dd id="reviewLocation">—</dd></div><div><dt>Status</dt><dd id="reviewStatus">Draft</dd></div></dl></article>
+                    <article class="review-summary-card"><h4>Pricing</h4><dl><div><dt>Total Tour Cost</dt><dd id="reviewTotalCost">₱0.00</dd></div><div><dt>Cost per Pax</dt><dd id="reviewCostPerPax">₱0.00</dd></div><div><dt>Expected Pax</dt><dd id="reviewExpectedPax">0 pax</dd></div><div><dt>Final Selling Rate</dt><dd id="reviewFinalRate">₱0.00 / pax</dd></div><div><dt>Profit Margin</dt><dd id="reviewProfitMargin">0.00%</dd></div><div><dt>Estimated Tour Profit</dt><dd id="reviewTourProfit">₱0.00</dd></div></dl></article>
+                </div>
+                <div class="review-ready"><i class="fa-solid fa-circle-check"></i><div><strong>Ready to Publish</strong><small>Save as Draft anytime, or publish when all required information is complete.</small></div></div>
+            </section>
 
                 </div>
 
@@ -2402,6 +2328,23 @@
 
 </div>
 
+
+
+<!-- EXISTING PACKAGE EDIT CONFIRMATION -->
+<div class="package-edit-confirm" id="packageEditConfirm" hidden>
+    <div class="package-edit-confirm-backdrop" data-package-edit-cancel></div>
+    <div class="package-edit-confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="packageEditConfirmTitle">
+        <div class="package-edit-confirm-icon"><i class="fa-solid fa-pen-to-square"></i></div>
+        <div class="package-edit-confirm-copy">
+            <h3 id="packageEditConfirmTitle">Edit Package Option?</h3>
+            <p id="packageEditConfirmMessage">Are you sure you want to edit this package?</p>
+        </div>
+        <div class="package-edit-confirm-actions">
+            <button type="button" class="btn-secondary" id="cancelExistingPackageEdit">Cancel</button>
+            <button type="button" class="btn-primary" id="confirmExistingPackageEdit">Yes, Edit Package</button>
+        </div>
+    </div>
+</div>
 
 </body>
 </html>

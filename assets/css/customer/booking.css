@@ -8841,3 +8841,610 @@ body.requested-date-mode #paymentMethodSection .payment-step-summary {
         font-size: 4.6px;
     }
 }
+
+
+/* =========================================================
+   BOOKING — TOUR TYPE
+   ========================================================= */
+
+.tour-type-field {
+    margin-top: 2px;
+}
+
+.tour-type-choice-group {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.tour-type-choice {
+    min-height: 78px;
+    padding: 13px 14px;
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    background: #ffffff;
+    border: 1px solid var(--tw-border);
+    border-radius: 12px;
+    cursor: pointer;
+    transition:
+        border-color var(--tw-transition),
+        box-shadow var(--tw-transition),
+        background var(--tw-transition);
+}
+
+.tour-type-choice input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.tour-type-choice:hover {
+    border-color: #9bcbc7;
+}
+
+.tour-type-choice.active {
+    background: var(--tw-primary-soft);
+    border-color: var(--tw-primary);
+    box-shadow: 0 0 0 3px rgba(15, 107, 103, 0.07);
+}
+
+.tour-type-choice-icon {
+    width: 38px;
+    height: 38px;
+    flex: 0 0 38px;
+    display: grid;
+    place-items: center;
+    color: var(--tw-primary);
+    background: #ffffff;
+    border: 1px solid #dce9e7;
+    border-radius: 10px;
+    font-size: 14px;
+}
+
+.tour-type-choice-copy {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.tour-type-choice-copy strong {
+    color: var(--tw-secondary);
+    font-size: 10px;
+    font-weight: 800;
+}
+
+.tour-type-choice-copy small {
+    color: var(--tw-muted);
+    font-size: 8px;
+    line-height: 1.45;
+}
+
+.tour-type-status {
+    margin-top: 10px;
+    padding: 10px 12px;
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+    border: 1px solid #d8e5f7;
+    border-radius: 10px;
+    background: #f3f7ff;
+    color: #315f91;
+}
+
+.tour-type-status > i {
+    margin-top: 2px;
+    font-size: 11px;
+}
+
+.tour-type-status > div {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.tour-type-status strong {
+    font-size: 9px;
+    font-weight: 800;
+}
+
+.tour-type-status span {
+    font-size: 8px;
+    line-height: 1.5;
+}
+
+.tour-type-status[data-status="success"] {
+    border-color: #ccebdc;
+    background: #eefaf4;
+    color: #16724f;
+}
+
+.tour-type-status[data-status="warning"] {
+    border-color: #f0d7a8;
+    background: #fff8eb;
+    color: #9a6612;
+}
+
+@media (max-width: 560px) {
+    .tour-type-choice-group {
+        grid-template-columns: 1fr;
+    }
+
+    .tour-type-choice {
+        min-height: 70px;
+        padding: 11px 12px;
+    }
+
+    .tour-type-choice-icon {
+        width: 34px;
+        height: 34px;
+        flex-basis: 34px;
+        font-size: 12px;
+    }
+}
+
+
+/* =========================================================
+   TOUR TYPE — QUESTION / RADIO STYLE
+   ========================================================= */
+
+.tour-type-question-help {
+    display: block;
+    margin: -2px 0 8px;
+    color: var(--tw-muted);
+    font-size: 8px;
+}
+
+.tour-type-question-options {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding: 2px 0;
+}
+
+.tour-type-question-options .tour-type-choice {
+    min-height: auto;
+    padding: 5px 0;
+    display: inline-flex;
+    align-items: flex-start;
+    gap: 8px;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+.tour-type-question-options .tour-type-choice:hover,
+.tour-type-question-options .tour-type-choice.active {
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+}
+
+.tour-type-question-options .tour-type-choice input {
+    position: static;
+    opacity: 1;
+    pointer-events: auto;
+    width: 14px;
+    height: 14px;
+    margin: 1px 0 0;
+    flex: 0 0 14px;
+    accent-color: var(--tw-primary);
+    cursor: pointer;
+}
+
+.tour-type-question-options .tour-type-choice-copy {
+    gap: 1px;
+}
+
+.tour-type-question-options .tour-type-choice-copy strong {
+    font-size: 9px;
+}
+
+.tour-type-question-options .tour-type-choice-copy small {
+    font-size: 8px;
+}
+
+.tour-type-question-options .tour-type-choice.active .tour-type-choice-copy strong {
+    color: var(--tw-primary);
+}
+
+@media (max-width: 560px) {
+    .tour-type-question-options {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 5px;
+    }
+
+    .tour-type-question-options .tour-type-choice {
+        min-height: auto;
+        padding: 5px 0;
+    }
+}
+
+
+
+
+/* =========================================================
+   PRIVATE / EXCLUSIVE — GREAT CHOICE POPUP
+   ========================================================= */
+
+body.exclusive-choice-modal-open {
+    overflow: hidden;
+}
+
+.exclusive-choice-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 100000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.exclusive-choice-modal.hidden {
+    display: none;
+}
+
+.exclusive-choice-modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.52);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+}
+
+.exclusive-choice-modal-panel {
+    position: relative;
+    z-index: 1;
+    width: min(100%, 390px);
+    padding: 32px 24px 22px;
+    border-radius: 18px;
+    background: #ffffff;
+    box-shadow: 0 24px 70px rgba(15, 23, 42, 0.24);
+    text-align: center;
+    animation: exclusiveChoiceModalIn 0.22s ease-out;
+}
+
+.exclusive-choice-modal-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 34px;
+    height: 34px;
+    display: grid;
+    place-items: center;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: #64748b;
+    font-size: 17px;
+    cursor: pointer;
+}
+
+.exclusive-choice-modal-close:hover {
+    background: #f1f5f9;
+    color: #0f172a;
+}
+
+.exclusive-choice-modal-icon {
+    margin-bottom: 10px;
+    font-size: 32px;
+    line-height: 1;
+}
+
+.exclusive-choice-modal-panel h2 {
+    margin: 0 0 8px;
+    color: #0f172a;
+    font-size: 21px;
+    font-weight: 800;
+    line-height: 1.25;
+}
+
+.exclusive-choice-modal-panel p {
+    margin: 0 auto 21px;
+    max-width: 310px;
+    color: #64748b;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.exclusive-choice-modal-action {
+    width: 100%;
+    min-height: 44px;
+    border: 0;
+    border-radius: 10px;
+    background: #2563eb;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition:
+        transform 0.15s ease,
+        opacity 0.15s ease;
+}
+
+.exclusive-choice-modal-action:hover {
+    opacity: 0.94;
+}
+
+.exclusive-choice-modal-action:active {
+    transform: scale(0.99);
+}
+
+@keyframes exclusiveChoiceModalIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px) scale(0.97);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@media (max-width: 480px) {
+    .exclusive-choice-modal {
+        padding: 16px;
+    }
+
+    .exclusive-choice-modal-panel {
+        padding: 30px 20px 20px;
+        border-radius: 16px;
+    }
+
+    .exclusive-choice-modal-panel h2 {
+        font-size: 20px;
+    }
+}
+
+
+/* PRIVATE / EXCLUSIVE — PRICE ADJUSTMENT */
+.exclusive-adjustment-line strong {
+    color: #b45309;
+}
+
+.exclusive-adjustment-line small {
+    display: block;
+    margin-top: 2px;
+}
+
+
+/* =========================================================
+   POST-BOOKING ACCOUNT ACCESS
+   ========================================================= */
+
+.post-booking-account {
+    width: 100%;
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px solid #e5e7eb;
+    text-align: left;
+}
+
+.post-booking-account .hidden {
+    display: none !important;
+}
+
+.post-booking-account-heading {
+    display: grid;
+    gap: 4px;
+    margin-bottom: 14px;
+}
+
+.post-booking-account-heading strong {
+    color: #0f172a;
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.post-booking-account-heading span,
+.post-booking-account-note,
+.post-booking-account-signed-in span {
+    color: #64748b;
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+.post-booking-account-guest > label {
+    display: block;
+    margin: 10px 0 5px;
+    color: #475569;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.post-booking-account-guest > input,
+.post-booking-password-wrap input {
+    width: 100%;
+    height: 42px;
+    padding: 0 12px;
+    color: #0f172a;
+    background: #ffffff;
+    border: 1px solid #d7e2ed;
+    border-radius: 9px;
+    outline: none;
+    font: inherit;
+    font-size: 11px;
+}
+
+.post-booking-account-guest > input[readonly] {
+    color: #475569;
+    background: #f8fafc;
+}
+
+.post-booking-password-wrap {
+    position: relative;
+}
+
+.post-booking-password-wrap input {
+    padding-right: 44px;
+}
+
+.post-booking-password-wrap button {
+    position: absolute;
+    top: 50%;
+    right: 6px;
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transform: translateY(-50%);
+    color: #64748b;
+    background: transparent;
+    border: 0;
+    border-radius: 7px;
+    cursor: pointer;
+}
+
+.post-booking-signin,
+.post-booking-create-account,
+.post-booking-social-actions button {
+    min-height: 42px;
+    border-radius: 9px;
+    font: inherit;
+    font-size: 11px;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.post-booking-signin {
+    width: 100%;
+    margin-top: 12px;
+    color: #ffffff;
+    background: #176de4;
+    border: 1px solid #176de4;
+}
+
+.post-booking-signin:disabled,
+.post-booking-social-actions button:disabled {
+    opacity: .65;
+    cursor: not-allowed;
+}
+
+.post-booking-account-error {
+    margin: 8px 0 0;
+    color: #dc2626;
+    font-size: 10px;
+    line-height: 1.45;
+}
+
+.post-booking-or {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 10px;
+    margin: 12px 0;
+    color: #94a3b8;
+    font-size: 9px;
+}
+
+.post-booking-or::before,
+.post-booking-or::after {
+    content: "";
+    height: 1px;
+    background: #e2e8f0;
+}
+
+.post-booking-social-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.post-booking-social-actions button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    color: #334155;
+    background: #ffffff;
+    border: 1px solid #d7e2ed;
+}
+
+.post-booking-create-account {
+    width: 100%;
+    margin-top: 8px;
+    color: #176de4;
+    background: #eef5ff;
+    border: 1px solid #cfe0f7;
+}
+
+.post-booking-account-note {
+    display: block;
+    margin-top: 10px;
+    text-align: center;
+}
+
+.post-booking-account-signed-in {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px;
+    color: #166534;
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 10px;
+}
+
+.post-booking-account-signed-in > i {
+    margin-top: 2px;
+}
+
+.post-booking-account-signed-in div {
+    display: grid;
+    gap: 2px;
+}
+
+.post-booking-account-signed-in strong {
+    color: #166534;
+    font-size: 12px;
+}
+
+@media (max-width: 560px) {
+    .post-booking-account {
+        margin-top: 14px;
+        padding-top: 14px;
+    }
+
+    .post-booking-social-actions {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+
+/* Post-booking password recovery */
+.post-booking-password-helper {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 6px;
+}
+
+.post-booking-password-helper button {
+    padding: 0;
+    color: #176de4;
+    background: transparent;
+    border: 0;
+    font: inherit;
+    font-size: 10px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.post-booking-password-helper button:hover {
+    text-decoration: underline;
+}
+
+.post-booking-password-helper button:disabled {
+    opacity: .6;
+    cursor: wait;
+}
+
+.post-booking-account-error.success {
+    color: #166534;
+}

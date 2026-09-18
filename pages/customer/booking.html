@@ -1036,6 +1036,42 @@
                         </small>
                     </div>
 
+                    <div class="form-field full tour-type-field" id="tourTypeField">
+                        <label>What type of tour would you like? *</label>
+                        <small class="tour-type-question-help">Choose how you want to travel.</small>
+
+                        <div class="tour-type-choice-group tour-type-question-options" role="radiogroup" aria-label="Tour type">
+                            <label class="tour-type-choice active" id="tourTypeJoinerChoice">
+                                <input type="radio"
+                                       name="tourType"
+                                       value="joiner"
+                                       checked>
+                                <span class="tour-type-choice-copy">
+                                    <strong>Joiner Tour</strong>
+                                    <small>Travel with other guests joining the same tour.</small>
+                                </span>
+                            </label>
+
+                            <label class="tour-type-choice" id="tourTypeExclusiveChoice">
+                                <input type="radio"
+                                       name="tourType"
+                                       value="exclusive">
+                                <span class="tour-type-choice-copy">
+                                    <strong>Private / Exclusive Tour</strong>
+                                    <small>Travel exclusively with your own group.</small>
+                                </span>
+                            </label>
+                        </div>
+
+                        <div class="tour-type-status" id="tourTypeStatus" data-status="info" aria-live="polite">
+                            <i class="fa-solid fa-circle-info"></i>
+                            <div>
+                                <strong id="tourTypeStatusTitle">Joiner Tour selected</strong>
+                                <span id="tourTypeStatusText">Regular package rate applies.</span>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="form-field full children-question-field" id="childrenQuestionField">
                         <label>
                             Do you have children joining the trip?
@@ -1244,7 +1280,7 @@
                         <div class="clean-summary-row clean-summary-subtotal">
                             <div>
                                 <span>Package Subtotal</span>
-                                <small>After applicable child / exclusive discounts</small>
+                                <small>After applicable child discounts</small>
                             </div>
                             <strong id="summarySubtotal">₱0</strong>
                         </div>
@@ -1263,11 +1299,12 @@
                             <strong id="summaryChildDiscount">-₱0</strong>
                         </div>
 
-                        <div class="clean-summary-row discount-line hidden" id="summaryExclusiveRow">
+                        <div class="clean-summary-row exclusive-adjustment-line hidden" id="summaryExclusiveRow">
                             <div>
-                                <span>Exclusive Tour Benefit</span>
+                                <span id="summaryExclusiveLabel">Exclusive Minimum Adjustment</span>
+                                <small id="summaryExclusiveNote">Minimum paying pax requirement</small>
                             </div>
-                            <strong id="summaryExclusiveDiscount">-₱0</strong>
+                            <strong id="summaryExclusiveDiscount">+₱0</strong>
                         </div>
 
                         <div class="clean-summary-row hidden" id="summaryAccommodationRow">
@@ -1419,7 +1456,7 @@
                     </div>
 
                     <small class="payment-followup-note">
-                        Minimum required deposit is ₱500 per payable guest. If a balance remains after payment, Trips Wonder can send a reminder after 3 days for full settlement.
+                        The required initial deposit is based on the selected package and tour type. If a balance remains after payment, Trips Wonder can send a reminder after 3 days for full settlement.
                     </small>
                 </div>
 
@@ -1785,6 +1822,44 @@
 
 
 <!-- =========================================================
+     PRIVATE / EXCLUSIVE — GREAT CHOICE POPUP
+========================================================= -->
+<div class="exclusive-choice-modal hidden"
+     id="exclusiveChoiceModal"
+     aria-hidden="true">
+    <div class="exclusive-choice-modal-backdrop"
+         id="exclusiveChoiceModalBackdrop"></div>
+
+    <div class="exclusive-choice-modal-panel"
+         role="dialog"
+         aria-modal="true"
+         aria-labelledby="exclusiveChoiceModalTitle">
+
+        <button type="button"
+                class="exclusive-choice-modal-close"
+                id="exclusiveChoiceModalClose"
+                aria-label="Close">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <div class="exclusive-choice-modal-icon">✨</div>
+
+        <h2 id="exclusiveChoiceModalTitle">Great choice!</h2>
+
+        <p>
+            We’re excited to create unforgettable memories with your group!
+        </p>
+
+        <button type="button"
+                class="exclusive-choice-modal-action"
+                id="exclusiveChoiceModalContinue">
+            Continue Booking
+        </button>
+    </div>
+</div>
+
+
+<!-- =========================================================
      PAYMENT SUBMITTED / FOR VERIFICATION
 ========================================================= -->
 <div class="success-modal" id="bookingSuccessModal" aria-hidden="true">
@@ -1824,6 +1899,92 @@
         <small>
             You can keep your booking number for reference.
         </small>
+
+        <section class="post-booking-account" id="postBookingAccountAccess">
+            <div class="post-booking-account-signed-in hidden" id="postBookingAccountSignedIn">
+                <i class="fa-solid fa-circle-check"></i>
+                <div>
+                    <strong>Booking linked to your account</strong>
+                    <span>You can now view this booking in My Trip.</span>
+                </div>
+            </div>
+
+            <div class="post-booking-account-guest" id="postBookingAccountGuest">
+                <div class="post-booking-account-heading">
+                    <strong>Access your booking anytime</strong>
+                    <span>Sign in with the same email used for this booking, or create an account.</span>
+                </div>
+
+                <label for="postBookingAccountEmail">Booking Email</label>
+                <input
+                    type="email"
+                    id="postBookingAccountEmail"
+                    readonly
+                    autocomplete="email"
+                >
+
+                <label for="postBookingPassword">Password</label>
+                <div class="post-booking-password-wrap">
+                    <input
+                        type="password"
+                        id="postBookingPassword"
+                        placeholder="Enter your password"
+                        autocomplete="current-password"
+                    >
+                    <button
+                        type="button"
+                        id="postBookingPasswordToggle"
+                        aria-label="Show password"
+                    >
+                        <i class="fa-regular fa-eye"></i>
+                    </button>
+                </div>
+
+                <div class="post-booking-password-helper">
+                    <button
+                        type="button"
+                        id="postBookingForgotPassword"
+                    >
+                        Forgot Password?
+                    </button>
+                </div>
+
+                <button
+                    type="button"
+                    class="post-booking-signin"
+                    id="postBookingSignInButton"
+                >
+                    Sign In &amp; Link Booking
+                </button>
+
+                <p class="post-booking-account-error" id="postBookingAccountError" hidden></p>
+
+                <div class="post-booking-or"><span>or</span></div>
+
+                <div class="post-booking-social-actions">
+                    <button type="button" id="postBookingGoogleButton">
+                        <i class="fa-brands fa-google"></i>
+                        Google
+                    </button>
+                    <button type="button" id="postBookingFacebookButton">
+                        <i class="fa-brands fa-facebook"></i>
+                        Facebook
+                    </button>
+                </div>
+
+                <button
+                    type="button"
+                    class="post-booking-create-account"
+                    id="postBookingCreateAccountButton"
+                >
+                    Create Account
+                </button>
+
+                <small class="post-booking-account-note">
+                    Your booking is already submitted. Creating or signing in to an account will not change its payment verification status.
+                </small>
+            </div>
+        </section>
 
         <!-- Legacy post-booking elements are retained but hidden.
              Accommodation upgrades are now selected before payment. -->
