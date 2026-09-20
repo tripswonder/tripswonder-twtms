@@ -605,6 +605,24 @@ addPickupLocation?.addEventListener(
             );
 
 
+        if (photoPreviewGrid) {
+            const destinationGalleryObserver =
+                new MutationObserver(
+                    () => {
+                        enhanceDestinationGalleryCoverControls();
+                    }
+                );
+
+            destinationGalleryObserver.observe(
+                photoPreviewGrid,
+                {
+                    childList: true,
+                    subtree: false
+                }
+            );
+        }
+
+
         // ======================================================
         // HTML ESCAPE
         // ======================================================
@@ -1980,13 +1998,13 @@ addPickupLocation?.addEventListener(
                 sourcePackage.gallery.length > 0
             ) {
                 return [
-                    sourcePackage.gallery[0]
+                    ...sourcePackage.gallery
                 ];
             }
 
             if (sourcePackage?.image) {
                 return [{
-                    name: "Destination Image",
+                    name: "Destination Photo",
                     url: sourcePackage.image
                 }];
             }
@@ -7141,6 +7159,124 @@ if (
         // PACKAGE GALLERY
         // ======================================================
 
+        function setDestinationCoverPhoto(source, index) {
+            if (source === "existing") {
+                const selected =
+                    existingGalleryPhotos.splice(
+                        index,
+                        1
+                    )[0];
+
+                if (selected) {
+                    existingGalleryPhotos.unshift(
+                        selected
+                    );
+                }
+            } else {
+                const selected =
+                    packageGalleryFiles.splice(
+                        index,
+                        1
+                    )[0];
+
+                if (selected) {
+                    packageGalleryFiles.unshift(
+                        selected
+                    );
+                }
+            }
+
+            renderPackageGallery();
+            updateBuilderLivePreview();
+        }
+
+
+        function enhanceDestinationGalleryCoverControls() {
+            if (!photoPreviewGrid) {
+                return;
+            }
+
+            const items =
+                Array.from(
+                    photoPreviewGrid.children
+                );
+
+            items.forEach(
+                (item, visualIndex) => {
+
+                    if (
+                        item.querySelector(
+                            ".destination-cover-button"
+                        )
+                    ) {
+                        return;
+                    }
+
+                    const existingCount =
+                        existingGalleryPhotos.length;
+
+                    const source =
+                        visualIndex < existingCount
+                            ? "existing"
+                            : "new";
+
+                    const sourceIndex =
+                        source === "existing"
+                            ? visualIndex
+                            : visualIndex -
+                                existingCount;
+
+                    const isCover =
+                        visualIndex === 0;
+
+                    const button =
+                        document.createElement(
+                            "button"
+                        );
+
+                    button.type =
+                        "button";
+
+                    button.className =
+                        "destination-cover-button" +
+                        (
+                            isCover
+                                ? " active"
+                                : ""
+                        );
+
+                    button.innerHTML =
+                        isCover
+                            ? '<i class="fa-solid fa-star"></i><span>Cover Photo</span>'
+                            : '<i class="fa-regular fa-star"></i><span>Set as Cover</span>';
+
+                    button.addEventListener(
+                        "click",
+                        event => {
+                            event.preventDefault();
+                            event.stopPropagation();
+
+                            if (isCover) {
+                                return;
+                            }
+
+                            setDestinationCoverPhoto(
+                                source,
+                                sourceIndex
+                            );
+                        }
+                    );
+
+                    item.appendChild(
+                        button
+                    );
+                }
+            );
+        }
+
+
+
+
         function renderPackageGallery() {
 
             if (
@@ -7368,25 +7504,55 @@ if (
                 }
 
 
-                const imageFile =
-                    selectedFiles.find(
-                        file =>
-                            file.type.startsWith(
+                selectedFiles.forEach(
+                    file => {
+
+
+                        if (
+                            !file.type.startsWith(
                                 "image/"
                             )
-                    );
+                        ) {
+                            return;
+                        }
 
-                if (!imageFile) {
-                    packagePhotos.value = "";
-                    return;
-                }
 
-                // One destination image only. A new selection replaces
-                // the previous shared image for every package option.
-                existingGalleryPhotos = [];
-                packageGalleryFiles = [
-                    imageFile
-                ];
+                        const duplicate =
+                            packageGalleryFiles.some(
+                                existingFile =>
+                                    existingFile.name ===
+                                        file.name &&
+                                    existingFile.size ===
+                                        file.size
+                            );
+
+
+                        if (
+                            duplicate
+                        ) {
+                            return;
+                        }
+
+
+                        const totalPhotos =
+                            existingGalleryPhotos.length +
+                            packageGalleryFiles.length;
+
+
+                        if (
+                            totalPhotos >=
+                            10
+                        ) {
+                            return;
+                        }
+
+
+                        packageGalleryFiles.push(
+                            file
+                        );
+
+                    }
+                );
 
 
                 renderPackageGallery();
@@ -7846,12 +8012,12 @@ if (
                 ) &&
                 packageItem.gallery.length > 0
                     ? [
-                        packageItem.gallery[0]
+                        ...packageItem.gallery
                       ]
                     : (
                         packageItem.image
                             ? [{
-                                name: "Destination Image",
+                                name: "Destination Photo",
                                 url: packageItem.image
                               }]
                             : []

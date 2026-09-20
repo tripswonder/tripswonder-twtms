@@ -614,6 +614,7 @@
 
                     <button
                         type="submit"
+                        form="packageForm"
                         class="btn-primary"
                         id="savePackageButton"
                         hidden>
@@ -1025,47 +1026,49 @@
 
                     <div class="form-group full destination-image-field">
 
-                        <div class="destination-image-heading">
-                            <div>
+                        <div class="destination-photos-header">
+
+                            <div class="destination-photos-copy">
                                 <label for="packagePhotos">
-                                    Destination Image
+                                    Destination Photos
                                 </label>
+
                                 <small class="field-help">
-                                    Upload once per destination. The same image is automatically used by all package options for this destination.
+                                    Shared by all package options for this destination.
                                 </small>
                             </div>
 
-                            <span class="destination-image-shared-badge">
-                                <i class="fa-solid fa-link"></i>
-                                Shared Image
-                            </span>
-                        </div>
+                            <div class="destination-photos-actions">
 
-                        <div class="destination-image-uploader">
-                            <input
-                                type="file"
-                                id="packagePhotos"
-                                accept="image/*"
-                                hidden>
-
-                            <button
-                                type="button"
-                                class="upload-button destination-image-upload-button"
-                                id="uploadPhotosButton">
-
-                                <i class="fa-solid fa-cloud-arrow-up"></i>
-
-                                <span>
-                                    <strong>Upload Destination Image</strong>
-                                    <small>JPG, PNG or WEBP • One shared cover image</small>
+                                <span class="destination-image-shared-badge">
+                                    <i class="fa-solid fa-link"></i>
+                                    Shared Gallery
                                 </span>
 
-                            </button>
+                                <input
+                                    type="file"
+                                    id="packagePhotos"
+                                    accept="image/*"
+                                    multiple
+                                    hidden>
 
-                            <div
-                                class="photo-preview-grid destination-image-preview"
-                                id="photoPreviewGrid">
+                                <button
+                                    type="button"
+                                    class="destination-add-photo-btn"
+                                    id="uploadPhotosButton">
+
+                                    <i class="fa-regular fa-image"></i>
+                                    <span>Add</span>
+
+                                </button>
+
                             </div>
+
+                        </div>
+
+                        <div
+                            class="photo-preview-grid destination-image-preview"
+                            id="photoPreviewGrid">
                         </div>
 
                     </div>
