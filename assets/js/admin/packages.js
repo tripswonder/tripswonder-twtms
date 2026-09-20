@@ -10554,45 +10554,176 @@ function getDynamicCostBasisLabel(type){
   return "1";
 }
 function renderDynamicCostItems(){
-  const host=document.getElementById("dynamicCostItems"); if(!host)return;
-  if(!dynamicCostItemsState.length){host.innerHTML='<div style="padding:18px;text-align:center">No cost items yet. Click <strong>+ Add Cost Item</strong> or <strong>+ Van Rental</strong>.</div>';return;}
+  const host=document.getElementById("dynamicCostItems");
+  if(!host)return;
+
+  if(!dynamicCostItemsState.length){
+    host.innerHTML=`
+      <div class="cost-empty-state">
+        No cost items yet. Click <strong>+ Add Cost Item</strong> to add an expense.
+      </div>`;
+    return;
+  }
+
   host.innerHTML=dynamicCostItemsState.map((x,index)=>{
+    const rowNumber=String(index+1).padStart(2,"0");
+
     if(x.source==="vanRental"){
       syncVanRentalItemRate(x);
-      const routeOptions=vanRentalRatesCache.map(rate=>`<option value="${dynamicCostEscape(rate.id)}" ${x.vanRateId===rate.id?"selected":""}>${dynamicCostEscape(rate.destination)}</option>`).join("");
-      return `<div class="dynamic-cost-row dynamic-cost-row-van" data-id="${x.id}">
-        <span class="dynamic-cost-row-number">${String(index+1).padStart(2,"0")}</span>
-        <select class="dc-van-route" title="Van rental route"><option value="">Select van route</option>${routeOptions}</select>
-        <select class="dc-van-unit" title="Van type">${Object.entries(VAN_UNIT_LABELS).map(([value,label])=>`<option value="${value}" ${x.vanUnit===value?"selected":""}>${label}</option>`).join("")}</select>
-        <input class="dc-rate" type="number" min="0" step=".01" value="${x.rate||0}" readonly aria-label="Van rental rate">
-        <input class="dc-qty" type="number" min="1" step="1" value="${x.qty??1}" title="Number of vans">
-        <strong class="dynamic-cost-computed">₱0.00</strong>
-        <button type="button" class="remove-dynamic-cost" title="Remove expense" aria-label="Remove expense">🗑</button></div>`;
+
+      const routeOptions=vanRentalRatesCache
+        .map(rate=>`
+          <option value="${dynamicCostEscape(rate.id)}" ${x.vanRateId===rate.id?"selected":""}>
+            ${dynamicCostEscape(rate.destination)}
+          </option>`)
+        .join("");
+
+      return `
+        <div class="dynamic-cost-row dynamic-cost-row-van tw-cost-card" data-id="${x.id}">
+          <div class="tw-cost-card-head">
+            <span class="dynamic-cost-row-number">${rowNumber}</span>
+            <strong class="tw-cost-name">Van Rental</strong>
+            <button type="button" class="remove-dynamic-cost" title="Remove expense" aria-label="Remove expense">
+              <i class="fa-regular fa-trash-can"></i>
+            </button>
+          </div>
+
+          <div class="tw-van-route-field">
+            <label>Route</label>
+            <select class="dc-van-route" title="Van rental route">
+              <option value="">Select van route</option>
+              ${routeOptions}
+            </select>
+          </div>
+
+          <div class="tw-cost-fields">
+            <div class="tw-cost-field">
+              <label>Van Unit</label>
+              <select class="dc-van-unit" title="Van type">
+                ${Object.entries(VAN_UNIT_LABELS)
+                  .map(([value,label])=>`
+                    <option value="${value}" ${x.vanUnit===value?"selected":""}>
+                      ${label}
+                    </option>`)
+                  .join("")}
+              </select>
+            </div>
+
+            <div class="tw-cost-field">
+              <label>Rate</label>
+              <input class="dc-rate" type="number" min="0" step=".01" value="${x.rate||0}" readonly aria-label="Van rental rate">
+            </div>
+
+            <div class="tw-cost-field">
+              <label>Basis / Qty</label>
+              <div class="tw-basis-input">
+                <input class="dc-qty" type="number" min="1" step="1" value="${x.qty??1}" title="Number of vans">
+                <span>van</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="tw-cost-computed">
+            <span>Computed Cost</span>
+            <strong class="dynamic-cost-computed">₱0.00</strong>
+          </div>
+        </div>`;
     }
-    return `<div class="dynamic-cost-row" data-id="${x.id}">
-      <span class="dynamic-cost-row-number">${String(index+1).padStart(2,"0")}</span>
-      <input class="dc-name" type="text" value="${dynamicCostEscape(x.name)}" placeholder="e.g. Van Rental">
-      <select class="dc-type">${DYNAMIC_COST_TYPES.map(([v,l])=>`<option value="${v}" ${x.type===v?"selected":""}>${l}</option>`).join("")}</select>
-      <input class="dc-rate" type="number" min="0" step=".01" value="${x.rate||0}">
-      ${["fixed","perHeadUnit"].includes(x.type)
-        ? `<input class="dc-qty" type="number" min="0" step="1" value="${x.qty??1}">`
-        : `<div class="dynamic-cost-basis">${getDynamicCostBasisLabel(x.type)}</div>`}
-      <strong class="dynamic-cost-computed">₱0.00</strong>
-      <button type="button" class="remove-dynamic-cost" title="Remove expense" aria-label="Remove expense">🗑</button></div>`;
+
+    const basisControl=["fixed","perHeadUnit"].includes(x.type)
+      ? `<input class="dc-qty" type="number" min="0" step="1" value="${x.qty??1}">`
+      : `<div class="tw-basis-readonly">
+           <span class="tw-basis-value">${dynamicCostEscape(getDynamicCostBasisLabel(x.type).replace(/\s*pax$/i,""))}</span>
+           <span class="tw-basis-unit">${x.type==="perHead" ? "pax" : ""}</span>
+         </div>`;
+
+    return `
+      <div class="dynamic-cost-row tw-cost-card" data-id="${x.id}">
+        <div class="tw-cost-card-head">
+          <span class="dynamic-cost-row-number">${rowNumber}</span>
+          <strong class="tw-cost-name">${dynamicCostEscape(x.name || "Cost Item")}</strong>
+          <button type="button" class="remove-dynamic-cost" title="Remove expense" aria-label="Remove expense">
+            <i class="fa-regular fa-trash-can"></i>
+          </button>
+        </div>
+
+        <div class="tw-cost-fields">
+          <div class="tw-cost-field">
+            <label>Rate</label>
+            <input class="dc-rate" type="number" min="0" step=".01" value="${x.rate||0}">
+          </div>
+
+          <div class="tw-cost-field">
+            <label>Calculation</label>
+            <select class="dc-type">
+              ${DYNAMIC_COST_TYPES
+                .map(([v,l])=>`<option value="${v}" ${x.type===v?"selected":""}>${l}</option>`)
+                .join("")}
+            </select>
+          </div>
+
+          <div class="tw-cost-field">
+            <label>Basis / Qty</label>
+            ${basisControl}
+          </div>
+        </div>
+
+        <div class="tw-cost-computed">
+          <span>Computed Cost</span>
+          <strong class="dynamic-cost-computed">₱0.00</strong>
+        </div>
+      </div>`;
   }).join("");
+
   host.querySelectorAll(".dynamic-cost-row").forEach(row=>{
-    const x=dynamicCostItemsState.find(v=>v.id===row.dataset.id); if(!x)return;
+    const x=dynamicCostItemsState.find(v=>v.id===row.dataset.id);
+    if(!x)return;
+
     if(x.source==="vanRental"){
-      row.querySelector(".dc-van-route").onchange=e=>{x.vanRateId=e.target.value;syncVanRentalItemRate(x);renderDynamicCostItems();calculatePackageCosting();};
-      row.querySelector(".dc-van-unit").onchange=e=>{x.vanUnit=e.target.value;syncVanRentalItemRate(x);renderDynamicCostItems();calculatePackageCosting();};
-      row.querySelector(".dc-qty").oninput=e=>{x.qty=Math.max(1,+e.target.value||1);calculatePackageCosting();};
+      row.querySelector(".dc-van-route").onchange=e=>{
+        x.vanRateId=e.target.value;
+        syncVanRentalItemRate(x);
+        renderDynamicCostItems();
+        calculatePackageCosting();
+      };
+
+      row.querySelector(".dc-van-unit").onchange=e=>{
+        x.vanUnit=e.target.value;
+        syncVanRentalItemRate(x);
+        renderDynamicCostItems();
+        calculatePackageCosting();
+      };
+
+      row.querySelector(".dc-qty").oninput=e=>{
+        x.qty=Math.max(1,+e.target.value||1);
+        calculatePackageCosting();
+      };
     }else{
-      row.querySelector(".dc-name").oninput=e=>x.name=e.target.value;
-      row.querySelector(".dc-type").onchange=e=>{x.type=e.target.value;renderDynamicCostItems();calculatePackageCosting();};
-      row.querySelector(".dc-rate").oninput=e=>{x.rate=+e.target.value||0;calculatePackageCosting();};
-      const qtyInput=row.querySelector(".dc-qty"); if(qtyInput) qtyInput.oninput=e=>{x.qty=+e.target.value||0;calculatePackageCosting();};
+      row.querySelector(".dc-type").onchange=e=>{
+        x.type=e.target.value;
+        renderDynamicCostItems();
+        calculatePackageCosting();
+      };
+
+      row.querySelector(".dc-rate").oninput=e=>{
+        x.rate=+e.target.value||0;
+        calculatePackageCosting();
+      };
+
+      const qtyInput=row.querySelector(".dc-qty");
+      if(qtyInput){
+        qtyInput.oninput=e=>{
+          x.qty=+e.target.value||0;
+          calculatePackageCosting();
+        };
+      }
     }
-    row.querySelector(".remove-dynamic-cost").onclick=()=>{dynamicCostItemsState=dynamicCostItemsState.filter(v=>v.id!==x.id);renderDynamicCostItems();calculatePackageCosting();};
+
+    row.querySelector(".remove-dynamic-cost").onclick=()=>{
+      dynamicCostItemsState=dynamicCostItemsState.filter(v=>v.id!==x.id);
+      renderDynamicCostItems();
+      calculatePackageCosting();
+    };
   });
 }
 function addDynamicCostItem(data={}){
@@ -10758,3 +10889,4 @@ function initDynamicCosting(){
   calculatePackageCosting();
 }
 document.addEventListener("DOMContentLoaded",initDynamicCosting);
+ 

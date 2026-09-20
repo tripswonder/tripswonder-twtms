@@ -400,7 +400,7 @@
             <div class="package-builder-workspace">
 
                 <!-- LEFT SECTION NAVIGATION -->
-                <aside class="package-builder-sidebar">
+                <div class="package-builder-sidebar package-builder-top-tabs">
 
                     <nav
                         class="package-builder-side-nav"
@@ -430,7 +430,7 @@
                         </button>
                     </nav>
 
-                </aside>
+                </div>
 
 
                 <!-- CENTER FORM CONTENT -->
@@ -507,9 +507,22 @@
                                     Package Option / Duration
                                 </label>
 
-                                <select id="existingPackageDurationSelect" disabled>
+                                
+<div class="tw-duration-select" data-native-select="existingPackageDurationSelect">
+    <div class="tw-duration-native">
+        <select id="existingPackageDurationSelect" disabled>
                                     <option value="">Select destination first</option>
                                 </select>
+    </div>
+    <button type="button" class="tw-duration-trigger" aria-haspopup="listbox" aria-expanded="false">
+        <span class="tw-duration-trigger-text">Select package option to edit</span>
+        <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+    </button>
+    <div class="tw-duration-menu" role="listbox">
+        <button type="button" class="tw-duration-option" data-value="">Select destination first</button>
+    </div>
+</div>
+
 
                                 <input
                                     type="text"
@@ -1816,75 +1829,97 @@
             <!-- =================================================
                  11 COST & PRICING
             ================================================== -->
-            <section class="form-section package-builder-section" id="packageSectionCostPricing">
-  <div class="cost-pricing-grid dynamic-cost-pricing-grid">
-    <div class="costing-card">
-      <div class="costing-card-head dynamic-cost-head">
-        <div><strong>Costing Details</strong><small>Add only the expenses that apply to this package.</small></div>
-        <button type="button" class="btn btn-secondary cost-add-legacy-btn" id="addCostItemBtn" hidden>+ Add Cost Item</button>
+            <section class="form-section package-builder-section cost-pricing-screen" id="packageSectionCostPricing">
+  <div class="tw-costing-shell">
+
+    <div class="tw-costing-title">
+      <div class="tw-costing-title-icon"><i class="fa-solid fa-chart-simple"></i></div>
+      <div>
+        <h3>Costing Details</h3>
+        <p>Add only the expenses that apply to this package.</p>
+      </div>
+    </div>
+
+    <div class="tw-cost-context">
+      <div class="tw-context-card">
+        <div class="tw-context-icon"><i class="fa-solid fa-user-group"></i></div>
+        <div class="tw-context-copy">
+          <label for="costExpectedPax">Expected Pax</label>
+          <input type="number" id="costExpectedPax" min="1" step="1" value="12">
+          <small>pax</small>
+        </div>
       </div>
 
-      <div class="dynamic-cost-context">
-        <div class="form-group">
-          <label for="costExpectedPax">Expected Pax <span class="required">*</span></label>
-          <input type="number" id="costExpectedPax" min="1" step="1" value="12">
-        </div>
-        <div class="cost-duration-box">
+      <div class="tw-context-card">
+        <div class="tw-context-icon"><i class="fa-regular fa-calendar-days"></i></div>
+        <div class="tw-context-copy">
           <span>Package Duration</span>
           <strong id="costDurationSummary">—</strong>
-          <small>Auto-based on Package Option / Duration.</small>
+          <small>Auto-based on Package Option</small>
         </div>
-      </div>
-
-      <div class="dynamic-cost-table">
-        <div class="dynamic-cost-table-toolbar">
-          <div><strong>Package Expenses</strong><small>Calculation updates automatically from pax and duration.</small></div>
-          <div class="dynamic-cost-table-actions">
-            <button type="button" class="btn btn-secondary compact-add-cost-btn" id="addVanRentalCostBtn"><i class="fa-solid fa-van-shuttle"></i> + Van Rental</button>
-            <button type="button" class="btn btn-primary compact-add-cost-btn" id="addCostItemBtnTable">+ Add Cost Item</button>
-          </div>
-        </div>
-        <div class="dynamic-cost-table-head">
-          <span class="cost-row-number-head">#</span>
-          <span>Expense</span><span>Calculation</span><span>Rate (₱)</span>
-          <span>Basis / Qty</span><span class="computed-head">Computed Cost</span><span></span>
-        </div>
-        <div id="dynamicCostItems"></div>
-      </div>
-
-      <div class="dynamic-cost-summary">
-        <div><span>Total Package Cost</span><strong id="costTotalTour">₱0.00</strong></div>
-        <div><span>Cost Per Pax</span><strong id="costPerPax">₱0.00</strong></div>
       </div>
     </div>
 
-    <div class="costing-card">
-      <div class="costing-card-head"><div><strong>Package Pricing</strong><small>Recommended and final customer rate.</small></div></div>
+    <div class="tw-expense-heading">
+      <div>
+        <h4>Package Expenses</h4>
+        <p>Add, edit or remove the expenses for this package.</p>
+      </div>
+      <button type="button" class="tw-add-cost-btn" id="addCostItemBtnTable">
+        <i class="fa-solid fa-plus"></i>
+        <span>Add Cost Item</span>
+      </button>
+      <button type="button" id="addCostItemBtn" hidden></button>
+    </div>
 
-      <div class="form-group">
-        <label for="costMarkup">Markup Percentage</label>
-        <div class="input-suffix-wrap"><input type="number" id="costMarkup" min="0" step="0.01" value="15"><span class="input-suffix">%</span></div>
+    <div id="dynamicCostItems" class="tw-cost-items"></div>
+
+    <button type="button" class="tw-add-van-btn" id="addVanRentalCostBtn">
+      <i class="fa-solid fa-plus"></i>
+      <span>
+        <strong>Add Van Rental</strong>
+        <small>Quick add van rental cost</small>
+      </span>
+    </button>
+
+    <div class="tw-cost-totals">
+      <div class="tw-total-card tw-total-package">
+        <div class="tw-total-icon"><i class="fa-solid fa-calculator"></i></div>
+        <div>
+          <span>Total Package Cost</span>
+          <strong id="costTotalTour">₱0.00</strong>
+          <small>Total of all expenses</small>
+        </div>
       </div>
 
-      <div class="recommended-rate-card">
-        <span>Recommended Selling Rate / Pax</span>
-        <strong id="costRecommendedRate">₱0.00</strong>
-      </div>
-
-      <div class="form-group">
-        <label for="costFinalSellingRate">Final Selling Rate <span class="required">*</span></label>
-        <div class="input-prefix-wrap"><span class="input-prefix">₱</span><input type="number" id="costFinalSellingRate" min="0" step="0.01" placeholder="0"></div>
-        <small class="field-help">This becomes the Package Price in Basic Info.</small>
-      </div>
-
-      <div class="dynamic-profit-grid">
-        <div><span>Profit / Pax</span><strong id="costProfitPerPax">₱0.00</strong></div>
-        <div><span>Estimated Total Profit</span><strong id="costPackageProfit">₱0.00</strong></div>
-        <div><span>Profit Margin</span><strong id="costProfitMargin">0.00%</strong></div>
+      <div class="tw-total-card tw-total-pax">
+        <div class="tw-total-icon"><i class="fa-solid fa-user-group"></i></div>
+        <div>
+          <span>Estimated Cost Per Pax</span>
+          <strong id="costPerPax">₱0.00</strong>
+          <small>Based on expected pax</small>
+        </div>
       </div>
     </div>
+
+    <!-- Existing pricing fields remain in the DOM for current calculation/save logic.
+         They are visually hidden in this mobile Cost & Pricing mockup. -->
+    <div class="tw-costing-logic-fields" aria-hidden="true">
+      <label for="costMarkup">Markup Percentage</label>
+      <input type="number" id="costMarkup" min="0" step="0.01" value="15">
+      <span id="costRecommendedRate">₱0.00</span>
+
+      <label for="costFinalSellingRate">Final Selling Rate</label>
+      <input type="number" id="costFinalSellingRate" min="0" step="0.01" placeholder="0">
+
+      <span id="costProfitPerPax">₱0.00</span>
+      <span id="costPackageProfit">₱0.00</span>
+      <span id="costProfitMargin">0.00%</span>
+    </div>
+
   </div>
 </section>
+
 
             <!-- =================================================
                  12 REVIEW & PUBLISH
@@ -2346,5 +2381,104 @@
     </div>
 </div>
 
+
+<script>
+(function () {
+    const root = document.querySelector('.tw-duration-select');
+    if (!root) return;
+
+    const nativeSelect = root.querySelector('select');
+    const trigger = root.querySelector('.tw-duration-trigger');
+    const triggerText = root.querySelector('.tw-duration-trigger-text');
+    const menu = root.querySelector('.tw-duration-menu');
+
+    if (!nativeSelect || !trigger || !menu) return;
+
+    function closeMenu() {
+        root.classList.remove('open');
+        trigger.setAttribute('aria-expanded', 'false');
+    }
+
+    function syncLabel() {
+        const selected = nativeSelect.options[nativeSelect.selectedIndex];
+        triggerText.textContent =
+            selected && selected.textContent.trim()
+                ? selected.textContent.trim()
+                : 'Select package option to edit';
+
+        menu.querySelectorAll('.tw-duration-option').forEach((button) => {
+            const active = button.dataset.value === nativeSelect.value;
+            button.classList.toggle('selected', active);
+            button.setAttribute('aria-selected', active ? 'true' : 'false');
+        });
+    }
+
+    function rebuildMenu() {
+        menu.innerHTML = '';
+
+        Array.from(nativeSelect.options).forEach((option) => {
+            if (option.disabled) return;
+
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'tw-duration-option';
+            button.dataset.value = option.value;
+            button.textContent = option.textContent.trim();
+            button.setAttribute('role', 'option');
+
+            button.addEventListener('click', () => {
+                nativeSelect.value = option.value;
+                nativeSelect.dispatchEvent(new Event('input', { bubbles: true }));
+                nativeSelect.dispatchEvent(new Event('change', { bubbles: true }));
+                syncLabel();
+                closeMenu();
+            });
+
+            menu.appendChild(button);
+        });
+
+        syncLabel();
+    }
+
+    trigger.addEventListener('click', (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+
+        /* Rebuild immediately so the latest Day Tour / 2D1N / 3D2N
+           options inserted by packages.js are always shown. */
+        rebuildMenu();
+
+        const willOpen = !root.classList.contains('open');
+        root.classList.toggle('open', willOpen);
+        trigger.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+    });
+
+    nativeSelect.addEventListener('change', syncLabel);
+    nativeSelect.addEventListener('input', syncLabel);
+
+    document.addEventListener('click', (event) => {
+        if (!root.contains(event.target)) closeMenu();
+    });
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') closeMenu();
+    });
+
+    /* packages.js dynamically replaces the duration options after a
+       destination/package is selected. Rebuild whenever that happens. */
+    const observer = new MutationObserver(() => {
+        rebuildMenu();
+    });
+
+    observer.observe(nativeSelect, {
+        childList: true,
+        subtree: true,
+        attributes: true
+    });
+
+    rebuildMenu();
+})();
+</script>
+
 </body>
-</html>
+</html> 

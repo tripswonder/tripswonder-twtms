@@ -1,0 +1,1301 @@
+<!-- =========================================================
+     TRIPS WONDER TRAVEL AND TOURS
+     TOUR PRICING CALCULATOR
+
+     FILE:
+     pages/admin/tour-pricing.html
+========================================================= -->
+
+<meta charset="UTF-8">
+
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+>
+
+<link
+  rel="stylesheet"
+  href="../../assets/css/admin/tour-pricing.css"
+> 
+
+<link
+  rel="stylesheet"
+  href="../../assets/css/admin/tour-pricing.css"
+/>
+
+
+<section class="tour-pricing-page">
+
+  <!-- =====================================================
+       PAGE HEADER
+  ====================================================== -->
+
+  <header class="tour-pricing-header">
+
+    <div>
+      <p class="tour-pricing-eyebrow">
+        Trips Wonder Admin
+      </p>
+
+      <h1>
+        Tour Pricing Calculator
+      </h1>
+
+      <p class="tour-pricing-subtitle">
+        Create tour costing and calculate your suggested
+        selling price.
+      </p>
+    </div>
+
+  </header>
+
+
+  <!-- =====================================================
+       PROGRESS STEPS
+  ====================================================== -->
+
+  <nav
+    class="pricing-steps"
+    aria-label="Tour pricing progress"
+  >
+
+    <div
+      class="pricing-step active"
+      data-step="1"
+    >
+      <span>1</span>
+      <small>Details</small>
+    </div>
+
+
+    <div
+      class="pricing-step"
+      data-step="2"
+    >
+      <span>2</span>
+      <small>Expenses</small>
+    </div>
+
+
+    <div
+      class="pricing-step"
+      data-step="3"
+    >
+      <span>3</span>
+      <small>Pricing</small>
+    </div>
+
+
+    <div
+      class="pricing-step"
+      data-step="4"
+    >
+      <span>4</span>
+      <small>Summary</small>
+    </div>
+
+  </nav>
+
+
+
+  <!-- =====================================================
+       STEP 1
+       TOUR DETAILS
+  ====================================================== -->
+
+  <section
+    class="pricing-panel active"
+    id="pricingStep1"
+  >
+
+    <div class="pricing-card">
+
+
+      <!-- CARD HEADER -->
+
+      <div class="card-heading">
+
+        <div>
+          <span class="card-step-label">
+            STEP 1
+          </span>
+
+          <h2>
+            Tour Details
+          </h2>
+        </div>
+
+
+        <p>
+          Enter the basic information for this tour.
+        </p>
+
+      </div>
+
+
+
+      <!-- FORM -->
+
+      <div class="pricing-form-grid">
+
+
+        <!-- DESTINATION -->
+
+        <div class="pricing-field full-width">
+
+          <label for="tourDestination">
+            Destination / Tour Name
+          </label>
+
+          <input
+            type="text"
+            id="tourDestination"
+            placeholder="Example: Jomalig Island"
+            autocomplete="off"
+          />
+
+        </div>
+
+
+
+        <!-- DURATION -->
+
+        <div class="pricing-field">
+
+          <label for="tourDuration">
+            Duration
+          </label>
+
+          <select id="tourDuration">
+
+            <option value="">
+              Select duration
+            </option>
+
+            <option value="Day Tour">
+              Day Tour
+            </option>
+
+            <option value="2D1N">
+              2 Days 1 Night
+            </option>
+
+            <option value="3D2N">
+              3 Days 2 Nights
+            </option>
+
+            <option value="4D3N">
+              4 Days 3 Nights
+            </option>
+
+            <option value="5D4N">
+              5 Days 4 Nights
+            </option>
+
+            <option value="custom">
+              Custom
+            </option>
+
+          </select>
+
+        </div>
+
+
+
+        <!-- TOUR TYPE -->
+
+        <div class="pricing-field">
+
+          <label for="tourType">
+            Tour Type
+          </label>
+
+          <select id="tourType">
+
+            <option value="Joiners">
+              Joiners
+            </option>
+
+            <option value="Exclusive">
+              Exclusive
+            </option>
+
+          </select>
+
+        </div>
+
+
+
+        <!-- EXPECTED PAX -->
+
+        <div class="pricing-field">
+
+          <label for="expectedPax">
+            Expected Guests
+          </label>
+
+          <div class="input-with-suffix">
+
+            <input
+              type="number"
+              id="expectedPax"
+              min="1"
+              value="12"
+              inputmode="numeric"
+            />
+
+            <span>
+              pax
+            </span>
+
+          </div>
+
+        </div>
+
+
+
+        <!-- TRAVEL DATE -->
+
+        <div class="pricing-field">
+
+          <label for="tourDate">
+            Travel Date
+          </label>
+
+          <input
+            type="date"
+            id="tourDate"
+          />
+
+        </div>
+
+
+
+        <!-- NOTES -->
+
+        <div class="pricing-field full-width">
+
+          <label for="tourNotes">
+
+            Notes
+
+            <span class="optional-label">
+              Optional
+            </span>
+
+          </label>
+
+          <textarea
+            id="tourNotes"
+            rows="3"
+            placeholder="Add notes about this tour..."
+          ></textarea>
+
+        </div>
+
+      </div>
+
+
+
+      <!-- ACTION -->
+
+      <div class="pricing-actions">
+
+        <button
+          type="button"
+          class="pricing-btn pricing-btn-primary"
+          id="goToExpenses"
+        >
+          Continue to Expenses
+          <span aria-hidden="true">
+            →
+          </span>
+        </button>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+
+  <!-- =====================================================
+       STEP 2
+       TOUR EXPENSES
+  ====================================================== -->
+
+  <section
+    class="pricing-panel"
+    id="pricingStep2"
+  >
+
+    <div class="pricing-card">
+
+
+      <!-- CARD HEADER -->
+
+      <div class="card-heading">
+
+        <div>
+
+          <span class="card-step-label">
+            STEP 2
+          </span>
+
+          <h2>
+            Tour Expenses
+          </h2>
+
+        </div>
+
+
+        <p>
+          Add all expenses needed to operate this tour.
+        </p>
+
+      </div>
+
+
+
+      <!-- =================================================
+           QUICK SUMMARY
+      ================================================== -->
+
+      <div class="expense-top-summary">
+
+
+        <!-- EXPECTED GUESTS -->
+
+        <div class="expense-summary-item">
+
+          <span>
+            Expected Guests
+          </span>
+
+          <strong>
+            <span id="expenseExpectedPax">
+              12
+            </span>
+            pax
+          </strong>
+
+        </div>
+
+
+
+        <!-- CURRENT TOTAL -->
+
+        <div class="expense-summary-item">
+
+          <span>
+            Current Total Cost
+          </span>
+
+          <strong id="expenseRunningTotal">
+            ₱0.00
+          </strong>
+
+        </div>
+
+      </div>
+
+
+
+      <!-- =================================================
+           EXPENSE TYPE GUIDE
+      ================================================== -->
+
+      <div class="expense-type-guide">
+
+
+        <!-- FIXED -->
+
+        <div class="expense-guide-item">
+
+          <div class="expense-guide-icon">
+            ₱
+          </div>
+
+          <div>
+
+            <strong>
+              Fixed Cost
+            </strong>
+
+            <p>
+              One amount regardless of the number
+              of guests.
+            </p>
+
+          </div>
+
+        </div>
+
+
+
+        <!-- PER PAX -->
+
+        <div class="expense-guide-item">
+
+          <div class="expense-guide-icon">
+            👤
+          </div>
+
+          <div>
+
+            <strong>
+              Per Pax
+            </strong>
+
+            <p>
+              Cost is automatically multiplied
+              by the guest count.
+            </p>
+
+          </div>
+
+        </div>
+
+
+
+        <!-- CAPACITY -->
+
+        <div class="expense-guide-item">
+
+          <div class="expense-guide-icon">
+            #
+          </div>
+
+          <div>
+
+            <strong>
+              Per Unit / Capacity
+            </strong>
+
+            <p>
+              Adds another unit when the maximum
+              capacity is exceeded.
+            </p>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+
+      <!-- =================================================
+           EXPENSE BREAKDOWN
+      ================================================== -->
+
+      <div class="expense-section">
+
+
+        <!-- SECTION HEADER -->
+
+        <div class="expense-section-header">
+
+          <div>
+
+            <h3>
+              Expense Breakdown
+            </h3>
+
+            <p>
+              Choose how each expense should
+              be calculated.
+            </p>
+
+          </div>
+
+
+          <button
+            type="button"
+            class="expense-add-btn"
+            id="addExpenseBtn"
+          >
+            + Add Expense
+          </button>
+
+        </div>
+
+
+
+        <!-- =================================================
+             DESKTOP COLUMN LABELS
+        ================================================== -->
+
+        <div class="expense-column-labels">
+
+          <span>
+            Expense
+          </span>
+
+          <span>
+            Type
+          </span>
+
+          <span>
+            Amount
+          </span>
+
+          <span>
+            Qty / Capacity
+          </span>
+
+          <span>
+            Total
+          </span>
+
+          <span></span>
+
+        </div>
+
+
+
+        <!-- =================================================
+             EXPENSE LIST
+        ================================================== -->
+
+        <div
+          class="expense-list"
+          id="expenseList"
+        >
+
+
+          <!-- =============================================
+               VAN RENTAL
+          ============================================== -->
+
+          <div class="expense-row">
+
+
+            <!-- NAME -->
+
+            <div
+              class="expense-field expense-name-field"
+              data-label="Expense"
+            >
+
+              <input
+                type="text"
+                class="expense-name"
+                value="Van Rental"
+                placeholder="Expense name"
+              />
+
+            </div>
+
+
+
+            <!-- TYPE -->
+
+            <div
+              class="expense-field"
+              data-label="Type"
+            >
+
+              <select class="expense-type">
+
+                <option value="fixed">
+                  Fixed Cost
+                </option>
+
+                <option value="perPax">
+                  Per Pax
+                </option>
+
+                <option
+                  value="capacity"
+                  selected
+                >
+                  Per Unit / Capacity
+                </option>
+
+              </select>
+
+            </div>
+
+
+
+            <!-- AMOUNT -->
+
+            <div
+              class="expense-field"
+              data-label="Amount / Unit"
+            >
+
+              <div class="money-input">
+
+                <span>
+                  ₱
+                </span>
+
+                <input
+                  type="number"
+                  class="expense-amount"
+                  min="0"
+                  step="0.01"
+                  value="15000"
+                  inputmode="decimal"
+                />
+
+              </div>
+
+            </div>
+
+
+
+            <!-- CAPACITY -->
+
+            <div
+              class="expense-field"
+              data-label="Capacity"
+            >
+
+              <div class="capacity-input">
+
+                <input
+                  type="number"
+                  class="expense-capacity"
+                  min="1"
+                  value="12"
+                  inputmode="numeric"
+                />
+
+                <span>
+                  pax
+                </span>
+
+              </div>
+
+            </div>
+
+
+
+            <!-- TOTAL -->
+
+            <div
+              class="expense-total"
+              data-label="Total"
+            >
+              ₱15,000.00
+            </div>
+
+
+
+            <!-- REMOVE -->
+
+            <button
+              type="button"
+              class="expense-remove-btn"
+              aria-label="Remove Van Rental"
+            >
+              ×
+            </button>
+
+          </div>
+
+
+
+          <!-- =============================================
+               DRIVER
+          ============================================== -->
+
+          <div class="expense-row">
+
+
+            <div
+              class="expense-field expense-name-field"
+              data-label="Expense"
+            >
+
+              <input
+                type="text"
+                class="expense-name"
+                value="Driver"
+                placeholder="Expense name"
+              />
+
+            </div>
+
+
+
+            <div
+              class="expense-field"
+              data-label="Type"
+            >
+
+              <select class="expense-type">
+
+                <option
+                  value="fixed"
+                  selected
+                >
+                  Fixed Cost
+                </option>
+
+                <option value="perPax">
+                  Per Pax
+                </option>
+
+                <option value="capacity">
+                  Per Unit / Capacity
+                </option>
+
+              </select>
+
+            </div>
+
+
+
+            <div
+              class="expense-field"
+              data-label="Amount"
+            >
+
+              <div class="money-input">
+
+                <span>
+                  ₱
+                </span>
+
+                <input
+                  type="number"
+                  class="expense-amount"
+                  min="0"
+                  step="0.01"
+                  value="2000"
+                  inputmode="decimal"
+                />
+
+              </div>
+
+            </div>
+
+
+
+            <div
+              class="expense-field"
+              data-label="Quantity"
+            >
+
+              <div class="capacity-input">
+
+                <input
+                  type="number"
+                  class="expense-capacity"
+                  min="1"
+                  value="1"
+                  disabled
+                />
+
+                <span>
+                  qty
+                </span>
+
+              </div>
+
+            </div>
+
+
+
+            <div
+              class="expense-total"
+              data-label="Total"
+            >
+              ₱2,000.00
+            </div>
+
+
+
+            <button
+              type="button"
+              class="expense-remove-btn"
+              aria-label="Remove Driver"
+            >
+              ×
+            </button>
+
+          </div>
+
+
+
+          <!-- =============================================
+               MEALS
+          ============================================== -->
+
+          <div class="expense-row">
+
+
+            <div
+              class="expense-field expense-name-field"
+              data-label="Expense"
+            >
+
+              <input
+                type="text"
+                class="expense-name"
+                value="Meals"
+                placeholder="Expense name"
+              />
+
+            </div>
+
+
+
+            <div
+              class="expense-field"
+              data-label="Type"
+            >
+
+              <select class="expense-type">
+
+                <option value="fixed">
+                  Fixed Cost
+                </option>
+
+                <option
+                  value="perPax"
+                  selected
+                >
+                  Per Pax
+                </option>
+
+                <option value="capacity">
+                  Per Unit / Capacity
+                </option>
+
+              </select>
+
+            </div>
+
+
+
+            <div
+              class="expense-field"
+              data-label="Amount / Pax"
+            >
+
+              <div class="money-input">
+
+                <span>
+                  ₱
+                </span>
+
+                <input
+                  type="number"
+                  class="expense-amount"
+                  min="0"
+                  step="0.01"
+                  value="600"
+                  inputmode="decimal"
+                />
+
+              </div>
+
+            </div>
+
+
+
+            <div
+              class="expense-field"
+              data-label="Guests"
+            >
+
+              <div class="capacity-input">
+
+                <input
+                  type="number"
+                  class="expense-capacity"
+                  value="12"
+                  disabled
+                />
+
+                <span>
+                  pax
+                </span>
+
+              </div>
+
+            </div>
+
+
+
+            <div
+              class="expense-total"
+              data-label="Total"
+            >
+              ₱7,200.00
+            </div>
+
+
+
+            <button
+              type="button"
+              class="expense-remove-btn"
+              aria-label="Remove Meals"
+            >
+              ×
+            </button>
+
+          </div>
+
+
+        </div>
+
+
+
+        <!-- MOBILE ADD EXPENSE -->
+
+        <button
+          type="button"
+          class="expense-add-mobile-btn"
+          id="addExpenseMobileBtn"
+        >
+          + Add Another Expense
+        </button>
+
+      </div>
+
+
+
+      <!-- =================================================
+           GRAND TOTAL
+      ================================================== -->
+
+      <div class="expense-grand-total">
+
+        <div>
+
+          <span>
+            Total Tour Expenses
+          </span>
+
+          <small>
+            Based on
+            <strong id="expensePaxLabel">
+              12
+            </strong>
+            expected guests
+          </small>
+
+        </div>
+
+
+        <strong id="expenseGrandTotal">
+          ₱24,200.00
+        </strong>
+
+      </div>
+
+
+
+      <!-- =================================================
+           ACTIONS
+      ================================================== -->
+
+      <div class="pricing-actions pricing-actions-between">
+
+        <button
+          type="button"
+          class="pricing-btn pricing-btn-secondary"
+          id="backToDetails"
+        >
+          ← Back
+        </button>
+
+
+        <button
+          type="button"
+          class="pricing-btn pricing-btn-primary"
+          id="goToPricing"
+        >
+          Continue to Pricing
+
+          <span aria-hidden="true">
+            →
+          </span>
+
+        </button>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+
+  <!-- =====================================================
+       STEP 3
+       PRICING SETUP
+  ====================================================== -->
+
+  <section class="pricing-panel" id="pricingStep3">
+    <div class="pricing-card">
+
+      <div class="card-heading">
+        <div>
+          <span class="card-step-label">STEP 3</span>
+          <h2>Pricing Setup</h2>
+        </div>
+        <p>Set your target profit and final selling price.</p>
+      </div>
+
+      <div class="pricing-metrics-grid">
+        <div class="pricing-metric">
+          <span>Total Tour Cost</span>
+          <strong id="pricingTotalCost">₱0.00</strong>
+        </div>
+
+        <div class="pricing-metric">
+          <span>Expected Guests</span>
+          <strong><span id="pricingExpectedPax">12</span> pax</strong>
+        </div>
+
+        <div class="pricing-metric pricing-metric-highlight">
+          <span>Cost Per Pax</span>
+          <strong id="pricingCostPerPax">₱0.00</strong>
+        </div>
+      </div>
+
+      <div class="pricing-setup-body">
+
+        <div class="pricing-field">
+          <label for="targetProfitPerPax">Target Profit / Pax</label>
+          <div class="money-input pricing-money-input">
+            <span>₱</span>
+            <input
+              type="number"
+              id="targetProfitPerPax"
+              min="0"
+              step="0.01"
+              value="800"
+              inputmode="decimal"
+            />
+          </div>
+        </div>
+
+        <div class="pricing-field">
+          <label for="markupPercent">
+            Markup %
+            <span class="optional-label">Optional</span>
+          </label>
+
+          <div class="input-with-suffix">
+            <input
+              type="number"
+              id="markupPercent"
+              min="0"
+              step="0.01"
+              placeholder="0"
+              inputmode="decimal"
+            />
+            <span>%</span>
+          </div>
+        </div>
+
+        <div class="suggested-price-card">
+          <div>
+            <span>Suggested Selling Price / Pax</span>
+            <small>Cost per pax + target profit + optional markup</small>
+          </div>
+          <strong id="suggestedSellingPrice">₱0.00</strong>
+        </div>
+
+        <label class="own-price-toggle">
+          <input type="checkbox" id="useOwnSellingPrice" />
+          <span class="toggle-ui"></span>
+
+          <span class="toggle-copy">
+            <strong>Set my own selling price</strong>
+            <small>Use your actual package price instead of the suggested price.</small>
+          </span>
+        </label>
+
+        <div class="pricing-field own-price-field" id="ownPriceField" hidden>
+          <label for="ownSellingPrice">Own Selling Price / Pax</label>
+
+          <div class="money-input pricing-money-input">
+            <span>₱</span>
+            <input
+              type="number"
+              id="ownSellingPrice"
+              min="0"
+              step="0.01"
+              placeholder="Example: 4799"
+              inputmode="decimal"
+            />
+          </div>
+        </div>
+
+        <div class="pricing-results-grid">
+          <div class="pricing-result-box">
+            <span>Final Selling Price / Pax</span>
+            <strong id="finalSellingPrice">₱0.00</strong>
+          </div>
+
+          <div class="pricing-result-box">
+            <span>Expected Revenue</span>
+            <strong id="expectedRevenue">₱0.00</strong>
+          </div>
+
+          <div class="pricing-result-box profit">
+            <span>Estimated Profit</span>
+            <strong id="estimatedProfit">₱0.00</strong>
+          </div>
+
+          <div class="pricing-result-box">
+            <span>Profit / Pax</span>
+            <strong id="actualProfitPerPax">₱0.00</strong>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="pricing-actions pricing-actions-between">
+        <button
+          type="button"
+          class="pricing-btn pricing-btn-secondary"
+          id="backToExpenses"
+        >
+          ← Back
+        </button>
+
+        <button
+          type="button"
+          class="pricing-btn pricing-btn-primary"
+          id="goToSummary"
+        >
+          View Summary
+          <span aria-hidden="true">→</span>
+        </button>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- =====================================================
+       STEP 4
+       PRICING SUMMARY
+  ====================================================== -->
+
+  <section class="pricing-panel" id="pricingStep4">
+    <div class="pricing-card">
+
+      <div class="card-heading">
+        <div>
+          <span class="card-step-label">STEP 4</span>
+          <h2>Pricing Summary</h2>
+        </div>
+        <p>Review the final costing and compare different guest counts.</p>
+      </div>
+
+      <div class="summary-tour-header">
+        <div>
+          <span>TOUR</span>
+          <h3 id="summaryDestination">Untitled Tour</h3>
+          <p id="summaryMeta">—</p>
+        </div>
+
+        <div class="summary-price">
+          <span>Final Price / Pax</span>
+          <strong id="summarySellingPrice">₱0.00</strong>
+        </div>
+      </div>
+
+      <div class="summary-metrics-grid">
+        <div class="summary-metric">
+          <span>Total Cost</span>
+          <strong id="summaryTotalCost">₱0.00</strong>
+        </div>
+
+        <div class="summary-metric">
+          <span>Cost / Pax</span>
+          <strong id="summaryCostPerPax">₱0.00</strong>
+        </div>
+
+        <div class="summary-metric">
+          <span>Revenue</span>
+          <strong id="summaryRevenue">₱0.00</strong>
+        </div>
+
+        <div class="summary-metric summary-profit">
+          <span>Profit</span>
+          <strong id="summaryProfit">₱0.00</strong>
+        </div>
+      </div>
+
+      <div class="simulator-section">
+
+        <div class="simulator-heading">
+          <div>
+            <h3>Pax Pricing Simulator</h3>
+            <p>Compare total cost and profit at different guest counts.</p>
+          </div>
+
+          <div class="custom-pax-control">
+            <label for="customSimulatorPax">Custom Pax</label>
+            <input
+              type="number"
+              id="customSimulatorPax"
+              min="1"
+              placeholder="20"
+              inputmode="numeric"
+            />
+          </div>
+        </div>
+
+        <div class="simulator-table-wrap">
+          <table class="simulator-table">
+            <thead>
+              <tr>
+                <th>Pax</th>
+                <th>Total Cost</th>
+                <th>Cost / Pax</th>
+                <th>Revenue</th>
+                <th>Profit</th>
+              </tr>
+            </thead>
+            <tbody id="simulatorTableBody"></tbody>
+          </table>
+        </div>
+
+        <div class="break-even-card">
+          <span>Break-even at current selling price</span>
+          <strong id="breakEvenPax">—</strong>
+          <small id="breakEvenNote">
+            Calculated using your current expense setup.
+          </small>
+        </div>
+
+      </div>
+
+      <div class="pricing-actions pricing-actions-between">
+        <button
+          type="button"
+          class="pricing-btn pricing-btn-secondary"
+          id="backToPricing"
+        >
+          ← Back
+        </button>
+
+        <button
+          type="button"
+          class="pricing-btn pricing-btn-primary"
+          id="saveTourPricing"
+        >
+          Save Tour Pricing
+        </button>
+      </div>
+
+    </div>
+  </section>
+
+</section>
+
+<script src="../../assets/js/admin/tour-pricing.js"></script>

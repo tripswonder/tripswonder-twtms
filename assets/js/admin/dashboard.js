@@ -1850,7 +1850,8 @@ const dashboardState = {
     packages: [],
     bookings: [],
     customers: [],
-    payments: []
+    payments: [],
+    notificationReads: []
 };
 
 let dashboardUnsubscribers = [];
@@ -1968,6 +1969,129 @@ function packageName(record) {
 }
 
 
+// =========================================================
+// CUSTOMER COUNT
+// Keep Dashboard customer total consistent with Customers module:
+// manual customers + unique customers generated from bookings.
+// Priority: Contact -> Email -> Facebook -> Name
+// =========================================================
+
+function normalizeCustomerText(value) {
+
+    return String(value ?? "")
+        .trim()
+        .toLowerCase();
+
+}
+
+
+function getDashboardCustomerKey(record) {
+
+    const contact = normalizeCustomerText(
+        record.customerContact ||
+        record.contact ||
+        record.phone
+    );
+
+    const email = normalizeCustomerText(
+        record.customerEmail ||
+        record.email
+    );
+
+    const facebook = normalizeCustomerText(
+        record.customerFb ||
+        record.customerFacebook ||
+        record.facebook
+    );
+
+    const name = normalizeCustomerText(
+        record.customerName ||
+        record.fullName ||
+        record.name ||
+        [record.firstName, record.lastName]
+            .filter(Boolean)
+            .join(" ")
+    );
+
+    if (contact) {
+        return `contact:${contact}`;
+    }
+
+    if (email) {
+        return `email:${email}`;
+    }
+
+    if (facebook) {
+        return `facebook:${facebook}`;
+    }
+
+    if (name) {
+        return `name:${name}`;
+    }
+
+    return "";
+
+}
+
+
+function getDashboardCustomerCount() {
+
+    const customerMap = new Map();
+
+    // FIRST:
+    // Build unique customers automatically from bookings.
+    dashboardState.bookings.forEach(
+        booking => {
+
+            const key =
+                getDashboardCustomerKey(booking);
+
+            if (!key) {
+                return;
+            }
+
+            if (!customerMap.has(key)) {
+                customerMap.set(
+                    key,
+                    {
+                        source: "booking",
+                        record: booking
+                    }
+                );
+            }
+
+        }
+    );
+
+    // SECOND:
+    // Merge manual customer profiles using the same match-key
+    // approach used by the Customers module.
+    dashboardState.customers.forEach(
+        customer => {
+
+            const key =
+                getDashboardCustomerKey(customer);
+
+            if (!key) {
+                return;
+            }
+
+            customerMap.set(
+                key,
+                {
+                    source: "manual",
+                    record: customer
+                }
+            );
+
+        }
+    );
+
+    return customerMap.size;
+
+}
+
+
 function emptyDashboardState(icon, title, message) {
 
     return `
@@ -2020,7 +2144,7 @@ function renderOverview() {
     const values = {
         totalPackages: activePackages.length,
         totalBookings: dashboardState.bookings.length,
-        totalCustomers: dashboardState.customers.length,
+        totalCustomers: getDashboardCustomerCount(),
         totalRevenue: `₱${formatDashboardMoney(revenue)}`
     };
 
@@ -2386,6 +2510,85 @@ function renderUpcomingTrips() {
 }
 
 
+function isDashboardWebsiteBooking(booking) {
+    const bookingSource = String(booking.bookingSource || "").trim().toLowerCase();
+    const source = String(booking.source || "").trim().toLowerCase();
+    return bookingSource === "website" || source === "client_booking_form";
+}
+
+function dashboardNotificationTime(value) {
+    const date = valueToDate(value);
+    if (!date) return "";
+    const diff = Date.now() - date.getTime();
+    const minutes = Math.max(0, Math.floor(diff / 60000));
+    if (minutes < 1) return "Just now";
+    if (minutes < 60) return `${minutes}m ago`;
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `${hours}h ago`;
+    const days = Math.floor(hours / 24);
+    if (days < 7) return `${days}d ago`;
+    return formatDashboardDate(date);
+}
+
+function renderDashboardNotifications() {
+    const container = document.getElementById("dashboardNotificationList");
+    if (!container) return;
+
+    const readIds = new Set(
+        dashboardState.notificationReads
+            .map(item => item.notificationKey)
+            .filter(Boolean)
+    );
+
+    const notifications = dashboardState.bookings
+        .filter(isDashboardWebsiteBooking)
+        .map(booking => ({
+            ...booking,
+            dashboardNotificationDate: recordDate(
+                booking,
+                ["createdAt", "dateCreated", "bookingDate", "updatedAt"]
+            )
+        }))
+        .sort((a, b) =>
+            (b.dashboardNotificationDate?.getTime() || 0) -
+            (a.dashboardNotificationDate?.getTime() || 0)
+        )
+        .slice(0, 4);
+
+    if (!notifications.length) {
+        container.innerHTML = emptyDashboardState(
+            "fa-regular fa-bell",
+            "No recent notifications",
+            "New messages, requests and booking activity will appear here."
+        );
+        return;
+    }
+
+    container.innerHTML = notifications.map(booking => {
+        const key = `booking:${booking.id}`;
+        const unread = !readIds.has(key);
+        const name = customerName(booking);
+        const tour = packageName(booking);
+        return `
+            <div class="dashboard-notification-item"
+                onclick="window.location.href='notifications.html'">
+                <div class="dashboard-notification-icon">
+                    <i class="fa-regular fa-calendar-plus"></i>
+                </div>
+                <div class="dashboard-notification-copy">
+                    <strong>New Booking Request</strong>
+                    <span>${escapeHtml(name)} submitted a booking for ${escapeHtml(tour)}.</span>
+                </div>
+                <div class="dashboard-notification-meta">
+                    <span>${escapeHtml(dashboardNotificationTime(booking.dashboardNotificationDate))}</span>
+                    ${unread ? '<span class="dashboard-notification-dot" title="Unread"></span>' : ''}
+                </div>
+            </div>
+        `;
+    }).join("");
+}
+
+
 function renderDashboard() {
 
     renderOverview();
@@ -2393,6 +2596,7 @@ function renderDashboard() {
     renderNewBookings();
     renderRecentPayments();
     renderUpcomingTrips();
+    renderDashboardNotifications();
 
 }
 
@@ -2446,6 +2650,21 @@ function startDashboardData() {
 
         }
     );
+
+    const readsUnsubscribe = onSnapshot(
+        collection(db, "adminNotificationReads"),
+        snapshot => {
+            dashboardState.notificationReads = snapshot.docs.map(
+                item => ({ id: item.id, ...item.data() })
+            );
+            renderDashboardNotifications();
+        },
+        error => {
+            console.error("DASHBOARD NOTIFICATION READS ERROR:", error);
+        }
+    );
+
+    dashboardUnsubscribers.push(readsUnsubscribe);
 
 }
 

@@ -1357,3 +1357,523 @@ a {
     }   
 }
  
+/* =========================================================
+   MOBILE BOOKINGS - FINAL USABILITY UPDATE
+   - 4 summary cards in one row
+   - Only booking table can swipe horizontally
+   - Selected booking row stays highlighted
+========================================================= */
+
+.booking-table tbody tr.booking-row-selected {
+    background: #eaf4ff;
+    box-shadow: inset 4px 0 0 #1767b7;
+}
+
+.booking-table tbody tr.booking-row-selected td {
+    background: #eaf4ff;
+}
+
+@media (max-width: 700px) {
+    html,
+    body,
+    .admin-wrapper,
+    .main,
+    .content,
+    #bookingsContent {
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+
+    .booking-summary {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 6px;
+    }
+
+    .summary-card {
+        min-height: 70px;
+        gap: 6px;
+        padding: 8px 6px;
+        border-radius: 10px;
+    }
+
+    .summary-icon {
+        width: 30px;
+        height: 30px;
+        flex: 0 0 30px;
+        border-radius: 8px;
+        font-size: 11px;
+    }
+
+    .summary-info {
+        min-width: 0;
+        grid-template-columns: 1fr;
+        grid-template-areas:
+            "label"
+            "value";
+        row-gap: 2px;
+    }
+
+    .summary-info > span {
+        overflow: hidden;
+        font-size: 7px;
+        line-height: 1.2;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .summary-info > strong {
+        margin-top: 0;
+        font-size: 16px;
+    }
+
+    .summary-info > small {
+        display: none;
+    }
+
+    .booking-table-card {
+        overflow: hidden;
+    }
+
+    .table-scroll {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: auto;
+        overflow-y: hidden;
+        overscroll-behavior-x: contain;
+        -webkit-overflow-scrolling: touch;
+        touch-action: pan-x pan-y;
+    }
+
+    .booking-table tbody tr {
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+    }
+}
+
+
+/* =========================================================
+   FINAL MOBILE BOOKINGS LAYOUT
+   Target: compact 440px mobile admin view
+   - Title + New Booking in one row
+   - 3 filters in one row
+   - 4 summary cards in one row
+   - Only booking table scrolls horizontally
+========================================================= */
+
+@media (max-width: 700px) {
+
+    html,
+    body {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden !important;
+    }
+
+    .admin-wrapper,
+    .main,
+    .content,
+    #bookingsContent {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        overflow-x: hidden;
+    }
+
+    .content {
+        padding: 20px 18px 36px;
+    }
+
+    /* HEADER: title + button same row */
+    .bookings-header {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        grid-template-areas:
+            "title button";
+        align-items: start;
+        gap: 12px;
+        margin-bottom: 16px;
+    }
+
+    .bookings-title {
+        grid-area: title;
+        min-width: 0;
+    }
+
+    .bookings-title h1 {
+        font-size: 27px;
+        line-height: 1.05;
+    }
+
+    .bookings-title p {
+        max-width: 245px;
+        margin-top: 5px;
+        font-size: 9px;
+        line-height: 1.5;
+    }
+
+    .bookings-header .primary-btn {
+        grid-area: button;
+        width: auto;
+        min-width: 116px;
+        min-height: 38px;
+        padding: 0 12px;
+        align-self: start;
+        border-radius: 9px;
+        font-size: 9px;
+    }
+
+    /* SEARCH + FILTERS */
+    .booking-toolbar {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 7px;
+        margin-bottom: 14px;
+    }
+
+    .booking-search-wrap {
+        grid-column: 1 / -1;
+        height: 38px;
+        padding: 0 11px;
+        border-radius: 9px;
+    }
+
+    .booking-search {
+        font-size: 9px;
+    }
+
+    .filter-select {
+        width: 100%;
+        min-width: 0;
+        height: 38px;
+        padding: 0 22px 0 8px;
+        border-radius: 9px;
+        font-size: 8px;
+        text-overflow: ellipsis;
+    }
+
+    /* SUMMARY: all four in one row */
+    .booking-summary {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 7px;
+        margin-bottom: 16px;
+    }
+
+    .summary-card {
+        min-width: 0;
+        min-height: 62px;
+        gap: 6px;
+        padding: 8px 6px;
+        border-radius: 10px;
+        box-shadow: 0 3px 12px rgba(23, 58, 93, .035);
+    }
+
+    .summary-icon {
+        width: 28px;
+        height: 28px;
+        flex: 0 0 28px;
+        border-radius: 8px;
+        font-size: 10px;
+    }
+
+    .summary-info {
+        min-width: 0;
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-areas:
+            "label"
+            "value";
+        align-items: center;
+        row-gap: 1px;
+    }
+
+    .summary-info > span {
+        overflow: hidden;
+        font-size: 7px;
+        line-height: 1.15;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .summary-info > strong {
+        margin-top: 0;
+        font-size: 16px;
+        line-height: 1;
+    }
+
+    .summary-info > small {
+        display: none;
+    }
+
+    /* LIST HEADER */
+    .booking-list-header {
+        min-height: 0;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(160px, 1.25fr);
+        align-items: end;
+        gap: 10px;
+        margin-bottom: 9px;
+    }
+
+    .booking-list-header h2 {
+        font-size: 15px;
+    }
+
+    .booking-list-header > div:first-child > span {
+        margin-top: 2px;
+        font-size: 7px;
+    }
+
+    .booking-list-actions {
+        min-width: 0;
+        justify-content: flex-end;
+        gap: 6px;
+    }
+
+    .booking-list-actions label {
+        flex: 0 0 auto;
+        font-size: 7px;
+    }
+
+    .booking-sort-select {
+        width: auto;
+        min-width: 0;
+        flex: 1 1 auto;
+        height: 34px;
+        padding: 0 24px 0 9px;
+        font-size: 8px;
+    }
+
+    .refresh-btn {
+        width: 34px;
+        height: 34px;
+        flex: 0 0 34px;
+    }
+
+    /* TABLE: this is the ONLY horizontal swipe area */
+    .booking-table-card {
+        width: 100%;
+        max-width: 100%;
+        overflow: hidden;
+        touch-action: pan-y;
+    }
+
+    .table-scroll {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: auto !important;
+        overflow-y: visible;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior-x: contain;
+        touch-action: pan-x pan-y;
+    }
+
+    .booking-table {
+        min-width: 1100px;
+    }
+
+    /* Selected row stays visible while horizontally swiping */
+    .booking-table tbody tr {
+        position: relative;
+        cursor: pointer;
+        transition:
+            background-color .16s ease,
+            box-shadow .16s ease;
+    }
+
+    .booking-table tbody tr.booking-row-selected,
+    .booking-table tbody tr.booking-row-selected:hover {
+        background: #eaf4ff !important;
+        box-shadow: inset 4px 0 0 #1767b7;
+    }
+
+    .booking-table tbody tr.booking-row-selected td {
+        background: transparent;
+    }
+
+    /* Keep forms/modals mobile-friendly */
+    .form-grid,
+    .booking-payment-grid,
+    .booking-view-grid,
+    .booking-status-options,
+    .booking-promo-breakdown {
+        grid-template-columns: 1fr;
+    }
+
+    .booking-modal,
+    .booking-view-modal,
+    .booking-status-modal {
+        padding: 10px;
+    }
+
+    .booking-modal-panel,
+    .booking-view-dialog,
+    .booking-status-dialog {
+        max-height: calc(100vh - 20px);
+    }
+
+    .booking-form-footer {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .booking-form-footer-actions {
+        width: 100%;
+    }
+
+    .booking-form-footer-actions button {
+        flex: 1;
+    }
+
+    .booking-promo-summary-head {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}
+
+/* Extra protection for narrower phones */
+@media (max-width: 390px) {
+
+    .content {
+        padding-left: 14px;
+        padding-right: 14px;
+    }
+
+    .bookings-header {
+        gap: 8px;
+    }
+
+    .bookings-title h1 {
+        font-size: 24px;
+    }
+
+    .bookings-header .primary-btn {
+        min-width: 105px;
+        padding: 0 9px;
+        font-size: 8px;
+    }
+
+    .booking-toolbar,
+    .booking-summary {
+        gap: 5px;
+    }
+
+    .filter-select {
+        padding-left: 6px;
+        font-size: 7px;
+    }
+
+    .summary-card {
+        gap: 4px;
+        padding-left: 5px;
+        padding-right: 5px;
+    }
+
+    .summary-icon {
+        width: 25px;
+        height: 25px;
+        flex-basis: 25px;
+    }
+
+    .summary-info > span {
+        font-size: 6.5px;
+    }
+
+    .summary-info > strong {
+        font-size: 15px;
+    }
+}
+
+
+/* =========================================================
+   MOBILE READABILITY POLISH
+   Keeps the approved compact layout while improving legibility.
+========================================================= */
+
+@media (min-width: 391px) and (max-width: 700px) {
+
+    .bookings-title h1 {
+        font-size: 29px;
+        letter-spacing: -0.5px;
+    }
+
+    .bookings-title p {
+        max-width: 255px;
+        font-size: 9.5px;
+        line-height: 1.45;
+    }
+
+    .bookings-header .primary-btn {
+        min-width: 120px;
+        min-height: 40px;
+        padding-inline: 13px;
+        font-size: 9.5px;
+        font-weight: 700;
+    }
+
+    .booking-search-wrap {
+        height: 40px;
+    }
+
+    .booking-search {
+        font-size: 9.5px;
+    }
+
+    .filter-select {
+        height: 40px;
+        padding-left: 9px;
+        font-size: 8.5px;
+        font-weight: 600;
+    }
+
+    .booking-summary {
+        gap: 7px;
+    }
+
+    .summary-card {
+        min-height: 66px;
+        padding: 8px 7px;
+    }
+
+    .summary-icon {
+        width: 30px;
+        height: 30px;
+        flex-basis: 30px;
+        font-size: 11px;
+    }
+
+    .summary-info > span {
+        font-size: 7.4px;
+        font-weight: 600;
+    }
+
+    .summary-info > strong {
+        font-size: 17px;
+        font-weight: 700;
+    }
+
+    .booking-list-header h2 {
+        font-size: 16px;
+    }
+
+    .booking-list-header > div:first-child > span {
+        font-size: 7.5px;
+    }
+
+    .booking-list-actions label {
+        font-size: 7.5px;
+        font-weight: 600;
+    }
+
+    .booking-sort-select {
+        height: 36px;
+        font-size: 8.5px;
+        font-weight: 600;
+    }
+
+    .refresh-btn {
+        width: 36px;
+        height: 36px;
+        flex-basis: 36px;
+    }
+}

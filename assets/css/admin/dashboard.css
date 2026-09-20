@@ -4985,3 +4985,428 @@ ol {
 
 }
 
+
+
+/* =========================================================
+   DASHBOARD CLEAN TOP LAYOUT
+   Welcome banner + Overview heading removed.
+   Stats cards now begin immediately below the shared header.
+   ========================================================= */
+
+#dashboardContent {
+    padding-top: 28px;
+}
+
+#dashboardContent > .stats-grid {
+    margin-top: 0;
+}
+
+@media (max-width: 900px) {
+    #dashboardContent {
+        padding-top: 22px;
+    }
+}
+
+@media (max-width: 600px) {
+    #dashboardContent {
+        padding-top: 18px;
+    }
+}
+
+/* =========================================================
+   DASHBOARD COMPACT UI
+   Reduced whitespace while preserving the existing layout.
+   ========================================================= */
+#dashboardContent { padding: 22px 30px 42px; }
+#dashboardContent > .stats-grid { gap: 14px; margin-bottom: 16px; }
+#dashboardContent .stat-card { min-height: 122px; padding: 15px 16px; }
+#dashboardContent .stat-icon { width: 36px; height: 36px; flex-basis: 36px; border-radius: 9px; font-size: 14px; }
+#dashboardContent .stat-value { margin-top: 10px; }
+#dashboardContent .stat-value strong { font-size: 23px; }
+#dashboardContent .stat-description { margin-top: 6px; }
+#dashboardContent .stat-change { margin-top: 5px; }
+#dashboardContent .dashboard-main-grid { column-gap: 16px; row-gap: 16px; }
+#dashboardContent .dashboard-card { min-height: 0; }
+#dashboardContent .dashboard-card-header { min-height: 60px; padding: 13px 18px; }
+#dashboardContent .dashboard-card-header h2 { font-size: 13px; }
+#dashboardContent .dashboard-card-header span { margin-top: 2px; }
+#dashboardContent .booking-list, #dashboardContent .payment-list { padding: 0 10px; }
+#dashboardContent .booking-item, #dashboardContent .payment-item { min-height: 64px; gap: 10px; padding: 9px 10px; }
+#dashboardContent .booking-item-icon, #dashboardContent .payment-item-icon { width: 34px; height: 34px; flex-basis: 34px; border-radius: 9px; font-size: 12px; }
+#dashboardContent .booking-customer { margin-top: 2px; }
+#dashboardContent .booking-details, #dashboardContent .payment-details { margin-top: 1px; }
+#dashboardContent .payment-booking { margin-top: 2px; }
+#dashboardContent .booking-item-right, #dashboardContent .payment-item-right { gap: 2px; }
+#dashboardContent .dashboard-card-footer { padding: 9px 18px; }
+#dashboardContent .upcoming-trips-list { padding-top: 0; padding-bottom: 0; }
+#dashboardContent .trip-item { min-height: 62px; padding: 8px 10px; }
+#dashboardContent .booking-status-grid { gap: 10px; padding: 14px; }
+#dashboardContent .booking-status { min-height: 88px; padding: 12px; }
+#dashboardContent .account-section .section-title { margin-top: 20px; margin-bottom: 10px; }
+@media (max-width: 1100px) {
+  #dashboardContent { padding: 20px 22px 38px; }
+  #dashboardContent > .stats-grid { gap: 12px; }
+}
+@media (max-width: 700px) {
+  #dashboardContent { padding: 16px 14px 30px; }
+  #dashboardContent > .stats-grid { gap: 10px; margin-bottom: 12px; }
+  #dashboardContent .stat-card { min-height: 112px; padding: 13px 14px; }
+  #dashboardContent .dashboard-main-grid { row-gap: 12px; }
+  #dashboardContent .dashboard-card-header { min-height: 56px; padding: 12px 14px; }
+  #dashboardContent .booking-item, #dashboardContent .payment-item { min-height: 60px; padding: 8px 7px; }
+  #dashboardContent .dashboard-card-footer { padding: 8px 14px; }
+}
+
+/* FINAL COMPACT DASHBOARD LAYOUT */
+#dashboardContent .dashboard-main-grid{
+  display:grid;
+  grid-template-columns:repeat(6,minmax(0,1fr));
+  gap:14px;
+  align-items:stretch;
+}
+#dashboardContent .new-bookings-card,
+#dashboardContent .recent-payments-card,
+#dashboardContent .upcoming-trips-card{grid-column:span 2;min-height:350px;}
+#dashboardContent .booking-status-card,
+#dashboardContent .needs-attention-card{grid-column:span 3;}
+
+#dashboardContent .dashboard-card-header{min-height:54px;padding:10px 14px;}
+#dashboardContent .booking-item,
+#dashboardContent .payment-item{min-height:54px;padding:7px;gap:8px;}
+#dashboardContent .booking-item-icon,
+#dashboardContent .payment-item-icon{width:31px;height:31px;flex-basis:31px;}
+#dashboardContent .trip-item{min-height:54px;padding:7px 8px;}
+#dashboardContent .trip-image{width:44px;height:38px;flex-basis:44px;}
+
+#dashboardContent .booking-status-grid{
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:9px;padding:12px;
+}
+#dashboardContent .booking-status{min-height:80px;padding:10px;}
+
+#dashboardContent .dashboard-card-title-with-icon{display:flex;align-items:center;gap:9px;}
+#dashboardContent .attention-header-icon{
+  width:30px;height:30px;flex:0 0 30px;display:grid;place-items:center;
+  border-radius:9px;background:#fff0f0;color:#e53945;font-size:12px;
+}
+#dashboardContent .attention-list{padding:2px 14px 8px;}
+#dashboardContent .attention-item{
+  min-height:48px;display:grid;grid-template-columns:30px 1fr 14px;
+  align-items:center;gap:10px;border-bottom:1px solid var(--border-light);
+}
+#dashboardContent .attention-item:last-child{border-bottom:0;}
+#dashboardContent .attention-count{
+  min-width:28px;height:25px;display:grid;place-items:center;border-radius:7px;
+  background:#fff0f0;color:#e53945;font-size:10px;font-weight:700;
+}
+#dashboardContent .attention-label{color:var(--text);font-size:10px;font-weight:500;}
+#dashboardContent .attention-item>i{color:#9aacc0;font-size:8px;}
+
+/* Account info is already available from the profile menu; keep dashboard operational. */
+#dashboardContent .account-section{display:none;}
+
+@media(max-width:1180px){
+  #dashboardContent .new-bookings-card,
+  #dashboardContent .recent-payments-card{grid-column:span 3;}
+  #dashboardContent .upcoming-trips-card{grid-column:span 6;min-height:0;}
+}
+@media(max-width:850px){
+  #dashboardContent .dashboard-main-grid{grid-template-columns:1fr;}
+  #dashboardContent .new-bookings-card,
+  #dashboardContent .recent-payments-card,
+  #dashboardContent .upcoming-trips-card,
+  #dashboardContent .booking-status-card,
+  #dashboardContent .needs-attention-card{grid-column:auto;min-height:0;}
+  #dashboardContent .booking-status-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+}
+
+
+/* =========================================================
+   APPROVED FINAL DASHBOARD DESIGN
+   Compact KPI cards + 3-column activity row
+   ========================================================= */
+
+/* Overall dashboard spacing */
+#dashboardContent {
+    padding-top: 18px;
+}
+
+#dashboardContent > .stats-grid {
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+/* Compact KPI cards:
+   icon on left, information stacked on right */
+#dashboardContent .stat-card {
+    min-height: 96px;
+    padding: 13px 15px;
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr);
+    grid-template-rows: auto auto auto auto;
+    column-gap: 12px;
+    row-gap: 1px;
+    align-content: center;
+}
+
+#dashboardContent .stat-card-header {
+    display: contents;
+}
+
+#dashboardContent .stat-icon {
+    grid-column: 1;
+    grid-row: 1 / 5;
+    align-self: center;
+    width: 40px;
+    height: 40px;
+    flex-basis: 40px;
+    border-radius: 10px;
+    font-size: 15px;
+}
+
+#dashboardContent .stat-label {
+    grid-column: 2;
+    grid-row: 1;
+    align-self: end;
+    font-size: 9px;
+    line-height: 1.25;
+}
+
+#dashboardContent .stat-value {
+    grid-column: 2;
+    grid-row: 2;
+    margin: 1px 0 0;
+    line-height: 1;
+}
+
+#dashboardContent .stat-value strong {
+    font-size: 22px;
+    line-height: 1;
+}
+
+#dashboardContent .stat-description {
+    grid-column: 2;
+    grid-row: 3;
+    margin-top: 4px;
+    font-size: 8.5px;
+    line-height: 1.2;
+}
+
+#dashboardContent .stat-change {
+    grid-column: 2;
+    grid-row: 4;
+    margin-top: 4px;
+    font-size: 8px;
+    line-height: 1.2;
+}
+
+/* Main cards */
+#dashboardContent .dashboard-main-grid {
+    gap: 12px;
+}
+
+#dashboardContent .dashboard-card {
+    border-radius: 13px;
+}
+
+#dashboardContent .new-bookings-card,
+#dashboardContent .recent-payments-card,
+#dashboardContent .upcoming-trips-card {
+    min-height: 342px;
+}
+
+#dashboardContent .dashboard-card-header {
+    min-height: 52px;
+    padding: 10px 13px;
+}
+
+#dashboardContent .dashboard-card-header h2 {
+    font-size: 12px;
+    line-height: 1.2;
+}
+
+#dashboardContent .dashboard-card-header span {
+    margin-top: 2px;
+    font-size: 8px;
+}
+
+#dashboardContent .view-all-link {
+    font-size: 8.5px;
+    gap: 5px;
+}
+
+/* New Bookings / Recent Payments */
+#dashboardContent .booking-list,
+#dashboardContent .payment-list {
+    padding: 0 8px;
+}
+
+#dashboardContent .booking-item,
+#dashboardContent .payment-item {
+    min-height: 56px;
+    padding: 7px 6px;
+}
+
+#dashboardContent .booking-item-icon,
+#dashboardContent .payment-item-icon {
+    width: 32px;
+    height: 32px;
+    flex-basis: 32px;
+    border-radius: 9px;
+}
+
+/* Upcoming Trips */
+#dashboardContent .upcoming-trips-list {
+    padding: 0 8px;
+}
+
+#dashboardContent .trip-item {
+    min-height: 56px;
+    padding: 7px 6px;
+}
+
+/* Booking status */
+#dashboardContent .booking-status-grid {
+    padding: 11px;
+    gap: 8px;
+}
+
+#dashboardContent .booking-status {
+    min-height: 76px;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+/* Needs Attention */
+#dashboardContent .attention-list {
+    padding: 2px 12px 7px;
+}
+
+#dashboardContent .attention-item {
+    min-height: 43px;
+}
+
+/* Responsive */
+@media (max-width: 1180px) {
+    #dashboardContent .stat-card {
+        min-height: 94px;
+    }
+}
+
+@media (max-width: 900px) {
+    #dashboardContent .stat-card {
+        grid-template-columns: 40px minmax(0, 1fr);
+        column-gap: 10px;
+    }
+
+    #dashboardContent .stat-icon {
+        width: 36px;
+        height: 36px;
+        flex-basis: 36px;
+    }
+}
+
+@media (max-width: 600px) {
+    #dashboardContent {
+        padding-top: 14px;
+    }
+
+    #dashboardContent .stat-card {
+        min-height: 90px;
+        padding: 11px 12px;
+    }
+
+    #dashboardContent .stat-value strong {
+        font-size: 19px;
+    }
+}
+
+
+/* =========================================================
+   DASHBOARD NOTIFICATIONS CARD
+   ========================================================= */
+#dashboardContent .dashboard-notifications-card{grid-column:span 3;}
+#dashboardContent .dashboard-notification-header-icon{width:30px;height:30px;flex:0 0 30px;display:grid;place-items:center;border-radius:9px;background:#eaf4ff;color:#1767b7;font-size:12px;}
+#dashboardContent .dashboard-notification-list{padding:2px 12px 7px;}
+#dashboardContent .dashboard-notification-item{min-height:52px;display:grid;grid-template-columns:34px minmax(0,1fr) auto;align-items:center;gap:10px;padding:7px 2px;border-bottom:1px solid var(--border-light);cursor:pointer;}
+#dashboardContent .dashboard-notification-item:last-child{border-bottom:0;}
+#dashboardContent .dashboard-notification-item:hover{background:#f8fbff;}
+#dashboardContent .dashboard-notification-icon{width:32px;height:32px;display:grid;place-items:center;border-radius:9px;background:#eaf4ff;color:#1767b7;font-size:11px;}
+#dashboardContent .dashboard-notification-copy{min-width:0;display:flex;flex-direction:column;gap:2px;}
+#dashboardContent .dashboard-notification-copy strong{font-size:9.5px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+#dashboardContent .dashboard-notification-copy span{font-size:8px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+#dashboardContent .dashboard-notification-meta{display:flex;align-items:center;gap:7px;color:var(--muted);font-size:7.5px;white-space:nowrap;}
+#dashboardContent .dashboard-notification-dot{width:6px;height:6px;border-radius:50%;background:#1677d2;display:inline-block;}
+@media(max-width:850px){#dashboardContent .dashboard-notifications-card{grid-column:auto;}}
+
+
+/* =========================================================
+   FINAL APPROVED CARD ORDER
+   Row 1: New Bookings | Recent Payments | Notifications
+   Row 2: Booking Status | Upcoming Trips
+   ========================================================= */
+
+#dashboardContent .new-bookings-card,
+#dashboardContent .recent-payments-card,
+#dashboardContent .dashboard-notifications-card {
+    grid-column: span 2;
+    min-height: 342px;
+}
+
+#dashboardContent .booking-status-card,
+#dashboardContent .upcoming-trips-card {
+    grid-column: span 3;
+    min-height: 0;
+}
+
+/* Notifications should match the height and density of the first row */
+#dashboardContent .dashboard-notifications-card {
+    overflow: hidden;
+}
+
+#dashboardContent .dashboard-notification-list {
+    padding: 0 8px;
+}
+
+#dashboardContent .dashboard-notification-item {
+    min-height: 56px;
+}
+
+/* Upcoming Trips becomes the bottom-right summary card */
+#dashboardContent .upcoming-trips-card .upcoming-trips-list {
+    padding: 0 12px 10px;
+}
+
+#dashboardContent .upcoming-trips-card .trip-item {
+    min-height: 62px;
+}
+
+/* Tablet */
+@media (max-width: 1180px) {
+    #dashboardContent .new-bookings-card,
+    #dashboardContent .recent-payments-card {
+        grid-column: span 3;
+    }
+
+    #dashboardContent .dashboard-notifications-card {
+        grid-column: span 6;
+        min-height: 0;
+    }
+
+    #dashboardContent .booking-status-card,
+    #dashboardContent .upcoming-trips-card {
+        grid-column: span 3;
+    }
+}
+
+/* Mobile */
+@media (max-width: 850px) {
+    #dashboardContent .new-bookings-card,
+    #dashboardContent .recent-payments-card,
+    #dashboardContent .dashboard-notifications-card,
+    #dashboardContent .booking-status-card,
+    #dashboardContent .upcoming-trips-card {
+        grid-column: auto;
+        min-height: 0;
+    }
+}

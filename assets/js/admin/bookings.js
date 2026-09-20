@@ -2672,6 +2672,43 @@ else if (
                         );
 
 
+                    row.dataset.bookingId =
+                        booking.id;
+
+
+                    row.addEventListener(
+                        "click",
+                        event => {
+
+                            if (
+                                event.target.closest(
+                                    "button, a, input, select, textarea, .booking-action-menu"
+                                )
+                            ) {
+                                return;
+                            }
+
+
+                            bookingTableBody
+                                .querySelectorAll(
+                                    "tr.booking-row-selected"
+                                )
+                                .forEach(
+                                    selectedRow =>
+                                        selectedRow.classList.remove(
+                                            "booking-row-selected"
+                                        )
+                                );
+
+
+                            row.classList.add(
+                                "booking-row-selected"
+                            );
+
+                        }
+                    );
+
+
                     const paymentClass =
                         booking.paymentStatus ||
                         "unpaid";

@@ -1,0 +1,2365 @@
+/* =========================================================
+   TRIPS WONDER TRAVEL AND TOURS
+   TOUR PRICING CALCULATOR
+
+   FILE:
+   assets/css/admin/tour-pricing.css
+========================================================= */
+
+
+/* =========================================================
+   PAGE
+========================================================= */
+
+.tour-pricing-page {
+  --tw-blue: #123b6d;
+  --tw-blue-dark: #092a50;
+  --tw-orange: #f28c28;
+
+  --tw-bg: #f5f7fb;
+  --tw-card: #ffffff;
+
+  --tw-text: #172033;
+  --tw-muted: #6b7280;
+  --tw-light-muted: #9ca3af;
+
+  --tw-border: #e2e7ee;
+  --tw-input-border: #d6dde7;
+
+  width: 100%;
+  max-width: 1180px;
+
+  margin: 0 auto;
+  padding: 22px;
+
+  color: var(--tw-text);
+
+  box-sizing: border-box;
+}
+
+.tour-pricing-page *,
+.tour-pricing-page *::before,
+.tour-pricing-page *::after {
+  box-sizing: border-box;
+}
+
+
+/* =========================================================
+   PAGE HEADER
+========================================================= */
+
+.tour-pricing-header {
+  margin-bottom: 24px;
+}
+
+.tour-pricing-eyebrow {
+  margin: 0 0 5px;
+
+  color: var(--tw-orange);
+
+  font-size: 11px;
+  font-weight: 800;
+
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.tour-pricing-header h1 {
+  margin: 0;
+
+  color: var(--tw-blue-dark);
+
+  font-size: 28px;
+  font-weight: 800;
+
+  line-height: 1.2;
+}
+
+.tour-pricing-subtitle {
+  max-width: 600px;
+
+  margin: 7px 0 0;
+
+  color: var(--tw-muted);
+
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+
+/* =========================================================
+   PROGRESS STEPS
+========================================================= */
+
+.pricing-steps {
+  position: relative;
+
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+
+  gap: 8px;
+
+  margin-bottom: 22px;
+}
+
+.pricing-step {
+  position: relative;
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 6px;
+
+  color: var(--tw-light-muted);
+
+  text-align: center;
+}
+
+.pricing-step::before {
+  content: "";
+
+  position: absolute;
+
+  top: 16px;
+  right: 50%;
+
+  width: 100%;
+  height: 2px;
+
+  background: #e5e9ef;
+
+  z-index: 0;
+}
+
+.pricing-step:first-child::before {
+  display: none;
+}
+
+.pricing-step span {
+  position: relative;
+
+  z-index: 2;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  width: 34px;
+  height: 34px;
+
+  border: 2px solid #d5dbe3;
+  border-radius: 50%;
+
+  background: #ffffff;
+
+  color: #9ca3af;
+
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.pricing-step small {
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.pricing-step.active {
+  color: var(--tw-blue);
+}
+
+.pricing-step.active span {
+  border-color: var(--tw-blue);
+
+  background: var(--tw-blue);
+  color: #ffffff;
+}
+
+
+/* =========================================================
+   PANELS
+========================================================= */
+
+.pricing-panel {
+  display: none;
+}
+
+.pricing-panel.active {
+  display: block;
+}
+
+
+/* =========================================================
+   MAIN CARD
+========================================================= */
+
+.pricing-card {
+  overflow: hidden;
+
+  width: 100%;
+
+  border: 1px solid var(--tw-border);
+  border-radius: 16px;
+
+  background: var(--tw-card);
+
+  box-shadow:
+    0 3px 8px rgba(15, 23, 42, 0.025),
+    0 12px 28px rgba(15, 23, 42, 0.055);
+}
+
+
+/* =========================================================
+   CARD HEADER
+========================================================= */
+
+.card-heading {
+  display: flex;
+
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  padding: 20px 22px;
+
+  border-bottom: 1px solid var(--tw-border);
+}
+
+.card-step-label {
+  display: block;
+
+  margin-bottom: 3px;
+
+  color: var(--tw-orange);
+
+  font-size: 9px;
+  font-weight: 800;
+
+  letter-spacing: 0.08em;
+}
+
+.card-heading h2 {
+  margin: 0;
+
+  color: var(--tw-blue-dark);
+
+  font-size: 19px;
+  font-weight: 800;
+}
+
+.card-heading p {
+  max-width: 360px;
+
+  margin: 2px 0 0;
+
+  color: var(--tw-muted);
+
+  font-size: 11px;
+  line-height: 1.5;
+
+  text-align: right;
+}
+
+
+/* =========================================================
+   STEP 1 — FORM
+========================================================= */
+
+.pricing-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  gap: 17px;
+
+  padding: 22px;
+}
+
+.pricing-field {
+  min-width: 0;
+}
+
+.pricing-field.full-width {
+  grid-column: 1 / -1;
+}
+
+.pricing-field label {
+  display: block;
+
+  margin-bottom: 6px;
+
+  color: #374151;
+
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.optional-label {
+  margin-left: 4px;
+
+  color: var(--tw-light-muted);
+
+  font-size: 9px;
+  font-weight: 500;
+}
+
+.pricing-field input,
+.pricing-field select,
+.pricing-field textarea {
+  display: block;
+
+  width: 100%;
+
+  border: 1px solid var(--tw-input-border);
+  border-radius: 9px;
+
+  outline: none;
+
+  background: #ffffff;
+  color: var(--tw-text);
+
+  font-family: inherit;
+
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.pricing-field input,
+.pricing-field select {
+  height: 44px;
+
+  padding: 0 12px;
+
+  font-size: 12px;
+}
+
+.pricing-field textarea {
+  min-height: 86px;
+
+  padding: 11px 12px;
+
+  font-size: 12px;
+
+  resize: vertical;
+}
+
+.pricing-field input:focus,
+.pricing-field select:focus,
+.pricing-field textarea:focus {
+  border-color: var(--tw-blue);
+
+  box-shadow:
+    0 0 0 3px rgba(18, 59, 109, 0.08);
+}
+
+
+/* =========================================================
+   INPUT SUFFIX
+========================================================= */
+
+.input-with-suffix {
+  position: relative;
+}
+
+.input-with-suffix input {
+  padding-right: 50px;
+}
+
+.input-with-suffix span {
+  position: absolute;
+
+  top: 50%;
+  right: 12px;
+
+  color: var(--tw-muted);
+
+  font-size: 10px;
+  font-weight: 700;
+
+  transform: translateY(-50%);
+
+  pointer-events: none;
+}
+
+
+/* =========================================================
+   BUTTONS / ACTION AREA
+========================================================= */
+
+.pricing-actions {
+  display: flex;
+
+  align-items: center;
+  justify-content: flex-end;
+
+  gap: 10px;
+
+  padding: 15px 22px;
+
+  border-top: 1px solid var(--tw-border);
+
+  background: #fafbfd;
+}
+
+.pricing-actions-between {
+  justify-content: space-between;
+}
+
+.pricing-btn {
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+
+  min-height: 42px;
+
+  padding: 0 17px;
+
+  border-radius: 9px;
+
+  font-family: inherit;
+
+  font-size: 11px;
+  font-weight: 800;
+
+  cursor: pointer;
+
+  transition:
+    background 0.18s ease,
+    border-color 0.18s ease,
+    transform 0.12s ease,
+    box-shadow 0.18s ease;
+}
+
+.pricing-btn:active {
+  transform: scale(0.98);
+}
+
+.pricing-btn-primary {
+  border: 1px solid var(--tw-blue);
+
+  background: var(--tw-blue);
+  color: #ffffff;
+
+  box-shadow:
+    0 4px 12px rgba(18, 59, 109, 0.16);
+}
+
+.pricing-btn-primary:hover {
+  border-color: var(--tw-blue-dark);
+
+  background: var(--tw-blue-dark);
+}
+
+.pricing-btn-secondary {
+  border: 1px solid var(--tw-border);
+
+  background: #ffffff;
+  color: #374151;
+}
+
+.pricing-btn-secondary:hover {
+  border-color: #cbd2dc;
+
+  background: #f8fafc;
+}
+
+
+/* =========================================================
+   STEP 2 — QUICK SUMMARY
+========================================================= */
+
+.expense-top-summary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  gap: 12px;
+
+  padding: 18px 22px 0;
+}
+
+.expense-summary-item {
+  padding: 13px 15px;
+
+  border: 1px solid var(--tw-border);
+  border-radius: 10px;
+
+  background: #f8fafc;
+}
+
+.expense-summary-item > span {
+  display: block;
+
+  margin-bottom: 4px;
+
+  color: var(--tw-muted);
+
+  font-size: 9px;
+  font-weight: 700;
+
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.expense-summary-item > strong {
+  color: var(--tw-blue-dark);
+
+  font-size: 16px;
+  font-weight: 800;
+}
+
+
+/* =========================================================
+   EXPENSE TYPE GUIDE
+========================================================= */
+
+.expense-type-guide {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+
+  gap: 10px;
+
+  padding: 14px 22px 20px;
+}
+
+.expense-guide-item {
+  display: flex;
+
+  align-items: flex-start;
+
+  gap: 9px;
+
+  min-width: 0;
+
+  padding: 11px;
+
+  border: 1px solid var(--tw-border);
+  border-radius: 10px;
+
+  background: #ffffff;
+}
+
+.expense-guide-icon {
+  flex: 0 0 30px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  width: 30px;
+  height: 30px;
+
+  border-radius: 8px;
+
+  background: rgba(18, 59, 109, 0.07);
+  color: var(--tw-blue);
+
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.expense-guide-item strong {
+  display: block;
+
+  margin-top: 1px;
+
+  color: var(--tw-blue-dark);
+
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.expense-guide-item p {
+  margin: 3px 0 0;
+
+  color: var(--tw-muted);
+
+  font-size: 9px;
+  line-height: 1.4;
+}
+
+
+/* =========================================================
+   EXPENSE BREAKDOWN
+========================================================= */
+
+.expense-section {
+  padding: 0 22px 20px;
+}
+
+.expense-section-header {
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 16px;
+
+  margin-bottom: 12px;
+}
+
+.expense-section-header h3 {
+  margin: 0;
+
+  color: var(--tw-blue-dark);
+
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.expense-section-header p {
+  margin: 3px 0 0;
+
+  color: var(--tw-muted);
+
+  font-size: 9px;
+}
+
+.expense-add-btn {
+  flex: 0 0 auto;
+
+  min-height: 36px;
+
+  padding: 0 13px;
+
+  border: 1px solid var(--tw-blue);
+  border-radius: 8px;
+
+  background: #ffffff;
+  color: var(--tw-blue);
+
+  font-family: inherit;
+
+  font-size: 10px;
+  font-weight: 800;
+
+  cursor: pointer;
+}
+
+.expense-add-btn:hover {
+  background: rgba(18, 59, 109, 0.04);
+}
+
+
+/* =========================================================
+   EXPENSE TABLE HEADER
+========================================================= */
+
+.expense-column-labels,
+.expense-row {
+  display: grid;
+
+  grid-template-columns:
+    minmax(130px, 1.35fr)
+    minmax(130px, 1.05fr)
+    minmax(105px, 0.85fr)
+    minmax(105px, 0.85fr)
+    minmax(100px, 0.75fr)
+    32px;
+
+  gap: 7px;
+
+  align-items: center;
+}
+
+.expense-column-labels {
+  padding: 0 8px 6px;
+
+  color: var(--tw-muted);
+
+  font-size: 8px;
+  font-weight: 800;
+
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+
+/* =========================================================
+   EXPENSE ROW
+========================================================= */
+
+.expense-row {
+  margin-bottom: 7px;
+
+  padding: 8px;
+
+  border: 1px solid var(--tw-border);
+  border-radius: 9px;
+
+  background: #ffffff;
+
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.expense-row:hover {
+  border-color: #d3dae4;
+
+  box-shadow:
+    0 3px 10px rgba(15, 23, 42, 0.035);
+}
+
+.expense-field {
+  min-width: 0;
+}
+
+.expense-field input,
+.expense-field select {
+  display: block;
+
+  width: 100%;
+  height: 38px;
+
+  border: 1px solid var(--tw-input-border);
+  border-radius: 7px;
+
+  outline: none;
+
+  background: #ffffff;
+  color: var(--tw-text);
+
+  font-family: inherit;
+  font-size: 10px;
+}
+
+.expense-field input {
+  padding: 0 9px;
+}
+
+.expense-field select {
+  padding: 0 7px;
+}
+
+.expense-field input:focus,
+.expense-field select:focus {
+  border-color: var(--tw-blue);
+
+  box-shadow:
+    0 0 0 2px rgba(18, 59, 109, 0.07);
+}
+
+.expense-field input:disabled {
+  background: #f4f6f8;
+  color: #8b93a1;
+
+  cursor: not-allowed;
+}
+
+
+/* =========================================================
+   MONEY INPUT
+========================================================= */
+
+.money-input,
+.capacity-input {
+  position: relative;
+}
+
+.money-input > span {
+  position: absolute;
+
+  top: 50%;
+  left: 9px;
+
+  z-index: 1;
+
+  color: var(--tw-muted);
+
+  font-size: 10px;
+
+  transform: translateY(-50%);
+
+  pointer-events: none;
+}
+
+.money-input input {
+  padding-left: 23px;
+}
+
+
+/* =========================================================
+   CAPACITY INPUT
+========================================================= */
+
+.capacity-input > span {
+  position: absolute;
+
+  top: 50%;
+  right: 8px;
+
+  color: var(--tw-muted);
+
+  font-size: 8px;
+  font-weight: 700;
+
+  transform: translateY(-50%);
+
+  pointer-events: none;
+}
+
+.capacity-input input {
+  padding-right: 34px;
+}
+
+
+/* =========================================================
+   EXPENSE TOTAL
+========================================================= */
+
+.expense-total {
+  min-width: 0;
+
+  color: var(--tw-blue-dark);
+
+  font-size: 10px;
+  font-weight: 800;
+
+  text-align: right;
+
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   REMOVE EXPENSE
+========================================================= */
+
+.expense-remove-btn {
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  width: 30px;
+  height: 30px;
+
+  padding: 0;
+
+  border: 0;
+  border-radius: 7px;
+
+  background: transparent;
+  color: #a3aab5;
+
+  font-size: 18px;
+  line-height: 1;
+
+  cursor: pointer;
+
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.expense-remove-btn:hover {
+  background: #fff1f2;
+  color: #dc2626;
+}
+
+
+/* =========================================================
+   MOBILE ADD EXPENSE BUTTON
+========================================================= */
+
+.expense-add-mobile-btn {
+  display: none;
+
+  width: 100%;
+
+  min-height: 42px;
+
+  margin-top: 8px;
+
+  border: 1px dashed var(--tw-blue);
+  border-radius: 8px;
+
+  background: #ffffff;
+  color: var(--tw-blue);
+
+  font-family: inherit;
+
+  font-size: 10px;
+  font-weight: 800;
+
+  cursor: pointer;
+}
+
+
+/* =========================================================
+   GRAND TOTAL
+========================================================= */
+
+.expense-grand-total {
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  padding: 16px 22px;
+
+  border-top: 1px solid var(--tw-border);
+
+  background: rgba(18, 59, 109, 0.04);
+}
+
+.expense-grand-total > div > span {
+  display: block;
+
+  color: var(--tw-blue-dark);
+
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.expense-grand-total small {
+  display: block;
+
+  margin-top: 3px;
+
+  color: var(--tw-muted);
+
+  font-size: 9px;
+}
+
+.expense-grand-total small strong {
+  color: var(--tw-text);
+}
+
+.expense-grand-total > strong {
+  color: var(--tw-blue);
+
+  font-size: 21px;
+  font-weight: 800;
+
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   PLACEHOLDER
+========================================================= */
+
+.pricing-placeholder {
+  padding: 55px 22px;
+
+  text-align: center;
+}
+
+.pricing-placeholder strong {
+  display: block;
+
+  margin-bottom: 5px;
+
+  color: var(--tw-blue-dark);
+
+  font-size: 14px;
+}
+
+.pricing-placeholder p {
+  max-width: 430px;
+
+  margin: 0 auto;
+
+  color: var(--tw-muted);
+
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 850px) {
+
+  .tour-pricing-page {
+    padding: 17px;
+  }
+
+  .expense-column-labels,
+  .expense-row {
+    grid-template-columns:
+      minmax(120px, 1.2fr)
+      minmax(115px, 1fr)
+      minmax(95px, 0.8fr)
+      minmax(95px, 0.8fr)
+      minmax(90px, 0.75fr)
+      30px;
+  }
+
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 700px) {
+
+  .tour-pricing-page {
+    padding: 12px;
+  }
+
+
+  /* HEADER */
+
+  .tour-pricing-header {
+    margin-bottom: 18px;
+  }
+
+  .tour-pricing-header h1 {
+    font-size: 22px;
+  }
+
+  .tour-pricing-subtitle {
+    font-size: 11px;
+  }
+
+
+  /* PROGRESS */
+
+  .pricing-steps {
+    gap: 2px;
+
+    margin-bottom: 16px;
+  }
+
+  .pricing-step::before {
+    top: 14px;
+  }
+
+  .pricing-step span {
+    width: 30px;
+    height: 30px;
+
+    font-size: 10px;
+  }
+
+  .pricing-step small {
+    font-size: 8px;
+  }
+
+
+  /* CARD */
+
+  .pricing-card {
+    border-radius: 13px;
+
+    box-shadow:
+      0 5px 18px rgba(15, 23, 42, 0.045);
+  }
+
+
+  /* CARD HEADER */
+
+  .card-heading {
+    flex-direction: column;
+
+    gap: 6px;
+
+    padding: 17px;
+  }
+
+  .card-heading h2 {
+    font-size: 17px;
+  }
+
+  .card-heading p {
+    max-width: none;
+
+    margin: 0;
+
+    font-size: 10px;
+
+    text-align: left;
+  }
+
+
+  /* STEP 1 FORM */
+
+  .pricing-form-grid {
+    grid-template-columns: 1fr;
+
+    gap: 14px;
+
+    padding: 17px;
+  }
+
+  .pricing-field.full-width {
+    grid-column: auto;
+  }
+
+  .pricing-field label {
+    font-size: 10px;
+  }
+
+  .pricing-field input,
+  .pricing-field select {
+    height: 46px;
+
+    font-size: 16px;
+  }
+
+  .pricing-field textarea {
+    min-height: 85px;
+
+    font-size: 16px;
+  }
+
+
+  /* QUICK SUMMARY */
+
+  .expense-top-summary {
+    grid-template-columns: 1fr 1fr;
+
+    gap: 8px;
+
+    padding: 15px 15px 0;
+  }
+
+  .expense-summary-item {
+    padding: 11px;
+  }
+
+  .expense-summary-item > strong {
+    font-size: 14px;
+  }
+
+
+  /* EXPENSE GUIDE */
+
+  .expense-type-guide {
+    grid-template-columns: 1fr;
+
+    gap: 7px;
+
+    padding: 12px 15px 17px;
+  }
+
+  .expense-guide-item {
+    padding: 10px;
+  }
+
+
+  /* EXPENSE SECTION */
+
+  .expense-section {
+    padding: 0 15px 17px;
+  }
+
+  .expense-section-header {
+    margin-bottom: 11px;
+  }
+
+  .expense-add-btn {
+    display: none;
+  }
+
+  .expense-column-labels {
+    display: none;
+  }
+
+
+  /* EXPENSE CARDS */
+
+  .expense-row {
+    display: grid;
+
+    grid-template-columns:
+      minmax(0, 1fr)
+      minmax(0, 1fr);
+
+    gap: 11px;
+
+    margin-bottom: 11px;
+
+    padding: 13px;
+
+    border-radius: 10px;
+  }
+
+  .expense-name-field {
+    grid-column: 1 / -1;
+  }
+
+  .expense-field::before,
+  .expense-total::before {
+    content: attr(data-label);
+
+    display: block;
+
+    margin-bottom: 5px;
+
+    color: var(--tw-muted);
+
+    font-size: 8px;
+    font-weight: 800;
+
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+
+  .expense-field input,
+  .expense-field select {
+    height: 43px;
+
+    font-size: 14px;
+  }
+
+  .expense-total {
+    display: flex;
+
+    flex-direction: column;
+    justify-content: center;
+
+    min-height: 43px;
+
+    padding: 0 4px;
+
+    font-size: 13px;
+
+    text-align: left;
+  }
+
+  .expense-remove-btn {
+    align-self: end;
+    justify-self: end;
+
+    width: 38px;
+    height: 38px;
+
+    background: #fff1f2;
+    color: #dc2626;
+  }
+
+  .expense-add-mobile-btn {
+    display: block;
+  }
+
+
+  /* GRAND TOTAL */
+
+  .expense-grand-total {
+    padding: 15px;
+  }
+
+  .expense-grand-total > strong {
+    font-size: 18px;
+  }
+
+
+  /* ACTIONS */
+
+  .pricing-actions {
+    padding: 13px 15px;
+  }
+
+  .pricing-btn {
+    min-height: 44px;
+  }
+
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (max-width: 430px) {
+
+  .tour-pricing-page {
+    padding: 9px;
+  }
+
+  .expense-top-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .expense-row {
+    grid-template-columns: 1fr;
+  }
+
+  .expense-name-field {
+    grid-column: auto;
+  }
+
+  .expense-remove-btn {
+    width: 100%;
+
+    border: 1px solid #fecdd3;
+  }
+
+  .expense-grand-total {
+    align-items: flex-start;
+  }
+
+  .expense-grand-total > strong {
+    font-size: 17px;
+  }
+
+  .pricing-actions-between {
+    flex-direction: column-reverse;
+
+    gap: 8px;
+  }
+
+  .pricing-actions-between .pricing-btn {
+    width: 100%;
+  }
+
+  .pricing-actions:not(.pricing-actions-between)
+  .pricing-btn {
+    width: 100%;
+  }
+
+}
+
+/* =========================================================
+   STEP 3 — PRICING SETUP
+========================================================= */
+
+.pricing-metrics-grid,
+.summary-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  padding: 20px 22px 0;
+}
+
+.pricing-metric,
+.summary-metric,
+.pricing-result-box {
+  min-width: 0;
+  padding: 15px;
+  border: 1px solid var(--tw-border);
+  border-radius: 11px;
+  background: #f8fafc;
+}
+
+.pricing-metric > span,
+.summary-metric > span,
+.pricing-result-box > span {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--tw-muted);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.pricing-metric > strong,
+.summary-metric > strong,
+.pricing-result-box > strong {
+  display: block;
+  overflow: hidden;
+  color: var(--tw-blue-dark);
+  font-size: 17px;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pricing-metric-highlight {
+  border-color: rgba(18, 59, 109, 0.18);
+  background: rgba(18, 59, 109, 0.055);
+}
+
+.pricing-setup-body {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  padding: 20px 22px 22px;
+}
+
+.pricing-money-input input {
+  padding-left: 28px;
+}
+
+.suggested-price-card {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 17px;
+  border: 1px solid rgba(18, 59, 109, 0.18);
+  border-radius: 12px;
+  background: rgba(18, 59, 109, 0.05);
+}
+
+.suggested-price-card span {
+  display: block;
+  color: var(--tw-blue-dark);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.suggested-price-card small {
+  display: block;
+  margin-top: 3px;
+  color: var(--tw-muted);
+  font-size: 9px;
+  line-height: 1.45;
+}
+
+.suggested-price-card > strong {
+  color: var(--tw-blue);
+  font-size: 23px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.own-price-toggle {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 14px;
+  border: 1px solid var(--tw-border);
+  border-radius: 11px;
+  background: #ffffff;
+  cursor: pointer;
+}
+
+.own-price-toggle input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.toggle-ui {
+  position: relative;
+  flex: 0 0 40px;
+  width: 40px;
+  height: 22px;
+  border-radius: 999px;
+  background: #d7dce3;
+  transition: background 0.18s ease;
+}
+
+.toggle-ui::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.18);
+  transition: transform 0.18s ease;
+}
+
+.own-price-toggle input:checked + .toggle-ui {
+  background: var(--tw-blue);
+}
+
+.own-price-toggle input:checked + .toggle-ui::after {
+  transform: translateX(18px);
+}
+
+.toggle-copy strong,
+.toggle-copy small {
+  display: block;
+}
+
+.toggle-copy strong {
+  color: var(--tw-blue-dark);
+  font-size: 11px;
+}
+
+.toggle-copy small {
+  margin-top: 2px;
+  color: var(--tw-muted);
+  font-size: 9px;
+  line-height: 1.4;
+}
+
+.own-price-field {
+  grid-column: 1 / -1;
+}
+
+.own-price-field[hidden] {
+  display: none !important;
+}
+
+.pricing-results-grid {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.pricing-result-box.profit,
+.summary-profit {
+  background: #f2faf5;
+}
+
+.pricing-result-box.profit strong,
+.summary-profit strong,
+.positive-profit {
+  color: #137333 !important;
+}
+
+.negative-profit {
+  color: #c62828 !important;
+}
+
+
+/* =========================================================
+   STEP 4 — SUMMARY
+========================================================= */
+
+.summary-tour-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 20px 22px;
+  border-bottom: 1px solid var(--tw-border);
+}
+
+.summary-tour-header > div > span,
+.summary-price span {
+  color: var(--tw-muted);
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.summary-tour-header h3 {
+  margin: 4px 0 3px;
+  color: var(--tw-blue-dark);
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.summary-tour-header p {
+  margin: 0;
+  color: var(--tw-muted);
+  font-size: 10px;
+}
+
+.summary-price {
+  flex: 0 0 auto;
+  text-align: right;
+}
+
+.summary-price strong {
+  display: block;
+  margin-top: 4px;
+  color: var(--tw-blue);
+  font-size: 23px;
+  font-weight: 800;
+}
+
+.summary-metrics-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.simulator-section {
+  padding: 22px;
+}
+
+.simulator-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 13px;
+}
+
+.simulator-heading h3 {
+  margin: 0;
+  color: var(--tw-blue-dark);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.simulator-heading p {
+  margin: 3px 0 0;
+  color: var(--tw-muted);
+  font-size: 9px;
+}
+
+.custom-pax-control {
+  flex: 0 0 110px;
+}
+
+.custom-pax-control label {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--tw-muted);
+  font-size: 8px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.custom-pax-control input {
+  width: 100%;
+  height: 38px;
+  padding: 0 9px;
+  border: 1px solid var(--tw-input-border);
+  border-radius: 8px;
+  outline: none;
+  background: #ffffff;
+  color: var(--tw-text);
+  font-family: inherit;
+  font-size: 11px;
+}
+
+.custom-pax-control input:focus {
+  border-color: var(--tw-blue);
+  box-shadow: 0 0 0 3px rgba(18, 59, 109, 0.08);
+}
+
+.simulator-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--tw-border);
+  border-radius: 10px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.simulator-table {
+  width: 100%;
+  min-width: 620px;
+  border-collapse: collapse;
+}
+
+.simulator-table th,
+.simulator-table td {
+  padding: 11px 12px;
+  border-bottom: 1px solid var(--tw-border);
+  text-align: right;
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+.simulator-table th {
+  background: #f8fafc;
+  color: var(--tw-muted);
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.simulator-table th:first-child,
+.simulator-table td:first-child {
+  text-align: left;
+}
+
+.simulator-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.simulator-table .current-scenario {
+  background: rgba(18, 59, 109, 0.045);
+}
+
+.simulator-table td small {
+  display: block;
+  margin-top: 2px;
+  color: var(--tw-orange);
+  font-size: 7px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.break-even-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 13px;
+  padding: 13px 15px;
+  border: 1px solid var(--tw-border);
+  border-radius: 10px;
+  background: #fafbfd;
+}
+
+.break-even-card > span {
+  color: var(--tw-blue-dark);
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.break-even-card > strong {
+  margin-left: auto;
+  color: var(--tw-blue);
+  font-size: 15px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.break-even-card > small {
+  max-width: 270px;
+  color: var(--tw-muted);
+  font-size: 8px;
+  line-height: 1.4;
+}
+
+
+/* =========================================================
+   STEP 3 / STEP 4 — MOBILE
+========================================================= */
+
+@media (max-width: 700px) {
+
+  .pricing-metrics-grid,
+  .summary-metrics-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    padding: 15px 15px 0;
+  }
+
+  .pricing-metric-highlight {
+    grid-column: 1 / -1;
+  }
+
+  .pricing-setup-body {
+    grid-template-columns: 1fr;
+    gap: 14px;
+    padding: 15px;
+  }
+
+  .suggested-price-card,
+  .own-price-toggle,
+  .own-price-field,
+  .pricing-results-grid {
+    grid-column: auto;
+  }
+
+  .pricing-results-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .suggested-price-card > strong {
+    font-size: 19px;
+  }
+
+  .summary-tour-header {
+    align-items: flex-start;
+    padding: 16px 15px;
+  }
+
+  .summary-price strong {
+    font-size: 18px;
+  }
+
+  .simulator-section {
+    padding: 17px 15px;
+  }
+
+  .simulator-heading {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .custom-pax-control {
+    flex: none;
+    width: 100%;
+  }
+
+  .custom-pax-control input {
+    height: 46px;
+    font-size: 16px;
+  }
+
+  .break-even-card {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .break-even-card > strong {
+    margin-left: auto;
+  }
+
+  .break-even-card > small {
+    flex-basis: 100%;
+    max-width: none;
+  }
+
+}
+
+@media (max-width: 430px) {
+
+  .pricing-metrics-grid,
+  .summary-metrics-grid,
+  .pricing-results-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pricing-metric-highlight {
+    grid-column: auto;
+  }
+
+  .suggested-price-card {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .summary-tour-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .summary-price {
+    text-align: left;
+  }
+
+}
+
+/* =========================================================
+   FINAL MOBILE UX — APP-LIKE LAYOUT
+   Desktop remains unchanged.
+========================================================= */
+
+@media (max-width: 700px) {
+
+  .tour-pricing-page {
+    padding: 10px 10px 92px;
+  }
+
+  .tour-pricing-header {
+    margin-bottom: 13px;
+  }
+
+  .tour-pricing-eyebrow {
+    margin-bottom: 3px;
+    font-size: 9px;
+  }
+
+  .tour-pricing-header h1 {
+    font-size: 20px;
+  }
+
+  .tour-pricing-subtitle {
+    margin-top: 4px;
+    font-size: 10px;
+    line-height: 1.4;
+  }
+
+  /* Compact progress indicator */
+
+  .pricing-steps {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    gap: 0;
+    margin: 0 -10px 12px;
+    padding: 9px 12px 8px;
+    background: rgba(245, 247, 251, 0.96);
+    backdrop-filter: blur(8px);
+  }
+
+  .pricing-step {
+    gap: 4px;
+  }
+
+  .pricing-step::before {
+    top: 13px;
+  }
+
+  .pricing-step span {
+    width: 27px;
+    height: 27px;
+    border-width: 1.5px;
+    font-size: 9px;
+  }
+
+  .pricing-step small {
+    font-size: 7.5px;
+  }
+
+  /* Main card */
+
+  .pricing-card {
+    overflow: visible;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.045);
+  }
+
+  .card-heading {
+    gap: 3px;
+    padding: 14px;
+  }
+
+  .card-step-label {
+    margin-bottom: 2px;
+    font-size: 8px;
+  }
+
+  .card-heading h2 {
+    font-size: 16px;
+  }
+
+  .card-heading p {
+    font-size: 9px;
+    line-height: 1.4;
+  }
+
+  /* Forms */
+
+  .pricing-form-grid {
+    gap: 12px;
+    padding: 14px;
+  }
+
+  .pricing-field label {
+    margin-bottom: 5px;
+    font-size: 9px;
+  }
+
+  .pricing-field input,
+  .pricing-field select {
+    height: 44px;
+    font-size: 16px;
+  }
+
+  .pricing-field textarea {
+    min-height: 78px;
+    font-size: 16px;
+  }
+
+  /* Step 2 quick summary */
+
+  .expense-top-summary {
+    grid-template-columns: 1fr 1fr;
+    gap: 7px;
+    padding: 12px 12px 0;
+  }
+
+  .expense-summary-item {
+    padding: 11px;
+    border-radius: 9px;
+  }
+
+  .expense-summary-item > span {
+    font-size: 7px;
+  }
+
+  .expense-summary-item > strong {
+    font-size: 14px;
+  }
+
+  /* Hide guide on phone to reduce clutter */
+
+  .expense-type-guide {
+    display: none;
+  }
+
+  .expense-section {
+    padding: 14px 12px;
+  }
+
+  .expense-section-header {
+    margin-bottom: 10px;
+  }
+
+  .expense-section-header h3 {
+    font-size: 12px;
+  }
+
+  .expense-section-header p {
+    font-size: 8px;
+  }
+
+  .expense-add-btn,
+  .expense-column-labels {
+    display: none;
+  }
+
+  /* True mobile expense cards */
+
+  .expense-list {
+    display: grid;
+    gap: 10px;
+  }
+
+  .expense-row {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 0;
+    padding: 13px;
+    border-radius: 11px;
+    background: #fff;
+    box-shadow: 0 2px 9px rgba(15, 23, 42, 0.035);
+  }
+
+  .expense-row:hover {
+    box-shadow: 0 2px 9px rgba(15, 23, 42, 0.035);
+  }
+
+  .expense-field {
+    display: block;
+  }
+
+  .expense-field::before,
+  .expense-total::before {
+    content: attr(data-label);
+    display: block;
+    margin-bottom: 5px;
+    color: var(--tw-muted);
+    font-size: 7px;
+    font-weight: 800;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+  }
+
+  .expense-name-field {
+    grid-column: 1 / -1;
+    padding-right: 32px;
+  }
+
+  .expense-name-field::before {
+    content: "Expense";
+  }
+
+  .expense-field input,
+  .expense-field select {
+    height: 43px;
+    border-radius: 8px;
+    font-size: 16px;
+  }
+
+  .money-input > span {
+    font-size: 12px;
+  }
+
+  .capacity-input > span {
+    font-size: 9px;
+  }
+
+  .expense-total {
+    grid-column: 1 / -1;
+    padding: 10px 0 0;
+    border-top: 1px solid var(--tw-border);
+    font-size: 15px;
+    text-align: right;
+  }
+
+  .expense-total::before {
+    float: left;
+    margin: 3px 0 0;
+  }
+
+  .expense-remove-btn {
+    position: absolute;
+    top: 10px;
+    right: 9px;
+    width: 32px;
+    height: 32px;
+    background: #fff5f5;
+    color: #c94a4a;
+  }
+
+  .expense-add-mobile-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 45px;
+    margin-top: 11px;
+    font-size: 10px;
+  }
+
+  .expense-grand-total {
+    padding: 14px;
+  }
+
+  .expense-grand-total > div > span {
+    font-size: 10px;
+  }
+
+  .expense-grand-total small {
+    font-size: 8px;
+  }
+
+  .expense-grand-total > strong {
+    font-size: 18px;
+  }
+
+  /* Step 3 */
+
+  .pricing-metrics-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 7px;
+    padding: 12px 12px 0;
+  }
+
+  .pricing-metric {
+    padding: 11px;
+    border-radius: 9px;
+  }
+
+  .pricing-metric-highlight {
+    grid-column: 1 / -1;
+  }
+
+  .pricing-metric > span,
+  .pricing-result-box > span,
+  .summary-metric > span {
+    font-size: 7px;
+  }
+
+  .pricing-metric > strong {
+    font-size: 15px;
+  }
+
+  .pricing-setup-body {
+    gap: 12px;
+    padding: 12px;
+  }
+
+  .suggested-price-card {
+    gap: 7px;
+    padding: 13px;
+    border-radius: 10px;
+  }
+
+  .suggested-price-card span {
+    font-size: 10px;
+  }
+
+  .suggested-price-card small {
+    font-size: 8px;
+  }
+
+  .suggested-price-card > strong {
+    font-size: 20px;
+  }
+
+  .own-price-toggle {
+    padding: 12px;
+  }
+
+  .toggle-copy strong {
+    font-size: 10px;
+  }
+
+  .toggle-copy small {
+    font-size: 8px;
+  }
+
+  .pricing-results-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 7px;
+  }
+
+  .pricing-result-box {
+    padding: 11px;
+    border-radius: 9px;
+  }
+
+  .pricing-result-box > strong {
+    font-size: 14px;
+  }
+
+  /* Step 4 */
+
+  .summary-tour-header {
+    gap: 10px;
+    padding: 14px;
+  }
+
+  .summary-tour-header h3 {
+    font-size: 16px;
+  }
+
+  .summary-tour-header p {
+    font-size: 8px;
+  }
+
+  .summary-price strong {
+    font-size: 19px;
+  }
+
+  .summary-metrics-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 7px;
+    padding: 12px;
+  }
+
+  .summary-metric {
+    padding: 11px;
+  }
+
+  .summary-metric > strong {
+    font-size: 14px;
+  }
+
+  .simulator-section {
+    padding: 5px 12px 14px;
+  }
+
+  .simulator-heading {
+    gap: 10px;
+  }
+
+  .simulator-heading h3 {
+    font-size: 12px;
+  }
+
+  .simulator-heading p {
+    font-size: 8px;
+  }
+
+  /* Mobile simulator becomes cards, no horizontal scroll */
+
+  .simulator-table-wrap {
+    overflow: visible;
+    border: 0;
+    border-radius: 0;
+  }
+
+  .simulator-table {
+    display: block;
+    min-width: 0;
+  }
+
+  .simulator-table thead {
+    display: none;
+  }
+
+  .simulator-table tbody {
+    display: grid;
+    gap: 8px;
+  }
+
+  .simulator-table tr {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 9px;
+    padding: 11px;
+    border: 1px solid var(--tw-border);
+    border-radius: 10px;
+    background: #fff;
+  }
+
+  .simulator-table tr.current-scenario {
+    border-color: rgba(18, 59, 109, .25);
+    background: rgba(18, 59, 109, .04);
+  }
+
+  .simulator-table td {
+    display: block;
+    padding: 0;
+    border: 0;
+    text-align: left !important;
+    white-space: normal;
+  }
+
+  .simulator-table td::before {
+    display: block;
+    margin-bottom: 3px;
+    color: var(--tw-muted);
+    font-size: 7px;
+    font-weight: 800;
+    letter-spacing: .03em;
+    text-transform: uppercase;
+  }
+
+  .simulator-table td:nth-child(1)::before { content: "Guests"; }
+  .simulator-table td:nth-child(2)::before { content: "Total Cost"; }
+  .simulator-table td:nth-child(3)::before { content: "Cost / Pax"; }
+  .simulator-table td:nth-child(4)::before { content: "Revenue"; }
+  .simulator-table td:nth-child(5)::before { content: "Profit"; }
+
+  .simulator-table td:nth-child(1) {
+    grid-column: 1 / -1;
+    padding-bottom: 7px;
+    border-bottom: 1px solid var(--tw-border);
+  }
+
+  .simulator-table td:nth-child(5) {
+    grid-column: 1 / -1;
+    padding-top: 7px;
+    border-top: 1px solid var(--tw-border);
+    font-size: 13px;
+    font-weight: 800;
+  }
+
+  .simulator-table td strong {
+    font-size: 15px;
+  }
+
+  .simulator-table td small {
+    display: inline-block;
+    margin: 0 0 0 6px;
+  }
+
+  .break-even-card {
+    padding: 11px;
+  }
+
+  /* Sticky bottom navigation */
+
+  .pricing-actions {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 50;
+    gap: 8px;
+    padding: 9px 11px calc(9px + env(safe-area-inset-bottom));
+    border-top: 1px solid var(--tw-border);
+    background: rgba(255, 255, 255, .97);
+    box-shadow: 0 -6px 18px rgba(15, 23, 42, .08);
+    backdrop-filter: blur(10px);
+  }
+
+  .pricing-actions .pricing-btn {
+    flex: 1;
+    min-height: 46px;
+    padding: 0 12px;
+    font-size: 10px;
+  }
+
+  /* Step 1 only has one action, keep it full width */
+  #pricingStep1 .pricing-actions .pricing-btn {
+    width: 100%;
+  }
+
+}
+
+@media (max-width: 390px) {
+
+  .tour-pricing-page {
+    padding-right: 8px;
+    padding-left: 8px;
+  }
+
+  .expense-top-summary,
+  .pricing-metrics-grid,
+  .pricing-results-grid,
+  .summary-metrics-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .expense-row {
+    gap: 8px;
+    padding: 11px;
+  }
+
+  .expense-field input,
+  .expense-field select {
+    font-size: 15px;
+  }
+
+}
+

@@ -38,6 +38,7 @@ const ADMIN_NAV_ITEMS = [
     {
         id: "dashboard",
         label: "Dashboard",
+        group: "main",
         href: "dashboard.html",
         icon: "fa-solid fa-chart-pie",
         permission: "dashboard",
@@ -46,6 +47,7 @@ const ADMIN_NAV_ITEMS = [
     {
         id: "packages",
         label: "Packages",
+        group: "main",
         href: "packages.html",
         icon: "fa-solid fa-suitcase",
         permission: "packages",
@@ -54,6 +56,7 @@ const ADMIN_NAV_ITEMS = [
     {
         id: "bookings",
         label: "Bookings",
+        group: "main",
         href: "bookings.html",
         icon: "fa-regular fa-calendar-check",
         permission: "bookings",
@@ -62,6 +65,7 @@ const ADMIN_NAV_ITEMS = [
     {
         id: "trip-operations",
         label: "Trip Operations",
+        group: "main",
         href: "trip-operations.html",
         icon: "fa-solid fa-route",
         permission: "tripOperations",
@@ -70,6 +74,7 @@ const ADMIN_NAV_ITEMS = [
     {
         id: "customers",
         label: "Customers",
+        group: "customers",
         href: "customers.html",
         icon: "fa-solid fa-user-group",
         permission: "customers",
@@ -78,6 +83,7 @@ const ADMIN_NAV_ITEMS = [
     {
         id: "messages",
         label: "Messages",
+        group: "customers",
         href: "messages.html",
         icon: "fa-regular fa-message",
         permission: "messages",
@@ -86,6 +92,7 @@ const ADMIN_NAV_ITEMS = [
     {
         id: "notifications",
         label: "Notifications",
+        group: "customers",
         href: "notifications.html",
         icon: "fa-regular fa-bell",
         permission: "bookings",
@@ -94,6 +101,7 @@ const ADMIN_NAV_ITEMS = [
     {
         id: "promo",
         label: "Promo",
+        group: "management",
         href: "promo.html",
         icon: "fa-solid fa-tags",
         permission: "promo",
@@ -102,22 +110,25 @@ const ADMIN_NAV_ITEMS = [
     {
         id: "payments",
         label: "Payments",
+        group: "management",
         href: "payments.html",
         icon: "fa-regular fa-credit-card",
         permission: "payments",
         available: true
     },
     {
-        id: "invoices",
-        label: "Invoices",
-        href: "invoices.html",
+        id: "tour-pricing",
+        label: "Tour Pricing",
+        group: "management",
+        href: "tour-pricing.html",
         icon: "fa-solid fa-file-invoice",
-        permission: "invoices",
+        permission: "tourPricing",
         available: true
     },
     {
         id: "resort-bookings",
         label: "Resort Bookings",
+        group: "management",
         href: "resort-bookings.html",
         icon: "fa-solid fa-building",
         permission: "resortBookings",
@@ -126,6 +137,7 @@ const ADMIN_NAV_ITEMS = [
     {
         id: "reports",
         label: "Reports",
+        group: "analytics",
         href: "reports.html",
         icon: "fa-solid fa-chart-line",
         permission: "reports",
@@ -430,7 +442,7 @@ function closeAdminLogoutModal() {
 
     document
         .getElementById(
-            "sharedAdminLogoutBtn"
+            "adminHeaderAccountBtn"
         )
         ?.focus();
 }
@@ -530,6 +542,678 @@ async function performAdminLogout(
 }
 
 
+
+// =========================================================
+// SHARED ADMIN SHELL / HEADER
+// =========================================================
+
+const ADMIN_NAV_GROUPS = [
+    { id: "main", label: "MAIN" },
+    { id: "management", label: "MANAGEMENT" },
+    { id: "customers", label: "CUSTOMERS" },
+    { id: "analytics", label: "ANALYTICS" }
+];
+
+function getCurrentNavItem(items = ADMIN_NAV_ITEMS) {
+    const currentFile = getCurrentFileName();
+    return items.find(
+        item => item.href.toLowerCase() === currentFile
+    ) || null;
+}
+
+function getProfilePhoto(user, profile) {
+    return String(
+        profile?.photoURL ||
+        profile?.profilePhoto ||
+        profile?.avatarURL ||
+        user?.photoURL ||
+        ""
+    ).trim();
+}
+
+function renderHeaderAvatar(user, profile, displayName) {
+    const photoURL = getProfilePhoto(user, profile);
+
+    if (photoURL) {
+        return `
+            <img
+                src="${photoURL}"
+                alt="${displayName}"
+                class="admin-header-avatar-image"
+                referrerpolicy="no-referrer"
+            >
+        `;
+    }
+
+    return `
+        <span class="admin-header-avatar-fallback">
+            ${getInitials(displayName)}
+        </span>
+    `;
+}
+
+function ensureSharedAdminHeader(user, profile, visibleItems) {
+    const main = document.querySelector(
+        "body.admin-shared-nav-page .main"
+    );
+
+    if (!main) return;
+
+    let header = document.getElementById(
+        "sharedAdminHeader"
+    );
+
+    if (!header) {
+        header = document.createElement("header");
+        header.id = "sharedAdminHeader";
+        header.className = "admin-topbar";
+        main.prepend(header);
+    }
+
+    const currentItem =
+        getCurrentNavItem(visibleItems) ||
+        getCurrentNavItem();
+
+    const displayName =
+        getDisplayName(user, profile);
+
+    const role =
+        normalizeRole(profile?.role);
+
+    const pageTitle =
+        currentItem?.label ||
+        document.title.split("|")[0].trim() ||
+        "Admin";
+
+    header.innerHTML = `
+        <div class="admin-topbar-left">
+            <button
+                type="button"
+                class="admin-mobile-logo-toggle"
+                id="adminMobileLogoToggle"
+                aria-label="Open navigation"
+                aria-expanded="false"
+            >
+                <img
+                    src="/assets/images/logo.png"
+                    alt="Trips Wonder"
+                    data-mobile-admin-logo
+                >
+            </button>
+        </div>
+
+        <div class="admin-topbar-center">
+            <div
+                class="admin-global-search"
+                id="adminGlobalSearch"
+            >
+                <i class="fa-solid fa-magnifying-glass"></i>
+
+                <input
+                    type="search"
+                    id="adminGlobalSearchInput"
+                    placeholder="Search bookings, customers, payments..."
+                    autocomplete="off"
+                    aria-label="Search admin modules"
+                >
+
+                <kbd>Ctrl K</kbd>
+
+                <div
+                    class="admin-global-search-panel"
+                    id="adminGlobalSearchPanel"
+                    hidden
+                ></div>
+            </div>
+        </div>
+
+        <div class="admin-topbar-actions">
+            <a
+                href="messages.html"
+                class="admin-topbar-icon-btn"
+                title="Messages"
+                aria-label="Messages"
+            >
+                <i class="fa-regular fa-message"></i>
+                <b
+                    class="admin-header-action-badge"
+                    id="sharedAdminMessageBadge"
+                    hidden
+                ></b>
+            </a>
+
+            <a
+                href="notifications.html"
+                class="admin-topbar-icon-btn"
+                title="Notifications"
+                aria-label="Notifications"
+            >
+                <i class="fa-regular fa-bell"></i>
+                <b
+                    class="admin-header-action-badge"
+                    id="sharedAdminNotificationBadge"
+                    hidden
+                    aria-hidden="true"
+                ></b>
+            </a>
+
+            <div class="admin-header-account">
+                <button
+                    type="button"
+                    class="admin-header-account-btn"
+                    id="adminHeaderAccountBtn"
+                    aria-haspopup="menu"
+                    aria-expanded="false"
+                >
+                    <span class="admin-header-avatar">
+                        ${renderHeaderAvatar(
+                            user,
+                            profile,
+                            displayName
+                        )}
+                    </span>
+
+                    <span class="admin-header-account-copy">
+                        <strong>${displayName}</strong>
+                        <small>
+                            ${role === "owner"
+                                ? "Owner"
+                                : "Administrator"}
+                        </small>
+                    </span>
+
+                    <i class="fa-solid fa-chevron-down"></i>
+                </button>
+
+                <div
+                    class="admin-header-account-menu"
+                    id="adminHeaderAccountMenu"
+                    role="menu"
+                    hidden
+                >
+                    <div class="admin-account-menu-head">
+                        <span class="admin-header-avatar large">
+                            ${renderHeaderAvatar(
+                                user,
+                                profile,
+                                displayName
+                            )}
+                        </span>
+
+                        <div>
+                            <strong>${displayName}</strong>
+                            <span>
+                                ${role === "owner"
+                                    ? "Owner"
+                                    : "Administrator"}
+                            </span>
+                        </div>
+                    </div>
+
+                    <a
+                        href="admin-profile.html"
+                        role="menuitem"
+                    >
+                        <i class="fa-regular fa-user"></i>
+                        <span>My Profile</span>
+                    </a>
+
+                    <a
+                        href="settings.html"
+                        role="menuitem"
+                    >
+                        <i class="fa-solid fa-gear"></i>
+                        <span>Account Settings</span>
+                    </a>
+
+                    <div class="admin-account-menu-divider"></div>
+
+                    <button
+                        type="button"
+                        id="sharedAdminHeaderLogoutBtn"
+                        class="admin-account-menu-logout"
+                        role="menuitem"
+                    >
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                        <span>Logout</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    initializeSharedAdminHeader(
+        user,
+        profile,
+        visibleItems
+    );
+}
+
+function initializeSharedAdminHeader(
+    user,
+    profile,
+    visibleItems
+) {
+    const body = document.body;
+    const sidebar =
+        document.getElementById("adminSidebar");
+    const overlay =
+        document.getElementById("adminSidebarOverlay");
+    const toggle =
+        document.getElementById("adminMobileLogoToggle");
+
+    const sidebarBrand =
+        document.querySelector(
+            ".admin-sidebar-brand"
+        );
+    const accountButton =
+        document.getElementById("adminHeaderAccountBtn");
+    const accountMenu =
+        document.getElementById("adminHeaderAccountMenu");
+    const headerLogout =
+        document.getElementById(
+            "sharedAdminHeaderLogoutBtn"
+        );
+    const searchInput =
+        document.getElementById(
+            "adminGlobalSearchInput"
+        );
+    const searchPanel =
+        document.getElementById(
+            "adminGlobalSearchPanel"
+        );
+
+    const isMobile = () =>
+        window.matchMedia("(max-width: 900px)").matches;
+
+    const closeMobileNav = () => {
+        body.classList.remove("admin-mobile-nav-open");
+        toggle?.setAttribute("aria-expanded", "false");
+    };
+
+    const syncDesktopState = () => {
+        if (isMobile()) {
+            body.classList.remove("admin-nav-expanded");
+            return;
+        }
+
+        const savedState =
+            localStorage.getItem(
+                "twtmsAdminNavExpanded"
+            );
+
+        const expanded =
+            savedState === null
+                ? true
+                : savedState === "true";
+
+        body.classList.toggle(
+            "admin-nav-expanded",
+            expanded
+        );
+
+        toggle?.setAttribute(
+            "aria-expanded",
+            String(expanded)
+        );
+    };
+
+    syncDesktopState();
+
+    if (sidebarBrand) {
+        sidebarBrand.setAttribute(
+            "role",
+            "button"
+        );
+        sidebarBrand.setAttribute(
+            "tabindex",
+            "0"
+        );
+        sidebarBrand.setAttribute(
+            "aria-label",
+            "Toggle navigation"
+        );
+
+        const toggleDesktopSidebar = () => {
+            if (isMobile()) return;
+
+            const expanded =
+                !body.classList.contains(
+                    "admin-nav-expanded"
+                );
+
+            body.classList.toggle(
+                "admin-nav-expanded",
+                expanded
+            );
+
+            localStorage.setItem(
+                "twtmsAdminNavExpanded",
+                String(expanded)
+            );
+        };
+
+        sidebarBrand.addEventListener(
+            "click",
+            toggleDesktopSidebar
+        );
+
+        sidebarBrand.addEventListener(
+            "keydown",
+            event => {
+                if (
+                    event.key === "Enter" ||
+                    event.key === " "
+                ) {
+                    event.preventDefault();
+                    toggleDesktopSidebar();
+                }
+            }
+        );
+    }
+
+    toggle?.addEventListener("click", () => {
+        if (isMobile()) {
+            const willOpen =
+                !body.classList.contains(
+                    "admin-mobile-nav-open"
+                );
+
+            body.classList.toggle(
+                "admin-mobile-nav-open",
+                willOpen
+            );
+
+            toggle.setAttribute(
+                "aria-expanded",
+                String(willOpen)
+            );
+
+            return;
+        }
+
+        const expanded =
+            !body.classList.contains(
+                "admin-nav-expanded"
+            );
+
+        body.classList.toggle(
+            "admin-nav-expanded",
+            expanded
+        );
+
+        localStorage.setItem(
+            "twtmsAdminNavExpanded",
+            String(expanded)
+        );
+
+        toggle.setAttribute(
+            "aria-expanded",
+            String(expanded)
+        );
+    });
+
+    overlay?.addEventListener(
+        "click",
+        closeMobileNav
+    );
+
+    sidebar
+        ?.querySelectorAll(".admin-sidebar-link")
+        .forEach(link => {
+            link.addEventListener(
+                "click",
+                closeMobileNav
+            );
+        });
+
+    window.addEventListener(
+        "resize",
+        syncDesktopState,
+        { passive: true }
+    );
+
+    accountButton?.addEventListener(
+        "click",
+        event => {
+            event.stopPropagation();
+
+            const willOpen =
+                accountMenu?.hidden !== false;
+
+            if (accountMenu) {
+                accountMenu.hidden =
+                    !willOpen;
+            }
+
+            accountButton.setAttribute(
+                "aria-expanded",
+                String(willOpen)
+            );
+        }
+    );
+
+    document.addEventListener(
+        "click",
+        event => {
+            if (
+                accountMenu &&
+                !accountMenu.hidden &&
+                !event.target.closest(
+                    ".admin-header-account"
+                )
+            ) {
+                accountMenu.hidden = true;
+                accountButton?.setAttribute(
+                    "aria-expanded",
+                    "false"
+                );
+            }
+
+            if (
+                searchPanel &&
+                !searchPanel.hidden &&
+                !event.target.closest(
+                    ".admin-global-search"
+                )
+            ) {
+                searchPanel.hidden = true;
+            }
+        }
+    );
+
+    headerLogout?.addEventListener(
+        "click",
+        openAdminLogoutModal
+    );
+
+    function renderSearchResults(value = "") {
+        if (!searchPanel) return;
+
+        const term =
+            String(value || "")
+                .trim()
+                .toLowerCase();
+
+        const results =
+            visibleItems.filter(item =>
+                !term ||
+                item.label
+                    .toLowerCase()
+                    .includes(term)
+            );
+
+        searchPanel.innerHTML = `
+            <div class="admin-search-panel-label">
+                ${term ? "SEARCH RESULTS" : "QUICK ACCESS"}
+            </div>
+
+            ${
+                results.length
+                    ? results
+                        .slice(0, 8)
+                        .map(item => `
+                            <a
+                                href="${item.href}"
+                                class="admin-search-result"
+                            >
+                                <span class="admin-search-result-icon">
+                                    <i class="${item.icon}"></i>
+                                </span>
+                                <span>
+                                    <strong>${item.label}</strong>
+                                    <small>Open admin module</small>
+                                </span>
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </a>
+                        `)
+                        .join("")
+                    : `
+                        <div class="admin-search-empty">
+                            <i class="fa-regular fa-folder-open"></i>
+                            <span>No matching admin module.</span>
+                        </div>
+                    `
+            }
+        `;
+
+        searchPanel.hidden = false;
+    }
+
+    searchInput?.addEventListener(
+        "focus",
+        () => renderSearchResults(
+            searchInput.value
+        )
+    );
+
+    searchInput?.addEventListener(
+        "input",
+        () => renderSearchResults(
+            searchInput.value
+        )
+    );
+
+    document.addEventListener(
+        "keydown",
+        event => {
+            if (
+                (event.ctrlKey || event.metaKey) &&
+                event.key.toLowerCase() === "k"
+            ) {
+                event.preventDefault();
+                searchInput?.focus();
+                renderSearchResults(
+                    searchInput?.value || ""
+                );
+            }
+
+            if (event.key === "Escape") {
+                if (searchPanel) {
+                    searchPanel.hidden = true;
+                }
+
+                if (accountMenu) {
+                    accountMenu.hidden = true;
+                }
+
+                accountButton?.setAttribute(
+                    "aria-expanded",
+                    "false"
+                );
+
+                closeMobileNav();
+            }
+        }
+    );
+}
+
+function renderGroupedNavigation(visibleItems, currentFile) {
+    return ADMIN_NAV_GROUPS
+        .map(group => {
+            const groupOrder = {
+                main: [
+                    "dashboard",
+                    "bookings",
+                    "packages",
+                    "trip-operations"
+                ],
+                management: [
+                    "payments",
+                    "tour-pricing",
+                    "resort-bookings",
+                    "promo"
+                ],
+                customers: [
+                    "customers",
+                    "messages",
+                    "notifications"
+                ],
+                analytics: [
+                    "reports"
+                ]
+            };
+
+            const order =
+                groupOrder[group.id] || [];
+
+            const items =
+                visibleItems
+                    .filter(
+                        item => item.group === group.id
+                    )
+                    .sort(
+                        (a, b) =>
+                            order.indexOf(a.id) -
+                            order.indexOf(b.id)
+                    );
+
+            if (!items.length) return "";
+
+            return `
+                <div class="admin-sidebar-group">
+                    <div class="admin-sidebar-menu-title">
+                        ${group.label}
+                    </div>
+
+                    <div class="admin-sidebar-group-links">
+                        ${items.map(item => {
+                            const isActive =
+                                currentFile ===
+                                item.href.toLowerCase();
+
+                            return `
+                                <a
+                                    href="${item.href}"
+                                    class="admin-sidebar-link${isActive ? " active" : ""}${!item.available ? " coming-soon" : ""}"
+                                    data-admin-nav="${item.id}"
+                                    data-available="${item.available ? "true" : "false"}"
+                                    ${isActive ? 'aria-current="page"' : ""}
+                                    data-tooltip="${item.label}"
+                                    title="${item.label}"
+                                >
+                                    <i class="${item.icon}"></i>
+                                    <span>${item.label}</span>
+                                    ${
+                                        item.id === "bookings"
+                                            ? '<b class="admin-sidebar-count-badge" id="sharedAdminBookingBadge" hidden></b>'
+                                            : item.id === "messages"
+                                                ? '<b class="admin-sidebar-count-badge" id="sharedAdminSidebarMessageBadge" hidden></b>'
+                                                : item.id === "notifications"
+                                                    ? '<b class="admin-sidebar-count-badge" id="sharedAdminSidebarNotificationBadge" hidden></b>'
+                                                    : ""
+                                    }
+                                </a>
+                            `;
+                        }).join("")}
+                    </div>
+                </div>
+            `;
+        })
+        .join("");
+}
+
+
 // =========================================================
 // RENDER
 // =========================================================
@@ -585,79 +1269,36 @@ function renderAdminNavigation(
             </div>
 
             <div class="admin-sidebar-brand-text">
-                <strong id="sharedAdminBusinessName">Trips Wonder</strong>
-                <span id="sharedAdminSystemName">Travel Management System</span>
+                <strong id="sharedAdminBusinessName">
+                    Trips Wonder
+                </strong>
+                <span id="sharedAdminSystemName">
+                    ADMIN MANAGEMENT
+                </span>
             </div>
-        </div>
-
-        <div class="admin-sidebar-menu-title">
-            MAIN MENU
         </div>
 
         <nav
             class="admin-sidebar-menu"
             aria-label="Admin Navigation"
         >
-            ${visibleItems.map(item => {
-                const isActive =
-                    currentFile ===
-                    item.href.toLowerCase();
-
-                return `
-                    <a
-                        href="${item.href}"
-                        class="admin-sidebar-link${isActive ? " active" : ""}${!item.available ? " coming-soon" : ""}"
-                        data-admin-nav="${item.id}"
-                        data-available="${item.available ? "true" : "false"}"
-                        ${isActive ? 'aria-current="page"' : ""}
-                        title="${item.label}"
-                    >
-                        <i class="${item.icon}"></i>
-                        <span>${item.label}</span>
-                        ${
-                            item.id === "notifications"
-                                ? '<b class="admin-sidebar-notification-badge" id="sharedAdminNotificationBadge" hidden aria-hidden="true"></b>'
-                                : ""
-                        }
-                    </a>
-                `;
-            }).join("")}
+            ${renderGroupedNavigation(
+                visibleItems,
+                currentFile
+            )}
         </nav>
 
-        <div class="admin-sidebar-bottom">
-
-            <a
-                href="admin-profile.html"
-                class="admin-sidebar-profile"
-                id="sharedAdminProfileLink"
-                title="Admin Profile"
-            >
-                <div class="admin-sidebar-avatar">
-                    ${getInitials(displayName)}
-                </div>
-
-                <div class="admin-sidebar-account">
-                    <strong>${displayName}</strong>
-                    <span>
-                        ${role === "owner"
-                            ? "Owner"
-                            : "Administrator"}
-                    </span>
-                </div>
-            </a>
-
-            <button
-                type="button"
-                class="admin-sidebar-logout"
-                id="sharedAdminLogoutBtn"
-                title="Logout"
-            >
-                <i class="fa-solid fa-right-from-bracket"></i>
-                <span>Logout</span>
-            </button>
-
+        <div class="admin-sidebar-footnote">
+            <span>TWTMS</span>
+            <small>Trips Wonder</small>
         </div>
     `;
+
+    ensureSharedAdminHeader(
+        user,
+        profile,
+        visibleItems
+    );
 
     container
         .querySelectorAll(
@@ -682,7 +1323,7 @@ function renderAdminNavigation(
 
     const logoutButton =
         document.getElementById(
-            "sharedAdminLogoutBtn"
+            "sharedAdminHeaderLogoutBtn"
         );
 
     const logoutModal =
@@ -692,11 +1333,6 @@ function renderAdminNavigation(
         document.getElementById(
             "sharedAdminLogoutConfirm"
         );
-
-    logoutButton?.addEventListener(
-        "click",
-        openAdminLogoutModal
-    );
 
     if (
         logoutConfirmButton &&
@@ -923,7 +1559,12 @@ function updateAdminNotificationBadge() {
             "sharedAdminNotificationBadge"
         );
 
-    if (!badge) {
+    const sidebarBadge =
+        document.getElementById(
+            "sharedAdminSidebarNotificationBadge"
+        );
+
+    if (!badge && !sidebarBadge) {
         return;
     }
 
@@ -947,24 +1588,26 @@ function updateAdminNotificationBadge() {
     const hasUnread =
         unreadCount > 0;
 
-    badge.hidden =
-        !hasUnread;
-
-    badge.setAttribute(
-        "aria-hidden",
-        String(!hasUnread)
-    );
-
-    if (!hasUnread) {
-        badge.textContent =
-            "";
-        return;
-    }
-
-    badge.textContent =
+    const badgeText =
         unreadCount > 99
             ? "99+"
             : String(unreadCount);
+
+    [badge, sidebarBadge]
+        .filter(Boolean)
+        .forEach(element => {
+            element.hidden = !hasUnread;
+            element.setAttribute(
+                "aria-hidden",
+                String(!hasUnread)
+            );
+            element.textContent =
+                hasUnread ? badgeText : "";
+        });
+
+    if (!hasUnread) {
+        return;
+    }
 }
 
 
