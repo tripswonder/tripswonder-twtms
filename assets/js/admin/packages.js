@@ -1206,13 +1206,29 @@ addPickupLocation?.addEventListener(
                 PACKAGE_BUILDER_SECTIONS.length -
                 1;
 
+            // Keep the builder actions in sync on every step.
+            // Steps 1–6: Save as Draft + Next
+            // Step 7:   Save as Draft + Publish Package
+            if (savePackageDraftButton) {
+                savePackageDraftButton.hidden = false;
+            }
+
             if (nextPackageSection) {
-                nextPackageSection.hidden =
-                    isLast;
+                nextPackageSection.hidden = isLast;
             }
 
             if (savePackageButton) {
                 savePackageButton.hidden = !isLast;
+            }
+
+            // Expose the active step to CSS so mobile can place the
+            // correct action buttons in the package header.
+            if (packageModal) {
+                packageModal.dataset.builderStep = String(sectionIndex + 1);
+                packageModal.classList.toggle(
+                    "package-builder-last-step",
+                    isLast
+                );
             }
 
             if (cancelPackage) {
@@ -1944,6 +1960,55 @@ addPickupLocation?.addEventListener(
         }
 
 
+        function getSharedDestinationGallery(group) {
+            if (!group?.packages?.length) {
+                return [];
+            }
+
+            const sourcePackage =
+                group.packages.find(
+                    item =>
+                        Array.isArray(item?.gallery) &&
+                        item.gallery.length > 0
+                ) ||
+                group.packages.find(
+                    item => item?.image
+                );
+
+            if (
+                Array.isArray(sourcePackage?.gallery) &&
+                sourcePackage.gallery.length > 0
+            ) {
+                return [
+                    sourcePackage.gallery[0]
+                ];
+            }
+
+            if (sourcePackage?.image) {
+                return [{
+                    name: "Destination Image",
+                    url: sourcePackage.image
+                }];
+            }
+
+            return [];
+        }
+
+
+        function loadSharedDestinationImage(group) {
+            packageGalleryFiles = [];
+            existingGalleryPhotos =
+                getSharedDestinationGallery(group);
+
+            if (packagePhotos) {
+                packagePhotos.value = "";
+            }
+
+            renderPackageGallery();
+            updateBuilderLivePreview();
+        }
+
+
         function renderExistingDestinationOptions(
             group
         ) {
@@ -1954,6 +2019,9 @@ addPickupLocation?.addEventListener(
 
             selectedExistingDestinationKey = group.key;
             showExistingPackageOptionMode();
+
+            // Destination image is shared across every package option.
+            loadSharedDestinationImage(group);
 
             if (existingDestinationName) {
                 existingDestinationName.textContent = group.name;
@@ -2279,6 +2347,10 @@ addPickupLocation?.addEventListener(
             setInputValue("formDuration", "");
             setInputValue("formPrice", "");
             setInputValue("formStatus", "active");
+
+            // Reuse the destination-level image; no re-upload is required.
+            loadSharedDestinationImage(selectedGroup);
+
             updateBuilderLivePreview();
             document.getElementById("formDuration")?.focus();
         }
@@ -7296,55 +7368,25 @@ if (
                 }
 
 
-                selectedFiles.forEach(
-                    file => {
-
-
-                        if (
-                            !file.type.startsWith(
+                const imageFile =
+                    selectedFiles.find(
+                        file =>
+                            file.type.startsWith(
                                 "image/"
                             )
-                        ) {
-                            return;
-                        }
+                    );
 
+                if (!imageFile) {
+                    packagePhotos.value = "";
+                    return;
+                }
 
-                        const duplicate =
-                            packageGalleryFiles.some(
-                                existingFile =>
-                                    existingFile.name ===
-                                        file.name &&
-                                    existingFile.size ===
-                                        file.size
-                            );
-
-
-                        if (
-                            duplicate
-                        ) {
-                            return;
-                        }
-
-
-                        const totalPhotos =
-                            existingGalleryPhotos.length +
-                            packageGalleryFiles.length;
-
-
-                        if (
-                            totalPhotos >=
-                            10
-                        ) {
-                            return;
-                        }
-
-
-                        packageGalleryFiles.push(
-                            file
-                        );
-
-                    }
-                );
+                // One destination image only. A new selection replaces
+                // the previous shared image for every package option.
+                existingGalleryPhotos = [];
+                packageGalleryFiles = [
+                    imageFile
+                ];
 
 
                 renderPackageGallery();
@@ -7801,11 +7843,19 @@ if (
             existingGalleryPhotos =
                 Array.isArray(
                     packageItem.gallery
-                )
+                ) &&
+                packageItem.gallery.length > 0
                     ? [
-                        ...packageItem.gallery
+                        packageItem.gallery[0]
                       ]
-                    : [];
+                    : (
+                        packageItem.image
+                            ? [{
+                                name: "Destination Image",
+                                url: packageItem.image
+                              }]
+                            : []
+                    );
 
 
             if (
@@ -10336,6 +10386,73 @@ function collectPickupLocations() {
                     );
 
 
+                    // ==========================================
+                    // SHARED DESTINATION IMAGE
+                    // Keep every package option under the same
+                    // destination on one cover image.
+                    // ==========================================
+
+                    const sharedDestinationImage =
+                        uploadedGallery?.[0]?.url ||
+                        "";
+
+                    const siblingPackages =
+                        packages.filter(
+                            item =>
+                                item.id !== packageId &&
+                                (
+                                    item.destinationGroupKey ===
+                                        packageData.destinationGroupKey ||
+                                    (
+                                        getBaseDestinationName(
+                                            item.destinationName ||
+                                            item.name ||
+                                            ""
+                                        )
+                                            .trim()
+                                            .toLowerCase() ===
+                                        destinationName
+                                            .trim()
+                                            .toLowerCase() &&
+                                        String(
+                                            item.location ||
+                                            ""
+                                        )
+                                            .trim()
+                                            .toLowerCase() ===
+                                        String(
+                                            packageData.location ||
+                                            ""
+                                        )
+                                            .trim()
+                                            .toLowerCase()
+                                    )
+                                )
+                        );
+
+                    await Promise.all(
+                        siblingPackages.map(
+                            sibling =>
+                                updateDoc(
+                                    doc(
+                                        db,
+                                        "packages",
+                                        sibling.id
+                                    ),
+                                    {
+                                        gallery:
+                                            uploadedGallery,
+                                        image:
+                                            sharedDestinationImage,
+                                        updatedAt:
+                                            new Date()
+                                                .toISOString()
+                                    }
+                                )
+                        )
+                    );
+
+
                     console.log(
                         "PACKAGE SAVED:",
                         packageId
@@ -10553,14 +10670,328 @@ function getDynamicCostBasisLabel(type){
   if(type==="perHeadNight") return `${pax} × ${d.nights} nights`;
   return "1";
 }
+
+
+(function(){
+  if(document.getElementById("twCostActionButtonsStyle")) return;
+  const style=document.createElement("style");
+  style.id="twCostActionButtonsStyle";
+  style.textContent=`
+    @media (max-width:768px){
+      .tw-cost-action-buttons{
+        width:100%;
+        display:grid;
+        grid-template-columns:1fr 1fr;
+        gap:8px;
+      }
+      .tw-cost-action-buttons button{
+        width:100%;
+        min-width:0;
+      }
+      .tw-cost-action-buttons #addVanRentalCostBtn::after{
+        content:none !important;
+      }
+    }
+  `;
+  document.head.appendChild(style);
+})();
+
+function twPlaceCostActionButtons(){ return;
+/* legacy button relocation disabled
+
+  const addCostBtn =
+    document.getElementById("addDynamicCostItemBtn") ||
+    document.querySelector('[data-action="add-cost-item"]') ||
+    [...document.querySelectorAll("button")].find(btn =>
+      /add cost item/i.test((btn.textContent || "").trim())
+    );
+
+  const vanBtn =
+    document.getElementById("addVanRentalCostBtn") ||
+    [...document.querySelectorAll("button")].find(btn =>
+      /add van rental/i.test((btn.textContent || "").trim())
+    );
+
+  if(!addCostBtn || !vanBtn) return;
+
+  let actions = document.getElementById("twCostActionButtons");
+  if(!actions){
+    actions = document.createElement("div");
+    actions.id = "twCostActionButtons";
+    actions.className = "tw-cost-action-buttons";
+    addCostBtn.parentNode.insertBefore(actions, addCostBtn);
+  }
+
+  // Keep Van Rental first, then Add Cost Item.
+  if(vanBtn.parentNode !== actions) actions.appendChild(vanBtn);
+  if(addCostBtn.parentNode !== actions) actions.appendChild(addCostBtn);
+
+  // Remove vehicle icon only from the Van Rental button.
+  vanBtn.querySelectorAll("i, svg").forEach(icon => icon.remove());
+
+  // Remove old helper/subtitle text inside the Van Rental button.
+  [...vanBtn.childNodes].forEach(node => {
+    if(node.nodeType === Node.TEXT_NODE) return;
+    if(node.nodeType === Node.ELEMENT_NODE &&
+       /quick add van rental cost/i.test(node.textContent || "")){
+      node.remove();
+    }
+  });
+
+  vanBtn.childNodes.forEach(node => {
+    if(node.nodeType === Node.TEXT_NODE){
+      node.textContent = node.textContent.replace(/quick add van rental cost/ig, "");
+    }
+  });
+
+  vanBtn.textContent = "+ Add Van Rental";
+*/
+}
+
 function renderDynamicCostItems(){
   const host=document.getElementById("dynamicCostItems");
   if(!host)return;
 
+  requestAnimationFrame(twPlaceCostActionButtons);
+
+  if(!document.getElementById("twDynamicCostCompactStyle")){
+    const style=document.createElement("style");
+    style.id="twDynamicCostCompactStyle";
+    style.textContent=`
+      .tw-cost-action-buttons{
+        display:flex;
+        align-items:center;
+        justify-content:flex-end;
+        gap:12px;
+      }
+
+      .tw-cost-action-buttons #addVanRentalCostBtn,
+      .tw-cost-action-buttons button{
+        white-space:nowrap;
+      }
+
+      @media (min-width: 769px){
+        .tw-cost-action-buttons{
+          margin-left:auto;
+          width:max-content;
+        }
+
+        .tw-cost-action-buttons #addVanRentalCostBtn{
+          min-height:44px;
+          padding:0 22px;
+          border:1px solid #0878f9;
+          border-radius:11px;
+          background:#fff;
+          color:#0878f9;
+          font-weight:800;
+          box-shadow:none;
+        }
+
+        .tw-cost-action-buttons #addVanRentalCostBtn::after{
+          content:none !important;
+        }
+        #dynamicCostItems .tw-basis-readonly-compact,
+        #dynamicCostItems .tw-basis-input-compact{
+          width:100%;
+          min-width:0;
+          height:38px;
+          display:flex;
+          align-items:stretch;
+          overflow:hidden;
+          border:1px solid #cfe0f3;
+          border-radius:10px;
+          background:#fff;
+          box-sizing:border-box;
+        }
+        #dynamicCostItems .tw-basis-readonly-compact .tw-basis-value,
+        #dynamicCostItems .tw-basis-input-compact .dc-qty{
+          flex:1 1 auto;
+          min-width:0;
+          height:100%;
+          padding:0 10px;
+          display:flex;
+          align-items:center;
+          border:0 !important;
+          outline:0;
+          background:#fff;
+          box-sizing:border-box;
+        }
+        #dynamicCostItems .tw-basis-readonly-compact .tw-basis-unit,
+        #dynamicCostItems .tw-basis-input-compact > span{
+          flex:0 0 auto;
+          min-width:58px;
+          height:100%;
+          padding:0 10px;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          border-left:1px solid #cfe0f3;
+          background:#eef5fc;
+          color:#506a8b;
+          font-weight:700;
+          box-sizing:border-box;
+          white-space:nowrap;
+        }
+
+        #dynamicCostItems .tw-van-basis-compact{
+          width:100% !important;
+          max-width:none !important;
+        }
+
+        #addVanRentalCostBtn{
+          min-height:48px;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          gap:8px;
+          border:1px solid #cfe0f3;
+          border-radius:12px;
+          background:#fff;
+          color:#0878f9;
+          font-weight:800;
+          line-height:1.15;
+        }
+
+        #costTotalTour,
+        #costPerPax{
+          font-weight:800;
+          letter-spacing:-.02em;
+        }
+
+        #costTotalTour{
+          color:#079447;
+        }
+
+        #costPerPax{
+          color:#0878f9;
+        }
+
+        /* Compact summary cards - desktop only */
+        .cost-summary-card,
+        .cost-total-card,
+        .cost-per-pax-card{
+          min-height:82px;
+          padding:16px 18px !important;
+          border:1px solid #dce8f5 !important;
+          border-radius:14px !important;
+          box-shadow:none !important;
+          box-sizing:border-box;
+        }
+
+        .cost-total-card{
+          background:#effcf4 !important;
+        }
+
+        .cost-per-pax-card{
+          background:#f1f7ff !important;
+        }
+
+        .cost-total-card i,
+        .cost-per-pax-card i{
+          width:38px;
+          height:38px;
+          display:inline-flex;
+          align-items:center;
+          justify-content:center;
+          border-radius:10px;
+          vertical-align:middle;
+          margin-right:10px;
+        }
+
+        .cost-total-card i{
+          background:#dcf8e7;
+          color:#0aae55;
+        }
+
+        .cost-per-pax-card i{
+          background:#e1efff;
+          color:#0878f9;
+        }
+
+        .tw-cost-empty-state{
+          width:100%;
+          min-height:150px;
+          padding:24px 18px;
+          display:flex;
+          flex-direction:column;
+          align-items:center;
+          justify-content:center;
+          gap:8px;
+          text-align:center;
+          box-sizing:border-box;
+          border:1px dashed #cbdced;
+          border-radius:12px;
+          background:#f8fbff;
+        }
+
+        .tw-cost-empty-icon{
+          width:42px;
+          height:42px;
+          display:grid;
+          place-items:center;
+          border-radius:10px;
+          background:#eaf4ff;
+          color:#0878f9;
+          font-size:17px;
+        }
+
+        .tw-cost-empty-copy{
+          display:flex;
+          flex-direction:column;
+          align-items:center;
+          gap:3px;
+        }
+
+        .tw-cost-empty-copy strong{
+          color:#123d73;
+          font-size:13px;
+          font-weight:800;
+        }
+
+        .tw-cost-empty-copy span{
+          color:#7488a2;
+          font-size:10px;
+          line-height:1.4;
+        }
+
+        @media (max-width:700px){
+          .tw-cost-empty-state{
+            min-height:132px;
+            padding:18px 12px;
+          }
+
+          .tw-cost-empty-icon{
+            width:38px;
+            height:38px;
+            font-size:15px;
+          }
+
+          .tw-cost-empty-copy strong{
+            font-size:12px;
+          }
+
+          .tw-cost-empty-copy span{
+            max-width:290px;
+            font-size:9px;
+            line-height:1.45;
+          }
+
+        }
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
   if(!dynamicCostItemsState.length){
     host.innerHTML=`
-      <div class="cost-empty-state">
-        No cost items yet. Click <strong>+ Add Cost Item</strong> to add an expense.
+      <div class="cost-empty-state tw-cost-empty-state">
+        <div class="tw-cost-empty-icon" aria-hidden="true">
+          <i class="fa-solid fa-receipt"></i>
+        </div>
+        <div class="tw-cost-empty-copy">
+          <strong>No cost items yet</strong>
+          <span>Add your first expense using the Add Cost Item menu above to start calculating the package cost.</span>
+        </div>
       </div>`;
     return;
   }
@@ -10582,21 +11013,26 @@ function renderDynamicCostItems(){
         <div class="dynamic-cost-row dynamic-cost-row-van tw-cost-card" data-id="${x.id}">
           <div class="tw-cost-card-head">
             <span class="dynamic-cost-row-number">${rowNumber}</span>
-            <strong class="tw-cost-name">Van Rental</strong>
+
+            <div class="tw-van-route-inline">
+              <label>Route</label>
+              <select class="dc-van-route" title="Van rental route">
+                <option value="">Select van route</option>
+                ${routeOptions}
+              </select>
+            </div>
+
             <button type="button" class="remove-dynamic-cost" title="Remove expense" aria-label="Remove expense">
               <i class="fa-regular fa-trash-can"></i>
             </button>
           </div>
 
-          <div class="tw-van-route-field">
-            <label>Route</label>
-            <select class="dc-van-route" title="Van rental route">
-              <option value="">Select van route</option>
-              ${routeOptions}
-            </select>
-          </div>
-
           <div class="tw-cost-fields">
+            <div class="tw-cost-field">
+              <label>Rate</label>
+              <input class="dc-rate" type="number" min="0" step=".01" value="${x.rate||0}" readonly aria-label="Van rental rate">
+            </div>
+
             <div class="tw-cost-field">
               <label>Van Unit</label>
               <select class="dc-van-unit" title="Van type">
@@ -10610,13 +11046,8 @@ function renderDynamicCostItems(){
             </div>
 
             <div class="tw-cost-field">
-              <label>Rate</label>
-              <input class="dc-rate" type="number" min="0" step=".01" value="${x.rate||0}" readonly aria-label="Van rental rate">
-            </div>
-
-            <div class="tw-cost-field">
               <label>Basis / Qty</label>
-              <div class="tw-basis-input">
+              <div class="tw-basis-input tw-basis-input-compact tw-van-basis-compact">
                 <input class="dc-qty" type="number" min="1" step="1" value="${x.qty??1}" title="Number of vans">
                 <span>van</span>
               </div>
@@ -10630,18 +11061,33 @@ function renderDynamicCostItems(){
         </div>`;
     }
 
+    const basisLabel = getDynamicCostBasisLabel(x.type);
+    const basisMatch = basisLabel.match(/^(.+?)\\s+(pax|days?|nights?)$/i);
+    const basisValue = basisMatch ? basisMatch[1] : basisLabel;
+    const basisUnit = basisMatch ? basisMatch[2] : "";
+
     const basisControl=["fixed","perHeadUnit"].includes(x.type)
-      ? `<input class="dc-qty" type="number" min="0" step="1" value="${x.qty??1}">`
-      : `<div class="tw-basis-readonly">
-           <span class="tw-basis-value">${dynamicCostEscape(getDynamicCostBasisLabel(x.type).replace(/\s*pax$/i,""))}</span>
-           <span class="tw-basis-unit">${x.type==="perHead" ? "pax" : ""}</span>
+      ? `<div class="tw-basis-input tw-basis-input-compact">
+           <input class="dc-qty" type="number" min="0" step="1" value="${x.qty??1}">
+           <span>${x.type==="perHeadUnit" ? "unit" : "qty"}</span>
+         </div>`
+      : `<div class="tw-basis-readonly tw-basis-readonly-compact">
+           <span class="tw-basis-value">${dynamicCostEscape(basisValue)}</span>
+           ${basisUnit ? `<span class="tw-basis-unit">${dynamicCostEscape(basisUnit)}</span>` : ""}
          </div>`;
 
     return `
       <div class="dynamic-cost-row tw-cost-card" data-id="${x.id}">
         <div class="tw-cost-card-head">
           <span class="dynamic-cost-row-number">${rowNumber}</span>
-          <strong class="tw-cost-name">${dynamicCostEscape(x.name || "Cost Item")}</strong>
+          <input
+            class="dc-name tw-cost-name-input"
+            type="text"
+            value="${dynamicCostEscape(x.name || "New Cost Item")}"
+            placeholder="Enter cost item name"
+            aria-label="Cost item name"
+            title="Edit cost item name"
+          >
           <button type="button" class="remove-dynamic-cost" title="Remove expense" aria-label="Remove expense">
             <i class="fa-regular fa-trash-can"></i>
           </button>
@@ -10699,6 +11145,17 @@ function renderDynamicCostItems(){
         calculatePackageCosting();
       };
     }else{
+      const nameInput=row.querySelector(".dc-name");
+      if(nameInput){
+        nameInput.oninput=e=>{
+          x.name=e.target.value;
+        };
+        nameInput.onchange=e=>{
+          x.name=e.target.value.trim() || "New Cost Item";
+          e.target.value=x.name;
+        };
+      }
+
       row.querySelector(".dc-type").onchange=e=>{
         x.type=e.target.value;
         renderDynamicCostItems();
@@ -10727,8 +11184,29 @@ function renderDynamicCostItems(){
   });
 }
 function addDynamicCostItem(data={}){
-  dynamicCostItemsState.push({id:`dc_${Date.now()}_${Math.random().toString(36).slice(2,6)}`,source:data.source||"custom",name:data.name||"",type:data.type||"fixed",rate:+data.rate||0,qty:data.qty??1,...data});
-  renderDynamicCostItems();calculatePackageCosting();
+  const newItem={
+    id:`dc_${Date.now()}_${Math.random().toString(36).slice(2,6)}`,
+    source:data.source||"custom",
+    name:data.name||"New Cost Item",
+    type:data.type||"fixed",
+    rate:+data.rate||0,
+    qty:data.qty??1,
+    ...data
+  };
+
+  dynamicCostItemsState.push(newItem);
+  renderDynamicCostItems();
+  calculatePackageCosting();
+
+  // Focus/select the title immediately so Admin can name the new expense.
+  requestAnimationFrame(()=>{
+    const row=document.querySelector(`#dynamicCostItems .dynamic-cost-row[data-id="${newItem.id}"]`);
+    const input=row?.querySelector(".dc-name");
+    if(input){
+      input.focus();
+      input.select();
+    }
+  });
 }
 function refreshDynamicCostBasis(){
   document.querySelectorAll("#dynamicCostItems .dynamic-cost-row").forEach(row=>{
@@ -10857,7 +11335,85 @@ function loadPackageCostingForEditor(packageItem={}){
   }
 }
 
+
+function initCostItemAddMenu(){
+  const wrap=document.getElementById("costItemAddMenu");
+  const trigger=document.getElementById("addCostItemMenuBtn");
+  const dropdown=document.getElementById("costItemAddDropdown");
+  const customOption=document.getElementById("addCustomCostOption");
+  const vanOption=document.getElementById("addVanRentalOption");
+
+  if(!wrap||!trigger||!dropdown)return;
+
+  const closeMenu=()=>{
+    wrap.classList.remove("open");
+    trigger.setAttribute("aria-expanded","false");
+  };
+
+  trigger.addEventListener("click",event=>{
+    event.stopPropagation();
+    const willOpen=!wrap.classList.contains("open");
+    document.querySelectorAll(".tw-cost-add-menu.open").forEach(menu=>{
+      if(menu!==wrap)menu.classList.remove("open");
+    });
+    wrap.classList.toggle("open",willOpen);
+    trigger.setAttribute("aria-expanded",willOpen?"true":"false");
+  });
+
+  customOption?.addEventListener("click",()=>{
+    closeMenu();
+    addDynamicCostItem();
+  });
+
+  vanOption?.addEventListener("click",async()=>{
+    closeMenu();
+    const optionButton=vanOption;
+    try{
+      optionButton.disabled=true;
+      await ensureVanRentalRatesLoaded();
+
+      if(!vanRentalRatesCache.length){
+        alert("No active van rental rates found. Add rates in Van Rental first.");
+        return;
+      }
+
+      const item={
+        id:`dc_${Date.now()}_${Math.random().toString(36).slice(2,6)}`,
+        source:"vanRental",
+        name:"Van Rental",
+        type:"fixed",
+        rate:0,
+        qty:1,
+        vanRateId:"",
+        vanUnit:"high"
+      };
+
+      dynamicCostItemsState.push(item);
+      renderDynamicCostItems();
+      calculatePackageCosting();
+
+      requestAnimationFrame(()=>{
+        document.querySelector(`[data-id="${item.id}"] .dc-van-route`)?.focus();
+      });
+    }catch(error){
+      console.error("VAN RENTAL COST LOAD ERROR:",error);
+      alert("Unable to load Van Rental rates. Please check Firestore access and try again.");
+    }finally{
+      optionButton.disabled=false;
+    }
+  });
+
+  document.addEventListener("click",event=>{
+    if(!wrap.contains(event.target))closeMenu();
+  });
+
+  document.addEventListener("keydown",event=>{
+    if(event.key==="Escape")closeMenu();
+  });
+}
+
 function initDynamicCosting(){
+  initCostItemAddMenu();
   if(!dynamicCostItemsState.length){
     dynamicCostItemsState=[];
     renderDynamicCostItems();

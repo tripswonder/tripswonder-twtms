@@ -13253,3 +13253,3734 @@ body > [role="dialog"]:not(#packageModal) > * {
     margin-top:8px!important;
   }
 }
+
+
+/* ============================================================
+   COST & PRICING — FINAL VISUAL POLISH V4
+   Reference-match spacing + Van Rental cleanup
+   Keep LAST in packages.css
+   ============================================================ */
+@media (max-width:700px){
+
+  /* Remove legacy stray labels/pseudo content in Van Rental */
+  #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van > label,
+  #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van > .expense-label,
+  #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .tw-van-route-field::before,
+  #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .tw-van-route-field::after{
+    content:none!important;
+    display:none!important;
+  }
+
+  /* Slightly more reference-like card proportions */
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-card{
+    padding:10px!important;
+    border-radius:10px!important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-card .tw-cost-card-head{
+    min-height:30px!important;
+    margin-bottom:9px!important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-card .tw-cost-name{
+    font-size:9.5px!important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-card .tw-cost-field > label,
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-card .tw-van-route-field > label{
+    margin-bottom:5px!important;
+    font-size:6.7px!important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-card .tw-cost-fields{
+    gap:7px!important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-card .tw-cost-field input,
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-card .tw-cost-field select,
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-card .tw-basis-readonly,
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-card .tw-basis-input{
+    height:36px!important;
+    min-height:36px!important;
+    max-height:36px!important;
+    font-size:8px!important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-card .tw-basis-unit,
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-card .tw-basis-input > span{
+    height:34px!important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-card .tw-cost-computed{
+    min-height:34px!important;
+    margin-top:9px!important;
+    padding:7px 9px!important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-card .tw-cost-computed > span{
+    font-size:7px!important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-card .tw-cost-computed .dynamic-cost-computed{
+    font-size:11.5px!important;
+  }
+
+  /* Van route full width and clean */
+  #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .tw-van-route-field{
+    display:block!important;
+    width:100%!important;
+    margin:0 0 8px!important;
+    padding:0!important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .tw-van-route-field > label{
+    display:block!important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .tw-van-route-field select{
+    width:100%!important;
+    height:36px!important;
+    min-height:36px!important;
+    margin:0!important;
+    box-sizing:border-box!important;
+  }
+
+  /* Expense section spacing */
+  #packageSectionCostPricing .tw-expense-heading{
+    margin-top:2px!important;
+    margin-bottom:10px!important;
+  }
+
+  #packageSectionCostPricing .tw-cost-items{
+    gap:9px!important;
+  }
+
+  #packageSectionCostPricing .tw-add-van-btn{
+    margin-top:10px!important;
+    min-height:40px!important;
+  }
+
+  #packageSectionCostPricing .tw-cost-totals{
+    margin-top:10px!important;
+    gap:8px!important;
+  }
+
+  #packageSectionCostPricing .tw-total-card{
+    min-height:68px!important;
+  }
+}
+
+
+/* ============================================================
+   PACKAGE PRICING / PROFIT — RESTORE + MOBILE REFERENCE STYLE
+   Keep this block LAST in packages.css
+   ============================================================ */
+@media (max-width:700px){
+
+  /* Restore pricing/profit section if older mobile CSS hid it */
+  #packageSectionCostPricing .package-pricing,
+  #packageSectionCostPricing .package-pricing-section,
+  #packageSectionCostPricing .pricing-summary,
+  #packageSectionCostPricing .pricing-results,
+  #packageSectionCostPricing .profit-summary,
+  #packageSectionCostPricing [class*="package-pricing"],
+  #packageSectionCostPricing [class*="profit-summary"]{
+    visibility:visible!important;
+    opacity:1!important;
+    max-height:none!important;
+    overflow:visible!important;
+  }
+
+  #packageSectionCostPricing .package-pricing,
+  #packageSectionCostPricing .package-pricing-section{
+    display:block!important;
+    width:100%!important;
+    margin:10px 0 0!important;
+    padding:11px!important;
+    box-sizing:border-box!important;
+    border:1px solid #dce7f3!important;
+    border-radius:11px!important;
+    background:#fff!important;
+  }
+
+  #packageSectionCostPricing .package-pricing h3,
+  #packageSectionCostPricing .package-pricing-section h3{
+    margin:0 0 3px!important;
+    color:#0b3d73!important;
+    font-size:12px!important;
+    line-height:1.2!important;
+    font-weight:900!important;
+  }
+
+  #packageSectionCostPricing .package-pricing p,
+  #packageSectionCostPricing .package-pricing-section > p{
+    margin:0 0 10px!important;
+    color:#71849a!important;
+    font-size:7.5px!important;
+    line-height:1.35!important;
+  }
+
+  /* Inputs */
+  #packageSectionCostPricing .package-pricing label,
+  #packageSectionCostPricing .package-pricing-section label{
+    display:block!important;
+    margin:0 0 5px!important;
+    color:#536b87!important;
+    font-size:7px!important;
+    font-weight:700!important;
+  }
+
+  #packageSectionCostPricing .package-pricing input,
+  #packageSectionCostPricing .package-pricing-section input{
+    width:100%!important;
+    min-width:0!important;
+    height:36px!important;
+    box-sizing:border-box!important;
+    border:1px solid #d4e1ef!important;
+    border-radius:7px!important;
+    background:#fff!important;
+    color:#103b70!important;
+    font-size:9px!important;
+    font-weight:700!important;
+  }
+
+  /* Recommended selling rate highlight */
+  #packageSectionCostPricing .recommended-selling-rate,
+  #packageSectionCostPricing .recommended-rate,
+  #packageSectionCostPricing [class*="recommended-selling"]{
+    display:flex!important;
+    align-items:center!important;
+    justify-content:space-between!important;
+    gap:8px!important;
+    width:100%!important;
+    min-height:54px!important;
+    margin:9px 0!important;
+    padding:10px!important;
+    box-sizing:border-box!important;
+    border:1px solid #ccefd8!important;
+    border-radius:8px!important;
+    background:#edfdf3!important;
+  }
+
+  #packageSectionCostPricing .recommended-selling-rate strong,
+  #packageSectionCostPricing .recommended-rate strong,
+  #packageSectionCostPricing [class*="recommended-selling"] strong{
+    color:#129447!important;
+    font-size:17px!important;
+    line-height:1!important;
+    font-weight:900!important;
+    white-space:nowrap!important;
+  }
+
+  /* Profit result cards */
+  #packageSectionCostPricing .pricing-results,
+  #packageSectionCostPricing .profit-summary{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:7px!important;
+    width:100%!important;
+    margin-top:9px!important;
+  }
+
+  #packageSectionCostPricing .pricing-result-card,
+  #packageSectionCostPricing .profit-card,
+  #packageSectionCostPricing [class*="profit-card"]{
+    display:block!important;
+    width:100%!important;
+    min-height:54px!important;
+    margin:0!important;
+    padding:9px 10px!important;
+    box-sizing:border-box!important;
+    border:1px solid #dce7f3!important;
+    border-radius:8px!important;
+    background:#f7faff!important;
+  }
+
+  #packageSectionCostPricing .pricing-result-card span,
+  #packageSectionCostPricing .profit-card span,
+  #packageSectionCostPricing [class*="profit-card"] span{
+    display:block!important;
+    margin-bottom:5px!important;
+    color:#71849a!important;
+    font-size:7px!important;
+    line-height:1!important;
+  }
+
+  #packageSectionCostPricing .pricing-result-card strong,
+  #packageSectionCostPricing .profit-card strong,
+  #packageSectionCostPricing [class*="profit-card"] strong{
+    display:block!important;
+    color:#073e7b!important;
+    font-size:13px!important;
+    line-height:1.1!important;
+    font-weight:900!important;
+  }
+}
+
+
+/* ============================================================
+   COST ITEM — EDITABLE TITLE
+   Keep LAST in packages.css
+   ============================================================ */
+#packageSectionCostPricing #dynamicCostItems .tw-cost-card .tw-cost-name-input,
+#packageSectionCostPricing #dynamicCostItems .tw-cost-card input.dc-name.tw-cost-name-input{
+  display:block !important;
+  position:static !important;
+  width:100% !important;
+  min-width:0 !important;
+  max-width:100% !important;
+  height:30px !important;
+  min-height:30px !important;
+  margin:0 !important;
+  padding:0 8px !important;
+  box-sizing:border-box !important;
+  border:1px solid transparent !important;
+  border-radius:7px !important;
+  outline:none !important;
+  background:transparent !important;
+  color:#103b70 !important;
+  font-size:12px !important;
+  line-height:1 !important;
+  font-weight:900 !important;
+  white-space:nowrap !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+}
+#packageSectionCostPricing #dynamicCostItems .tw-cost-card .tw-cost-name-input:hover{
+  border-color:#d8e6f5 !important;
+  background:#fff !important;
+}
+#packageSectionCostPricing #dynamicCostItems .tw-cost-card .tw-cost-name-input:focus{
+  border-color:#1683ff !important;
+  background:#fff !important;
+  box-shadow:0 0 0 2px rgba(22,131,255,.10) !important;
+}
+@media(max-width:700px){
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-card .tw-cost-name-input,
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-card input.dc-name.tw-cost-name-input{
+    display:block !important;
+    width:100% !important;
+    height:27px !important;
+    min-height:27px !important;
+    padding:0 6px !important;
+    font-size:9px !important;
+    font-weight:900 !important;
+  }
+}
+
+/* === COST & PRICING DESKTOP RESTORE — keep LAST === */
+@media (min-width:701px){
+#packageSectionCostPricing,#packageSectionCostPricing #dynamicCostItems{width:100%!important;max-width:none!important}
+#packageSectionCostPricing #dynamicCostItems{display:flex!important;flex-direction:column!important;gap:12px!important}
+#packageSectionCostPricing #dynamicCostItems .tw-cost-card,
+#packageSectionCostPricing #dynamicCostItems .dynamic-cost-row{
+ display:block!important;position:relative!important;width:100%!important;max-width:none!important;
+ margin:0!important;padding:14px!important;box-sizing:border-box!important;
+ border:1px solid #dbe7f3!important;border-radius:12px!important;background:#fff!important;overflow:visible!important}
+#packageSectionCostPricing #dynamicCostItems .tw-cost-card-head{
+ display:grid!important;grid-template-columns:42px minmax(0,1fr) 38px!important;align-items:center!important;
+ gap:10px!important;width:100%!important;min-height:40px!important;margin:0 0 12px!important;padding:0!important;position:static!important}
+#packageSectionCostPricing #dynamicCostItems .tw-cost-index{
+ display:flex!important;align-items:center!important;justify-content:center!important;width:38px!important;height:34px!important;
+ border-radius:9px!important;background:#eaf4ff!important;color:#0875e8!important;font-size:11px!important;font-weight:800!important}
+#packageSectionCostPricing #dynamicCostItems .tw-cost-name-input,
+#packageSectionCostPricing #dynamicCostItems input.dc-name.tw-cost-name-input{
+ display:block!important;position:static!important;width:100%!important;min-width:0!important;max-width:none!important;
+ height:38px!important;min-height:38px!important;margin:0!important;padding:0 11px!important;box-sizing:border-box!important;
+ border:1px solid transparent!important;border-radius:8px!important;background:transparent!important;color:#0b376b!important;
+ font-size:14px!important;font-weight:800!important}
+#packageSectionCostPricing #dynamicCostItems .tw-cost-name-input:focus{
+ background:#fff!important;border-color:#1683ff!important;box-shadow:0 0 0 3px rgba(22,131,255,.10)!important;outline:none!important}
+#packageSectionCostPricing #dynamicCostItems .tw-cost-remove{
+ position:static!important;display:flex!important;align-items:center!important;justify-content:center!important;
+ width:36px!important;height:36px!important;margin:0!important;padding:0!important;border:0!important;border-radius:9px!important;
+ background:#fff0f1!important;color:#e63746!important}
+#packageSectionCostPricing #dynamicCostItems .tw-cost-fields{
+ display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr) minmax(0,1fr)!important;
+ align-items:end!important;gap:12px!important;width:100%!important;margin:0!important;padding:0!important}
+#packageSectionCostPricing #dynamicCostItems .tw-cost-field{
+ display:block!important;position:static!important;width:100%!important;min-width:0!important;max-width:none!important;
+ margin:0!important;padding:0!important;grid-row:auto!important;grid-column:auto!important}
+#packageSectionCostPricing #dynamicCostItems .tw-cost-field>label,
+#packageSectionCostPricing #dynamicCostItems .tw-van-route-field>label{
+ display:block!important;position:static!important;width:auto!important;height:auto!important;margin:0 0 6px!important;padding:0!important;
+ color:#5f7490!important;font-size:11px!important;line-height:1.2!important;font-weight:600!important}
+#packageSectionCostPricing #dynamicCostItems .tw-cost-field input,
+#packageSectionCostPricing #dynamicCostItems .tw-cost-field select,
+#packageSectionCostPricing #dynamicCostItems .tw-basis-readonly,
+#packageSectionCostPricing #dynamicCostItems .tw-basis-input{
+ width:100%!important;min-width:0!important;max-width:none!important;height:42px!important;min-height:42px!important;
+ box-sizing:border-box!important;border:1px solid #cfdeed!important;border-radius:9px!important;background:#fff!important;
+ color:#0b376b!important;font-size:12px!important}
+#packageSectionCostPricing #dynamicCostItems .tw-cost-computed{
+ display:flex!important;align-items:center!important;justify-content:space-between!important;width:100%!important;min-height:42px!important;
+ margin:12px 0 0!important;padding:9px 12px!important;box-sizing:border-box!important;border-radius:9px!important;background:#eef5fc!important}
+#packageSectionCostPricing #dynamicCostItems .tw-cost-computed .dynamic-cost-computed{color:#073e7b!important;font-size:15px!important;font-weight:900!important}
+#packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .tw-van-route-field{display:block!important;width:100%!important;margin:0 0 12px!important}
+#packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .tw-van-route-field select{
+ width:100%!important;height:42px!important;box-sizing:border-box!important;border:1px solid #cfdeed!important;border-radius:9px!important;background:#fff!important}
+#packageSectionCostPricing .tw-cost-totals{display:grid!important;grid-template-columns:1fr 1fr!important;gap:12px!important;width:100%!important;margin-top:14px!important}
+#packageSectionCostPricing .tw-profit-pricing{
+ display:block!important;visibility:visible!important;opacity:1!important;width:100%!important;margin-top:14px!important;padding:16px!important;
+ box-sizing:border-box!important;border:1px solid #dbe7f5!important;border-radius:14px!important;background:#fff!important}
+#packageSectionCostPricing .tw-profit-input-grid,#packageSectionCostPricing .tw-profit-summary{
+ display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:12px!important}
+#packageSectionCostPricing .tw-profit-summary{margin-top:14px!important}
+#packageSectionCostPricing #dynamicCostItems .dc-name,
+#packageSectionCostPricing #dynamicCostItems .dc-type,
+#packageSectionCostPricing #dynamicCostItems .dc-rate,
+#packageSectionCostPricing #dynamicCostItems .dc-qty{position:static!important;float:none!important;transform:none!important}
+}
+
+
+/* ============================================================
+   COST & PRICING — DESKTOP POLISH V7
+   Desktop only. Mobile <=700px remains unchanged.
+   ============================================================ */
+@media (min-width:701px){
+
+  /* Main costing panel */
+  #packageSectionCostPricing .costing-details-card,
+  #packageSectionCostPricing .tw-costing-shell,
+  #packageSectionCostPricing .package-costing-card{
+    padding:24px !important;
+    border:1px solid #d7e5f3 !important;
+    border-radius:16px !important;
+    background:#fff !important;
+    box-shadow:0 2px 8px rgba(13,55,102,.04) !important;
+  }
+
+  /* Expected Pax + Duration: polished cards */
+  #packageSectionCostPricing .tw-costing-top,
+  #packageSectionCostPricing .tw-costing-overview{
+    display:grid !important;
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr) !important;
+    gap:14px !important;
+    margin:16px 0 24px !important;
+  }
+
+  #packageSectionCostPricing .tw-costing-top > *,
+  #packageSectionCostPricing .tw-costing-overview > *{
+    min-height:88px !important;
+    padding:14px 16px !important;
+    box-sizing:border-box !important;
+    border:1px solid #d7e5f3 !important;
+    border-radius:12px !important;
+    background:#fbfdff !important;
+  }
+
+  /* Expected pax input should not look like raw browser input */
+  #packageSectionCostPricing input[type="number"]{
+    box-sizing:border-box;
+  }
+
+  /* Add Cost Item */
+  #packageSectionCostPricing #addDynamicCostItem,
+  #packageSectionCostPricing .tw-add-cost-btn{
+    display:inline-flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    gap:7px !important;
+    min-width:145px !important;
+    height:42px !important;
+    padding:0 16px !important;
+    border:1px solid #0d7cff !important;
+    border-radius:9px !important;
+    background:#fff !important;
+    color:#086fdc !important;
+    font-size:12px !important;
+    font-weight:800 !important;
+    cursor:pointer !important;
+    box-shadow:none !important;
+  }
+
+  #packageSectionCostPricing #addDynamicCostItem:hover,
+  #packageSectionCostPricing .tw-add-cost-btn:hover{
+    background:#f2f8ff !important;
+  }
+
+  /* Expense card */
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-card,
+  #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row{
+    padding:12px 14px !important;
+    border-radius:12px !important;
+  }
+
+  /* Header becomes compact */
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-card-head{
+    grid-template-columns:38px minmax(0,1fr) 36px !important;
+    gap:8px !important;
+    min-height:36px !important;
+    margin-bottom:10px !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-index{
+    width:34px !important;
+    height:32px !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-name-input,
+  #packageSectionCostPricing #dynamicCostItems input.dc-name.tw-cost-name-input{
+    height:34px !important;
+    min-height:34px !important;
+    padding:0 8px !important;
+  }
+
+  /* 3 desktop fields */
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-fields{
+    grid-template-columns:minmax(180px,.9fr) minmax(210px,1.05fr) minmax(180px,.9fr) !important;
+    gap:12px !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-field input,
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-field select,
+  #packageSectionCostPricing #dynamicCostItems .tw-basis-readonly,
+  #packageSectionCostPricing #dynamicCostItems .tw-basis-input{
+    height:40px !important;
+    min-height:40px !important;
+    padding:0 12px !important;
+  }
+
+  /* Basis field / suffix */
+  #packageSectionCostPricing #dynamicCostItems .tw-basis-wrap{
+    display:flex !important;
+    align-items:stretch !important;
+    width:100% !important;
+    min-width:0 !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-basis-wrap input,
+  #packageSectionCostPricing #dynamicCostItems .tw-basis-wrap .tw-basis-readonly{
+    flex:1 1 auto !important;
+    width:auto !important;
+    min-width:0 !important;
+    border-radius:9px 0 0 9px !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-basis-unit{
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    flex:0 0 auto !important;
+    min-width:54px !important;
+    padding:0 12px !important;
+    border:1px solid #cfdeed !important;
+    border-left:0 !important;
+    border-radius:0 9px 9px 0 !important;
+    background:#eef4fa !important;
+    color:#617996 !important;
+    font-size:11px !important;
+    font-weight:800 !important;
+    box-sizing:border-box !important;
+  }
+
+  /* Computed cost: always one row */
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-computed{
+    display:grid !important;
+    grid-template-columns:minmax(0,1fr) auto !important;
+    align-items:center !important;
+    column-gap:20px !important;
+    min-height:40px !important;
+    margin-top:10px !important;
+    padding:8px 12px !important;
+    white-space:nowrap !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-computed > span,
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-computed > div{
+    white-space:nowrap !important;
+    line-height:1.2 !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-computed > span:first-child{
+    font-size:11px !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-computed .dynamic-cost-computed{
+    justify-self:end !important;
+    font-size:15px !important;
+  }
+
+  /* Delete button */
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-remove{
+    width:34px !important;
+    height:34px !important;
+    background:#fff0f1 !important;
+    color:#e12d3c !important;
+  }
+
+  /* Van button */
+  #packageSectionCostPricing .tw-add-van-btn{
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    width:100% !important;
+    min-height:44px !important;
+    margin-top:12px !important;
+    border:1px solid #cddff0 !important;
+    border-radius:10px !important;
+    background:#fff !important;
+    color:#0875e8 !important;
+    font-weight:800 !important;
+  }
+
+  /* Summary cards */
+  #packageSectionCostPricing .tw-cost-totals{
+    gap:14px !important;
+  }
+
+  #packageSectionCostPricing .tw-total-card{
+    min-height:96px !important;
+    display:flex !important;
+    flex-direction:column !important;
+    justify-content:center !important;
+    padding:16px 18px !important;
+  }
+
+  /* Profit area */
+  #packageSectionCostPricing .tw-profit-pricing{
+    padding:20px !important;
+    border-radius:14px !important;
+  }
+
+  #packageSectionCostPricing .tw-profit-input-grid{
+    grid-template-columns:minmax(180px,.8fr) minmax(220px,1fr) minmax(220px,1fr) !important;
+  }
+
+  #packageSectionCostPricing .tw-profit-summary{
+    grid-template-columns:repeat(3,minmax(180px,1fr)) !important;
+  }
+}
+
+/* Wide desktop: keep content readable rather than stretching controls too far */
+@media (min-width:1200px){
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-fields{
+    grid-template-columns:1fr 1.15fr 1fr !important;
+  }
+}
+
+
+/* ============================================================
+   COST & PRICING — COMPACT DESKTOP V8
+   Matches the approved compact desktop mockup.
+   MOBILE <= 700px IS NOT CHANGED.
+   Keep this block LAST.
+   ============================================================ */
+@media (min-width:701px){
+
+  /* Main desktop content */
+  #packageSectionCostPricing{
+    width:100% !important;
+    max-width:none !important;
+  }
+
+  #packageSectionCostPricing .costing-details-card,
+  #packageSectionCostPricing .tw-costing-shell,
+  #packageSectionCostPricing .package-costing-card{
+    width:100% !important;
+    max-width:none !important;
+    padding:0 !important;
+    overflow:hidden !important;
+    border:1px solid #d5e4f4 !important;
+    border-radius:15px !important;
+    background:#fff !important;
+    box-shadow:0 2px 8px rgba(16,62,110,.035) !important;
+  }
+
+  /* ===== TOP: title + pax + duration in ONE compact row ===== */
+  #packageSectionCostPricing .tw-costing-header,
+  #packageSectionCostPricing .costing-header{
+    padding:20px 22px 10px !important;
+    margin:0 !important;
+  }
+
+  #packageSectionCostPricing .tw-costing-top,
+  #packageSectionCostPricing .tw-costing-overview{
+    display:grid !important;
+    grid-template-columns:minmax(240px,1.3fr) minmax(220px,.75fr) minmax(260px,.9fr) !important;
+    align-items:center !important;
+    gap:16px !important;
+    width:100% !important;
+    margin:0 !important;
+    padding:18px 22px !important;
+    box-sizing:border-box !important;
+    border-bottom:1px solid #e3edf7 !important;
+  }
+
+  #packageSectionCostPricing .tw-costing-top > *,
+  #packageSectionCostPricing .tw-costing-overview > *{
+    min-width:0 !important;
+    min-height:64px !important;
+    margin:0 !important;
+    padding:10px 12px !important;
+    border:0 !important;
+    border-radius:10px !important;
+    background:transparent !important;
+    box-shadow:none !important;
+  }
+
+  /* ===== PACKAGE EXPENSES header ===== */
+  #packageSectionCostPricing .tw-expenses-heading,
+  #packageSectionCostPricing .package-expenses-heading{
+    position:relative !important;
+    margin:0 !important;
+    padding:16px 22px 10px !important;
+  }
+
+  #packageSectionCostPricing #addDynamicCostItem,
+  #packageSectionCostPricing .tw-add-cost-btn{
+    min-width:145px !important;
+    height:40px !important;
+    min-height:40px !important;
+    padding:0 16px !important;
+    border:1px solid #1683ff !important;
+    border-radius:9px !important;
+    background:#fff !important;
+    color:#0875e8 !important;
+    font-size:12px !important;
+    font-weight:800 !important;
+  }
+
+  /* ===== LIST: compact horizontal rows ===== */
+  #packageSectionCostPricing #dynamicCostItems{
+    display:flex !important;
+    flex-direction:column !important;
+    gap:8px !important;
+    width:100% !important;
+    margin:0 !important;
+    padding:0 22px 10px !important;
+    box-sizing:border-box !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-card,
+  #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row{
+    display:grid !important;
+    grid-template-columns:44px minmax(170px,1.25fr) minmax(120px,.85fr) minmax(155px,.95fr) minmax(135px,.85fr) minmax(150px,1fr) 38px !important;
+    grid-template-rows:auto !important;
+    align-items:end !important;
+    column-gap:10px !important;
+    width:100% !important;
+    min-height:76px !important;
+    margin:0 !important;
+    padding:9px 10px !important;
+    box-sizing:border-box !important;
+    border:1px solid #d8e6f4 !important;
+    border-radius:11px !important;
+    background:#fff !important;
+    overflow:visible !important;
+  }
+
+  /* Flatten card header into row */
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-card-head{
+    display:contents !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-index{
+    grid-column:1 !important;
+    grid-row:1 !important;
+    align-self:center !important;
+    justify-self:center !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    width:34px !important;
+    height:34px !important;
+    margin:0 !important;
+    border-radius:50% !important;
+    background:#eaf4ff !important;
+    color:#0875e8 !important;
+    font-size:11px !important;
+    font-weight:900 !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-name-input,
+  #packageSectionCostPricing #dynamicCostItems input.dc-name.tw-cost-name-input{
+    grid-column:2 !important;
+    grid-row:1 !important;
+    align-self:end !important;
+    width:100% !important;
+    height:40px !important;
+    min-height:40px !important;
+    margin:0 !important;
+    padding:0 12px !important;
+    box-sizing:border-box !important;
+    border:1px solid #cfdeed !important;
+    border-radius:8px !important;
+    background:#fff !important;
+    color:#0b376b !important;
+    font-size:12px !important;
+    font-weight:700 !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-remove{
+    grid-column:7 !important;
+    grid-row:1 !important;
+    align-self:end !important;
+    justify-self:center !important;
+    position:static !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    width:34px !important;
+    height:40px !important;
+    margin:0 !important;
+    padding:0 !important;
+    border:1px solid #ffc9ce !important;
+    border-radius:8px !important;
+    background:#fff4f5 !important;
+    color:#ef3340 !important;
+  }
+
+  /* Make fields participate directly in the expense row */
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-fields{
+    display:contents !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-field{
+    display:block !important;
+    width:100% !important;
+    min-width:0 !important;
+    margin:0 !important;
+    padding:0 !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-field:nth-child(1){
+    grid-column:3 !important;
+    grid-row:1 !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-field:nth-child(2){
+    grid-column:4 !important;
+    grid-row:1 !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-field:nth-child(3){
+    grid-column:5 !important;
+    grid-row:1 !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-field > label,
+  #packageSectionCostPricing #dynamicCostItems .tw-van-route-field > label{
+    display:block !important;
+    margin:0 0 5px !important;
+    color:#5f7490 !important;
+    font-size:10px !important;
+    line-height:1 !important;
+    font-weight:700 !important;
+    white-space:nowrap !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-field input,
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-field select,
+  #packageSectionCostPricing #dynamicCostItems .tw-basis-readonly,
+  #packageSectionCostPricing #dynamicCostItems .tw-basis-input{
+    width:100% !important;
+    height:40px !important;
+    min-height:40px !important;
+    margin:0 !important;
+    padding:0 10px !important;
+    box-sizing:border-box !important;
+    border:1px solid #cfdeed !important;
+    border-radius:8px !important;
+    background:#fff !important;
+    color:#0b376b !important;
+    font-size:12px !important;
+  }
+
+  /* Basis + suffix */
+  #packageSectionCostPricing #dynamicCostItems .tw-basis-wrap{
+    display:flex !important;
+    width:100% !important;
+    height:40px !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-basis-wrap input,
+  #packageSectionCostPricing #dynamicCostItems .tw-basis-wrap .tw-basis-readonly{
+    flex:1 1 auto !important;
+    width:1% !important;
+    height:40px !important;
+    border-radius:8px 0 0 8px !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-basis-unit{
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    min-width:50px !important;
+    height:40px !important;
+    padding:0 9px !important;
+    box-sizing:border-box !important;
+    border:1px solid #cfdeed !important;
+    border-left:0 !important;
+    border-radius:0 8px 8px 0 !important;
+    background:#eaf1f8 !important;
+    color:#607895 !important;
+    font-size:10px !important;
+    font-weight:800 !important;
+  }
+
+  /* Computed Cost is now a column in same row */
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-computed{
+    grid-column:6 !important;
+    grid-row:1 !important;
+    align-self:end !important;
+    display:flex !important;
+    flex-direction:column !important;
+    align-items:flex-start !important;
+    justify-content:center !important;
+    width:100% !important;
+    height:40px !important;
+    min-height:40px !important;
+    margin:0 !important;
+    padding:5px 10px !important;
+    box-sizing:border-box !important;
+    border-radius:8px !important;
+    background:#eef5fc !important;
+    white-space:nowrap !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-computed > span:first-child{
+    display:block !important;
+    margin:0 0 1px !important;
+    color:#617996 !important;
+    font-size:9px !important;
+    line-height:1 !important;
+    font-weight:700 !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-computed .dynamic-cost-computed{
+    display:block !important;
+    color:#073e7b !important;
+    font-size:13px !important;
+    line-height:1.1 !important;
+    font-weight:900 !important;
+  }
+
+  /* ===== VAN: route gets a compact extra row inside its card ===== */
+  #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van{
+    grid-template-rows:auto auto !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .tw-van-route-field{
+    grid-column:2 / 7 !important;
+    grid-row:2 !important;
+    width:100% !important;
+    margin:8px 0 0 !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .tw-van-route-field select{
+    width:100% !important;
+    height:38px !important;
+    border:1px solid #cfdeed !important;
+    border-radius:8px !important;
+    background:#fff !important;
+  }
+
+  /* ===== Add Van Rental ===== */
+  #packageSectionCostPricing .tw-add-van-btn{
+    width:calc(100% - 44px) !important;
+    min-height:40px !important;
+    margin:2px 22px 10px !important;
+    border:1px solid #cddff0 !important;
+    border-radius:9px !important;
+    background:#fff !important;
+    color:#0875e8 !important;
+    font-size:11px !important;
+    font-weight:800 !important;
+  }
+
+  /* ===== TOTALS: two compact summary cards ===== */
+  #packageSectionCostPricing .tw-cost-totals{
+    display:grid !important;
+    grid-template-columns:1fr 1fr !important;
+    gap:12px !important;
+    width:auto !important;
+    margin:0 22px 14px !important;
+  }
+
+  #packageSectionCostPricing .tw-total-card{
+    min-height:76px !important;
+    padding:12px 16px !important;
+    border-radius:11px !important;
+    box-sizing:border-box !important;
+  }
+
+  /* ===== PACKAGE PRICING / PROFIT stays compact ===== */
+  #packageSectionCostPricing .tw-profit-pricing{
+    width:auto !important;
+    margin:0 22px 20px !important;
+    padding:16px !important;
+    border:1px solid #dbe7f5 !important;
+    border-radius:12px !important;
+    background:#fff !important;
+  }
+
+  #packageSectionCostPricing .tw-profit-input-grid{
+    display:grid !important;
+    grid-template-columns:minmax(150px,.65fr) minmax(200px,1fr) minmax(220px,1.15fr) !important;
+    gap:10px !important;
+  }
+
+  #packageSectionCostPricing .tw-profit-summary{
+    display:grid !important;
+    grid-template-columns:repeat(3,minmax(150px,1fr)) !important;
+    gap:10px !important;
+    margin-top:10px !important;
+  }
+
+  #packageSectionCostPricing .tw-profit-card{
+    min-height:64px !important;
+    padding:10px 12px !important;
+    border-radius:9px !important;
+  }
+}
+
+/* Slightly tighter columns on normal laptop widths */
+@media (min-width:701px) and (max-width:1199px){
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-card,
+  #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row{
+    grid-template-columns:40px minmax(145px,1.1fr) minmax(105px,.8fr) minmax(135px,.9fr) minmax(120px,.8fr) minmax(135px,.9fr) 34px !important;
+    column-gap:8px !important;
+  }
+}
+
+
+/* =========================================================
+   TWTMS PACKAGES — DESKTOP COMPACT POLISH V9
+   Desktop only. Mobile layout remains unchanged.
+   ========================================================= */
+@media (min-width: 701px) {
+
+  /* Costing main panel: remove oversized vertical gaps */
+  #packageModal .costing-details,
+  #packageModal .costing-section,
+  #packageModal .cost-pricing-section,
+  #packageModal [data-section="costing"] {
+    gap: 14px !important;
+  }
+
+  /* Keep headings/content naturally sized instead of stretching */
+  #packageModal .costing-details > *,
+  #packageModal .costing-section > *,
+  #packageModal .cost-pricing-section > * {
+    min-height: 0 !important;
+  }
+
+  /* Compact the intro / meta area */
+  #packageModal .costing-details-header,
+  #packageModal .costing-header,
+  #packageModal .costing-summary,
+  #packageModal .costing-meta {
+    margin-bottom: 12px !important;
+  }
+
+  /* Expected Pax + Package Duration: compact cards */
+  #packageModal .costing-info-grid,
+  #packageModal .costing-meta-grid,
+  #packageModal .costing-overview-grid,
+  #packageModal .costing-summary-grid {
+    display: grid !important;
+    grid-template-columns: minmax(260px, 1fr) minmax(300px, 1fr) !important;
+    gap: 12px !important;
+    max-width: 760px !important;
+    margin: 12px 0 18px !important;
+    align-items: stretch !important;
+  }
+
+  #packageModal .costing-info-card,
+  #packageModal .costing-meta-card,
+  #packageModal .costing-summary-card {
+    min-height: 72px !important;
+    padding: 12px 14px !important;
+    border: 1px solid #dce7f4 !important;
+    border-radius: 12px !important;
+    background: #fff !important;
+    box-shadow: 0 2px 8px rgba(15, 54, 92, .04) !important;
+  }
+
+  /* Package Expenses heading area */
+  #packageModal .package-expenses-header,
+  #packageModal .cost-items-header {
+    margin-top: 6px !important;
+    margin-bottom: 10px !important;
+  }
+
+  /* Expense rows */
+  #packageModal .cost-item,
+  #packageModal .cost-item-card,
+  #packageModal .expense-item,
+  #packageModal .expense-card {
+    min-height: 88px !important;
+    padding: 10px 12px !important;
+    margin-bottom: 9px !important;
+    border-radius: 12px !important;
+  }
+
+  /* Main expense fields should stay on one desktop row */
+  #packageModal .cost-item-fields,
+  #packageModal .expense-fields,
+  #packageModal .cost-row-fields {
+    display: grid !important;
+    grid-template-columns:
+      minmax(140px, 1.25fr)
+      minmax(150px, 1.15fr)
+      minmax(150px, 1fr)
+      minmax(180px, 1.15fr) !important;
+    gap: 10px !important;
+    align-items: end !important;
+  }
+
+  /* Basis / Qty: force value + suffix into one compact control */
+  #packageModal .basis-qty,
+  #packageModal .basis-field,
+  #packageModal .cost-basis,
+  #packageModal .qty-field,
+  #packageModal .basis-qty-field {
+    position: relative !important;
+    display: block !important;
+    min-width: 0 !important;
+  }
+
+  #packageModal .basis-qty input,
+  #packageModal .basis-field input,
+  #packageModal .cost-basis input,
+  #packageModal .qty-field input,
+  #packageModal .basis-qty-field input {
+    width: 100% !important;
+    height: 42px !important;
+    min-height: 42px !important;
+    padding-right: 58px !important;
+    box-sizing: border-box !important;
+  }
+
+  #packageModal .basis-qty .unit,
+  #packageModal .basis-qty .suffix,
+  #packageModal .basis-field .unit,
+  #packageModal .basis-field .suffix,
+  #packageModal .cost-basis .unit,
+  #packageModal .cost-basis .suffix,
+  #packageModal .qty-field .unit,
+  #packageModal .qty-field .suffix,
+  #packageModal .basis-qty-field .unit,
+  #packageModal .basis-qty-field .suffix {
+    position: absolute !important;
+    right: 7px !important;
+    bottom: 6px !important;
+    width: auto !important;
+    min-width: 46px !important;
+    height: 30px !important;
+    min-height: 30px !important;
+    padding: 0 10px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 8px !important;
+    background: #edf3f9 !important;
+    line-height: 1 !important;
+    margin: 0 !important;
+  }
+
+  /* Generic input-group fallback used by Basis / Qty */
+  #packageModal .basis-qty .input-group,
+  #packageModal .basis-field .input-group,
+  #packageModal .cost-basis .input-group,
+  #packageModal .qty-field .input-group,
+  #packageModal .basis-qty-field .input-group {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: stretch !important;
+    width: 100% !important;
+    height: 42px !important;
+  }
+
+  #packageModal .basis-qty .input-group > input,
+  #packageModal .basis-field .input-group > input,
+  #packageModal .cost-basis .input-group > input,
+  #packageModal .qty-field .input-group > input,
+  #packageModal .basis-qty-field .input-group > input {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    height: 42px !important;
+  }
+
+  #packageModal .basis-qty .input-group > span,
+  #packageModal .basis-field .input-group > span,
+  #packageModal .cost-basis .input-group > span,
+  #packageModal .qty-field .input-group > span,
+  #packageModal .basis-qty-field .input-group > span {
+    flex: 0 0 54px !important;
+    width: 54px !important;
+    height: 42px !important;
+    min-height: 42px !important;
+    margin: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  /* Standardize field heights */
+  #packageModal .cost-item input,
+  #packageModal .cost-item select,
+  #packageModal .expense-item input,
+  #packageModal .expense-item select,
+  #packageModal .cost-item-card input,
+  #packageModal .cost-item-card select,
+  #packageModal .expense-card input,
+  #packageModal .expense-card select {
+    min-height: 42px !important;
+  }
+
+  /* Computed cost: compact horizontal strip */
+  #packageModal .computed-cost,
+  #packageModal .cost-computed,
+  #packageModal .computed-cost-row {
+    min-height: 40px !important;
+    padding: 8px 12px !important;
+    margin-top: 8px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    border-radius: 9px !important;
+  }
+}
+
+
+/* ============================================================
+   COST & PRICING — DESKTOP COMPACT FINAL V10
+   Exact selectors from current packages.html.
+   Desktop only — mobile <=700px is untouched.
+   ============================================================ */
+@media (min-width:701px){
+
+  /* Section / shell */
+  #packageSectionCostPricing{
+    padding:18px !important;
+    background:#f7faff !important;
+  }
+
+  #packageSectionCostPricing .tw-costing-shell{
+    width:100% !important;
+    max-width:1180px !important;
+    margin:0 auto !important;
+    padding:18px !important;
+    box-sizing:border-box !important;
+    border:1px solid #d9e6f3 !important;
+    border-radius:14px !important;
+    background:#fff !important;
+    box-shadow:0 2px 8px rgba(16,62,110,.035) !important;
+    overflow:visible !important;
+  }
+
+  /* Costing Details */
+  #packageSectionCostPricing .tw-costing-title{
+    display:flex !important;
+    align-items:center !important;
+    gap:11px !important;
+    margin:0 0 14px !important;
+  }
+
+  #packageSectionCostPricing .tw-costing-title-icon{
+    width:42px !important;
+    height:42px !important;
+    flex:0 0 42px !important;
+    display:grid !important;
+    place-items:center !important;
+    border-radius:10px !important;
+    background:#eaf4ff !important;
+    color:#0878ed !important;
+    font-size:18px !important;
+  }
+
+  #packageSectionCostPricing .tw-costing-title h3{
+    margin:0 !important;
+    color:#103b70 !important;
+    font-size:18px !important;
+    line-height:1.15 !important;
+    font-weight:800 !important;
+  }
+
+  #packageSectionCostPricing .tw-costing-title p{
+    margin:3px 0 0 !important;
+    color:#71849c !important;
+    font-size:10px !important;
+  }
+
+  /* Expected Pax + Package Duration */
+  #packageSectionCostPricing .tw-cost-context{
+    display:grid !important;
+    grid-template-columns:1fr 1fr !important;
+    gap:12px !important;
+    width:100% !important;
+    margin:0 0 18px !important;
+  }
+
+  #packageSectionCostPricing .tw-context-card{
+    min-width:0 !important;
+    min-height:74px !important;
+    padding:11px 13px !important;
+    display:flex !important;
+    align-items:center !important;
+    gap:11px !important;
+    box-sizing:border-box !important;
+    border:1px solid #d9e5f2 !important;
+    border-radius:11px !important;
+    background:#fbfdff !important;
+    box-shadow:none !important;
+  }
+
+  #packageSectionCostPricing .tw-context-icon{
+    width:38px !important;
+    height:38px !important;
+    flex:0 0 38px !important;
+    display:grid !important;
+    place-items:center !important;
+    border-radius:9px !important;
+    background:#eaf4ff !important;
+    color:#0878ed !important;
+    font-size:15px !important;
+  }
+
+  #packageSectionCostPricing .tw-context-copy{
+    min-width:0 !important;
+    flex:1 1 auto !important;
+  }
+
+  #packageSectionCostPricing .tw-context-copy label,
+  #packageSectionCostPricing .tw-context-copy > span{
+    display:block !important;
+    margin:0 !important;
+    color:#637a96 !important;
+    font-size:9px !important;
+    line-height:1.2 !important;
+    font-weight:700 !important;
+  }
+
+  #packageSectionCostPricing .tw-context-copy input{
+    width:100% !important;
+    max-width:110px !important;
+    height:27px !important;
+    min-height:27px !important;
+    margin:2px 0 0 !important;
+    padding:0 !important;
+    border:0 !important;
+    outline:0 !important;
+    background:transparent !important;
+    color:#103b70 !important;
+    font-size:14px !important;
+    line-height:1 !important;
+    font-weight:800 !important;
+    box-shadow:none !important;
+  }
+
+  #packageSectionCostPricing .tw-context-copy strong{
+    display:block !important;
+    margin-top:2px !important;
+    color:#103b70 !important;
+    font-size:14px !important;
+    line-height:1.15 !important;
+    font-weight:800 !important;
+  }
+
+  #packageSectionCostPricing .tw-context-copy small{
+    display:block !important;
+    margin-top:2px !important;
+    color:#8494a8 !important;
+    font-size:8px !important;
+  }
+
+  /* Package Expenses heading */
+  #packageSectionCostPricing .tw-expense-heading{
+    display:flex !important;
+    align-items:center !important;
+    justify-content:space-between !important;
+    gap:14px !important;
+    width:100% !important;
+    margin:0 0 10px !important;
+  }
+
+  #packageSectionCostPricing .tw-expense-heading h4{
+    margin:0 !important;
+    color:#103b70 !important;
+    font-size:15px !important;
+    font-weight:800 !important;
+  }
+
+  #packageSectionCostPricing .tw-expense-heading p{
+    margin:2px 0 0 !important;
+    color:#71849c !important;
+    font-size:9px !important;
+  }
+
+  #packageSectionCostPricing .tw-add-cost-btn{
+    flex:0 0 auto !important;
+    width:auto !important;
+    min-width:132px !important;
+    height:36px !important;
+    min-height:36px !important;
+    padding:0 13px !important;
+    display:inline-flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    gap:6px !important;
+    border:1px solid #0878ed !important;
+    border-radius:8px !important;
+    background:#fff !important;
+    color:#0878ed !important;
+    font-size:10px !important;
+    font-weight:800 !important;
+  }
+
+  /* Expense list */
+  #packageSectionCostPricing .tw-cost-items{
+    display:flex !important;
+    flex-direction:column !important;
+    gap:8px !important;
+    width:100% !important;
+    margin:0 !important;
+  }
+
+  /* Exact dynamically rendered expense card */
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-card,
+  #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row{
+    width:100% !important;
+    min-width:0 !important;
+    max-width:none !important;
+    margin:0 !important;
+    padding:9px 10px !important;
+    box-sizing:border-box !important;
+    border:1px solid #dce7f3 !important;
+    border-radius:10px !important;
+    background:#fff !important;
+    box-shadow:none !important;
+  }
+
+  /* Card heading */
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-card-head{
+    display:grid !important;
+    grid-template-columns:32px minmax(0,1fr) 30px !important;
+    align-items:center !important;
+    gap:8px !important;
+    width:100% !important;
+    min-height:30px !important;
+    margin:0 0 7px !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-index,
+  #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-number{
+    width:30px !important;
+    height:28px !important;
+    min-width:30px !important;
+    display:grid !important;
+    place-items:center !important;
+    border-radius:7px !important;
+    background:#edf5ff !important;
+    color:#0878ed !important;
+    font-size:9px !important;
+    font-weight:800 !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-name-input,
+  #packageSectionCostPricing #dynamicCostItems input.dc-name{
+    width:100% !important;
+    height:30px !important;
+    min-height:30px !important;
+    padding:0 7px !important;
+    border:0 !important;
+    background:transparent !important;
+    color:#103b70 !important;
+    font-size:11px !important;
+    font-weight:800 !important;
+    box-shadow:none !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-remove,
+  #packageSectionCostPricing #dynamicCostItems .remove-dynamic-cost{
+    width:28px !important;
+    height:28px !important;
+    min-width:28px !important;
+    min-height:28px !important;
+    padding:0 !important;
+    display:grid !important;
+    place-items:center !important;
+    justify-self:end !important;
+    border:0 !important;
+    border-radius:7px !important;
+    background:#fff0f1 !important;
+    color:#e12d3c !important;
+  }
+
+  /* Rate / Calculation / Basis in ONE compact row */
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-fields,
+  #packageSectionCostPricing #dynamicCostItems .cost-item-three-grid{
+    display:grid !important;
+    grid-template-columns:minmax(150px,.85fr) minmax(175px,1fr) minmax(160px,.9fr) !important;
+    gap:9px !important;
+    align-items:end !important;
+    width:100% !important;
+    margin:0 !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-field,
+  #packageSectionCostPricing #dynamicCostItems .cost-item-field{
+    min-width:0 !important;
+    width:100% !important;
+    margin:0 !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-field > label,
+  #packageSectionCostPricing #dynamicCostItems .cost-item-field > label{
+    display:block !important;
+    margin:0 0 4px !important;
+    color:#617996 !important;
+    font-size:8px !important;
+    line-height:1.1 !important;
+    font-weight:700 !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-field input,
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-field select,
+  #packageSectionCostPricing #dynamicCostItems .cost-item-field input,
+  #packageSectionCostPricing #dynamicCostItems .cost-item-field select{
+    width:100% !important;
+    height:34px !important;
+    min-height:34px !important;
+    padding:0 9px !important;
+    box-sizing:border-box !important;
+    border:1px solid #cfdeed !important;
+    border-radius:8px !important;
+    background:#fff !important;
+    color:#103b70 !important;
+    font-size:10px !important;
+  }
+
+  /* Basis + suffix is one control */
+  #packageSectionCostPricing #dynamicCostItems .tw-basis-wrap{
+    display:flex !important;
+    align-items:stretch !important;
+    width:100% !important;
+    height:34px !important;
+    min-height:34px !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-basis-wrap input,
+  #packageSectionCostPricing #dynamicCostItems .tw-basis-wrap .tw-basis-readonly{
+    flex:1 1 auto !important;
+    width:auto !important;
+    min-width:0 !important;
+    height:34px !important;
+    min-height:34px !important;
+    margin:0 !important;
+    padding:0 9px !important;
+    border:1px solid #cfdeed !important;
+    border-right:0 !important;
+    border-radius:8px 0 0 8px !important;
+    background:#fff !important;
+    box-sizing:border-box !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-basis-unit{
+    flex:0 0 52px !important;
+    width:52px !important;
+    min-width:52px !important;
+    height:34px !important;
+    min-height:34px !important;
+    margin:0 !important;
+    padding:0 7px !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    box-sizing:border-box !important;
+    border:1px solid #cfdeed !important;
+    border-left:0 !important;
+    border-radius:0 8px 8px 0 !important;
+    background:#edf3f9 !important;
+    color:#617996 !important;
+    font-size:9px !important;
+    font-weight:800 !important;
+  }
+
+  /* Computed Cost compact strip */
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-computed{
+    display:flex !important;
+    align-items:center !important;
+    justify-content:space-between !important;
+    gap:12px !important;
+    width:100% !important;
+    min-height:32px !important;
+    margin:7px 0 0 !important;
+    padding:6px 9px !important;
+    box-sizing:border-box !important;
+    border-radius:7px !important;
+    background:#eef5fc !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-computed > span:first-child{
+    margin:0 !important;
+    color:#617996 !important;
+    font-size:8px !important;
+    font-weight:700 !important;
+    white-space:nowrap !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-computed .dynamic-cost-computed{
+    margin:0 !important;
+    color:#073e7b !important;
+    font-size:12px !important;
+    line-height:1 !important;
+    font-weight:900 !important;
+    white-space:nowrap !important;
+  }
+
+  /* Van route */
+  #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .tw-van-route-field{
+    width:100% !important;
+    margin:7px 0 0 !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .tw-van-route-field select{
+    width:100% !important;
+    height:34px !important;
+    min-height:34px !important;
+    border:1px solid #cfdeed !important;
+    border-radius:8px !important;
+  }
+
+  /* Add van */
+  #packageSectionCostPricing .tw-add-van-btn{
+    width:100% !important;
+    min-height:36px !important;
+    margin:9px 0 !important;
+    padding:5px 12px !important;
+    border:1px solid #cddff0 !important;
+    border-radius:8px !important;
+    background:#fff !important;
+    color:#0875e8 !important;
+    font-size:9px !important;
+    font-weight:800 !important;
+  }
+
+  #packageSectionCostPricing .tw-add-van-btn small{
+    font-size:7px !important;
+  }
+
+  /* Totals */
+  #packageSectionCostPricing .tw-cost-totals{
+    display:grid !important;
+    grid-template-columns:1fr 1fr !important;
+    gap:10px !important;
+    width:100% !important;
+    margin:0 0 10px !important;
+  }
+
+  #packageSectionCostPricing .tw-total-card{
+    min-height:68px !important;
+    padding:10px 12px !important;
+    display:flex !important;
+    align-items:center !important;
+    gap:10px !important;
+    border-radius:10px !important;
+  }
+
+  #packageSectionCostPricing .tw-total-icon{
+    width:34px !important;
+    height:34px !important;
+    flex:0 0 34px !important;
+  }
+
+  #packageSectionCostPricing .tw-total-card span{
+    font-size:8px !important;
+  }
+
+  #packageSectionCostPricing .tw-total-card strong{
+    font-size:15px !important;
+  }
+
+  #packageSectionCostPricing .tw-total-card small{
+    font-size:7px !important;
+  }
+
+  /* Package Pricing */
+  #packageSectionCostPricing .tw-profit-pricing{
+    width:100% !important;
+    margin:0 !important;
+    padding:13px !important;
+    box-sizing:border-box !important;
+    border-radius:10px !important;
+  }
+
+  #packageSectionCostPricing .tw-profit-heading{
+    margin-bottom:9px !important;
+  }
+
+  #packageSectionCostPricing .tw-profit-input-grid{
+    grid-template-columns:minmax(130px,.65fr) minmax(180px,1fr) minmax(210px,1.15fr) !important;
+    gap:9px !important;
+  }
+
+  #packageSectionCostPricing .tw-profit-input-wrap,
+  #packageSectionCostPricing .tw-profit-readonly{
+    min-height:36px !important;
+  }
+
+  #packageSectionCostPricing .tw-profit-input-wrap input{
+    height:34px !important;
+  }
+
+  #packageSectionCostPricing .tw-profit-summary{
+    gap:8px !important;
+    margin-top:9px !important;
+  }
+
+  #packageSectionCostPricing .tw-profit-card{
+    min-height:58px !important;
+    padding:9px 10px !important;
+  }
+}
+
+
+/* ============================================================
+   COST & PRICING — DESKTOP HORIZONTAL ROW FIX V11
+   Final override. Desktop only; mobile remains unchanged.
+   Layout:
+   No. | Cost Item Name | Rate | Calculation | Basis/Qty | Computed Cost | Delete
+   ============================================================ */
+@media (min-width:701px){
+
+  #packageSectionCostPricing #dynamicCostItems{
+    display:flex !important;
+    flex-direction:column !important;
+    gap:8px !important;
+    width:100% !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-card,
+  #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row{
+    display:grid !important;
+    grid-template-columns:
+      42px
+      minmax(150px,1.20fr)
+      minmax(105px,.72fr)
+      minmax(145px,.92fr)
+      minmax(135px,.86fr)
+      minmax(145px,.92fr)
+      34px !important;
+    grid-template-rows:44px !important;
+    align-items:end !important;
+    column-gap:9px !important;
+    row-gap:0 !important;
+    width:100% !important;
+    min-width:0 !important;
+    min-height:62px !important;
+    margin:0 !important;
+    padding:9px 10px !important;
+    box-sizing:border-box !important;
+    border:1px solid #d8e6f4 !important;
+    border-radius:10px !important;
+    background:#fff !important;
+    overflow:visible !important;
+  }
+
+  /* Header contents become columns in the same expense row */
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-card-head{
+    display:contents !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-index,
+  #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-number{
+    grid-column:1 !important;
+    grid-row:1 !important;
+    align-self:center !important;
+    justify-self:center !important;
+    width:30px !important;
+    height:30px !important;
+    min-width:30px !important;
+    min-height:30px !important;
+    margin:0 !important;
+    display:grid !important;
+    place-items:center !important;
+    border-radius:8px !important;
+    background:#edf5ff !important;
+    color:#0878ed !important;
+    font-size:9px !important;
+    font-weight:900 !important;
+  }
+
+  /* Editable Cost Item title */
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-name-input,
+  #packageSectionCostPricing #dynamicCostItems input.dc-name,
+  #packageSectionCostPricing #dynamicCostItems input.dc-name.tw-cost-name-input{
+    grid-column:2 !important;
+    grid-row:1 !important;
+    align-self:end !important;
+    width:100% !important;
+    min-width:0 !important;
+    height:34px !important;
+    min-height:34px !important;
+    margin:0 !important;
+    padding:0 10px !important;
+    box-sizing:border-box !important;
+    border:1px solid transparent !important;
+    border-radius:8px !important;
+    background:transparent !important;
+    color:#103b70 !important;
+    font-size:11px !important;
+    line-height:34px !important;
+    font-weight:800 !important;
+    box-shadow:none !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-name-input:hover,
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-name-input:focus,
+  #packageSectionCostPricing #dynamicCostItems input.dc-name:hover,
+  #packageSectionCostPricing #dynamicCostItems input.dc-name:focus{
+    border-color:#cfe0f1 !important;
+    background:#fbfdff !important;
+    outline:none !important;
+  }
+
+  /* Flatten the 3 field wrapper into the row */
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-fields,
+  #packageSectionCostPricing #dynamicCostItems .cost-item-three-grid{
+    display:contents !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-field,
+  #packageSectionCostPricing #dynamicCostItems .cost-item-field{
+    display:block !important;
+    position:static !important;
+    min-width:0 !important;
+    width:100% !important;
+    height:44px !important;
+    margin:0 !important;
+    padding:0 !important;
+    align-self:end !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-field:nth-child(1),
+  #packageSectionCostPricing #dynamicCostItems .cost-item-field:nth-child(1){
+    grid-column:3 !important;
+    grid-row:1 !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-field:nth-child(2),
+  #packageSectionCostPricing #dynamicCostItems .cost-item-field:nth-child(2){
+    grid-column:4 !important;
+    grid-row:1 !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-field:nth-child(3),
+  #packageSectionCostPricing #dynamicCostItems .cost-item-field:nth-child(3){
+    grid-column:5 !important;
+    grid-row:1 !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-field > label,
+  #packageSectionCostPricing #dynamicCostItems .cost-item-field > label{
+    display:block !important;
+    position:static !important;
+    width:auto !important;
+    height:10px !important;
+    margin:0 0 3px !important;
+    padding:0 !important;
+    color:#607793 !important;
+    font-size:8px !important;
+    line-height:10px !important;
+    font-weight:700 !important;
+    white-space:nowrap !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-field input,
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-field select,
+  #packageSectionCostPricing #dynamicCostItems .cost-item-field input,
+  #packageSectionCostPricing #dynamicCostItems .cost-item-field select,
+  #packageSectionCostPricing #dynamicCostItems .tw-basis-readonly,
+  #packageSectionCostPricing #dynamicCostItems .tw-basis-input{
+    width:100% !important;
+    min-width:0 !important;
+    max-width:none !important;
+    height:31px !important;
+    min-height:31px !important;
+    margin:0 !important;
+    padding:0 8px !important;
+    box-sizing:border-box !important;
+    border:1px solid #cfdeed !important;
+    border-radius:7px !important;
+    background:#fff !important;
+    color:#103b70 !important;
+    font-size:10px !important;
+    line-height:1 !important;
+  }
+
+  /* Basis / Qty = one joined compact control */
+  #packageSectionCostPricing #dynamicCostItems .tw-basis-wrap{
+    display:flex !important;
+    align-items:stretch !important;
+    width:100% !important;
+    min-width:0 !important;
+    height:31px !important;
+    min-height:31px !important;
+    margin:0 !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-basis-wrap input,
+  #packageSectionCostPricing #dynamicCostItems .tw-basis-wrap .tw-basis-readonly{
+    flex:1 1 auto !important;
+    width:1% !important;
+    min-width:0 !important;
+    height:31px !important;
+    min-height:31px !important;
+    margin:0 !important;
+    padding:0 8px !important;
+    border:1px solid #cfdeed !important;
+    border-right:0 !important;
+    border-radius:7px 0 0 7px !important;
+    box-sizing:border-box !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-basis-unit{
+    position:static !important;
+    flex:0 0 47px !important;
+    width:47px !important;
+    min-width:47px !important;
+    height:31px !important;
+    min-height:31px !important;
+    margin:0 !important;
+    padding:0 6px !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    box-sizing:border-box !important;
+    border:1px solid #cfdeed !important;
+    border-left:0 !important;
+    border-radius:0 7px 7px 0 !important;
+    background:#edf3f9 !important;
+    color:#617996 !important;
+    font-size:9px !important;
+    line-height:1 !important;
+    font-weight:800 !important;
+  }
+
+  /* Computed cost is its own column, not a second row */
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-computed{
+    grid-column:6 !important;
+    grid-row:1 !important;
+    align-self:end !important;
+    width:100% !important;
+    min-width:0 !important;
+    height:31px !important;
+    min-height:31px !important;
+    margin:0 !important;
+    padding:0 9px !important;
+    box-sizing:border-box !important;
+    display:flex !important;
+    flex-direction:row !important;
+    align-items:center !important;
+    justify-content:space-between !important;
+    gap:6px !important;
+    border-radius:7px !important;
+    background:#eef5fc !important;
+    white-space:nowrap !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-computed > span:first-child{
+    margin:0 !important;
+    color:#617996 !important;
+    font-size:7px !important;
+    line-height:1 !important;
+    font-weight:700 !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-computed .dynamic-cost-computed{
+    margin:0 !important;
+    color:#073e7b !important;
+    font-size:11px !important;
+    line-height:1 !important;
+    font-weight:900 !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-remove,
+  #packageSectionCostPricing #dynamicCostItems .remove-dynamic-cost{
+    grid-column:7 !important;
+    grid-row:1 !important;
+    align-self:end !important;
+    justify-self:center !important;
+    position:static !important;
+    width:30px !important;
+    height:31px !important;
+    min-width:30px !important;
+    min-height:31px !important;
+    margin:0 !important;
+    padding:0 !important;
+    display:grid !important;
+    place-items:center !important;
+    border:0 !important;
+    border-radius:7px !important;
+    background:#fff0f1 !important;
+    color:#e12d3c !important;
+  }
+
+  /* Van Rental: keep route on a clean second line only for van cards */
+  #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van{
+    grid-template-rows:44px auto !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .tw-van-route-field{
+    grid-column:2 / 7 !important;
+    grid-row:2 !important;
+    width:100% !important;
+    min-width:0 !important;
+    margin:5px 0 0 !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .tw-van-route-field > label{
+    display:block !important;
+    margin:0 0 3px !important;
+    color:#607793 !important;
+    font-size:8px !important;
+    line-height:10px !important;
+    font-weight:700 !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .tw-van-route-field select{
+    width:100% !important;
+    height:31px !important;
+    min-height:31px !important;
+    margin:0 !important;
+    border:1px solid #cfdeed !important;
+    border-radius:7px !important;
+    background:#fff !important;
+    font-size:10px !important;
+  }
+}
+
+/* Laptop widths: preserve all 7 columns without overlap */
+@media (min-width:701px) and (max-width:1100px){
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-card,
+  #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row{
+    grid-template-columns:
+      36px
+      minmax(125px,1.05fr)
+      minmax(90px,.7fr)
+      minmax(120px,.85fr)
+      minmax(115px,.82fr)
+      minmax(125px,.88fr)
+      30px !important;
+    column-gap:7px !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-computed > span:first-child{
+    display:none !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-computed{
+    justify-content:flex-end !important;
+  }
+}
+
+
+/* ============================================================
+   DESKTOP BASIS / QTY — INLINE UNIT FIX V12
+   Keeps qty + unit (pax/days/nights/van) inside one control.
+   Desktop only. Mobile remains unchanged.
+   ============================================================ */
+@media (min-width:701px){
+
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-field:nth-child(3),
+  #packageSectionCostPricing #dynamicCostItems .cost-item-field:nth-child(3){
+    overflow:visible !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-basis-wrap{
+    position:relative !important;
+    display:grid !important;
+    grid-template-columns:minmax(0,1fr) auto !important;
+    align-items:stretch !important;
+    width:100% !important;
+    height:31px !important;
+    min-height:31px !important;
+    margin:0 !important;
+    padding:0 !important;
+    overflow:hidden !important;
+    box-sizing:border-box !important;
+    border:1px solid #cfdeed !important;
+    border-radius:7px !important;
+    background:#fff !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-basis-wrap input,
+  #packageSectionCostPricing #dynamicCostItems .tw-basis-wrap .tw-basis-readonly,
+  #packageSectionCostPricing #dynamicCostItems .tw-basis-wrap .tw-basis-input{
+    grid-column:1 !important;
+    width:100% !important;
+    min-width:0 !important;
+    height:29px !important;
+    min-height:29px !important;
+    margin:0 !important;
+    padding:0 8px !important;
+    box-sizing:border-box !important;
+    border:0 !important;
+    border-radius:0 !important;
+    outline:0 !important;
+    box-shadow:none !important;
+    background:#fff !important;
+    color:#103b70 !important;
+    font-size:10px !important;
+    line-height:29px !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-basis-unit{
+    grid-column:2 !important;
+    position:static !important;
+    inset:auto !important;
+    transform:none !important;
+    align-self:stretch !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    width:auto !important;
+    min-width:48px !important;
+    max-width:70px !important;
+    height:29px !important;
+    min-height:29px !important;
+    margin:0 !important;
+    padding:0 9px !important;
+    box-sizing:border-box !important;
+    border:0 !important;
+    border-left:1px solid #d8e4ef !important;
+    border-radius:0 !important;
+    background:#edf3f9 !important;
+    color:#617996 !important;
+    font-size:9px !important;
+    line-height:1 !important;
+    font-weight:800 !important;
+    white-space:nowrap !important;
+  }
+
+  /* Prevent older CSS from creating a second/tall unit box */
+  #packageSectionCostPricing #dynamicCostItems .tw-basis-wrap > *{
+    margin-top:0 !important;
+    margin-bottom:0 !important;
+  }
+}
+
+/* =========================================================
+   FINAL — COST & PRICING DESKTOP COMPACT BASIS / QTY
+   Keeps mobile rules and existing JS/Firestore behavior intact.
+   ========================================================= */
+@media (min-width: 901px) {
+    #packageSectionCostPricing .cost-item-row,
+    #packageSectionCostPricing .cost-item-card,
+    #packageSectionCostPricing .package-cost-item,
+    #packageSectionCostPricing [data-cost-item] {
+        min-width: 0;
+    }
+
+    /* Basis / Qty field: keep number + unit inside one compact control */
+    #packageSectionCostPricing .cost-basis-wrap,
+    #packageSectionCostPricing .basis-qty-wrap,
+    #packageSectionCostPricing .cost-item-basis,
+    #packageSectionCostPricing .cost-basis-field,
+    #packageSectionCostPricing .basis-field {
+        position: relative !important;
+        min-width: 0 !important;
+    }
+
+    #packageSectionCostPricing .cost-basis-wrap input,
+    #packageSectionCostPricing .basis-qty-wrap input,
+    #packageSectionCostPricing .cost-item-basis input,
+    #packageSectionCostPricing .cost-basis-field input,
+    #packageSectionCostPricing .basis-field input {
+        width: 100% !important;
+        min-width: 0 !important;
+        padding-right: 48px !important;
+    }
+
+    #packageSectionCostPricing .cost-basis-wrap .cost-unit,
+    #packageSectionCostPricing .basis-qty-wrap .cost-unit,
+    #packageSectionCostPricing .cost-item-basis .cost-unit,
+    #packageSectionCostPricing .cost-basis-field .cost-unit,
+    #packageSectionCostPricing .basis-field .cost-unit,
+    #packageSectionCostPricing .cost-basis-wrap .basis-unit,
+    #packageSectionCostPricing .basis-qty-wrap .basis-unit,
+    #packageSectionCostPricing .cost-item-basis .basis-unit,
+    #packageSectionCostPricing .cost-basis-field .basis-unit,
+    #packageSectionCostPricing .basis-field .basis-unit {
+        position: absolute !important;
+        right: 1px !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        width: 44px !important;
+        height: calc(100% - 2px) !important;
+        margin: 0 !important;
+        display: grid !important;
+        place-items: center !important;
+        border: 0 !important;
+        border-left: 1px solid #dbe7f5 !important;
+        border-radius: 0 8px 8px 0 !important;
+        background: #edf4fb !important;
+        color: #58708f !important;
+        font-size: 10px !important;
+        font-weight: 700 !important;
+        line-height: 1 !important;
+        pointer-events: none !important;
+    }
+
+    /* Common generated markup fallback: unit immediately after input */
+    #packageSectionCostPricing .cost-item-field:has(> input) {
+        min-width: 0;
+    }
+
+    #packageSectionCostPricing .cost-item-field:has(> input) > input + span,
+    #packageSectionCostPricing .cost-item-field:has(> input) > input + small {
+        white-space: nowrap;
+    }
+}
+
+/* ============================================================
+   VAN RENTAL — COMPACT DESKTOP FINAL
+   Desktop only. Mobile layout remains unchanged.
+   Layout:
+   No. | Van Rental | Van Unit | Rate | Basis/Qty | Computed | Delete
+         Route spans below from title through computed cost
+   ============================================================ */
+@media (min-width:701px){
+
+  #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van.tw-cost-card{
+    grid-template-columns:
+      42px
+      minmax(150px,1.20fr)
+      minmax(105px,.72fr)
+      minmax(145px,.92fr)
+      minmax(135px,.86fr)
+      minmax(145px,.92fr)
+      34px !important;
+    grid-template-rows:44px 43px !important;
+    column-gap:9px !important;
+    row-gap:5px !important;
+    min-height:105px !important;
+    padding:9px 10px !important;
+    align-items:end !important;
+  }
+
+  /* Van Rental title uses the same title column as normal expenses */
+  #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .tw-cost-name{
+    grid-column:2 !important;
+    grid-row:1 !important;
+    align-self:end !important;
+    display:flex !important;
+    align-items:center !important;
+    width:100% !important;
+    min-width:0 !important;
+    height:31px !important;
+    margin:0 !important;
+    padding:0 10px !important;
+    box-sizing:border-box !important;
+    color:#103b70 !important;
+    font-size:11px !important;
+    line-height:31px !important;
+    font-weight:800 !important;
+    white-space:nowrap !important;
+  }
+
+  /* Van Unit | Rate | Basis / Qty */
+  #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .tw-cost-field:nth-child(1){
+    grid-column:3 !important;
+    grid-row:1 !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .tw-cost-field:nth-child(2){
+    grid-column:4 !important;
+    grid-row:1 !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .tw-cost-field:nth-child(3){
+    grid-column:5 !important;
+    grid-row:1 !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .tw-cost-computed{
+    grid-column:6 !important;
+    grid-row:1 !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .remove-dynamic-cost{
+    grid-column:7 !important;
+    grid-row:1 !important;
+  }
+
+  /* Route becomes one slim aligned second row */
+  #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .tw-van-route-field{
+    grid-column:2 / 7 !important;
+    grid-row:2 !important;
+    align-self:end !important;
+    width:100% !important;
+    min-width:0 !important;
+    height:43px !important;
+    margin:0 !important;
+    padding:0 !important;
+    box-sizing:border-box !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .tw-van-route-field > label{
+    display:block !important;
+    height:10px !important;
+    margin:0 0 2px !important;
+    padding:0 !important;
+    color:#607793 !important;
+    font-size:8px !important;
+    line-height:10px !important;
+    font-weight:700 !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .tw-van-route-field select{
+    width:100% !important;
+    min-width:0 !important;
+    height:31px !important;
+    min-height:31px !important;
+    margin:0 !important;
+    padding:0 10px !important;
+    box-sizing:border-box !important;
+    border:1px solid #cfdeed !important;
+    border-radius:7px !important;
+    background:#fff !important;
+    color:#103b70 !important;
+    font-size:10px !important;
+  }
+
+  /* Keep the van quantity as one joined control */
+  #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .tw-van-basis-compact{
+    display:grid !important;
+    grid-template-columns:minmax(0,1fr) 47px !important;
+    align-items:stretch !important;
+    width:100% !important;
+    min-width:0 !important;
+    height:31px !important;
+    min-height:31px !important;
+    margin:0 !important;
+    padding:0 !important;
+    overflow:hidden !important;
+    box-sizing:border-box !important;
+    border:1px solid #cfdeed !important;
+    border-radius:7px !important;
+    background:#fff !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .tw-van-basis-compact > input{
+    width:100% !important;
+    min-width:0 !important;
+    height:29px !important;
+    min-height:29px !important;
+    margin:0 !important;
+    padding:0 8px !important;
+    box-sizing:border-box !important;
+    border:0 !important;
+    border-radius:0 !important;
+    background:#fff !important;
+    box-shadow:none !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .tw-van-basis-compact > span{
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    width:47px !important;
+    min-width:47px !important;
+    height:29px !important;
+    margin:0 !important;
+    padding:0 6px !important;
+    box-sizing:border-box !important;
+    border:0 !important;
+    border-left:1px solid #cfdeed !important;
+    background:#edf3f9 !important;
+    color:#617996 !important;
+    font-size:9px !important;
+    line-height:1 !important;
+    font-weight:800 !important;
+  }
+}
+
+/* ============================================================
+   VAN RENTAL ROUTE — COMPACT WIDTH DESKTOP
+   Keep mobile unchanged.
+   ============================================================ */
+@media (min-width:701px){
+
+  /* Route starts under Van Rental title and stops before
+     Computed Cost / Delete for a cleaner compact layout. */
+  #packageSectionCostPricing #dynamicCostItems
+  .dynamic-cost-row-van.tw-cost-card
+  .tw-van-route-field{
+    grid-column:2 / 6 !important;
+    grid-row:2 !important;
+    width:100% !important;
+    max-width:none !important;
+    justify-self:stretch !important;
+  }
+
+}
+
+
+
+/* ============================================================
+   COST & PRICING — UNIFIED COST ITEM UI
+   Custom Cost Item + Van Rental use one Add Cost Item menu.
+   Van Rental uses the same compact row structure as custom items.
+   ============================================================ */
+
+#packageSectionCostPricing .tw-expense-heading{
+    position:relative;
+}
+
+#packageSectionCostPricing .tw-cost-add-menu{
+    position:relative;
+    margin-left:auto;
+    flex:0 0 auto;
+    z-index:30;
+}
+
+#packageSectionCostPricing .tw-cost-add-menu > .tw-add-cost-btn{
+    display:inline-flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    gap:8px !important;
+    min-width:154px !important;
+}
+
+#packageSectionCostPricing .tw-add-cost-chevron{
+    margin-left:2px;
+    font-size:9px;
+    transition:transform .18s ease;
+}
+
+#packageSectionCostPricing .tw-cost-add-menu.open .tw-add-cost-chevron{
+    transform:rotate(180deg);
+}
+
+#packageSectionCostPricing .tw-cost-add-dropdown{
+    position:absolute;
+    top:calc(100% + 7px);
+    right:0;
+    width:270px;
+    padding:6px;
+    display:none;
+    background:#fff;
+    border:1px solid #d7e4f2;
+    border-radius:11px;
+    box-shadow:0 14px 34px rgba(20,55,95,.14);
+    z-index:100;
+}
+
+#packageSectionCostPricing .tw-cost-add-menu.open .tw-cost-add-dropdown{
+    display:block;
+}
+
+#packageSectionCostPricing .tw-cost-add-option{
+    width:100%;
+    min-height:52px;
+    padding:8px 9px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    border:0;
+    border-radius:8px;
+    background:#fff;
+    color:#123b70;
+    text-align:left;
+}
+
+#packageSectionCostPricing .tw-cost-add-option:hover{
+    background:#f3f8ff;
+}
+
+#packageSectionCostPricing .tw-cost-add-option-icon{
+    width:32px;
+    height:32px;
+    flex:0 0 32px;
+    display:grid;
+    place-items:center;
+    border-radius:8px;
+    background:#edf5ff;
+    color:#0878f9;
+    font-size:11px;
+}
+
+#packageSectionCostPricing .tw-cost-add-option > span:last-child{
+    min-width:0;
+}
+
+#packageSectionCostPricing .tw-cost-add-option strong,
+#packageSectionCostPricing .tw-cost-add-option small{
+    display:block;
+}
+
+#packageSectionCostPricing .tw-cost-add-option strong{
+    color:#123b70;
+    font-size:10px;
+    font-weight:800;
+}
+
+#packageSectionCostPricing .tw-cost-add-option small{
+    margin-top:2px;
+    color:#7c8fa8;
+    font-size:8px;
+    font-weight:500;
+}
+
+/* Disable all older special Van Rental two-row positioning. */
+@media (min-width:701px){
+    #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van.tw-cost-card{
+        grid-template-columns:
+            42px
+            minmax(190px,1.35fr)
+            minmax(120px,.85fr)
+            minmax(150px,1fr)
+            minmax(140px,.92fr)
+            minmax(150px,.95fr)
+            34px !important;
+        grid-template-rows:44px !important;
+        min-height:64px !important;
+        height:auto !important;
+        padding:9px 10px !important;
+        column-gap:9px !important;
+        row-gap:0 !important;
+        align-items:end !important;
+    }
+
+    #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .tw-cost-card-head{
+        display:contents !important;
+    }
+
+    #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .dynamic-cost-row-number{
+        grid-column:1 !important;
+        grid-row:1 !important;
+    }
+
+    #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .tw-van-route-inline{
+        grid-column:2 !important;
+        grid-row:1 !important;
+        min-width:0 !important;
+        width:100% !important;
+        align-self:end !important;
+    }
+
+    #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .tw-van-route-inline label{
+        display:block !important;
+        margin:0 0 3px !important;
+        color:#607793 !important;
+        font-size:8px !important;
+        line-height:1 !important;
+        font-weight:700 !important;
+    }
+
+    #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .tw-van-route-inline select{
+        width:100% !important;
+        min-width:0 !important;
+        height:31px !important;
+        min-height:31px !important;
+        padding:0 9px !important;
+        border:1px solid #cfdeed !important;
+        border-radius:7px !important;
+        background:#fff !important;
+        color:#103b70 !important;
+        font-size:10px !important;
+        box-shadow:none !important;
+    }
+
+    #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .tw-cost-fields{
+        display:contents !important;
+    }
+
+    #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .tw-cost-field:nth-child(1){
+        grid-column:3 !important;
+        grid-row:1 !important;
+    }
+
+    #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .tw-cost-field:nth-child(2){
+        grid-column:4 !important;
+        grid-row:1 !important;
+    }
+
+    #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .tw-cost-field:nth-child(3){
+        grid-column:5 !important;
+        grid-row:1 !important;
+    }
+
+    #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .tw-cost-computed{
+        grid-column:6 !important;
+        grid-row:1 !important;
+    }
+
+    #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .remove-dynamic-cost{
+        grid-column:7 !important;
+        grid-row:1 !important;
+    }
+
+    #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .tw-van-basis-compact{
+        display:grid !important;
+        grid-template-columns:minmax(0,1fr) 44px !important;
+        width:100% !important;
+        min-width:0 !important;
+        height:31px !important;
+        min-height:31px !important;
+        overflow:hidden !important;
+        border:1px solid #cfdeed !important;
+        border-radius:7px !important;
+        background:#fff !important;
+    }
+
+    #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .tw-van-basis-compact > input{
+        width:100% !important;
+        min-width:0 !important;
+        height:29px !important;
+        padding:0 8px !important;
+        border:0 !important;
+        background:#fff !important;
+        box-shadow:none !important;
+    }
+
+    #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .tw-van-basis-compact > span{
+        width:44px !important;
+        min-width:44px !important;
+        height:29px !important;
+        display:flex !important;
+        align-items:center !important;
+        justify-content:center !important;
+        border:0 !important;
+        border-left:1px solid #cfdeed !important;
+        background:#edf3f9 !important;
+        color:#617996 !important;
+        font-size:9px !important;
+        font-weight:800 !important;
+    }
+
+    #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .tw-van-route-field,
+    #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .tw-cost-name{
+        display:none !important;
+    }
+}
+
+@media (max-width:700px){
+    #packageSectionCostPricing .tw-cost-add-menu{
+        width:100%;
+        margin-left:0;
+    }
+
+    #packageSectionCostPricing .tw-cost-add-menu > .tw-add-cost-btn{
+        width:100% !important;
+    }
+
+    #packageSectionCostPricing .tw-cost-add-dropdown{
+        left:0;
+        right:0;
+        width:100%;
+    }
+
+    #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .tw-van-route-inline{
+        width:100%;
+        min-width:0;
+    }
+
+    #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .tw-van-route-inline label{
+        display:block;
+        margin-bottom:4px;
+        color:#607793;
+        font-size:8px;
+        font-weight:700;
+    }
+
+    #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .tw-van-route-inline select{
+        width:100%;
+        min-width:0;
+    }
+}
+
+
+/* ============================================================
+   COST & PRICING — FINAL MOBILE LAYOUT V13
+   Mobile only. Desktop >= 701px remains unchanged.
+   ============================================================ */
+@media (max-width:700px){
+
+  /* Give the costing screen a little more usable width */
+  #packageSectionCostPricing{
+    min-width:0 !important;
+  }
+
+  #packageSectionCostPricing .tw-costing-shell,
+  #packageSectionCostPricing .costing-details-card,
+  #packageSectionCostPricing .package-costing-card{
+    width:100% !important;
+    min-width:0 !important;
+    padding:12px 10px !important;
+    box-sizing:border-box !important;
+  }
+
+  /* Header action remains the only Add Cost Item control */
+  #packageSectionCostPricing .tw-expense-heading{
+    align-items:flex-start !important;
+    gap:10px !important;
+  }
+
+  #packageSectionCostPricing .tw-cost-add-menu{
+    width:auto !important;
+    min-width:132px !important;
+    margin-left:auto !important;
+    flex:0 0 auto !important;
+  }
+
+  #packageSectionCostPricing .tw-cost-add-menu > .tw-add-cost-btn{
+    width:auto !important;
+    min-width:132px !important;
+    height:36px !important;
+    min-height:36px !important;
+    padding:0 11px !important;
+    font-size:9px !important;
+  }
+
+  #packageSectionCostPricing .tw-cost-add-dropdown{
+    left:auto !important;
+    right:0 !important;
+    width:min(250px, calc(100vw - 40px)) !important;
+  }
+
+  /* Cost cards */
+  #packageSectionCostPricing #dynamicCostItems{
+    width:100% !important;
+    min-width:0 !important;
+    gap:9px !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-card,
+  #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row{
+    display:block !important;
+    width:100% !important;
+    min-width:0 !important;
+    margin:0 !important;
+    padding:10px !important;
+    box-sizing:border-box !important;
+    overflow:hidden !important;
+    border-radius:10px !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-card-head{
+    display:grid !important;
+    grid-template-columns:30px minmax(0,1fr) 30px !important;
+    align-items:center !important;
+    gap:7px !important;
+    width:100% !important;
+    min-width:0 !important;
+    margin:0 0 9px !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-index,
+  #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-number{
+    width:28px !important;
+    height:28px !important;
+    min-width:28px !important;
+    min-height:28px !important;
+    margin:0 !important;
+    font-size:8px !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-name,
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-name-input,
+  #packageSectionCostPricing #dynamicCostItems input.dc-name{
+    width:100% !important;
+    min-width:0 !important;
+    height:30px !important;
+    min-height:30px !important;
+    margin:0 !important;
+    padding:0 7px !important;
+    font-size:10px !important;
+    line-height:30px !important;
+    box-sizing:border-box !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-remove,
+  #packageSectionCostPricing #dynamicCostItems .remove-dynamic-cost{
+    position:static !important;
+    width:28px !important;
+    height:28px !important;
+    min-width:28px !important;
+    min-height:28px !important;
+    margin:0 !important;
+    padding:0 !important;
+    justify-self:end !important;
+  }
+
+  /* Regular cost item: Rate + Calculation, then Basis full width */
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-fields,
+  #packageSectionCostPricing #dynamicCostItems .cost-item-three-grid{
+    display:grid !important;
+    grid-template-columns:minmax(0,1fr) minmax(0,1.15fr) !important;
+    gap:8px !important;
+    width:100% !important;
+    min-width:0 !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-field,
+  #packageSectionCostPricing #dynamicCostItems .cost-item-field{
+    width:100% !important;
+    min-width:0 !important;
+    margin:0 !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-field:nth-child(3),
+  #packageSectionCostPricing #dynamicCostItems .cost-item-field:nth-child(3){
+    grid-column:1 / -1 !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-field > label,
+  #packageSectionCostPricing #dynamicCostItems .cost-item-field > label,
+  #packageSectionCostPricing #dynamicCostItems .tw-van-route-inline > label{
+    display:block !important;
+    margin:0 0 4px !important;
+    color:#607793 !important;
+    font-size:7px !important;
+    line-height:1.15 !important;
+    font-weight:700 !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-field input,
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-field select,
+  #packageSectionCostPricing #dynamicCostItems .cost-item-field input,
+  #packageSectionCostPricing #dynamicCostItems .cost-item-field select,
+  #packageSectionCostPricing #dynamicCostItems .tw-basis-readonly,
+  #packageSectionCostPricing #dynamicCostItems .tw-basis-input{
+    width:100% !important;
+    min-width:0 !important;
+    height:34px !important;
+    min-height:34px !important;
+    padding:0 8px !important;
+    box-sizing:border-box !important;
+    font-size:9px !important;
+    border-radius:7px !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-basis-wrap{
+    display:flex !important;
+    width:100% !important;
+    min-width:0 !important;
+    height:34px !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-basis-wrap input,
+  #packageSectionCostPricing #dynamicCostItems .tw-basis-wrap .tw-basis-readonly{
+    flex:1 1 auto !important;
+    width:1% !important;
+    min-width:0 !important;
+    height:34px !important;
+    border-radius:7px 0 0 7px !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-basis-unit{
+    flex:0 0 43px !important;
+    width:43px !important;
+    min-width:43px !important;
+    height:34px !important;
+    min-height:34px !important;
+    padding:0 5px !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    font-size:8px !important;
+    border-radius:0 7px 7px 0 !important;
+  }
+
+  /* Computed cost always gets its own clean row */
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-computed{
+    display:flex !important;
+    align-items:center !important;
+    justify-content:space-between !important;
+    width:100% !important;
+    min-width:0 !important;
+    min-height:34px !important;
+    height:auto !important;
+    margin:8px 0 0 !important;
+    padding:7px 9px !important;
+    box-sizing:border-box !important;
+    gap:8px !important;
+    border-radius:7px !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-computed > span:first-child{
+    font-size:7px !important;
+    white-space:nowrap !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-computed .dynamic-cost-computed{
+    margin-left:auto !important;
+    font-size:11px !important;
+    white-space:nowrap !important;
+  }
+
+  /* Van Rental: Route full width, then Rate + Van Unit, then Basis full width */
+  #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .tw-cost-card-head{
+    margin-bottom:8px !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .tw-van-route-inline{
+    grid-column:2 !important;
+    grid-row:1 !important;
+    width:100% !important;
+    min-width:0 !important;
+    margin:0 !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .tw-van-route-inline label{
+    margin-bottom:3px !important;
+    font-size:7px !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .tw-van-route-inline select{
+    width:100% !important;
+    min-width:0 !important;
+    height:32px !important;
+    min-height:32px !important;
+    padding:0 8px !important;
+    box-sizing:border-box !important;
+    font-size:8px !important;
+    border-radius:7px !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .tw-cost-fields{
+    display:grid !important;
+    grid-template-columns:minmax(0,.9fr) minmax(0,1.25fr) !important;
+    gap:8px !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .tw-cost-field:nth-child(1){
+    grid-column:1 !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .tw-cost-field:nth-child(2){
+    grid-column:2 !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .tw-cost-field:nth-child(3){
+    grid-column:1 / -1 !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .tw-van-basis-compact{
+    display:grid !important;
+    grid-template-columns:minmax(0,1fr) 42px !important;
+    width:100% !important;
+    min-width:0 !important;
+    height:34px !important;
+    overflow:hidden !important;
+    border:1px solid #cfdeed !important;
+    border-radius:7px !important;
+    background:#fff !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .tw-van-basis-compact > input{
+    width:100% !important;
+    min-width:0 !important;
+    height:32px !important;
+    padding:0 8px !important;
+    border:0 !important;
+    box-shadow:none !important;
+    font-size:9px !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .tw-van-basis-compact > span{
+    width:42px !important;
+    min-width:42px !important;
+    height:32px !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    border:0 !important;
+    border-left:1px solid #cfdeed !important;
+    background:#edf3f9 !important;
+    font-size:8px !important;
+    font-weight:800 !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .tw-van-route-field,
+  #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .tw-cost-name{
+    display:none !important;
+  }
+
+  /* Cost totals: stack on mobile so labels and values remain readable */
+  #packageSectionCostPricing .tw-cost-totals{
+    display:grid !important;
+    grid-template-columns:1fr !important;
+    gap:8px !important;
+    width:100% !important;
+    margin:10px 0 12px !important;
+  }
+
+  #packageSectionCostPricing .tw-total-card{
+    width:100% !important;
+    min-width:0 !important;
+    min-height:64px !important;
+    padding:10px 12px !important;
+    box-sizing:border-box !important;
+    display:flex !important;
+    flex-direction:row !important;
+    align-items:center !important;
+    justify-content:flex-start !important;
+    gap:10px !important;
+    border-radius:9px !important;
+  }
+
+  #packageSectionCostPricing .tw-total-icon{
+    width:34px !important;
+    height:34px !important;
+    flex:0 0 34px !important;
+  }
+
+  #packageSectionCostPricing .tw-total-card span{
+    font-size:7px !important;
+  }
+
+  #packageSectionCostPricing .tw-total-card strong{
+    font-size:14px !important;
+  }
+
+  #packageSectionCostPricing .tw-total-card small{
+    font-size:7px !important;
+  }
+
+  /* Package Pricing: all major controls stack */
+  #packageSectionCostPricing .tw-profit-pricing{
+    width:100% !important;
+    min-width:0 !important;
+    margin:0 !important;
+    padding:12px 10px !important;
+    box-sizing:border-box !important;
+    border-radius:10px !important;
+  }
+
+  #packageSectionCostPricing .tw-profit-input-grid{
+    display:grid !important;
+    grid-template-columns:1fr !important;
+    gap:9px !important;
+    width:100% !important;
+  }
+
+  #packageSectionCostPricing .tw-profit-input-wrap,
+  #packageSectionCostPricing .tw-profit-readonly{
+    width:100% !important;
+    min-width:0 !important;
+  }
+
+  #packageSectionCostPricing .tw-profit-summary{
+    display:grid !important;
+    grid-template-columns:1fr !important;
+    gap:8px !important;
+    width:100% !important;
+    margin-top:9px !important;
+  }
+
+  #packageSectionCostPricing .tw-profit-card{
+    width:100% !important;
+    min-width:0 !important;
+    min-height:54px !important;
+    padding:9px 10px !important;
+    box-sizing:border-box !important;
+    border-radius:8px !important;
+  }
+}
+
+/* Very narrow phones */
+@media (max-width:390px){
+  #packageSectionCostPricing .tw-expense-heading{
+    flex-direction:column !important;
+    align-items:stretch !important;
+  }
+
+  #packageSectionCostPricing .tw-cost-add-menu,
+  #packageSectionCostPricing .tw-cost-add-menu > .tw-add-cost-btn{
+    width:100% !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-fields,
+  #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .tw-cost-fields{
+    grid-template-columns:1fr !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-field:nth-child(1),
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-field:nth-child(2),
+  #packageSectionCostPricing #dynamicCostItems .tw-cost-field:nth-child(3),
+  #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .tw-cost-field:nth-child(1),
+  #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .tw-cost-field:nth-child(2),
+  #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .tw-cost-field:nth-child(3){
+    grid-column:1 !important;
+  }
+}
+
+
+/* ============================================================
+   COST & PRICING — COMPACT VAN HEADER MOBILE V14
+   Target:
+   08 | Route | Jomalig Island
+   Desktop remains unchanged.
+   ============================================================ */
+@media (max-width:700px){
+
+  /* Van card: remove extra vertical space around the route header */
+  #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van{
+    padding:8px !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .tw-cost-card-head{
+    display:grid !important;
+    grid-template-columns:30px minmax(0,1fr) 28px !important;
+    align-items:center !important;
+    gap:6px !important;
+    min-height:32px !important;
+    margin:0 0 7px !important;
+    padding:0 !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .tw-cost-index,
+  #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .dynamic-cost-row-number{
+    width:28px !important;
+    height:28px !important;
+    min-width:28px !important;
+    min-height:28px !important;
+  }
+
+  /* Route label + destination become one compact horizontal control */
+  #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .tw-van-route-inline{
+    grid-column:2 !important;
+    grid-row:1 !important;
+    display:grid !important;
+    grid-template-columns:auto minmax(0,1fr) !important;
+    align-items:center !important;
+    gap:7px !important;
+    width:100% !important;
+    min-width:0 !important;
+    height:30px !important;
+    min-height:30px !important;
+    margin:0 !important;
+    padding:0 7px !important;
+    box-sizing:border-box !important;
+    border:1px solid #d6e3f0 !important;
+    border-radius:7px !important;
+    background:#f7fbff !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .tw-van-route-inline > label{
+    display:block !important;
+    margin:0 !important;
+    padding:0 7px 0 0 !important;
+    border-right:1px solid #d6e3f0 !important;
+    color:#607793 !important;
+    font-size:7px !important;
+    line-height:1 !important;
+    font-weight:800 !important;
+    white-space:nowrap !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .tw-van-route-inline > select{
+    width:100% !important;
+    min-width:0 !important;
+    height:28px !important;
+    min-height:28px !important;
+    margin:0 !important;
+    padding:0 20px 0 0 !important;
+    border:0 !important;
+    border-radius:0 !important;
+    outline:0 !important;
+    box-shadow:none !important;
+    background-color:transparent !important;
+    color:#123d73 !important;
+    font-size:8px !important;
+    line-height:28px !important;
+    font-weight:800 !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .tw-cost-remove,
+  #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .remove-dynamic-cost{
+    width:28px !important;
+    height:28px !important;
+    min-width:28px !important;
+    min-height:28px !important;
+  }
+
+  /* Keep fields close to the compact header */
+  #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .tw-cost-fields{
+    margin:0 !important;
+    gap:6px !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .tw-cost-field > label{
+    margin-bottom:3px !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .tw-cost-computed{
+    margin-top:6px !important;
+  }
+}
+
+@media (max-width:390px){
+  #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .tw-van-route-inline{
+    gap:5px !important;
+    padding:0 6px !important;
+  }
+
+  #packageSectionCostPricing #dynamicCostItems .dynamic-cost-row-van .tw-van-route-inline > label{
+    padding-right:5px !important;
+  }
+}
+
+
+/* ============================================================
+   REVIEW & PUBLISH — COMPACT MOBILE FINAL
+   Desktop remains unchanged.
+   ============================================================ */
+@media (max-width:700px){
+
+  #packageSectionReview{
+    padding:10px 0 12px !important;
+    border-bottom:0 !important;
+  }
+
+  #packageSectionReview > .form-section-title{
+    margin:0 0 9px !important;
+    gap:0 !important;
+  }
+
+  #packageSectionReview > .form-section-title > span{
+    display:none !important;
+  }
+
+  #packageSectionReview > .form-section-title h3{
+    margin:0 !important;
+    font-size:13px !important;
+    line-height:1.25 !important;
+    color:#123d73 !important;
+  }
+
+  #packageSectionReview > .form-section-title p{
+    margin:2px 0 0 !important;
+    font-size:8px !important;
+    line-height:1.35 !important;
+  }
+
+  #packageSectionReview .package-review-grid{
+    display:grid !important;
+    grid-template-columns:1fr !important;
+    gap:8px !important;
+    width:100% !important;
+    min-width:0 !important;
+  }
+
+  #packageSectionReview .review-summary-card{
+    width:100% !important;
+    min-width:0 !important;
+    padding:9px 11px !important;
+    margin:0 !important;
+    border:1px solid #dce7f3 !important;
+    border-radius:9px !important;
+    background:#fff !important;
+    box-shadow:none !important;
+    box-sizing:border-box !important;
+  }
+
+  #packageSectionReview .review-summary-card h4{
+    margin:0 0 5px !important;
+    padding:0 0 6px !important;
+    border-bottom:1px solid #edf2f7 !important;
+    color:#123d73 !important;
+    font-size:10px !important;
+    line-height:1.2 !important;
+    font-weight:800 !important;
+  }
+
+  #packageSectionReview .review-summary-card dl{
+    margin:0 !important;
+  }
+
+  #packageSectionReview .review-summary-card dl > div{
+    display:grid !important;
+    grid-template-columns:minmax(0,1fr) minmax(95px,auto) !important;
+    align-items:center !important;
+    gap:10px !important;
+    min-height:27px !important;
+    padding:4px 0 !important;
+    border-bottom:1px solid #f0f4f8 !important;
+  }
+
+  #packageSectionReview .review-summary-card dl > div:last-child{
+    border-bottom:0 !important;
+  }
+
+  #packageSectionReview .review-summary-card dt{
+    min-width:0 !important;
+    color:#6f829a !important;
+    font-size:8px !important;
+    line-height:1.3 !important;
+    font-weight:500 !important;
+  }
+
+  #packageSectionReview .review-summary-card dd{
+    min-width:0 !important;
+    margin:0 !important;
+    color:#123d73 !important;
+    font-size:9px !important;
+    line-height:1.3 !important;
+    font-weight:800 !important;
+    text-align:right !important;
+    overflow-wrap:anywhere !important;
+  }
+
+  /* Keep status visually compact without changing its value/JS */
+  #packageSectionReview #reviewStatus{
+    justify-self:end !important;
+    width:max-content !important;
+    min-width:0 !important;
+    padding:3px 7px !important;
+    border-radius:999px !important;
+    background:#eaf8ef !important;
+    color:#168a45 !important;
+    text-transform:capitalize !important;
+  }
+
+  #packageSectionReview .review-ready{
+    display:grid !important;
+    grid-template-columns:28px minmax(0,1fr) !important;
+    align-items:center !important;
+    gap:8px !important;
+    width:100% !important;
+    min-width:0 !important;
+    margin:8px 0 0 !important;
+    padding:9px 10px !important;
+    box-sizing:border-box !important;
+    border:1px solid #c8ead4 !important;
+    border-radius:9px !important;
+    background:#effaf3 !important;
+  }
+
+  #packageSectionReview .review-ready > i{
+    width:28px !important;
+    height:28px !important;
+    display:grid !important;
+    place-items:center !important;
+    margin:0 !important;
+    border-radius:50% !important;
+    background:#1a984b !important;
+    color:#fff !important;
+    font-size:13px !important;
+  }
+
+  #packageSectionReview .review-ready strong{
+    display:block !important;
+    margin:0 !important;
+    color:#168a45 !important;
+    font-size:9px !important;
+    line-height:1.25 !important;
+    font-weight:800 !important;
+  }
+
+  #packageSectionReview .review-ready small{
+    display:block !important;
+    margin:2px 0 0 !important;
+    color:#5b8069 !important;
+    font-size:7px !important;
+    line-height:1.35 !important;
+  }
+}
+
+/* Keep the two review columns readable on the narrowest phones. */
+@media (max-width:360px){
+  #packageSectionReview .review-summary-card dl > div{
+    grid-template-columns:minmax(0,1fr) minmax(82px,auto) !important;
+    gap:7px !important;
+  }
+
+  #packageSectionReview .review-summary-card{
+    padding:8px 9px !important;
+  }
+}
+
+
+/* ============================================================
+   REVIEW & PUBLISH — MOBILE ACTIONS FIX
+   Restore Save as Draft + Publish on Step 7.
+   Existing button IDs/JS behavior are preserved.
+   ============================================================ */
+@media (max-width:700px){
+
+  /* On mobile, keep actions in a fixed footer row instead of trying
+     to squeeze them beside the close button in the header. */
+  #packageModal .package-builder-footer{
+    position:sticky !important;
+    left:auto !important;
+    right:auto !important;
+    top:auto !important;
+    bottom:0 !important;
+    width:100% !important;
+    height:auto !important;
+    min-height:0 !important;
+    margin:0 !important;
+    padding:8px 10px !important;
+    box-sizing:border-box !important;
+    background:rgba(255,255,255,.97) !important;
+    border-top:1px solid #e3ebf4 !important;
+    box-shadow:0 -5px 14px rgba(24,57,91,.05) !important;
+    overflow:visible !important;
+    z-index:95 !important;
+  }
+
+  #packageModal .package-builder-footer-note,
+  #packageModal #cancelPackage{
+    display:none !important;
+  }
+
+  #packageModal .package-builder-footer-actions{
+    position:static !important;
+    display:grid !important;
+    grid-template-columns:1fr 1fr !important;
+    align-items:center !important;
+    gap:7px !important;
+    width:100% !important;
+    min-width:0 !important;
+  }
+
+  #packageModal #savePackageDraftButton,
+  #packageModal #nextPackageSection,
+  #packageModal #savePackageButton{
+    width:100% !important;
+    min-width:0 !important;
+    height:38px !important;
+    min-height:38px !important;
+    margin:0 !important;
+    padding:0 10px !important;
+    border-radius:8px !important;
+    font-size:8px !important;
+    line-height:1 !important;
+    white-space:nowrap !important;
+  }
+
+  /* Steps 1–6: Draft + Next */
+  #packageModal #savePackageDraftButton{
+    display:inline-flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    gap:6px !important;
+  }
+
+  /* Respect the JS hidden state. */
+  #packageModal #nextPackageSection[hidden],
+  #packageModal #savePackageButton[hidden]{
+    display:none !important;
+  }
+
+  /* When JS exposes either action, make it a proper button. */
+  #packageModal #nextPackageSection:not([hidden]),
+  #packageModal #savePackageButton:not([hidden]){
+    display:inline-flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    gap:6px !important;
+  }
+
+  /* Keep content clear of the sticky actions. */
+  #packageModal .package-builder-content{
+    padding-bottom:12px !important;
+  }
+}
+
+
+/* =========================================================
+   PACKAGE BUILDER HEADER ACTIONS — TRUE DOM PLACEMENT FINAL
+   Buttons are physically inside the header in HTML.
+========================================================= */
+
+#packageModal .package-builder-header .package-builder-footer-actions{
+  margin-left:auto;
+}
+
+/* Footer no longer needs to reserve/action-position the buttons. */
+#packageModal .package-builder-footer{
+  min-height:0;
+}
+
+@media (max-width:700px){
+
+  #packageModal .package-builder-header{
+    display:flex !important;
+    align-items:center !important;
+    gap:7px !important;
+    min-height:72px !important;
+    padding:10px 10px 10px 12px !important;
+    box-sizing:border-box !important;
+  }
+
+  #packageModal .package-builder-header > :first-child{
+    flex:1 1 auto !important;
+    min-width:0 !important;
+  }
+
+  #packageModal .package-builder-header .package-builder-footer-actions{
+    position:static !important;
+    inset:auto !important;
+    transform:none !important;
+    flex:0 0 auto !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:flex-end !important;
+    gap:5px !important;
+    width:auto !important;
+    min-width:0 !important;
+    margin:0 0 0 auto !important;
+    padding:0 !important;
+    z-index:auto !important;
+  }
+
+  #packageModal .package-builder-header .package-builder-footer-actions > button{
+    width:auto !important;
+    min-width:0 !important;
+    height:30px !important;
+    min-height:30px !important;
+    margin:0 !important;
+    padding:0 8px !important;
+    border-radius:7px !important;
+    font-size:7px !important;
+    line-height:1 !important;
+    white-space:nowrap !important;
+  }
+
+  #packageModal .package-builder-header .package-builder-footer-actions > button i{
+    font-size:7px !important;
+  }
+
+  #packageModal .package-builder-header .package-builder-close,
+  #packageModal .package-builder-header #closePackageModal{
+    position:static !important;
+    inset:auto !important;
+    transform:none !important;
+    flex:0 0 28px !important;
+    width:28px !important;
+    height:28px !important;
+    min-width:28px !important;
+    min-height:28px !important;
+    margin:0 !important;
+  }
+
+  #packageModal .package-builder-header h2{
+    font-size:14px !important;
+    line-height:1.1 !important;
+    white-space:nowrap !important;
+  }
+
+  #packageModal .package-builder-header p{
+    max-width:145px !important;
+    font-size:6px !important;
+    line-height:1.25 !important;
+  }
+
+  #packageModal .package-builder-sidebar.package-builder-top-tabs{
+    margin-top:0 !important;
+  }
+}
+
+@media (max-width:390px){
+  #packageModal .package-builder-header{
+    gap:4px !important;
+    padding-left:9px !important;
+    padding-right:8px !important;
+  }
+
+  #packageModal .package-builder-header h2{
+    font-size:12px !important;
+  }
+
+  #packageModal .package-builder-header p{
+    display:none !important;
+  }
+
+  #packageModal .package-builder-header .package-builder-footer-actions{
+    gap:4px !important;
+  }
+
+  #packageModal .package-builder-header .package-builder-footer-actions > button{
+    height:28px !important;
+    min-height:28px !important;
+    padding:0 6px !important;
+    font-size:6.2px !important;
+  }
+
+  #packageModal .package-builder-header .package-builder-close,
+  #packageModal .package-builder-header #closePackageModal{
+    flex-basis:26px !important;
+    width:26px !important;
+    height:26px !important;
+    min-width:26px !important;
+    min-height:26px !important;
+  }
+}
+
+
+/* =========================================================
+   BASIC INFO — SHARED DESTINATION IMAGE
+   One destination image reused by all package options.
+========================================================= */
+#packageSectionBasic .destination-image-field{
+    margin-top:2px;
+}
+
+#packageSectionBasic .destination-image-heading{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:14px;
+    margin-bottom:9px;
+}
+
+#packageSectionBasic .destination-image-heading > div{
+    min-width:0;
+}
+
+#packageSectionBasic .destination-image-heading label{
+    margin-bottom:3px;
+}
+
+#packageSectionBasic .destination-image-shared-badge{
+    flex:0 0 auto;
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+    min-height:25px;
+    padding:0 9px;
+    border:1px solid #cfe0f5;
+    border-radius:999px;
+    background:#f1f7ff;
+    color:#1557a6;
+    font-size:8px;
+    font-weight:700;
+    white-space:nowrap;
+}
+
+#packageSectionBasic .destination-image-uploader{
+    display:grid;
+    grid-template-columns:minmax(210px, .72fr) minmax(180px, 1.28fr);
+    gap:10px;
+    align-items:stretch;
+}
+
+#packageSectionBasic .destination-image-upload-button{
+    width:100%;
+    min-height:104px;
+    padding:15px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:11px;
+    text-align:left;
+    border:1px dashed #b8cce4;
+    border-radius:11px;
+    background:#f8fbff;
+}
+
+#packageSectionBasic .destination-image-upload-button > i{
+    flex:0 0 auto;
+    font-size:21px;
+    color:#1557a6;
+}
+
+#packageSectionBasic .destination-image-upload-button > span{
+    min-width:0;
+}
+
+#packageSectionBasic .destination-image-upload-button strong,
+#packageSectionBasic .destination-image-upload-button small{
+    display:block;
+}
+
+#packageSectionBasic .destination-image-upload-button strong{
+    color:#17365f;
+    font-size:11px;
+}
+
+#packageSectionBasic .destination-image-upload-button small{
+    margin-top:3px;
+    color:#8295ad;
+    font-size:8px;
+}
+
+#packageSectionBasic .destination-image-preview{
+    min-height:104px;
+    margin:0;
+    padding:0;
+    display:grid;
+    grid-template-columns:minmax(0,1fr);
+}
+
+#packageSectionBasic .destination-image-preview .photo-preview-item{
+    width:100%;
+    min-height:104px;
+    max-height:150px;
+    margin:0;
+}
+
+#packageSectionBasic .destination-image-preview .photo-preview-item img{
+    width:100%;
+    height:100%;
+    min-height:104px;
+    max-height:150px;
+    object-fit:cover;
+}
+
+#packageSectionGallery.package-details-intro{
+    padding-bottom:0;
+    border-bottom:0;
+}
+
+@media (max-width:700px){
+    #packageSectionBasic .destination-image-heading{
+        gap:8px;
+        margin-bottom:7px;
+    }
+
+    #packageSectionBasic .destination-image-shared-badge{
+        min-height:22px;
+        padding:0 7px;
+        font-size:7px;
+    }
+
+    #packageSectionBasic .destination-image-uploader{
+        grid-template-columns:1fr;
+        gap:7px;
+    }
+
+    #packageSectionBasic .destination-image-upload-button{
+        min-height:58px;
+        padding:9px 10px;
+        justify-content:flex-start;
+    }
+
+    #packageSectionBasic .destination-image-upload-button > i{
+        font-size:16px;
+    }
+
+    #packageSectionBasic .destination-image-upload-button strong{
+        font-size:9px;
+    }
+
+    #packageSectionBasic .destination-image-upload-button small{
+        font-size:7px;
+    }
+
+    #packageSectionBasic .destination-image-preview{
+        min-height:0;
+    }
+
+    #packageSectionBasic .destination-image-preview:empty{
+        display:none;
+    }
+
+    #packageSectionBasic .destination-image-preview .photo-preview-item,
+    #packageSectionBasic .destination-image-preview .photo-preview-item img{
+        min-height:92px;
+        max-height:125px;
+    }
+
+    #packageSectionGallery.package-details-intro{
+        padding-bottom:0 !important;
+    }
+}

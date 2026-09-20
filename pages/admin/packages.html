@@ -56,6 +56,209 @@
 <style>
 .itinerary-builder{border:1px solid #e4eaf3;border-radius:16px;overflow:hidden;background:#fff}.itinerary-tabs{display:flex;gap:4px;padding:8px;background:#f6f8fc;border-bottom:1px solid #e4eaf3;overflow-x:auto}.itinerary-tab{flex:1;min-width:92px;border:0;background:transparent;padding:11px 12px;border-radius:10px;font:inherit;font-size:12px;font-weight:600;color:#64748b;cursor:pointer;white-space:nowrap}.itinerary-tab:hover{background:#fff;color:#1d4ed8}.itinerary-tab.active{background:#fff;color:#0d6efd;box-shadow:0 1px 5px rgba(15,23,42,.08)}.itinerary-panel{display:none;padding:18px}.itinerary-panel.active{display:block}.itinerary-panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}.itinerary-panel-head strong{display:block;color:#102a56;font-size:15px}.itinerary-panel-head span{display:block;margin-top:2px;color:#7a879b;font-size:12px}.itinerary-day-list{display:flex;flex-direction:column;gap:10px;margin-bottom:12px}.itinerary-schedule-row{display:grid;grid-template-columns:170px minmax(0,1fr) 38px;gap:10px;align-items:end;padding:12px;border:1px solid #e5eaf2;border-radius:12px;background:#fbfcfe}.itinerary-field label{display:block;margin-bottom:6px;font-size:11px;font-weight:600;color:#64748b}.itinerary-field input{width:100%;box-sizing:border-box}.itinerary-remove-row{width:38px;height:38px;border:1px solid #e5eaf2;border-radius:9px;background:#fff;color:#94a3b8;cursor:pointer}.itinerary-remove-row:hover{color:#dc2626;border-color:#fecaca;background:#fff7f7}@media(max-width:700px){.itinerary-schedule-row{grid-template-columns:1fr 38px}.itinerary-field.activity{grid-column:1/-1;grid-row:2}.itinerary-remove-row{grid-column:2;grid-row:1}}
 </style>
+
+<style>
+/* =========================================================
+   COST & PRICING — PACKAGE PRICING / PROFIT
+   ========================================================= */
+#packageSectionCostPricing .tw-profit-pricing{
+    display:block !important;
+    visibility:visible !important;
+    opacity:1 !important;
+    margin-top:14px;
+    padding:14px;
+    border:1px solid #dbe7f5;
+    border-radius:14px;
+    background:#fff;
+}
+#packageSectionCostPricing .tw-profit-heading{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    margin-bottom:12px;
+}
+#packageSectionCostPricing .tw-profit-heading h4{
+    margin:0;
+    color:#0b376b;
+    font-size:15px;
+    font-weight:800;
+}
+#packageSectionCostPricing .tw-profit-heading p{
+    margin:3px 0 0;
+    color:#718096;
+    font-size:11px;
+}
+#packageSectionCostPricing .tw-profit-input-grid{
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:10px;
+}
+#packageSectionCostPricing .tw-profit-field{
+    min-width:0;
+}
+#packageSectionCostPricing .tw-profit-field label{
+    display:block;
+    margin-bottom:6px;
+    color:#526987;
+    font-size:11px;
+    font-weight:600;
+}
+#packageSectionCostPricing .tw-profit-field small{
+    display:block;
+    margin-top:5px;
+    color:#8a9ab0;
+    font-size:9px;
+    line-height:1.35;
+}
+#packageSectionCostPricing .tw-profit-input-wrap,
+#packageSectionCostPricing .tw-profit-readonly{
+    min-height:42px;
+    width:100%;
+    box-sizing:border-box;
+    border:1px solid #d7e2ef;
+    border-radius:10px;
+    background:#fff;
+    display:flex;
+    align-items:center;
+    overflow:hidden;
+}
+#packageSectionCostPricing .tw-profit-input-wrap input{
+    width:100%;
+    min-width:0;
+    height:40px;
+    padding:0 10px;
+    border:0 !important;
+    outline:0;
+    background:transparent;
+    color:#0b376b;
+    font:inherit;
+    font-size:12px;
+    font-weight:700;
+    box-sizing:border-box;
+}
+#packageSectionCostPricing .tw-profit-input-wrap > span{
+    flex:0 0 auto;
+    padding:0 10px;
+    color:#667b98;
+    font-size:12px;
+    font-weight:700;
+}
+#packageSectionCostPricing .tw-profit-peso > span{
+    padding-right:0;
+}
+#packageSectionCostPricing .tw-profit-readonly{
+    padding:0 11px;
+    background:#f4f8fd;
+    color:#0d6efd;
+    font-size:13px;
+    font-weight:800;
+}
+#packageSectionCostPricing .tw-profit-summary{
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:10px;
+    margin-top:12px;
+}
+#packageSectionCostPricing .tw-profit-card{
+    min-width:0;
+    padding:11px 12px;
+    border:1px solid #dbe7f5;
+    border-radius:11px;
+    background:#f7faff;
+}
+#packageSectionCostPricing .tw-profit-card span{
+    display:block;
+    color:#667b98;
+    font-size:10px;
+    font-weight:600;
+}
+#packageSectionCostPricing .tw-profit-card strong{
+    display:block;
+    margin-top:3px;
+    color:#0b376b;
+    font-size:14px;
+    font-weight:800;
+}
+#packageSectionCostPricing .tw-profit-margin-card{
+    background:#eff8f2;
+    border-color:#d5efdc;
+}
+#packageSectionCostPricing .tw-profit-margin-card strong{
+    color:#159447;
+}
+@media(max-width:700px){
+    #packageSectionCostPricing .tw-profit-pricing{
+        margin-top:10px;
+        padding:10px;
+        border-radius:12px;
+    }
+    #packageSectionCostPricing .tw-profit-heading{
+        margin-bottom:9px;
+    }
+    #packageSectionCostPricing .tw-profit-heading h4{
+        font-size:12px;
+    }
+    #packageSectionCostPricing .tw-profit-heading p{
+        font-size:8px;
+    }
+    #packageSectionCostPricing .tw-profit-input-grid{
+        grid-template-columns:1fr 1fr;
+        gap:7px;
+    }
+    #packageSectionCostPricing .tw-profit-final-rate{
+        grid-column:1/-1;
+    }
+    #packageSectionCostPricing .tw-profit-field label{
+        margin-bottom:4px;
+        font-size:8px;
+    }
+    #packageSectionCostPricing .tw-profit-field small{
+        margin-top:3px;
+        font-size:7px;
+    }
+    #packageSectionCostPricing .tw-profit-input-wrap,
+    #packageSectionCostPricing .tw-profit-readonly{
+        min-height:34px;
+        border-radius:7px;
+    }
+    #packageSectionCostPricing .tw-profit-input-wrap input{
+        height:32px;
+        padding:0 7px;
+        font-size:9px;
+    }
+    #packageSectionCostPricing .tw-profit-input-wrap > span{
+        padding:0 7px;
+        font-size:9px;
+    }
+    #packageSectionCostPricing .tw-profit-peso > span{
+        padding-right:0;
+    }
+    #packageSectionCostPricing .tw-profit-readonly{
+        padding:0 8px;
+        font-size:10px;
+    }
+    #packageSectionCostPricing .tw-profit-summary{
+        grid-template-columns:repeat(3,minmax(0,1fr));
+        gap:6px;
+        margin-top:8px;
+    }
+    #packageSectionCostPricing .tw-profit-card{
+        padding:8px 7px;
+        border-radius:8px;
+    }
+    #packageSectionCostPricing .tw-profit-card span{
+        font-size:7px;
+        line-height:1.25;
+    }
+    #packageSectionCostPricing .tw-profit-card strong{
+        margin-top:2px;
+        font-size:10px;
+        white-space:nowrap;
+    }
+}
+</style>
+
 </head>
 
 <body class="twtms-page-loading admin-shared-nav-page">
@@ -375,7 +578,53 @@
 
             <div class="package-builder-header-actions">
 
-                <button
+                <div class="package-builder-footer-actions">
+
+                    <button
+                        type="button"
+                        class="btn-secondary"
+                        id="cancelPackage">
+
+                        Cancel
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="btn-secondary package-save-draft-btn"
+                        id="savePackageDraftButton">
+
+                        <i class="fa-regular fa-floppy-disk"></i>
+                        Save as Draft
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="btn-primary package-next-btn"
+                        id="nextPackageSection">
+
+                        Next
+                        <i class="fa-solid fa-arrow-right"></i>
+
+                    </button>
+
+
+                    <button
+                        type="submit"
+                        class="btn-primary"
+                        id="savePackageButton"
+                        hidden>
+
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                        Publish Package
+
+                    </button>
+
+                </div>
+          <button
                     type="button"
                     class="modal-close"
                     id="closePackageModal"
@@ -773,6 +1022,54 @@
 
                     </div>
 
+
+                    <div class="form-group full destination-image-field">
+
+                        <div class="destination-image-heading">
+                            <div>
+                                <label for="packagePhotos">
+                                    Destination Image
+                                </label>
+                                <small class="field-help">
+                                    Upload once per destination. The same image is automatically used by all package options for this destination.
+                                </small>
+                            </div>
+
+                            <span class="destination-image-shared-badge">
+                                <i class="fa-solid fa-link"></i>
+                                Shared Image
+                            </span>
+                        </div>
+
+                        <div class="destination-image-uploader">
+                            <input
+                                type="file"
+                                id="packagePhotos"
+                                accept="image/*"
+                                hidden>
+
+                            <button
+                                type="button"
+                                class="upload-button destination-image-upload-button"
+                                id="uploadPhotosButton">
+
+                                <i class="fa-solid fa-cloud-arrow-up"></i>
+
+                                <span>
+                                    <strong>Upload Destination Image</strong>
+                                    <small>JPG, PNG or WEBP • One shared cover image</small>
+                                </span>
+
+                            </button>
+
+                            <div
+                                class="photo-preview-grid destination-image-preview"
+                                id="photoPreviewGrid">
+                            </div>
+                        </div>
+
+                    </div>
+
                 </div>
 
             </section>
@@ -922,82 +1219,24 @@
 
 
             <!-- =================================================
-                 02 PACKAGE GALLERY
+                 02 PACKAGE DETAILS
             ================================================== -->
 
             <section
-                class="form-section package-builder-section"
+                class="form-section package-builder-section package-details-intro"
                 id="packageSectionGallery">
 
                 <div class="form-section-title">
-
                     <span>02</span>
-
                     <div>
-                        <h3>Package Gallery</h3>
+                        <h3>Package Details</h3>
                         <p>
-                            Add high-quality photos for the package.
+                            Configure inclusions, exclusions and pick-up locations for this package option.
                         </p>
                     </div>
-
-                </div>
-
-
-                <div class="package-gallery-note">
-
-                    <i class="fa-regular fa-image"></i>
-
-                    <div>
-                        <strong>
-                            The first photo will be used as the cover photo.
-                        </strong>
-
-                        <span>
-                            You can upload up to 10 package images.
-                        </span>
-                    </div>
-
-                </div>
-
-
-                <div class="upload-box">
-
-                    <input
-                        type="file"
-                        id="packagePhotos"
-                        accept="image/*"
-                        multiple
-                        hidden>
-
-
-                    <button
-                        type="button"
-                        class="upload-button"
-                        id="uploadPhotosButton">
-
-                        <i class="fa-solid fa-cloud-arrow-up"></i>
-
-                        <strong>
-                            Upload Package Photos
-                        </strong>
-
-                        <small>
-                            JPG, PNG or WEBP • Select multiple photos
-                        </small>
-
-                    </button>
-
-                </div>
-
-
-                <div
-                    class="photo-preview-grid"
-                    id="photoPreviewGrid">
                 </div>
 
             </section>
-
-
 
 
             <!-- =================================================
@@ -1865,22 +2104,44 @@
         <h4>Package Expenses</h4>
         <p>Add, edit or remove the expenses for this package.</p>
       </div>
-      <button type="button" class="tw-add-cost-btn" id="addCostItemBtnTable">
-        <i class="fa-solid fa-plus"></i>
-        <span>Add Cost Item</span>
-      </button>
+      <div class="tw-cost-add-menu" id="costItemAddMenu">
+        <button
+          type="button"
+          class="tw-add-cost-btn"
+          id="addCostItemMenuBtn"
+          aria-haspopup="menu"
+          aria-expanded="false">
+          <i class="fa-solid fa-plus"></i>
+          <span>Add Cost Item</span>
+          <i class="fa-solid fa-chevron-down tw-add-cost-chevron"></i>
+        </button>
+
+        <div class="tw-cost-add-dropdown" id="costItemAddDropdown" role="menu">
+          <button type="button" class="tw-cost-add-option" id="addCustomCostOption" role="menuitem">
+            <span class="tw-cost-add-option-icon"><i class="fa-solid fa-pen"></i></span>
+            <span>
+              <strong>Custom Cost Item</strong>
+              <small>Add a regular package expense</small>
+            </span>
+          </button>
+
+          <button type="button" class="tw-cost-add-option" id="addVanRentalOption" role="menuitem">
+            <span class="tw-cost-add-option-icon"><i class="fa-solid fa-route"></i></span>
+            <span>
+              <strong>Van Rental</strong>
+              <small>Choose route and van unit</small>
+            </span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Compatibility buttons kept for the existing costing logic -->
+      <button type="button" id="addCostItemBtnTable" hidden></button>
       <button type="button" id="addCostItemBtn" hidden></button>
+      <button type="button" id="addVanRentalCostBtn" hidden></button>
     </div>
 
     <div id="dynamicCostItems" class="tw-cost-items"></div>
-
-    <button type="button" class="tw-add-van-btn" id="addVanRentalCostBtn">
-      <i class="fa-solid fa-plus"></i>
-      <span>
-        <strong>Add Van Rental</strong>
-        <small>Quick add van rental cost</small>
-      </span>
-    </button>
 
     <div class="tw-cost-totals">
       <div class="tw-total-card tw-total-package">
@@ -1902,19 +2163,55 @@
       </div>
     </div>
 
-    <!-- Existing pricing fields remain in the DOM for current calculation/save logic.
-         They are visually hidden in this mobile Cost & Pricing mockup. -->
-    <div class="tw-costing-logic-fields" aria-hidden="true">
-      <label for="costMarkup">Markup Percentage</label>
-      <input type="number" id="costMarkup" min="0" step="0.01" value="15">
-      <span id="costRecommendedRate">₱0.00</span>
+    <!-- PACKAGE PRICING / PROFIT -->
+    <div class="tw-profit-pricing">
+      <div class="tw-profit-heading">
+        <div>
+          <h4>Package Pricing</h4>
+          <p>Set your markup and final selling rate for this package.</p>
+        </div>
+      </div>
 
-      <label for="costFinalSellingRate">Final Selling Rate</label>
-      <input type="number" id="costFinalSellingRate" min="0" step="0.01" placeholder="0">
+      <div class="tw-profit-input-grid">
+        <div class="tw-profit-field">
+          <label for="costMarkup">Markup Percentage</label>
+          <div class="tw-profit-input-wrap">
+            <input type="number" id="costMarkup" min="0" step="0.01" value="15">
+            <span>%</span>
+          </div>
+          <small>Used to calculate the recommended selling rate.</small>
+        </div>
 
-      <span id="costProfitPerPax">₱0.00</span>
-      <span id="costPackageProfit">₱0.00</span>
-      <span id="costProfitMargin">0.00%</span>
+        <div class="tw-profit-field">
+          <label>Recommended Selling Rate / Pax</label>
+          <div class="tw-profit-readonly" id="costRecommendedRate">₱0.00</div>
+          <small>Estimated cost per pax + markup.</small>
+        </div>
+
+        <div class="tw-profit-field tw-profit-final-rate">
+          <label for="costFinalSellingRate">Final Selling Rate / Pax</label>
+          <div class="tw-profit-input-wrap tw-profit-peso">
+            <span>₱</span>
+            <input type="number" id="costFinalSellingRate" min="0" step="0.01" placeholder="0">
+          </div>
+          <small>This becomes the package price shown to customers.</small>
+        </div>
+      </div>
+
+      <div class="tw-profit-summary">
+        <div class="tw-profit-card">
+          <span>Profit / Pax</span>
+          <strong id="costProfitPerPax">₱0.00</strong>
+        </div>
+        <div class="tw-profit-card">
+          <span>Estimated Total Profit</span>
+          <strong id="costPackageProfit">₱0.00</strong>
+        </div>
+        <div class="tw-profit-card tw-profit-margin-card">
+          <span>Profit Margin</span>
+          <strong id="costProfitMargin">0.00%</strong>
+        </div>
+      </div>
     </div>
 
   </div>
@@ -1928,7 +2225,7 @@
                 <div class="form-section-title"><span>7</span><div><h3>Review & Publish</h3><p>Review the important package details before publishing.</p></div></div>
                 <div class="package-review-grid">
                     <article class="review-summary-card"><h4>Package Summary</h4><dl><div><dt>Destination</dt><dd id="reviewDestination">—</dd></div><div><dt>Package Option</dt><dd id="reviewDuration">—</dd></div><div><dt>Location</dt><dd id="reviewLocation">—</dd></div><div><dt>Status</dt><dd id="reviewStatus">Draft</dd></div></dl></article>
-                    <article class="review-summary-card"><h4>Pricing</h4><dl><div><dt>Total Tour Cost</dt><dd id="reviewTotalCost">₱0.00</dd></div><div><dt>Cost per Pax</dt><dd id="reviewCostPerPax">₱0.00</dd></div><div><dt>Expected Pax</dt><dd id="reviewExpectedPax">0 pax</dd></div><div><dt>Final Selling Rate</dt><dd id="reviewFinalRate">₱0.00 / pax</dd></div><div><dt>Profit Margin</dt><dd id="reviewProfitMargin">0.00%</dd></div><div><dt>Estimated Tour Profit</dt><dd id="reviewTourProfit">₱0.00</dd></div></dl></article>
+                    <article class="review-summary-card"><h4>Pricing</h4><dl><div><dt>Total Tour Cost</dt><dd id="reviewTotalCost">₱0.00</dd></div><div><dt>Cost per Pax</dt><dd id="reviewCostPerPax">₱0.00</dd></div><div><dt>Expected Pax</dt><dd id="reviewExpectedPax">0 pax</dd></div><div><dt>Final Selling Rate / Pax</dt><dd id="reviewFinalRate">₱0.00</dd></div><div><dt>Profit Margin</dt><dd id="reviewProfitMargin">0.00%</dd></div><div><dt>Estimated Tour Profit</dt><dd id="reviewTourProfit">₱0.00</dd></div></dl></article>
                 </div>
                 <div class="review-ready"><i class="fa-solid fa-circle-check"></i><div><strong>Ready to Publish</strong><small>Save as Draft anytime, or publish when all required information is complete.</small></div></div>
             </section>
@@ -2045,52 +2342,7 @@
                 </div>
 
 
-                <div class="package-builder-footer-actions">
-
-                    <button
-                        type="button"
-                        class="btn-secondary"
-                        id="cancelPackage">
-
-                        Cancel
-
-                    </button>
-
-
-                    <button
-                        type="button"
-                        class="btn-secondary package-save-draft-btn"
-                        id="savePackageDraftButton">
-
-                        <i class="fa-regular fa-floppy-disk"></i>
-                        Save as Draft
-
-                    </button>
-
-
-                    <button
-                        type="button"
-                        class="btn-primary package-next-btn"
-                        id="nextPackageSection">
-
-                        Next
-                        <i class="fa-solid fa-arrow-right"></i>
-
-                    </button>
-
-
-                    <button
-                        type="submit"
-                        class="btn-primary"
-                        id="savePackageButton"
-                        hidden>
-
-                        <i class="fa-solid fa-cloud-arrow-up"></i>
-                        Publish Package
-
-                    </button>
-
-                </div>
+                
 
             </div>
 
