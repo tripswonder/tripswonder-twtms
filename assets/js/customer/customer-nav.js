@@ -855,10 +855,15 @@ function applyCustomerProfile(
 
     const photoURL =
         String(
-            profile.photoURL ||
-            profile.photo ||
-            profile.avatar ||
+            profile.profilePhotoUrl ||
             profile.profilePhoto ||
+            profile.photoURL ||
+            profile.photoUrl ||
+            profile.avatarUrl ||
+            profile.avatar ||
+            profile.imageUrl ||
+            state.user?.photoURL ||
+            auth?.currentUser?.photoURL ||
             ""
         ).trim();
 

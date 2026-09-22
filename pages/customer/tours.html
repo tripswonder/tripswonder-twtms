@@ -499,6 +499,82 @@
         ====================================================== -->
         <main class="tours-main">
 
+            <!-- =====================================================
+                 QUICK TOUR SETUP — instant package filtering
+            ====================================================== -->
+            <section class="tour-setup" aria-label="Tour setup">
+
+                <div class="tour-setup-field tour-setup-destination">
+                    <label for="tourSetupDestination">Destination</label>
+                    <div class="tour-setup-control">
+                        <i class="fa-solid fa-location-dot"></i>
+                        <input
+                            id="tourSetupDestination"
+                            type="search"
+                            placeholder="Search destination"
+                            autocomplete="off"
+                            aria-autocomplete="list"
+                            aria-controls="tourSetupDestinationDropdown"
+                            aria-expanded="false">
+                        <div
+                            class="tour-setup-search-dropdown"
+                            id="tourSetupDestinationDropdown"
+                            role="listbox"
+                            hidden>
+                        </div>
+                        <datalist id="tourSetupDestinationList" hidden></datalist>
+                    </div>
+                </div>
+
+                <div class="tour-setup-field tour-setup-duration">
+                    <label for="tourSetupDuration">Trip Duration</label>
+                    <div class="tour-setup-control">
+                        <i class="fa-regular fa-calendar"></i>
+                        <input
+                            id="tourSetupDuration"
+                            type="search"
+                            placeholder="Any duration"
+                            autocomplete="off"
+                            aria-autocomplete="list"
+                            aria-controls="tourSetupDurationDropdown"
+                            aria-expanded="false">
+                        <div
+                            class="tour-setup-search-dropdown tour-setup-duration-dropdown"
+                            id="tourSetupDurationDropdown"
+                            role="listbox"
+                            hidden>
+                        </div>
+                        <datalist id="tourSetupDurationList" hidden></datalist>
+                    </div>
+                </div>
+
+                <div class="tour-setup-field tour-setup-guests">
+                    <label>Guests</label>
+                    <div class="tour-setup-guest-control" aria-label="Number of guests">
+                        <button type="button" id="tourSetupGuestMinus" aria-label="Remove guest">−</button>
+                        <span><strong id="tourSetupGuestCount">1</strong><small>Guest</small></span>
+                        <button type="button" id="tourSetupGuestPlus" aria-label="Add guest">+</button>
+                    </div>
+                </div>
+
+                <div class="tour-setup-field tour-setup-type">
+                    <label for="tourSetupTripType">Trip Type</label>
+                    <div class="tour-setup-type-select">
+                        <i class="fa-solid fa-users"></i>
+                        <select id="tourSetupTripType" aria-label="Trip type">
+                            <option value="joiners">Joiners</option>
+                            <option value="exclusive">Exclusive / Private</option>
+                        </select>
+                        <i class="fa-solid fa-chevron-down tour-setup-type-chevron"></i>
+                    </div>
+                </div>
+
+                <button type="button" class="tour-setup-clear" id="tourSetupClear" aria-label="Clear tour setup" title="Clear tour setup">
+                    <i class="fa-solid fa-rotate-left"></i>
+                </button>
+
+            </section>
+
             <section class="tours-main-head">
 
 

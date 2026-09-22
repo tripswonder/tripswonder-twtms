@@ -27,6 +27,9 @@ const accountName =
 const accountEmail =
     document.getElementById("accountEmail");
 
+const accountAvatar =
+    document.querySelector(".account-avatar");
+
 const emailVerificationStatus =
     document.getElementById(
         "emailVerificationStatus"
@@ -121,6 +124,49 @@ function renderAuthFallback(user) {
             user.email ||
             "No email address";
     }
+
+    renderAccountAvatar(
+        user.photoURL || ""
+    );
+}
+
+function renderAccountAvatar(photoURL = "") {
+
+    if (!accountAvatar) {
+        return;
+    }
+
+    const normalizedPhotoURL =
+        String(photoURL || "").trim();
+
+    if (!normalizedPhotoURL) {
+        accountAvatar.innerHTML =
+            '<i class="fa-solid fa-user"></i>';
+        return;
+    }
+
+    const image =
+        document.createElement("img");
+
+    image.src = normalizedPhotoURL;
+    image.alt = "Profile photo";
+    image.referrerPolicy = "no-referrer";
+    image.style.width = "100%";
+    image.style.height = "100%";
+    image.style.display = "block";
+    image.style.objectFit = "cover";
+    image.style.borderRadius = "inherit";
+
+    image.addEventListener(
+        "error",
+        () => {
+            accountAvatar.innerHTML =
+                '<i class="fa-solid fa-user"></i>';
+        },
+        { once: true }
+    );
+
+    accountAvatar.replaceChildren(image);
 }
 
 function subscribeCustomerProfile(uid) {
@@ -166,6 +212,12 @@ function subscribeCustomerProfile(uid) {
                         auth.currentUser?.email ||
                         "No email address";
                 }
+
+                renderAccountAvatar(
+                    profile.photoURL ||
+                    auth.currentUser?.photoURL ||
+                    ""
+                );
             },
             error => {
                 console.error(

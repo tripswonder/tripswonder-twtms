@@ -4416,3 +4416,118 @@ body.tw-guest-auth-open { overflow: hidden; }
 
     .tw-guest-auth-side { display: none; }
 }
+
+/* Trips Wonder Home — compact feed header spacing
+   Add this at the VERY END of your current working home.css.
+   Visual spacing only. */
+
+.tw-feed-card-head {
+    min-height: 0;
+    padding-bottom: 2px;
+}
+
+.tw-feed-body {
+    padding-top: 0;
+}
+
+@media (max-width: 899px) {
+    .tw-feed-card-head {
+        min-height: 0;
+        padding-bottom: 2px;
+    }
+
+    .tw-feed-body {
+        padding-top: 0;
+    }
+}
+
+/* ==========================================================
+   PACKAGE FEED — DESCRIPTION-ONLY COMPACT SPACING
+   Package name/duration were removed from the feed markup.
+   Keep the admin Description directly below the post header.
+   ========================================================== */
+
+.tw-package-feed-post .tw-feed-card-head {
+    min-height: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+.tw-package-feed-post .tw-package-caption {
+    margin: 0 !important;
+    padding: 2px 16px 12px !important;
+}
+
+.tw-package-feed-post .tw-package-caption > p:first-child {
+    margin-top: 0 !important;
+}
+
+@media (max-width: 899px) {
+    .tw-package-feed-post .tw-feed-card-head {
+        min-height: 0 !important;
+        padding-bottom: 0 !important;
+    }
+
+    .tw-package-feed-post .tw-package-caption {
+        margin: 0 !important;
+        padding: 2px 13px 10px !important;
+    }
+
+    .tw-package-feed-post .tw-package-caption > p:first-child {
+        margin-top: 0 !important;
+    }
+}
+
+/* ==========================================================
+   PACKAGE FEED — COLLAPSED "SEE MORE" SPACING FIX
+   Keep the collapsed caption tight to the gallery.
+   Expanded captions retain comfortable spacing.
+   ========================================================== */
+
+.tw-package-feed-post .tw-package-caption:has(
+    .tw-package-see-more:not([data-expanded="true"])
+) {
+    padding-bottom: 3px !important;
+}
+
+.tw-package-feed-post .tw-package-see-more:not([data-expanded="true"]) {
+    display: block;
+    margin: 2px 0 0 !important;
+}
+
+.tw-package-feed-post .tw-package-caption:has(
+    .tw-package-see-more[data-expanded="true"]
+) {
+    padding-bottom: 10px !important;
+}
+
+@media (max-width: 899px) {
+    .tw-package-feed-post .tw-package-caption:has(
+        .tw-package-see-more:not([data-expanded="true"])
+    ) {
+        padding-bottom: 2px !important;
+    }
+
+    .tw-package-feed-post .tw-package-see-more:not([data-expanded="true"]) {
+        margin-bottom: 0 !important;
+    }
+
+    .tw-package-feed-post .tw-package-caption:has(
+        .tw-package-see-more[data-expanded="true"]
+    ) {
+        padding-bottom: 9px !important;
+    }
+}
+
+/* ==========================================================
+   PACKAGE FEED — EMPTY SOCIAL SUMMARY FIX
+   Hide the empty likes/comments summary row when both counts
+   are hidden. This removes the extra separator/blank strip.
+   ========================================================== */
+
+.tw-package-feed-post .tw-package-social-summary:has(
+    [data-package-like-count][hidden]
+):has(
+    [data-package-comment-count][hidden]
+) {
+    display: none !important;
+}

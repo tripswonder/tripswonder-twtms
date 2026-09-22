@@ -41,6 +41,10 @@ const state = {
     selectedDestinationKey: "",
 
     search: "",
+    setupDestination: "",
+    setupDuration: "",
+    guests: 1,
+    tripType: "joiners",
     category: "all",
     duration: "all",
     maxPrice: 10000,
@@ -154,6 +158,20 @@ const tourMobileClearFilters =
 
 const tourMobileApplyFilters =
     document.getElementById("tourMobileApplyFilters");
+
+
+/* Quick Tour Setup */
+const tourSetupDestination = document.getElementById("tourSetupDestination");
+const tourSetupDestinationList = document.getElementById("tourSetupDestinationList");
+const tourSetupDestinationDropdown = document.getElementById("tourSetupDestinationDropdown");
+const tourSetupDuration = document.getElementById("tourSetupDuration");
+const tourSetupDurationList = document.getElementById("tourSetupDurationList");
+const tourSetupDurationDropdown = document.getElementById("tourSetupDurationDropdown");
+const tourSetupGuestMinus = document.getElementById("tourSetupGuestMinus");
+const tourSetupGuestPlus = document.getElementById("tourSetupGuestPlus");
+const tourSetupGuestCount = document.getElementById("tourSetupGuestCount");
+const tourSetupClear = document.getElementById("tourSetupClear");
+const tourSetupTripType = document.getElementById("tourSetupTripType");
 
 
 /* Modal */
@@ -743,6 +761,7 @@ async function loadPackages() {
 
         populateCategories();
         populateLocations();
+        populateTourSetupOptions();
         resetVisibleCount();
         renderPackages();
 
@@ -939,6 +958,99 @@ function populateLocations() {
 
 
 /* ==========================================================
+   QUICK TOUR SETUP
+========================================================== */
+function getSetupDestinationLabel(packageItem) {
+    return String(
+        packageItem.destinationName ||
+        packageItem.name ||
+        packageItem.location ||
+        ""
+    ).trim();
+}
+
+function getSetupDurationLabel(packageItem) {
+    return String(
+        packageItem.packageOptionLabel ||
+        packageItem.duration ||
+        ""
+    ).trim();
+}
+
+function populateTourSetupOptions() {
+    if (tourSetupDestinationList) {
+        const destinations = [...new Set(
+            state.packages.map(getSetupDestinationLabel).filter(Boolean)
+        )].sort((a,b) => a.localeCompare(b));
+        tourSetupDestinationList.innerHTML = destinations
+            .map(value => `<option value="${escapeHtml(value)}"></option>`)
+            .join("");
+    }
+
+    if (tourSetupDurationList) {
+        const preferred = ["Day Tour", "2D1N", "3D2N", "4D3N", "5D4N"];
+        const actual = [...new Set(
+            state.packages.map(getSetupDurationLabel).filter(Boolean)
+        )];
+        const durations = [...new Set([...preferred, ...actual])];
+        tourSetupDurationList.innerHTML = durations
+            .map(value => `<option value="${escapeHtml(value)}"></option>`)
+            .join("");
+    }
+}
+
+function syncTourSetupTripTypeUI() {
+    if (tourSetupTripType) {
+        tourSetupTripType.value =
+            state.tripType === "exclusive"
+                ? "exclusive"
+                : "joiners";
+    }
+}
+
+
+function syncTourSetupGuestUI() {
+    if (!tourSetupGuestCount) return;
+    tourSetupGuestCount.textContent = String(state.guests);
+    const helper = tourSetupGuestCount.nextElementSibling;
+    if (helper) helper.textContent = state.guests === 1 ? "Guest" : "Guests";
+}
+
+function setSetupDestination(value) {
+    state.setupDestination = normalizeText(value);
+    resetVisibleCount();
+    renderPackages();
+}
+
+function setSetupDuration(value) {
+    state.setupDuration = normalizeText(value);
+    resetVisibleCount();
+    renderPackages();
+}
+
+function setSetupTripType(value) {
+    state.tripType = value === "exclusive" ? "exclusive" : "joiners";
+    document.querySelectorAll("[data-setup-trip-type]").forEach(button => {
+        button.classList.toggle("active", button.dataset.setupTripType === state.tripType);
+    });
+    resetVisibleCount();
+    renderPackages();
+    syncTourSetupTripTypeUI();
+
+}
+
+function clearTourSetup() {
+    state.setupDestination = "";
+    state.setupDuration = "";
+    state.guests = 1;
+    state.tripType = "joiners";
+    if (tourSetupDestination) tourSetupDestination.value = "";
+    if (tourSetupDuration) tourSetupDuration.value = "";
+    syncTourSetupGuestUI();
+    setSetupTripType("joiners");
+}
+
+/* ==========================================================
    FILTER + SORT
 ========================================================== */
 
@@ -996,12 +1108,61 @@ function getFilteredPackages() {
                     packageItem.location ===
                         state.location;
 
+                const setupDestinationHaystack =
+                    [
+                        packageItem.destinationName,
+                        packageItem.name,
+                        packageItem.location
+                    ]
+                        .join(" ")
+                        .toLowerCase();
+
+                const matchesSetupDestination =
+                    !state.setupDestination ||
+                    setupDestinationHaystack.includes(
+                        state.setupDestination
+                    );
+
+                const setupDurationHaystack =
+                    [
+                        packageItem.packageOptionLabel,
+                        packageItem.duration
+                    ]
+                        .join(" ")
+                        .toLowerCase();
+
+                const matchesSetupDuration =
+                    !state.setupDuration ||
+                    setupDurationHaystack.includes(
+                        state.setupDuration
+                    );
+
+                const packageTourType =
+                    normalizeText(packageItem.tourType);
+
+                const supportsExclusive =
+                    packageItem.exclusiveTour?.enabled === true ||
+                    packageTourType.includes("exclusive") ||
+                    packageTourType.includes("private");
+
+                const isPrivateOnly =
+                    packageTourType.includes("exclusive") ||
+                    packageTourType.includes("private");
+
+                const matchesTripType =
+                    state.tripType === "exclusive"
+                        ? supportsExclusive
+                        : !isPrivateOnly;
+
                 return (
                     matchesSearch &&
                     matchesCategory &&
                     matchesDuration &&
                     matchesPrice &&
-                    matchesLocation
+                    matchesLocation &&
+                    matchesSetupDestination &&
+                    matchesSetupDuration &&
+                    matchesTripType
                 );
             }
         );
@@ -2412,6 +2573,18 @@ function clearAllFilters() {
 
     state.sort =
         "recommended";
+
+    state.setupDestination = "";
+    state.setupDuration = "";
+    state.guests = 1;
+    state.tripType = "joiners";
+
+    if (tourSetupDestination) tourSetupDestination.value = "";
+    if (tourSetupDuration) tourSetupDuration.value = "";
+    syncTourSetupGuestUI();
+    document.querySelectorAll("[data-setup-trip-type]").forEach(button => {
+        button.classList.toggle("active", button.dataset.setupTripType === "joiners");
+    });
 
     if (tourSearch) {
         tourSearch.value =
@@ -4386,8 +4559,201 @@ function subscribeToursBranding() {
 
 
 /* ==========================================================
+   CUSTOM TRIP DURATION SEARCH DROPDOWN
+========================================================== */
+
+function getTourSetupDurationOptions() {
+    if (!tourSetupDurationList) return [];
+
+    return [...tourSetupDurationList.querySelectorAll("option")]
+        .map(option => String(option.value || option.textContent || "").trim())
+        .filter(Boolean)
+        .filter((value, index, array) =>
+            array.findIndex(item => normalizeText(item) === normalizeText(value)) === index
+        );
+}
+
+function closeTourSetupDurationDropdown() {
+    if (!tourSetupDurationDropdown) return;
+
+    tourSetupDurationDropdown.hidden = true;
+    tourSetupDuration?.setAttribute("aria-expanded", "false");
+}
+
+function renderTourSetupDurationDropdown(searchValue = "") {
+    if (!tourSetupDurationDropdown) return;
+
+    const query = normalizeText(searchValue);
+
+    const matches = getTourSetupDurationOptions()
+        .filter(value => !query || normalizeText(value).includes(query))
+        .slice(0, 8);
+
+    if (!matches.length) {
+        closeTourSetupDurationDropdown();
+        return;
+    }
+
+    tourSetupDurationDropdown.innerHTML = matches
+        .map(value => `
+            <button
+                type="button"
+                class="tour-setup-search-option"
+                role="option"
+                data-tour-setup-duration-option="${escapeHtml(value)}">
+                <i class="fa-regular fa-calendar"></i>
+                <span>${escapeHtml(value)}</span>
+            </button>
+        `)
+        .join("");
+
+    tourSetupDurationDropdown.hidden = false;
+    tourSetupDuration?.setAttribute("aria-expanded", "true");
+}
+
+
+/* ==========================================================
+   CUSTOM DESTINATION SEARCH DROPDOWN
+========================================================== */
+
+function getTourSetupDestinationOptions() {
+    if (!tourSetupDestinationList) return [];
+
+    return [...tourSetupDestinationList.querySelectorAll("option")]
+        .map(option => String(option.value || option.textContent || "").trim())
+        .filter(Boolean)
+        .filter((value, index, array) =>
+            array.findIndex(item => normalizeText(item) === normalizeText(value)) === index
+        );
+}
+
+function closeTourSetupDestinationDropdown() {
+    if (!tourSetupDestinationDropdown) return;
+
+    tourSetupDestinationDropdown.hidden = true;
+    tourSetupDestination?.setAttribute("aria-expanded", "false");
+}
+
+function renderTourSetupDestinationDropdown(searchValue = "") {
+    if (!tourSetupDestinationDropdown) return;
+
+    const query = normalizeText(searchValue);
+
+    const matches = getTourSetupDestinationOptions()
+        .filter(value => !query || normalizeText(value).includes(query))
+        .slice(0, 6);
+
+    if (!matches.length) {
+        closeTourSetupDestinationDropdown();
+        return;
+    }
+
+    tourSetupDestinationDropdown.innerHTML = matches
+        .map(value => `
+            <button
+                type="button"
+                class="tour-setup-search-option"
+                role="option"
+                data-tour-setup-destination-option="${escapeHtml(value)}">
+                <i class="fa-solid fa-location-dot"></i>
+                <span>${escapeHtml(value)}</span>
+            </button>
+        `)
+        .join("");
+
+    tourSetupDestinationDropdown.hidden = false;
+    tourSetupDestination?.setAttribute("aria-expanded", "true");
+}
+
+/* ==========================================================
    EVENT LISTENERS
 ========================================================== */
+
+tourSetupDestination?.addEventListener("input", event => {
+    setSetupDestination(event.target.value);
+    renderTourSetupDestinationDropdown(event.target.value);
+});
+
+tourSetupDestination?.addEventListener("focus", event => {
+    renderTourSetupDestinationDropdown(event.target.value);
+});
+
+tourSetupDestinationDropdown?.addEventListener("click", event => {
+    const option = event.target.closest("[data-tour-setup-destination-option]");
+    if (!option) return;
+
+    const value = option.dataset.tourSetupDestinationOption || "";
+
+    if (tourSetupDestination) {
+        tourSetupDestination.value = value;
+    }
+
+    setSetupDestination(value);
+    closeTourSetupDestinationDropdown();
+});
+
+document.addEventListener("click", event => {
+    if (
+        !event.target.closest(".tour-setup-destination") &&
+        !event.target.closest("#tourSetupDestinationDropdown")
+    ) {
+        closeTourSetupDestinationDropdown();
+    }
+});
+
+tourSetupDuration?.addEventListener("input", event => {
+    setSetupDuration(event.target.value);
+    renderTourSetupDurationDropdown(event.target.value);
+});
+
+tourSetupDuration?.addEventListener("focus", event => {
+    renderTourSetupDurationDropdown(event.target.value);
+});
+
+tourSetupDurationDropdown?.addEventListener("click", event => {
+    const option = event.target.closest("[data-tour-setup-duration-option]");
+    if (!option) return;
+
+    const value = option.dataset.tourSetupDurationOption || "";
+
+    if (tourSetupDuration) {
+        tourSetupDuration.value = value;
+    }
+
+    setSetupDuration(value);
+    closeTourSetupDurationDropdown();
+});
+
+document.addEventListener("click", event => {
+    if (
+        !event.target.closest(".tour-setup-duration") &&
+        !event.target.closest("#tourSetupDurationDropdown")
+    ) {
+        closeTourSetupDurationDropdown();
+    }
+});
+
+tourSetupGuestMinus?.addEventListener("click", () => {
+    state.guests = Math.max(1, state.guests - 1);
+    syncTourSetupGuestUI();
+});
+
+tourSetupGuestPlus?.addEventListener("click", () => {
+    state.guests = Math.min(99, state.guests + 1);
+    syncTourSetupGuestUI();
+});
+
+document.querySelectorAll("[data-setup-trip-type]").forEach(button => {
+    button.addEventListener("click", () => {
+        setSetupTripType(button.dataset.setupTripType);
+    });
+});
+
+tourSetupTripType?.addEventListener("change", event => {
+    setSetupTripType(event.target.value);
+});
+
+tourSetupClear?.addEventListener("click", clearTourSetup);
 
 tourSearch?.addEventListener(
     "input",
@@ -4809,6 +5175,9 @@ window.addEventListener(
 ========================================================== */
 
 function initTours() {
+
+    syncTourSetupGuestUI();
+    setSetupTripType("joiners");
 
     setMaxPrice(
         10000

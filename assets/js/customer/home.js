@@ -1125,25 +1125,8 @@ function applyBusinessLogo(
                 }
 
 
-                /*
-                 * Prevent the old/local fallback logo from flashing
-                 * while Page Setup branding is still loading.
-                 */
-                image.style.visibility =
-                    "hidden";
-
-
-                const revealLogo =
-                    () => {
-
-                        image.style.visibility =
-                            "visible";
-
-                    };
-
-
-                image.onload =
-                    revealLogo;
+                image.src =
+                    currentBusinessLogo;
 
 
                 image.onerror =
@@ -1152,27 +1135,10 @@ function applyBusinessLogo(
                         image.onerror =
                             null;
 
-                        image.onload =
-                            revealLogo;
-
                         image.src =
                             DEFAULT_BUSINESS_LOGO;
 
                     };
-
-
-                image.src =
-                    currentBusinessLogo;
-
-
-                if (
-                    image.complete &&
-                    image.naturalWidth > 0
-                ) {
-
-                    revealLogo();
-
-                }
 
             }
         );
@@ -1222,6 +1188,9 @@ function startBusinessBrandingListener() {
     );
 
 }
+
+
+applyBusinessLogo();
 
 
 /* ==========================================================
@@ -2910,13 +2879,58 @@ function getFeedTimestamp(value) {
 
 function getPackageFeedTimestamp(packageItem) {
 
+    // Admin edits must take priority in the Home feed.
+    // If updatedAt exists, the edited package becomes the newest package post.
     return (
+        getFeedTimestamp(packageItem?.updatedAt) ||
+        Number(packageItem?.updatedAtMs || 0) ||
         getFeedTimestamp(packageItem?.feedPublishedAt) ||
         getFeedTimestamp(packageItem?.postPublishedAt) ||
         getFeedTimestamp(packageItem?.publishedAt) ||
         getFeedTimestamp(packageItem?.createdAt) ||
-        getFeedTimestamp(packageItem?.updatedAt) ||
         Number(packageItem?.createdAtMs || 0) ||
+        0
+    );
+
+}
+
+
+// =========================================================
+// HOME FEED SHUFFLE
+// - Latest admin-edited package stays at the very top.
+// - Everything below it is shuffled once per page load.
+// - Re-rendering the feed (See More, search refresh, etc.) keeps
+//   the same shuffle order instead of jumping around.
+// =========================================================
+
+const homeFeedShuffleRanks = new Map();
+
+function getHomeFeedItemKey(item) {
+
+    return `${item?.type || "item"}:${item?.data?.id || "unknown"}`;
+
+}
+
+function getHomeFeedShuffleRank(item) {
+
+    const key =
+        getHomeFeedItemKey(item);
+
+    if (!homeFeedShuffleRanks.has(key)) {
+        homeFeedShuffleRanks.set(
+            key,
+            Math.random()
+        );
+    }
+
+    return homeFeedShuffleRanks.get(key);
+
+}
+
+function getPackageAdminEditTimestamp(packageItem) {
+
+    return (
+        getFeedTimestamp(packageItem?.updatedAt) ||
         Number(packageItem?.updatedAtMs || 0) ||
         0
     );
@@ -2983,13 +2997,11 @@ function getPackagePostImages(packageItem) {
 
 function getPackagePostCaption(packageItem) {
 
+    // Home package caption has one source of truth:
+    // Admin > Packages > Description
     return String(
-        packageItem?.feedCaption ||
-        packageItem?.postCaption ||
-        packageItem?.caption ||
         packageItem?.description ||
-        packageItem?.about ||
-        "Plan your next getaway with Trips Wonder."
+        ""
     ).trim();
 
 }
@@ -3554,11 +3566,6 @@ async function sharePackagePost(packageItem) {
 
 function createFeedCard(packageItem, index) {
 
-    const duration =
-        getPackageDuration(
-            packageItem
-        );
-
     const caption =
         getPackagePostCaption(
             packageItem
@@ -3568,11 +3575,6 @@ function createFeedCard(packageItem, index) {
         caption.length > 180
             ? `${caption.slice(0, 180).trim()}…`
             : caption;
-
-    const allInText =
-        getPackageAllInText(
-            packageItem
-        );
 
     const galleryMarkup =
         buildPackagePostGallery(
@@ -3624,48 +3626,32 @@ function createFeedCard(packageItem, index) {
             </button>
         </header>
 
-        <div class="tw-package-caption">
-            <h3>
-                🏝️ ${escapeHtml(packageItem.name || "Tour Package")}
-                ${duration ? `– ${escapeHtml(duration)}` : ""}
-            </h3>
+        ${
+            caption
+                ? `
+                    <div class="tw-package-caption">
+                        <p data-package-caption-text>
+                            ${escapeHtml(shortCaption)}
+                        </p>
 
-            <p data-package-caption-text>
-                ${escapeHtml(shortCaption)}
-            </p>
-
-            ${
-                caption.length > 180
-                    ? `
-                        <button
-                            type="button"
-                            class="tw-package-see-more"
-                            data-package-see-more>
-                            See more
-                        </button>
-                      `
-                    : ""
-            }
-        </div>
+                        ${
+                            caption.length > 180
+                                ? `
+                                    <button
+                                        type="button"
+                                        class="tw-package-see-more"
+                                        data-package-see-more>
+                                        See more
+                                    </button>
+                                  `
+                                : ""
+                        }
+                    </div>
+                  `
+                : ""
+        }
 
         ${galleryMarkup}
-
-        <section class="tw-package-offer-strip">
-            <div class="tw-package-price-inline">
-                <strong>₱${formatMoney(packageItem.price)}</strong>
-                <span>/ person</span>
-            </div>
-
-            <span class="tw-all-in-badge">
-                <i class="fa-solid fa-shield-heart"></i>
-                ALL-IN PACKAGE
-            </span>
-        </section>
-
-        <div class="tw-all-in-message">
-            <i class="fa-solid fa-shield-halved"></i>
-            <span>${escapeHtml(allInText)}</span>
-        </div>
 
         <div class="tw-community-social-summary tw-package-social-summary">
             <span data-package-like-count hidden></span>
@@ -3962,6 +3948,8 @@ function renderMockupFeed() {
                             post.createdAt?.toMillis?.() ||
                             0
                         ),
+                    adminEditTimestamp:
+                        0,
                     data:
                         post
                 })
@@ -3976,50 +3964,60 @@ function renderMockupFeed() {
                         getPackageFeedTimestamp(
                             packageItem
                         ),
+                    adminEditTimestamp:
+                        getPackageAdminEditTimestamp(
+                            packageItem
+                        ),
                     data:
                         packageItem
                 })
             )
     ];
 
-    feedItems.sort(
-        (a, b) => {
+    /*
+     * FEED ORDER
+     * 1. The package most recently edited by Admin stays on top.
+     * 2. All remaining feed items are shuffled once per page load.
+     * 3. The random rank is cached, so normal re-renders do not
+     *    reshuffle the feed while the customer is viewing it.
+     */
 
-            if (
-                a.timestamp &&
-                b.timestamp
-            ) {
-                return b.timestamp - a.timestamp;
-            }
+    const latestAdminEditedPackage =
+        feedItems
+            .filter(
+                item =>
+                    item.type === "package" &&
+                    item.adminEditTimestamp > 0
+            )
+            .sort(
+                (a, b) =>
+                    b.adminEditTimestamp -
+                    a.adminEditTimestamp
+            )[0] || null;
 
-            if (a.timestamp) {
-                return -1;
-            }
+    const remainingFeedItems =
+        feedItems
+            .filter(
+                item =>
+                    !latestAdminEditedPackage ||
+                    getHomeFeedItemKey(item) !==
+                        getHomeFeedItemKey(latestAdminEditedPackage)
+            )
+            .sort(
+                (a, b) =>
+                    getHomeFeedShuffleRank(a) -
+                    getHomeFeedShuffleRank(b)
+            );
 
-            if (b.timestamp) {
-                return 1;
-            }
+    const orderedFeedItems =
+        latestAdminEditedPackage
+            ? [
+                latestAdminEditedPackage,
+                ...remainingFeedItems
+              ]
+            : remainingFeedItems;
 
-            if (
-                a.type === "customer" &&
-                b.type !== "customer"
-            ) {
-                return -1;
-            }
-
-            if (
-                b.type === "customer" &&
-                a.type !== "customer"
-            ) {
-                return 1;
-            }
-
-            return 0;
-
-        }
-    );
-
-    feedItems.forEach(
+    orderedFeedItems.forEach(
         (item, index) => {
 
             tripsWonderFeed.appendChild(
@@ -4605,6 +4603,11 @@ function createPackageCard(
     packageItem
 ) {
 
+    const duration =
+        getPackageDuration(
+            packageItem
+        );
+
     const card =
         document.createElement(
             "article"
@@ -4620,11 +4623,6 @@ function createPackageCard(
             packageItem
         );
 
-
-    const duration =
-        getPackageDuration(
-            packageItem
-        );
 
 
     card.innerHTML = `

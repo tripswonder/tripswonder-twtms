@@ -991,4 +991,96 @@
     }
 }
 
+/* ==========================================================
+   TRIPS WONDER — FINAL DESKTOP NAV ENFORCEMENT
+   Fix: desktop header must win over earlier/mobile declarations.
+   Non-Home customer modules only.
+========================================================== */
+@media (min-width: 900px) {
+
+    body.customer-shared-nav-page {
+        padding-top: var(--customer-nav-header-height) !important;
+        padding-bottom: 0 !important;
+    }
+
+    body.customer-shared-nav-page #customerBottomNav {
+        position: relative !important;
+        z-index: 1600 !important;
+        pointer-events: auto !important;
+    }
+
+    body.customer-shared-nav-page .customer-shared-header {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+
+        width: 100% !important;
+        height: var(--customer-nav-header-height) !important;
+
+        display: grid !important;
+        grid-template-columns:
+            minmax(255px, 1fr)
+            minmax(430px, 620px)
+            minmax(220px, 1fr) !important;
+        align-items: center !important;
+        gap: 14px !important;
+
+        padding: 0 18px !important;
+
+        background: rgba(255, 255, 255, 0.98) !important;
+        border-bottom: 1px solid #e3e8ef !important;
+        box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04) !important;
+
+        z-index: 1700 !important;
+    }
+
+    body.customer-shared-nav-page .customer-shared-center-nav {
+        display: grid !important;
+    }
+
+    body.customer-shared-nav-page .customer-shared-actions {
+        display: flex !important;
+    }
+
+    body.customer-shared-nav-page .bottom-nav {
+        display: none !important;
+    }
+
+    /* Home keeps its own approved desktop navigation. */
+    body.customer-home-nav-protected #customerBottomNav,
+    body.customer-home-nav-protected .customer-shared-header {
+        display: none !important;
+    }
+}
+
+/* ==========================================================
+   FINAL SHARED NAV MOUNT VISIBILITY
+   Tours previously hid #customerBottomNav on desktop because
+   it had its own desktop header. The shared nav now owns it.
+========================================================== */
+@media (min-width: 900px) {
+
+    body.customer-shared-nav-page #customerBottomNav {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+
+    body.customer-shared-nav-page
+    #customerBottomNav > .customer-shared-header {
+        display: grid !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+
+    body.customer-shared-nav-page
+    #customerBottomNav > .bottom-nav {
+        display: none !important;
+    }
+
+    body.customer-home-nav-protected #customerBottomNav {
+        display: none !important;
+    }
+}
 
