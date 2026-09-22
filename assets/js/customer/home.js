@@ -1125,8 +1125,25 @@ function applyBusinessLogo(
                 }
 
 
-                image.src =
-                    currentBusinessLogo;
+                /*
+                 * Prevent the old/local fallback logo from flashing
+                 * while Page Setup branding is still loading.
+                 */
+                image.style.visibility =
+                    "hidden";
+
+
+                const revealLogo =
+                    () => {
+
+                        image.style.visibility =
+                            "visible";
+
+                    };
+
+
+                image.onload =
+                    revealLogo;
 
 
                 image.onerror =
@@ -1135,10 +1152,27 @@ function applyBusinessLogo(
                         image.onerror =
                             null;
 
+                        image.onload =
+                            revealLogo;
+
                         image.src =
                             DEFAULT_BUSINESS_LOGO;
 
                     };
+
+
+                image.src =
+                    currentBusinessLogo;
+
+
+                if (
+                    image.complete &&
+                    image.naturalWidth > 0
+                ) {
+
+                    revealLogo();
+
+                }
 
             }
         );
@@ -1188,9 +1222,6 @@ function startBusinessBrandingListener() {
     );
 
 }
-
-
-applyBusinessLogo();
 
 
 /* ==========================================================
@@ -6233,6 +6264,13 @@ function startMemberMessenger() {
    AUTH + HOME INITIALIZATION
    ========================================================== */
 
+/*
+ * Page Setup branding is public site branding.
+ * Start it once for both Guest and signed-in visitors.
+ */
+startBusinessBrandingListener();
+
+
 onAuthStateChanged(
     auth,
     async user => {
@@ -6297,12 +6335,6 @@ onAuthStateChanged(
 
             currentUser =
                 user;
-
-            /*
-             * Centralized branding is readable only after login.
-             */
-            startBusinessBrandingListener();
-
 
             currentProfile =
                 await loadCurrentProfile(

@@ -2,7 +2,8 @@
 
 import {
     auth,
-    db
+    db,
+    storage
 } from "../firebase/firebase-config.js";
 
 import {
@@ -17,6 +18,12 @@ import {
     reload,
     updateProfile
 } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
+
+import {
+    ref,
+    uploadBytes,
+    getDownloadURL
+} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-storage.js";
 
 
 // ==========================================================
@@ -51,6 +58,11 @@ const securityDescription =
 const profileAvatar =
     document.getElementById(
         "manageProfileAvatar"
+    );
+
+const profilePhotoInput =
+    document.getElementById(
+        "manageProfilePhotoInput"
     );
 
 
@@ -173,6 +185,9 @@ let personalInformationSaving =
     false;
 
 let contactDetailsSaving =
+    false;
+
+let profilePhotoUploading =
     false;
 
 
@@ -370,6 +385,12 @@ function subscribeCustomerProfile(
                         "No email address";
 
                 }
+
+
+                renderProfilePhoto(
+                    auth.currentUser,
+                    profile.photoURL
+                );
 
             },
 
@@ -669,7 +690,8 @@ function renderProvider(
 // ==========================================================
 
 function renderProfilePhoto(
-    user
+    user,
+    storedPhotoURL = ""
 ) {
 
     if (
@@ -680,10 +702,27 @@ function renderProfilePhoto(
     }
 
 
-    if (!user.photoURL) {
+    const photoURL =
+        String(
+            storedPhotoURL ||
+            currentProfile?.photoURL ||
+            user.photoURL ||
+            ""
+        ).trim();
+
+
+    const editBadge = `
+        <span class="manage-profile-photo-edit" aria-hidden="true">
+            <i class="fa-solid fa-camera"></i>
+        </span>
+    `;
+
+
+    if (!photoURL) {
 
         profileAvatar.innerHTML = `
             <i class="fa-solid fa-user"></i>
+            ${editBadge}
         `;
 
         return;
@@ -697,7 +736,7 @@ function renderProfilePhoto(
 
 
     image.src =
-        user.photoURL;
+        photoURL;
 
 
     image.alt =
@@ -716,6 +755,7 @@ function renderProfilePhoto(
 
             profileAvatar.innerHTML = `
                 <i class="fa-solid fa-user"></i>
+                ${editBadge}
             `;
 
         },
@@ -725,9 +765,220 @@ function renderProfilePhoto(
     );
 
 
-    profileAvatar.replaceChildren(
-        image
+    const badge =
+        document.createElement(
+            "span"
+        );
+
+    badge.className =
+        "manage-profile-photo-edit";
+
+    badge.setAttribute(
+        "aria-hidden",
+        "true"
     );
+
+    badge.innerHTML =
+        '<i class="fa-solid fa-camera"></i>';
+
+
+    profileAvatar.replaceChildren(
+        image,
+        badge
+    );
+
+}
+
+
+function getProfilePhotoExtension(
+    file
+) {
+
+    const type =
+        String(
+            file?.type ||
+            ""
+        ).toLowerCase();
+
+
+    if (type === "image/png") {
+        return "png";
+    }
+
+    if (type === "image/webp") {
+        return "webp";
+    }
+
+    return "jpg";
+
+}
+
+
+async function uploadProfilePhoto(
+    file
+) {
+
+    const user =
+        auth.currentUser;
+
+
+    if (
+        !user ||
+        !file ||
+        profilePhotoUploading
+    ) {
+        return;
+    }
+
+
+    const allowedTypes =
+        new Set([
+            "image/jpeg",
+            "image/png",
+            "image/webp"
+        ]);
+
+
+    if (
+        !allowedTypes.has(
+            file.type
+        )
+    ) {
+
+        alert(
+            "Please choose a JPG, PNG, or WEBP image."
+        );
+
+        return;
+    }
+
+
+    const maxSize =
+        5 * 1024 * 1024;
+
+
+    if (
+        file.size >
+        maxSize
+    ) {
+
+        alert(
+            "Profile photo must be 5 MB or smaller."
+        );
+
+        return;
+    }
+
+
+    try {
+
+        profilePhotoUploading =
+            true;
+
+
+        profileAvatar?.classList.add(
+            "is-uploading"
+        );
+
+
+        const extension =
+            getProfilePhotoExtension(
+                file
+            );
+
+
+        const photoRef =
+            ref(
+                storage,
+                `profilePhotos/${user.uid}/avatar.${extension}`
+            );
+
+
+        await uploadBytes(
+            photoRef,
+            file,
+            {
+                contentType:
+                    file.type
+            }
+        );
+
+
+        const photoURL =
+            await getDownloadURL(
+                photoRef
+            );
+
+
+        await updateProfile(
+            user,
+            {
+                photoURL
+            }
+        );
+
+
+        await setDoc(
+            doc(
+                db,
+                "users",
+                user.uid
+            ),
+            {
+                photoURL,
+                updatedAt:
+                    serverTimestamp()
+            },
+            {
+                merge: true
+            }
+        );
+
+
+        currentProfile = {
+            ...(currentProfile || {}),
+            photoURL
+        };
+
+
+        renderProfilePhoto(
+            user,
+            photoURL
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "PROFILE PHOTO UPLOAD ERROR:",
+            error
+        );
+
+
+        alert(
+            error?.code ===
+                "storage/unauthorized"
+                ? "Your account does not have permission to upload a profile photo."
+                : "Unable to update your profile photo. Please try again."
+        );
+
+    } finally {
+
+        profilePhotoUploading =
+            false;
+
+
+        profileAvatar?.classList.remove(
+            "is-uploading"
+        );
+
+
+        if (profilePhotoInput) {
+            profilePhotoInput.value =
+                "";
+        }
+
+    }
 
 }
 
@@ -1790,6 +2041,45 @@ contactMobile?.addEventListener(
             normalizePhoneInput(
                 contactMobile.value
             );
+
+    }
+);
+
+
+// ==========================================================
+// PROFILE PHOTO EVENTS
+// ==========================================================
+
+profileAvatar?.addEventListener(
+    "click",
+    () => {
+
+        if (
+            profilePhotoUploading
+        ) {
+            return;
+        }
+
+        profilePhotoInput?.click();
+
+    }
+);
+
+
+profilePhotoInput?.addEventListener(
+    "change",
+    event => {
+
+        const file =
+            event.target.files?.[0];
+
+        if (!file) {
+            return;
+        }
+
+        void uploadProfilePhoto(
+            file
+        );
 
     }
 );

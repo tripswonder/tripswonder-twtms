@@ -657,6 +657,152 @@ addPickupLocation?.addEventListener(
 
 
         // ======================================================
+        // COMPACT PACKAGE TOAST
+        // ======================================================
+
+        function showPackageToast(title, message, type = "success") {
+
+            let toastHost =
+                document.getElementById("packageToastHost");
+
+            if (!toastHost) {
+                toastHost = document.createElement("div");
+                toastHost.id = "packageToastHost";
+                toastHost.setAttribute("aria-live", "polite");
+                document.body.appendChild(toastHost);
+            }
+
+            if (!document.getElementById("packageToastStyles")) {
+                const style = document.createElement("style");
+                style.id = "packageToastStyles";
+                style.textContent = `
+                    #packageToastHost {
+                        position: fixed;
+                        top: 50%;
+                        left: 50%;
+                        right: auto;
+                        transform: translate(-50%, -50%);
+                        z-index: 100000;
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        gap: 8px;
+                        pointer-events: none;
+                    }
+
+                    .package-toast {
+                        width: min(310px, calc(100vw - 28px));
+                        display: flex;
+                        align-items: center;
+                        gap: 10px;
+                        padding: 11px 13px;
+                        background: #ffffff;
+                        border: 1px solid #dce7f3;
+                        border-radius: 11px;
+                        box-shadow: 0 10px 28px rgba(15, 49, 87, .16);
+                        color: #173b67;
+                        opacity: 0;
+                        transform: translateY(-8px);
+                        transition: opacity .18s ease, transform .18s ease;
+                        pointer-events: auto;
+                    }
+
+                    .package-toast.show {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+
+                    .package-toast.hide {
+                        opacity: 0;
+                        transform: translateY(-6px);
+                    }
+
+                    .package-toast-icon {
+                        flex: 0 0 28px;
+                        width: 28px;
+                        height: 28px;
+                        border-radius: 50%;
+                        display: grid;
+                        place-items: center;
+                        background: #eaf8ef;
+                        color: #148744;
+                        font-size: 13px;
+                    }
+
+                    .package-toast-copy {
+                        min-width: 0;
+                        flex: 1;
+                    }
+
+                    .package-toast-title {
+                        margin: 0;
+                        font-size: 13px;
+                        line-height: 1.2;
+                        font-weight: 700;
+                        color: #173b67;
+                    }
+
+                    .package-toast-message {
+                        margin: 2px 0 0;
+                        font-size: 11px;
+                        line-height: 1.35;
+                        color: #7085a0;
+                    }
+
+                    @media (max-width: 700px) {
+                        #packageToastHost {
+                            top: 50%;
+                            left: 50%;
+                            right: auto;
+                            transform: translate(-50%, -50%);
+                            width: calc(100vw - 24px);
+                            align-items: center;
+                        }
+
+                        .package-toast {
+                            width: min(300px, 100%);
+                            padding: 9px 11px;
+                            border-radius: 9px;
+                            gap: 8px;
+                        }
+
+                        .package-toast-icon {
+                            flex-basis: 25px;
+                            width: 25px;
+                            height: 25px;
+                            font-size: 11px;
+                        }
+
+                        .package-toast-title { font-size: 11px; }
+                        .package-toast-message { font-size: 9px; }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+
+            const toast = document.createElement("div");
+            toast.className = `package-toast ${type}`;
+            toast.innerHTML = `
+                <div class="package-toast-icon">
+                    <i class="fa-solid fa-check"></i>
+                </div>
+                <div class="package-toast-copy">
+                    <p class="package-toast-title">${escapeHtml(title)}</p>
+                    <p class="package-toast-message">${escapeHtml(message)}</p>
+                </div>
+            `;
+
+            toastHost.appendChild(toast);
+            requestAnimationFrame(() => toast.classList.add("show"));
+
+            window.setTimeout(() => {
+                toast.classList.add("hide");
+                window.setTimeout(() => toast.remove(), 220);
+            }, 2800);
+        }
+
+
+        // ======================================================
         // GET INPUT VALUE
         // ======================================================
 
@@ -10656,13 +10802,20 @@ function collectPickupLocations() {
                     // SUCCESS
                     // ==========================================
 
-                    alert(
+                    showPackageToast(
                         saveAsDraftMode
-                            ? "Draft saved successfully!"
+                            ? "Draft Saved"
                             : (
                                 editingPackageId
-                                    ? "Package updated successfully!"
-                                    : "Package published successfully!"
+                                    ? "Package Updated"
+                                    : "Package Published"
+                            ),
+                        saveAsDraftMode
+                            ? "Your package draft has been saved."
+                            : (
+                                editingPackageId
+                                    ? "Changes saved successfully."
+                                    : "Package published successfully."
                             )
                     );
 
