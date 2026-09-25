@@ -2429,6 +2429,95 @@ let supportHumanMessages = [];
 let supportHumanMessagesUnsubscribe = null;
 let supportConversationUnsubscribe = null;
 
+/* ==========================================================
+   SUPPORT SUMMARY
+   Compact Firestore handoff context. No extra AI/API call.
+   ========================================================== */
+
+function cleanSupportSummaryText(value) {
+    return String(value || "")
+        .replace(/\s+/g, " ")
+        .trim();
+}
+
+function uniqueSupportSummaryValues(values, limit = 5) {
+    const seen = new Set();
+
+    return values
+        .map(cleanSupportSummaryText)
+        .filter(value => {
+            if (!value) return false;
+
+            const key = value.toLowerCase();
+
+            if (seen.has(key)) return false;
+
+            seen.add(key);
+            return true;
+        })
+        .slice(-limit);
+}
+
+function buildTripsWonderSupportSummary(
+    messages = supportHumanMessages,
+    existingSummary = {}
+) {
+    const customerMessages = messages.filter(
+        message =>
+            String(message?.senderRole || "").toLowerCase() === "customer"
+    );
+
+    const responderMessages = messages.filter(message => {
+        const role =
+            String(message?.senderRole || "").toLowerCase();
+
+        return ["support", "admin", "owner", "staff"].includes(role);
+    });
+
+    const latestCustomer =
+        customerMessages[customerMessages.length - 1];
+
+    const latestResponder =
+        responderMessages[responderMessages.length - 1];
+
+    return {
+        clientConcern:
+            cleanSupportSummaryText(latestCustomer?.text) ||
+            cleanSupportSummaryText(
+                existingSummary?.clientConcern ||
+                existingSummary?.concern
+            ),
+
+        importantDetails:
+            uniqueSupportSummaryValues(
+                customerMessages.map(message => message.text),
+                5
+            ),
+
+        discussed:
+            uniqueSupportSummaryValues(
+                responderMessages.map(message => message.text),
+                5
+            ),
+
+        pendingItems:
+            latestCustomer
+                ? [cleanSupportSummaryText(latestCustomer.text)].filter(Boolean)
+                : [],
+
+        lastResolution:
+            cleanSupportSummaryText(latestResponder?.text) ||
+            cleanSupportSummaryText(
+                existingSummary?.lastResolution ||
+                existingSummary?.resolution
+            ),
+
+        updatedAt:
+            serverTimestamp()
+    };
+}
+
+
 
 /* ==========================================================
    SUPPORT MODE / CONVERSATION LISTENER
@@ -2886,16 +2975,34 @@ async function talkToTripsWonderTeam() {
         supportHumanMode = true;
         supportNeedsHumanHandoff = false;
 
-        await setDoc(
+        const conversationRef =
             doc(
                 db,
                 "conversations",
                 conversationId
-            ),
+            );
+
+        const currentConversationSnap =
+            await getDoc(conversationRef);
+
+        const currentConversation =
+            currentConversationSnap.exists()
+                ? currentConversationSnap.data()
+                : {};
+
+        const supportSummary =
+            buildTripsWonderSupportSummary(
+                supportHumanMessages,
+                currentConversation.supportSummary || {}
+            );
+
+        await setDoc(
+            conversationRef,
             {
                 status: "open",
                 supportMode: "human",
                 supportStatus: "active",
+                supportSummary,
                 handoffRequested: true,
                 handoffRequestedAt:
                     serverTimestamp(),
