@@ -15,21 +15,17 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 </head>
-
 <body class="twtms-page-loading admin-shared-nav-page">
-
 <div class="admin-wrapper">
     <aside id="adminSidebar" class="admin-sidebar"></aside>
 
     <main class="main messages-main">
         <div class="messages-page">
-
             <header class="messages-page-header">
                 <div>
                     <h1>Messages</h1>
                     <p>Manage live customer conversations and inquiries.</p>
                 </div>
-
                 <div class="message-status-pill">
                     <span class="status-dot"></span>
                     Live Inbox
@@ -37,7 +33,6 @@
             </header>
 
             <section class="messages-workspace">
-
                 <aside class="conversation-panel">
                     <div class="conversation-panel-head">
                         <div class="conversation-title-row">
@@ -71,9 +66,7 @@
 
                 <section class="chat-panel">
                     <div class="empty-chat" id="emptyChat">
-                        <div class="empty-chat-icon">
-                            <i class="fa-regular fa-comments"></i>
-                        </div>
+                        <div class="empty-chat-icon"><i class="fa-regular fa-comments"></i></div>
                         <h2>Select a conversation</h2>
                         <p>Choose a customer from the inbox to view and reply.</p>
                     </div>
@@ -87,7 +80,6 @@
                                     <p id="chatCustomerMeta">Trips Wonder customer</p>
                                 </div>
                             </div>
-
                             <button type="button" class="mobile-details-btn" id="mobileDetailsButton" aria-label="Customer details">
                                 <i class="fa-solid fa-circle-info"></i>
                             </button>
@@ -96,13 +88,7 @@
                         <div class="message-stream" id="messageStream"></div>
 
                         <form class="message-composer" id="adminMessageForm">
-                            <textarea
-                                id="adminMessageInput"
-                                rows="1"
-                                maxlength="2000"
-                                placeholder="Type a message..."
-                                required></textarea>
-
+                            <textarea id="adminMessageInput" rows="1" maxlength="2000" placeholder="Type a message..." required></textarea>
                             <button type="submit" id="adminSendButton" aria-label="Send message">
                                 <i class="fa-solid fa-paper-plane"></i>
                             </button>
@@ -123,41 +109,69 @@
                             <p id="detailsEmail">—</p>
                         </div>
 
-                        <div class="details-card">
-                            <span>Contact</span>
-                            <strong id="detailsContact">—</strong>
-                        </div>
+                        <div class="details-card"><span>Contact</span><strong id="detailsContact">—</strong></div>
+                        <div class="details-card"><span>Conversation Type</span><strong id="detailsType">Inquiry</strong></div>
+                        <div class="details-card"><span>Booking</span><strong id="detailsBooking">No linked booking</strong></div>
+                        <div class="details-card"><span>Travel Date</span><strong id="detailsTravelDate">—</strong></div>
 
-                        <div class="details-card">
-                            <span>Conversation Type</span>
-                            <strong id="detailsType">Inquiry</strong>
-                        </div>
+                        <section class="support-management" id="supportManagement">
+                            <div class="support-section-head">
+                                <div>
+                                    <span class="support-eyebrow">Internal</span>
+                                    <h4>Support Management</h4>
+                                </div>
+                                <span class="support-mode-badge online" id="supportModeBadge">Online Support</span>
+                            </div>
 
-                        <div class="details-card">
-                            <span>Booking</span>
-                            <strong id="detailsBooking">No linked booking</strong>
-                        </div>
+                            <div class="support-assignment" id="supportAssignment" hidden>
+                                <span>Assigned Admin</span>
+                                <strong id="supportAssignedAdmin">—</strong>
+                            </div>
 
-                        <div class="details-card">
-                            <span>Travel Date</span>
-                            <strong id="detailsTravelDate">—</strong>
-                        </div>
+                            <div class="support-summary">
+                                <div class="support-summary-head">
+                                    <h5>Support Summary</h5>
+                                    <span id="supportSummaryUpdated">Not yet generated</span>
+                                </div>
+
+                                <div class="support-summary-item">
+                                    <span>Client Concern</span>
+                                    <p id="supportSummaryConcern">No summary yet.</p>
+                                </div>
+                                <div class="support-summary-item">
+                                    <span>Important Details</span>
+                                    <div class="support-summary-values" id="supportSummaryImportant">—</div>
+                                </div>
+                                <div class="support-summary-item">
+                                    <span>Already Discussed</span>
+                                    <div class="support-summary-values" id="supportSummaryDiscussed">—</div>
+                                </div>
+                                <div class="support-summary-item">
+                                    <span>Pending Request</span>
+                                    <div class="support-summary-values" id="supportSummaryPending">—</div>
+                                </div>
+                                <div class="support-summary-item">
+                                    <span>Last Resolution</span>
+                                    <p id="supportSummaryResolution">—</p>
+                                </div>
+                            </div>
+
+                            <button type="button" class="return-support-btn" id="returnToSupportButton" hidden>
+                                <i class="fa-solid fa-rotate-left"></i>
+                                Return to Support
+                            </button>
+                            <p class="support-action-note" id="supportActionNote" hidden>
+                                This changes the internal responder only. No system message will be sent to the customer.
+                            </p>
+                        </section>
 
                         <div class="details-actions">
-                            <button type="button" id="viewCustomerButton">
-                                <i class="fa-regular fa-user"></i>
-                                View Customer
-                            </button>
-                            <button type="button" id="viewBookingButton">
-                                <i class="fa-solid fa-suitcase"></i>
-                                View Booking
-                            </button>
+                            <button type="button" id="viewCustomerButton"><i class="fa-regular fa-user"></i> View Customer</button>
+                            <button type="button" id="viewBookingButton"><i class="fa-solid fa-suitcase"></i> View Booking</button>
                         </div>
                     </div>
                 </aside>
-
             </section>
-
         </div>
     </main>
 </div>

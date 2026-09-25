@@ -1,558 +1,1124 @@
 <!DOCTYPE html>
+
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
+
     <meta
+
         name="viewport"
+
         content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+
+
 
     <meta name="theme-color" content="#f4f7fb">
 
+
+
     <title>Messages | Trips Wonder</title>
 
+
+
     <link rel="stylesheet" href="../../assets/css/shared/variables.css">
+
     <link rel="stylesheet" href="../../assets/css/shared/global.css">
+
     <link rel="stylesheet" href="../../assets/css/customer/message.css">
+
     <link rel="stylesheet" href="../../assets/css/customer/customer-nav.css">
 
+
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
+
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-    <link
-        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
-        rel="stylesheet">
+
 
     <link
+
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+
+        rel="stylesheet">
+
+
+
+    <link
+
         rel="stylesheet"
+
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
 </head>
+
+
 
 <body>
 
+
+
     <!-- SAME SHARED CUSTOMER NAV USED BY OTHER CUSTOMER MODULES -->
+
     <div id="customerBottomNav"></div>
 
 
+
+
+
     <!-- ======================================================
+
          MESSAGES
+
          ====================================================== -->
 
+
+
     <main
+
         class="messenger-page"
+
         id="memberMessagesPage">
 
+
+
         <section
+
             class="messenger-shell"
+
             aria-label="Trips Wonder Messages">
 
 
+
+
+
             <!-- LEFT: CHATS -->
+
             <aside
+
                 class="messenger-chats-column"
+
                 id="memberMessengerInbox">
+
+
 
                 <header class="messenger-chats-head">
 
+
+
                     <div>
+
                         <h1>Chats</h1>
+
                         <p>Trips Wonder Community</p>
+
                     </div>
 
+
+
                     <span
+
                         class="messenger-head-icon"
+
                         aria-hidden="true">
+
                         <i class="fa-regular fa-pen-to-square"></i>
+
                     </span>
+
+
 
                 </header>
 
 
+
+
+
                 <div class="tw-member-search">
+
+
 
                     <i class="fa-solid fa-magnifying-glass"></i>
 
+
+
                     <input
+
                         id="memberSearchInput"
+
                         type="text"
+
                         placeholder="Search username or email"
+
                         autocomplete="off">
 
+
+
                     <button
+
                         type="button"
+
                         id="memberSearchClear"
+
                         class="tw-member-search-clear"
+
                         aria-label="Clear member search"
+
                         hidden>
+
                         <i class="fa-solid fa-xmark"></i>
+
                     </button>
 
+
+
                 </div>
+
+
+
 
 
                 <p class="tw-member-search-note">
+
                     Search the exact username or email of a Trips Wonder member.
+
                 </p>
 
 
+
+
+
                 <div
+
                     class="tw-member-search-results"
+
                     id="memberSearchResults"
+
                     hidden>
+
                 </div>
 
 
+
+
+
                 <div
+
                     class="tw-messenger-tabs"
+
                     role="tablist"
+
                     aria-label="Chat lists">
 
+
+
                     <button
+
                         id="memberChatsTab"
+
                         type="button"
+
                         class="active"
+
                         data-member-tab="chats"
+
                         aria-selected="true">
+
                         Chats
+
+                    </button>
+
+
+
+                    <button
+
+                        id="memberRequestsTab"
+
+                        type="button"
+
+                        data-member-tab="requests"
+
+                        aria-selected="false">
+
+                        Requests
+
                     </button>
 
                     <button
-                        id="memberRequestsTab"
+                        id="memberSupportTab"
                         type="button"
-                        data-member-tab="requests"
+                        data-member-tab="support"
                         aria-selected="false">
-                        Requests
+                        <i class="fa-solid fa-headset" aria-hidden="true"></i>
+                        <span>Support</span>
                     </button>
+
+
 
                 </div>
 
 
+
+
+
                 <div
+
                     class="tw-member-chat-list"
+
                     id="memberChatList">
+
+
 
                     <div class="tw-messenger-empty">
 
+
+
                         <i class="fa-regular fa-comments"></i>
 
+
+
                         <strong>
+
                             No conversations yet
+
                         </strong>
 
+
+
                         <span>
+
                             Search a member above to start a conversation.
+
                         </span>
+
+
 
                     </div>
 
+
+
                 </div>
+
+
 
             </aside>
 
 
+
+
+
             <!-- CENTER: ACTIVE CHAT -->
+
             <section
+
                 class="messenger-conversation-column"
+
                 id="memberMessengerPanel">
 
+
+
                 <div
+
                     class="tw-messenger-view tw-chat-view"
+
                     id="memberChatView">
+
+
 
                     <header class="tw-chat-head">
 
+
+
                         <button
+
                             type="button"
+
                             class="tw-chat-back"
+
                             id="memberChatBack"
+
                             aria-label="Back to chats">
+
                             <i class="fa-solid fa-arrow-left"></i>
+
                         </button>
 
 
+
+
+
                         <span
+
                             class="tw-chat-avatar"
+
                             id="memberChatAvatar">
+
                             <i class="fa-solid fa-user"></i>
+
                         </span>
+
+
+
 
 
                         <div class="tw-chat-person">
 
+
+
                             <strong id="memberChatName">
+
                                 Select a conversation
+
                             </strong>
 
+
+
                             <small id="memberChatStatus">
+
                                 Trips Wonder member
+
                             </small>
 
+
+
                         </div>
+
+
 
                     </header>
 
 
+
+
+
                     <div
+
                         class="tw-chat-messages"
+
                         id="memberChatMessages">
+
+
 
                         <div class="tw-messenger-empty">
 
+
+
                             <i class="fa-regular fa-message"></i>
 
+
+
                             <strong>
+
                                 Your messages
+
                             </strong>
 
+
+
                             <span>
+
                                 Select a conversation or search for a member to start chatting.
+
                             </span>
+
+
 
                         </div>
 
+
+
                     </div>
+
+
+
 
 
                     <div
+
                         class="tw-chat-request-info"
+
                         id="memberChatRequestInfo"
+
                         hidden>
+
+
 
                         <i class="fa-solid fa-shield-heart"></i>
 
+
+
                         <span id="memberChatRequestText"></span>
+
+
 
                     </div>
 
 
+
+
+
                     <form
+
                         class="tw-chat-composer"
+
                         id="memberChatForm">
 
+
+
                         <textarea
+
                             id="memberChatInput"
+
                             rows="1"
+
                             maxlength="1000"
+
                             placeholder="Write a message..."></textarea>
 
+
+
                         <button
+
                             type="submit"
+
                             id="memberChatSend"
+
                             aria-label="Send message">
+
+
 
                             <i class="fa-solid fa-paper-plane"></i>
 
+
+
                         </button>
+
+
 
                     </form>
 
+
+
                 </div>
+
+
 
             </section>
 
 
+
+
+
             <!-- RIGHT: CHAT INFO -->
+
             <aside class="messenger-info-column">
 
+
+
                 <div
+
                     class="messenger-profile-avatar"
+
                     id="memberInfoAvatar">
+
                     <i class="fa-solid fa-user"></i>
+
                 </div>
 
 
+
+
+
                 <h2 id="memberInfoName">
+
                     Select a conversation
+
                 </h2>
 
+
+
                 <p id="memberInfoStatus">
+
                     Trips Wonder member
+
                 </p>
+
+
+
 
 
                 <div class="messenger-info-actions">
 
+
+
                     <a
+
                         href="account.html"
+
                         class="messenger-info-action">
+
                         <span>
+
                             <i class="fa-regular fa-user"></i>
+
                         </span>
+
                         <small>Profile</small>
+
                     </a>
 
-                    <button
-                        type="button"
-                        class="messenger-info-action">
-                        <span>
-                            <i class="fa-regular fa-bell"></i>
-                        </span>
-                        <small>Mute</small>
-                    </button>
+
 
                     <button
+
                         type="button"
-                        class="messenger-info-action"
-                        id="memberInfoSearchButton">
+
+                        class="messenger-info-action">
+
                         <span>
-                            <i class="fa-solid fa-magnifying-glass"></i>
+
+                            <i class="fa-regular fa-bell"></i>
+
                         </span>
-                        <small>Search</small>
+
+                        <small>Mute</small>
+
                     </button>
+
+
+
+                    <button
+
+                        type="button"
+
+                        class="messenger-info-action"
+
+                        id="memberInfoSearchButton">
+
+                        <span>
+
+                            <i class="fa-solid fa-magnifying-glass"></i>
+
+                        </span>
+
+                        <small>Search</small>
+
+                    </button>
+
+
 
                 </div>
+
+
+
 
 
                 <div class="messenger-info-sections">
 
+
+
                     <details>
+
                         <summary>
+
                             Chat info
+
                             <i class="fa-solid fa-chevron-down"></i>
+
                         </summary>
 
+
+
                         <p>
+
                             Trips Wonder member conversation.
+
                         </p>
+
                     </details>
 
 
+
+
+
                     <details>
+
                         <summary>
+
                             Customize chat
+
                             <i class="fa-solid fa-chevron-down"></i>
+
                         </summary>
 
+
+
                         <p>
+
                             More chat preferences can be added here.
+
                         </p>
+
                     </details>
 
 
+
+
+
                     <details>
+
                         <summary>
+
                             Media & files
+
                             <i class="fa-solid fa-chevron-down"></i>
+
                         </summary>
 
+
+
                         <p>
+
                             Shared media and files will appear here.
+
                         </p>
+
                     </details>
+
+
+
 
 
                     <details>
+
                         <summary>
+
                             Privacy & support
+
                             <i class="fa-solid fa-chevron-down"></i>
+
                         </summary>
 
+
+
                         <p>
+
                             Use Trips Wonder messaging responsibly.
+
                         </p>
+
                     </details>
+
+
 
                 </div>
 
+
+
             </aside>
 
+
+
         </section>
+
+
 
     </main>
 
 
+
+
+
     <!-- ======================================================
+
          NOTIFICATIONS
+
          Opened by shared header bell:
+
          message.html#notifications
+
          ====================================================== -->
 
+
+
     <main
+
         class="notifications-page"
+
         id="memberNotificationsPage"
+
         hidden>
+
+
 
         <section class="notifications-page-card">
 
+
+
             <header class="notifications-page-head">
 
+
+
                 <div>
+
                     <h1>Notifications</h1>
+
                     <p>Your Trips Wonder updates.</p>
+
                 </div>
 
+
+
                 <a
+
                     href="message.html"
+
                     class="notifications-back-to-messages">
+
                     <i class="fa-regular fa-comment-dots"></i>
+
                     <span>Messages</span>
+
                 </a>
+
+
 
             </header>
 
 
+
+
+
             <div class="notifications-workspace">
+
+
 
                 <section class="notifications-list-pane">
 
+
+
                     <div class="notifications-toolbar">
+
+
 
                         <label class="notification-search">
 
+
+
                             <i class="fa-solid fa-magnifying-glass"></i>
 
+
+
                             <input
+
                                 type="search"
+
                                 id="notificationSearch"
+
                                 placeholder="Search notifications..."
+
                                 autocomplete="off">
+
+
 
                         </label>
 
 
+
+
+
                         <button
+
                             type="button"
+
                             class="notification-filter-btn"
+
                             id="notificationUnreadFilter"
+
                             aria-pressed="false"
+
                             title="Show unread only">
+
+
 
                             <i class="fa-solid fa-sliders"></i>
 
+
+
                         </button>
 
+
+
                     </div>
+
+
+
 
 
                     <div
+
                         class="notifications-list"
+
                         id="notificationsList">
+
+
 
                         <div class="notification-empty-state">
 
+
+
                             <i class="fa-regular fa-bell"></i>
 
+
+
                             <span>
+
                                 Loading notifications...
+
                             </span>
 
+
+
                         </div>
+
+
 
                     </div>
 
 
+
+
+
                     <button
+
                         type="button"
+
                         class="mark-all-read-btn"
+
                         id="markAllNotificationsRead"
+
                         hidden>
+
+
 
                         <i class="fa-regular fa-envelope-open"></i>
 
+
+
                         <span>
+
                             Mark all as read
+
                         </span>
 
+
+
                     </button>
+
+
 
                 </section>
 
 
+
+
+
                 <aside
+
                     class="notification-detail-pane"
+
                     id="notificationDetailPane">
 
+
+
                     <div
+
                         class="notification-detail-empty"
+
                         id="notificationDetailEmpty">
 
+
+
                         <div class="detail-empty-icon">
+
                             <i class="fa-regular fa-bell"></i>
+
                         </div>
 
+
+
                         <h2>
+
                             Your updates, all in one place
+
                         </h2>
 
+
+
                         <p>
+
                             Select a notification to view its complete details.
+
                         </p>
+
+
 
                     </div>
 
 
+
+
+
                     <article
+
                         class="notification-detail-card"
+
                         id="notificationDetailCard"
+
                         hidden>
 
+
+
                         <div
+
                             class="notification-detail-icon"
+
                             id="notificationDetailIcon">
+
                             <i class="fa-solid fa-circle-info"></i>
+
                         </div>
 
+
+
                         <p
+
                             class="notification-detail-type"
+
                             id="notificationDetailType">
+
                             Update
+
                         </p>
+
+
 
                         <h2 id="notificationDetailTitle">
+
                             Notification
+
                         </h2>
 
+
+
                         <p
+
                             class="notification-detail-date"
+
                             id="notificationDetailDate">
+
                         </p>
 
-                        <div
-                            class="notification-detail-message"
-                            id="notificationDetailMessage">
-                        </div>
+
 
                         <div
-                            class="notification-detail-meta"
-                            id="notificationDetailMeta"
-                            hidden>
+
+                            class="notification-detail-message"
+
+                            id="notificationDetailMessage">
+
                         </div>
+
+
+
+                        <div
+
+                            class="notification-detail-meta"
+
+                            id="notificationDetailMeta"
+
+                            hidden>
+
+                        </div>
+
+
 
                         <a
+
                             href="#"
+
                             class="notification-detail-action"
+
                             id="notificationDetailAction"
+
                             hidden>
+
+
 
                             <span>View details</span>
 
+
+
                             <i class="fa-solid fa-arrow-right"></i>
+
+
 
                         </a>
 
+
+
                     </article>
+
+
 
                 </aside>
 
+
+
             </div>
 
+
+
         </section>
+
+
 
     </main>
 
 
+
+
+
     <!-- Legacy IDs intentionally omitted:
+
          this page now uses member-to-member messaging only. -->
 
 
-    <script
-        type="module"
-        src="../../assets/js/customer/message.js?v=20260903-0235">
-    </script>
+
+
 
     <script
+
         type="module"
-        src="../../assets/js/customer/customer-nav.js">
+
+        src="../../assets/js/customer/message.js?v=20260925-support1">
+
     </script>
+
+
+
+    <script
+
+        type="module"
+
+        src="../../assets/js/customer/customer-nav.js">
+
+    </script>
+
+
 
 </body>
+
 </html>

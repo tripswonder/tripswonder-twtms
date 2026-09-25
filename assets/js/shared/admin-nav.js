@@ -635,8 +635,10 @@ function ensureSharedAdminHeader(user, profile, visibleItems) {
                 aria-expanded="false"
             >
                 <img
+                    id="sharedAdminMobileBusinessLogo"
                     src="/assets/images/logo.png"
                     alt="Trips Wonder"
+                    data-default-src="/assets/images/logo.png"
                     data-mobile-admin-logo
                 >
             </button>
@@ -1434,6 +1436,9 @@ function applyBusinessBranding(settings = {}) {
     const logo =
         document.getElementById("sharedAdminBusinessLogo");
 
+    const mobileLogo =
+        document.getElementById("sharedAdminMobileBusinessLogo");
+
     const businessNameElement =
         document.getElementById("sharedAdminBusinessName");
 
@@ -1451,25 +1456,27 @@ function applyBusinessBranding(settings = {}) {
             businessName || defaultBusinessName;
     }
 
-    if (!logo) return;
-
-    const defaultSrc =
-        logo.dataset.defaultSrc ||
-        "/assets/images/logo.png";
-
     const businessLogo =
         String(settings.businessLogo || "").trim();
 
-    logo.src =
-        businessLogo || defaultSrc;
+    [logo, mobileLogo]
+        .filter(Boolean)
+        .forEach(logoElement => {
+            const defaultSrc =
+                logoElement.dataset.defaultSrc ||
+                "/assets/images/logo.png";
 
-    logo.alt =
-        `${businessName || defaultBusinessName} Logo`;
+            logoElement.src =
+                businessLogo || defaultSrc;
 
-    logo.onerror = () => {
-        logo.onerror = null;
-        logo.src = defaultSrc;
-    };
+            logoElement.alt =
+                `${businessName || defaultBusinessName} Logo`;
+
+            logoElement.onerror = () => {
+                logoElement.onerror = null;
+                logoElement.src = defaultSrc;
+            };
+        });
 }
 
 function initializeBusinessBranding() {

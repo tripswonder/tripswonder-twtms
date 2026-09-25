@@ -17,6 +17,15 @@
 
 "use strict";
 
+import {
+    db
+} from "../firebase/firebase-config.js";
+
+import {
+    doc,
+    onSnapshot
+} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+
 
 /* =========================================================
    GLOBAL STATE
@@ -32,6 +41,14 @@ let currentRetryCallback = null;
 
 let loaderVisible = false;
 let loaderFailed = false;
+
+let loaderBrandingUnsubscribe = null;
+
+const DEFAULT_LOADER_LOGO =
+    "/assets/images/logo.png";
+
+const LOADER_LOGO_CACHE_KEY =
+    "twtmsBusinessLogo";
 
 
 /* =========================================================
@@ -79,6 +96,8 @@ function createLoadingScreen() {
             existingLoader;
 
         bindRetryButton();
+        applyCachedLoaderLogo();
+        startLoaderBrandingListener();
 
         return loaderElement;
     }
@@ -126,8 +145,11 @@ function createLoadingScreen() {
 
             <div class="twtms-loader-logo">
                 <img
-                    src="../../../assets/images/logo.png"
-                    alt="Trips Wonder">
+                    id="twtmsLoaderBusinessLogo"
+                    src=""
+                    data-default-src="/assets/images/logo.png"
+                    alt="Trips Wonder"
+                    style="visibility:hidden;">
             </div>
 
             <div
@@ -186,6 +208,18 @@ function createLoadingScreen() {
 
             </button>
 
+            <div
+                class="twtms-loader-travel-scene"
+                aria-hidden="true">
+                <span class="twtms-loader-sun"></span>
+                <span class="twtms-loader-mountain mountain-one"></span>
+                <span class="twtms-loader-mountain mountain-two"></span>
+                <span class="twtms-loader-island"></span>
+                <span class="twtms-loader-palm palm-one">✦</span>
+                <span class="twtms-loader-palm palm-two">✦</span>
+                <span class="twtms-loader-plane">✈</span>
+            </div>
+
         </div>
     `;
 
@@ -197,8 +231,202 @@ function createLoadingScreen() {
 
     bindRetryButton();
 
+    applyCachedLoaderLogo();
+    startLoaderBrandingListener();
+
 
     return loaderElement;
+}
+
+
+/* =========================================================
+   PAGE SETUP BRANDING
+========================================================= */
+
+function getCachedLoaderLogo() {
+
+    try {
+        return String(
+            localStorage.getItem(
+                LOADER_LOGO_CACHE_KEY
+            ) || ""
+        ).trim();
+    } catch (error) {
+        return "";
+    }
+}
+
+
+function cacheLoaderLogo(logoUrl = "") {
+
+    const normalizedLogo =
+        String(logoUrl || "").trim();
+
+    if (!normalizedLogo) {
+        return;
+    }
+
+    try {
+        localStorage.setItem(
+            LOADER_LOGO_CACHE_KEY,
+            normalizedLogo
+        );
+    } catch (error) {
+        // Cache is optional. Firestore remains the source of truth.
+    }
+}
+
+
+function applyCachedLoaderLogo() {
+
+    if (!loaderElement) {
+        return;
+    }
+
+    const logo =
+        loaderElement.querySelector(
+            "#twtmsLoaderBusinessLogo"
+        );
+
+    if (!logo) {
+        return;
+    }
+
+    const cachedLogo =
+        getCachedLoaderLogo();
+
+    if (!cachedLogo) {
+        logo.removeAttribute("src");
+        logo.style.visibility = "hidden";
+        return;
+    }
+
+    logo.src = cachedLogo;
+    logo.style.visibility = "visible";
+}
+
+
+function applyLoaderBranding(settings = {}) {
+
+    if (!loaderElement) {
+        return;
+    }
+
+    const logo =
+        loaderElement.querySelector(
+            "#twtmsLoaderBusinessLogo"
+        );
+
+    if (!logo) {
+        return;
+    }
+
+    const businessLogo =
+        String(
+            settings.businessLogo || ""
+        ).trim();
+
+    const cachedLogo =
+        getCachedLoaderLogo();
+
+    const resolvedLogo =
+        businessLogo ||
+        cachedLogo ||
+        "";
+
+    if (!resolvedLogo) {
+        logo.removeAttribute("src");
+        logo.style.visibility = "hidden";
+        return;
+    }
+
+    if (businessLogo) {
+        cacheLoaderLogo(
+            businessLogo
+        );
+    }
+
+    logo.src =
+        resolvedLogo;
+
+    logo.style.visibility =
+        "visible";
+
+    logo.onerror = () => {
+
+        logo.onerror = null;
+
+        const latestCachedLogo =
+            getCachedLoaderLogo();
+
+        if (
+            latestCachedLogo &&
+            latestCachedLogo !== logo.src
+        ) {
+            logo.src =
+                latestCachedLogo;
+
+            logo.style.visibility =
+                "visible";
+
+            return;
+        }
+
+        logo.style.visibility =
+            "hidden";
+    };
+}
+
+
+function startLoaderBrandingListener() {
+
+    if (loaderBrandingUnsubscribe) {
+        return;
+    }
+
+    try {
+
+        const settingsRef =
+            doc(
+                db,
+                "systemSettings",
+                "general"
+            );
+
+        loaderBrandingUnsubscribe =
+            onSnapshot(
+                settingsRef,
+                snapshot => {
+
+                    const settings =
+                        snapshot.exists()
+                            ? snapshot.data()
+                            : {};
+
+                    applyLoaderBranding(
+                        settings
+                    );
+                },
+                error => {
+
+                    console.warn(
+                        "TWTMS LOADER BRANDING ERROR:",
+                        error
+                    );
+
+                    applyLoaderBranding({});
+                }
+            );
+
+    } catch (error) {
+
+        console.warn(
+            "TWTMS LOADER BRANDING INIT ERROR:",
+            error
+        );
+
+        applyLoaderBranding({});
+    }
 }
 
 

@@ -1,6 +1,7 @@
 "use strict";
 
 import { auth, db } from "../firebase/firebase-config.js";
+
 import {
     collection,
     doc,
@@ -11,10 +12,9 @@ import {
     serverTimestamp,
     setDoc,
     updateDoc,
-    addDoc,
-    where,
-    limit
+    addDoc
 } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+
 import {
     onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
@@ -59,7 +59,19 @@ document.addEventListener("DOMContentLoaded", () => {
         detailsBooking: $("detailsBooking"),
         detailsTravelDate: $("detailsTravelDate"),
         viewCustomer: $("viewCustomerButton"),
-        viewBooking: $("viewBookingButton")
+        viewBooking: $("viewBookingButton"),
+
+        supportModeBadge: $("supportModeBadge"),
+        supportAssignment: $("supportAssignment"),
+        supportAssignedAdmin: $("supportAssignedAdmin"),
+        supportSummaryUpdated: $("supportSummaryUpdated"),
+        supportSummaryConcern: $("supportSummaryConcern"),
+        supportSummaryImportant: $("supportSummaryImportant"),
+        supportSummaryDiscussed: $("supportSummaryDiscussed"),
+        supportSummaryPending: $("supportSummaryPending"),
+        supportSummaryResolution: $("supportSummaryResolution"),
+        returnToSupport: $("returnToSupportButton"),
+        supportActionNote: $("supportActionNote")
     });
 
     bindUI();
@@ -75,54 +87,29 @@ function bindUI() {
     el.filters?.addEventListener("click", e => {
         const button = e.target.closest("[data-filter]");
         if (!button) return;
+
         state.filter = button.dataset.filter;
-        el.filters.querySelectorAll(".filter-btn").forEach(b => b.classList.toggle("active", b === button));
+        el.filters.querySelectorAll(".filter-btn").forEach(b => {
+            b.classList.toggle("active", b === button);
+        });
         renderConversations();
     });
 
-    // -----------------------------------------------------
-    // CONVERSATION LIST
-    // Event delegation keeps the click working even when
-    // realtime Firestore updates re-render the inbox list.
-    // -----------------------------------------------------
-
     el.list?.addEventListener("click", event => {
+        const item = event.target.closest(".conversation-item");
+        if (!item) return;
 
-        const item =
-            event.target.closest(
-                ".conversation-item"
-            );
-
-        if (!item) {
-            return;
-        }
-
-        const conversationId =
-            item.dataset.id;
-
+        const conversationId = item.dataset.id;
         if (!conversationId) {
-            console.warn(
-                "MESSAGES: Conversation ID missing."
-            );
+            console.warn("MESSAGES: Conversation ID missing.");
             return;
         }
 
-        console.log(
-            "MESSAGES: Opening conversation:",
-            conversationId
-        );
-
-        openConversation(
-            conversationId
-        );
-
+        openConversation(conversationId);
     });
 
-
-    el.form?.addEventListener(
-        "submit",
-        sendAdminMessage
-    );
+    el.form?.addEventListener("submit", sendAdminMessage);
+    el.returnToSupport?.addEventListener("click", returnConversationToSupport);
 }
 
 function startAuth() {
@@ -143,7 +130,12 @@ function startAuth() {
 
         state.admin = {
             uid: user.uid,
-            name: profile.fullName || profile.name || profile.displayName || user.displayName || "Trips Wonder Admin"
+            name:
+                profile.fullName ||
+                profile.name ||
+                profile.displayName ||
+                user.displayName ||
+                "Trips Wonder Admin"
         };
 
         subscribeConversations();
@@ -159,11 +151,18 @@ function subscribeConversations() {
     );
 
     state.unsubscribeConversations = onSnapshot(q, snap => {
-        state.conversations = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        state.conversations = snap.docs.map(d => ({
+            id: d.id,
+            ...d.data()
+        }));
+
         renderConversations();
 
         if (state.activeConversation) {
-            const refreshed = state.conversations.find(c => c.id === state.activeConversation.id);
+            const refreshed = state.conversations.find(
+                c => c.id === state.activeConversation.id
+            );
+
             if (refreshed) {
                 state.activeConversation = refreshed;
                 renderCustomerDetails(refreshed);
@@ -201,9 +200,13 @@ function filteredConversations() {
 
 function renderConversations() {
     const items = filteredConversations();
-    const unreadTotal = state.conversations.reduce((sum, c) => sum + Number(c.unreadAdmin || 0), 0);
+    const unreadTotal = state.conversations.reduce(
+        (sum, c) => sum + Number(c.unreadAdmin || 0),
+        0
+    );
 
-    el.count.textContent = `${state.conversations.length} conversation${state.conversations.length === 1 ? "" : "s"}`;
+    el.count.textContent =
+        `${state.conversations.length} conversation${state.conversations.length === 1 ? "" : "s"}`;
     el.unread.textContent = unreadTotal;
 
     if (!items.length) {
@@ -214,6 +217,7 @@ function renderConversations() {
     el.list.innerHTML = items.map(c => {
         const unread = Number(c.unreadAdmin || 0);
         const active = state.activeConversation?.id === c.id ? "active" : "";
+
         return `
             <button
                 class="conversation-item ${active}"
@@ -232,32 +236,19 @@ function renderConversations() {
                 </span>
             </button>`;
     }).join("");
-
 }
 
 async function openConversation(id) {
-
-    const conversation =
-        state.conversations.find(
-            item =>
-                String(item.id) ===
-                String(id)
-        );
+    const conversation = state.conversations.find(
+        item => String(item.id) === String(id)
+    );
 
     if (!conversation) {
-
-        console.error(
-            "MESSAGES: Conversation not found:",
-            id,
-            state.conversations
-        );
-
+        console.error("MESSAGES: Conversation not found:", id, state.conversations);
         return;
     }
 
-
-    state.activeConversation =
-        conversation;
+    state.activeConversation = conversation;
     el.emptyChat.hidden = true;
     el.activeChat.hidden = false;
     el.workspace?.classList.add("chat-open");
@@ -293,7 +284,10 @@ function subscribeMessages(conversationId) {
     );
 
     state.unsubscribeMessages = onSnapshot(q, snap => {
-        const messages = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        const messages = snap.docs.map(d => ({
+            id: d.id,
+            ...d.data()
+        }));
 
         el.stream.innerHTML = messages.length
             ? messages.map(renderMessage).join("")
@@ -310,6 +304,7 @@ function subscribeMessages(conversationId) {
 
 function renderMessage(message) {
     const role = message.senderRole === "customer" ? "customer" : "admin";
+
     return `
         <div class="message-row ${role}">
             <div class="message-bubble">
@@ -341,15 +336,33 @@ async function sendAdminMessage(event) {
             }
         );
 
+        const currentMode = normalizeSupportMode(conversation);
+
+        const update = {
+            lastMessage: text,
+            lastMessageAt: serverTimestamp(),
+            lastSenderRole: "admin",
+            unreadCustomer: Number(conversation.unreadCustomer || 0) + 1,
+            updatedAt: serverTimestamp()
+        };
+
+        /*
+         * If a human handoff is already active, the first/admin reply also
+         * records who is handling the conversation. This does not expose
+         * anything new to the customer.
+         */
+        if (currentMode === "human" || currentMode === "needs_support") {
+            update.supportMode = "human";
+            update.supportStatus = "active";
+            update.handoffRequested = true;
+            update.assignedAdminUid = state.admin.uid;
+            update.assignedAdminName = state.admin.name;
+            update.adminAcceptedAt = serverTimestamp();
+        }
+
         await setDoc(
             doc(db, "conversations", conversation.id),
-            {
-                lastMessage: text,
-                lastMessageAt: serverTimestamp(),
-                lastSenderRole: "admin",
-                unreadCustomer: Number(conversation.unreadCustomer || 0) + 1,
-                updatedAt: serverTimestamp()
-            },
+            update,
             { merge: true }
         );
 
@@ -375,34 +388,246 @@ function renderCustomerDetails(c) {
     el.detailsBooking.textContent = c.bookingReference || "No linked booking";
     el.detailsTravelDate.textContent = c.travelDateText || "—";
 
+    renderSupportManagement(c);
+
     el.viewCustomer.onclick = () => {
         if (!c.customerUid) return;
-        window.location.href = `customers.html?uid=${encodeURIComponent(c.customerUid)}`;
+        window.location.href =
+            `customers.html?uid=${encodeURIComponent(c.customerUid)}`;
     };
 
     el.viewBooking.onclick = () => {
         if (!c.bookingId && !c.bookingReference) return;
         const value = c.bookingId || c.bookingReference;
-        window.location.href = `bookings.html?booking=${encodeURIComponent(value)}`;
+        window.location.href =
+            `bookings.html?booking=${encodeURIComponent(value)}`;
     };
 }
 
+function renderSupportManagement(c) {
+    const mode = normalizeSupportMode(c);
+    const summary = normalizeSupportSummary(c.supportSummary);
+
+    let label = "Online Support";
+    let badgeClass = "online";
+
+    if (mode === "human") {
+        label = "Human Support";
+        badgeClass = "human";
+    } else if (mode === "needs_support") {
+        label = "Needs Support";
+        badgeClass = "needs-support";
+    }
+
+    el.supportModeBadge.textContent = label;
+    el.supportModeBadge.className = `support-mode-badge ${badgeClass}`;
+
+    const assignedName = String(c.assignedAdminName || "").trim();
+    el.supportAssignment.hidden = !assignedName;
+    el.supportAssignedAdmin.textContent = assignedName || "—";
+
+    el.supportSummaryConcern.textContent =
+        summary.clientConcern || "No summary yet.";
+
+    renderSummaryValues(
+        el.supportSummaryImportant,
+        summary.importantDetails
+    );
+
+    renderSummaryValues(
+        el.supportSummaryDiscussed,
+        summary.discussed
+    );
+
+    renderSummaryValues(
+        el.supportSummaryPending,
+        summary.pendingItems
+    );
+
+    el.supportSummaryResolution.textContent =
+        summary.lastResolution || "—";
+
+    el.supportSummaryUpdated.textContent =
+        summary.updatedAt
+            ? `Updated ${formatRelative(summary.updatedAt)}`
+            : "Not yet generated";
+
+    /*
+     * Return is available only while the human side owns the thread.
+     * needs_support is also included so an admin can clear an accidental
+     * handoff without generating a client-visible system message.
+     */
+    const canReturn =
+        mode === "human" ||
+        mode === "needs_support";
+
+    el.returnToSupport.hidden = !canReturn;
+    el.supportActionNote.hidden = !canReturn;
+}
+
+async function returnConversationToSupport() {
+    const conversation = state.activeConversation;
+
+    if (!conversation || !state.admin) return;
+
+    const confirmed = window.confirm(
+        "Return this conversation to Trips Wonder Support?\n\n" +
+        "The customer will not receive a system message. " +
+        "The existing conversation and support summary will be kept."
+    );
+
+    if (!confirmed) return;
+
+    el.returnToSupport.disabled = true;
+
+    try {
+        await setDoc(
+            doc(db, "conversations", conversation.id),
+            {
+                supportMode: "online",
+                supportStatus: "active",
+                handoffRequested: false,
+                assignedAdminUid: null,
+                assignedAdminName: null,
+                returnedToSupportAt: serverTimestamp(),
+                returnedToSupportByUid: state.admin.uid,
+                returnedToSupportByName: state.admin.name,
+                updatedAt: serverTimestamp()
+            },
+            { merge: true }
+        );
+    } catch (error) {
+        console.error("Return to Support error:", error);
+        alert("Unable to return this conversation to Support.");
+    } finally {
+        el.returnToSupport.disabled = false;
+    }
+}
+
+function normalizeSupportMode(c = {}) {
+    const rawMode = String(c.supportMode || "").trim().toLowerCase();
+    const rawStatus = String(c.supportStatus || "").trim().toLowerCase();
+
+    if (
+        rawMode === "human" ||
+        rawStatus === "human" ||
+        rawStatus === "needs_support" ||
+        rawStatus === "needs support" ||
+        c.handoffRequested === true
+    ) {
+        if (
+            rawStatus === "needs_support" ||
+            rawStatus === "needs support" ||
+            (c.handoffRequested === true && rawMode !== "human")
+        ) {
+            return "needs_support";
+        }
+
+        return "human";
+    }
+
+    return "online";
+}
+
+function normalizeSupportSummary(value) {
+    const summary =
+        value && typeof value === "object" && !Array.isArray(value)
+            ? value
+            : {};
+
+    return {
+        clientConcern: String(
+            summary.clientConcern ||
+            summary.concern ||
+            ""
+        ).trim(),
+
+        importantDetails: normalizeSummaryList(
+            summary.importantDetails ||
+            summary.details
+        ),
+
+        discussed: normalizeSummaryList(
+            summary.discussed ||
+            summary.alreadyDiscussed
+        ),
+
+        pendingItems: normalizeSummaryList(
+            summary.pendingItems ||
+            summary.pending ||
+            summary.pendingRequest
+        ),
+
+        lastResolution: String(
+            summary.lastResolution ||
+            summary.resolution ||
+            ""
+        ).trim(),
+
+        updatedAt:
+            summary.updatedAt ||
+            null
+    };
+}
+
+function normalizeSummaryList(value) {
+    if (Array.isArray(value)) {
+        return value
+            .map(item => String(item || "").trim())
+            .filter(Boolean);
+    }
+
+    const text = String(value || "").trim();
+    return text ? [text] : [];
+}
+
+function renderSummaryValues(target, values) {
+    if (!target) return;
+
+    if (!values.length) {
+        target.textContent = "—";
+        return;
+    }
+
+    target.innerHTML = values
+        .map(value =>
+            `<span class="support-summary-line">• ${escapeHTML(value)}</span>`
+        )
+        .join("");
+}
+
 function stateMessage(text) {
-    return `<div class="panel-state"><i class="fa-regular fa-comments"></i><strong>${escapeHTML(text)}</strong></div>`;
+    return `
+        <div class="panel-state">
+            <i class="fa-regular fa-comments"></i>
+            <strong>${escapeHTML(text)}</strong>
+        </div>`;
 }
 
 function initials(name = "") {
-    const parts = String(name).trim().split(/\s+/).filter(Boolean);
-    return (parts.slice(0, 2).map(p => p[0]).join("") || "TW").toUpperCase();
+    const parts = String(name)
+        .trim()
+        .split(/\s+/)
+        .filter(Boolean);
+
+    return (
+        parts
+            .slice(0, 2)
+            .map(p => p[0])
+            .join("") || "TW"
+    ).toUpperCase();
 }
 
 function titleCase(value) {
-    return String(value).replace(/_/g, " ").replace(/\b\w/g, m => m.toUpperCase());
+    return String(value)
+        .replace(/_/g, " ")
+        .replace(/\b\w/g, m => m.toUpperCase());
 }
 
 function toDate(value) {
     if (!value) return null;
     if (typeof value.toDate === "function") return value.toDate();
+
     const d = new Date(value);
     return Number.isNaN(d.getTime()) ? null : d;
 }
@@ -410,22 +635,38 @@ function toDate(value) {
 function formatDateTime(value) {
     const d = toDate(value);
     if (!d) return "Sending...";
-    return d.toLocaleString([], { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
+
+    return d.toLocaleString([], {
+        month: "short",
+        day: "numeric",
+        hour: "numeric",
+        minute: "2-digit"
+    });
 }
 
 function formatRelative(value) {
     const d = toDate(value);
     if (!d) return "";
+
     const diff = Date.now() - d.getTime();
+
     if (diff < 60000) return "Now";
     if (diff < 3600000) return `${Math.floor(diff / 60000)}m`;
     if (diff < 86400000) return `${Math.floor(diff / 3600000)}h`;
-    return d.toLocaleDateString([], { month: "short", day: "numeric" });
+
+    return d.toLocaleDateString([], {
+        month: "short",
+        day: "numeric"
+    });
 }
 
 function escapeHTML(value) {
     return String(value ?? "").replace(/[&<>"']/g, ch => ({
-        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
     })[ch]);
 }
 

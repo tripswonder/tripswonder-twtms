@@ -82,6 +82,11 @@ document.addEventListener(
 
         let saveAsDraftMode = false;
 
+        // Prevent duplicate package writes while a save/publish is in progress.
+        // This protects against double-clicks, repeated Enter presses,
+        // and slow network responses.
+        let packageSaveInProgress = false;
+
         let activeBuilderSectionId =
             "packageSectionBasic";
 
@@ -9638,15 +9643,17 @@ function collectPickupLocations() {
                 );
 
 
+                // The Publish button lives in the package header and uses
+                // form="packageForm", so it may be outside packageForm.
+                // Use the already-cached button reference instead of querying
+                // only inside the form.
                 const saveButton =
-                    packageForm.querySelector(
-                        'button[type="submit"]'
-                    );
+                    savePackageButton;
 
 
-                if (
-                    saveButton?.disabled
-                ) {
+                // Hard submission lock. UI disabling alone is not enough,
+                // especially on slow connections.
+                if (packageSaveInProgress) {
                     return;
                 }
 
@@ -10218,19 +10225,30 @@ function collectPickupLocations() {
                     saveButton?.innerHTML ||
                     "Publish Package";
 
+                const originalDraftText =
+                    savePackageDraftButton?.innerHTML ||
+                    "Save as Draft";
+
                 const activeSaveButton =
                     saveAsDraftMode
                         ? savePackageDraftButton
                         : saveButton;
 
+                // Lock BEFORE the first async Firestore/Storage operation.
+                // Any second submit event will now exit immediately.
+                packageSaveInProgress = true;
 
-                if (
-                    activeSaveButton
-                ) {
+                // Disable both actions so the admin cannot trigger another
+                // save mode while the current request is still running.
+                if (saveButton) {
+                    saveButton.disabled = true;
+                }
 
-                    activeSaveButton.disabled =
-                        true;
+                if (savePackageDraftButton) {
+                    savePackageDraftButton.disabled = true;
+                }
 
+                if (activeSaveButton) {
 
                     activeSaveButton.innerHTML = `
 
@@ -10238,7 +10256,7 @@ function collectPickupLocations() {
                             class="save-loading-spinner"
                         ></span>
 
-                        Saving...
+                        ${saveAsDraftMode ? "Saving Draft..." : "Publishing..."}
 
                     `;
 
@@ -10867,18 +10885,30 @@ function collectPickupLocations() {
 
                 } finally {
 
-                    if (
-                        saveButton
-                    ) {
+                    packageSaveInProgress = false;
+
+                    if (saveButton) {
 
                         saveButton.disabled =
                             false;
-
 
                         saveButton.innerHTML =
                             originalSaveText;
 
                     }
+
+                    if (savePackageDraftButton) {
+
+                        savePackageDraftButton.disabled =
+                            false;
+
+                        savePackageDraftButton.innerHTML =
+                            originalDraftText;
+
+                    }
+
+                    // Always return to normal publish mode after the request.
+                    saveAsDraftMode = false;
 
                 }
 
