@@ -1208,46 +1208,17 @@ el.stream.innerHTML = messages.length
 
 
 function renderMessage(message) {
-
-
-
     const role = message.senderRole === "customer" ? "customer" : "admin";
 
-
-
-
-
-
-
     return `
-
-
-
         <div class="message-row ${role}">
-
-
-
             <div class="message-bubble">
-
-
-
-                ${escapeHTML(message.text || "")}
-
-
-
+                <span class="message-text">${escapeHTML(message.text || "")}</span>
                 <span class="message-time">${escapeHTML(formatDateTime(message.createdAt))}</span>
-
-
-
             </div>
-
-
-
         </div>`;
-
-
-
 }
+
 
 
 
