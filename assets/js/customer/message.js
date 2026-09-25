@@ -2431,20 +2431,21 @@ let supportConversationUnsubscribe = null;
 
 /* ==========================================================
    SUPPORT SUMMARY
-   Compact Firestore handoff context. No extra AI/API call.
+   Saves compact context before human handoff.
+   No extra OpenAI/API request is required.
    ========================================================== */
 
-function cleanSupportSummaryText(value) {
+function cleanTripsWonderSummaryText(value) {
     return String(value || "")
         .replace(/\s+/g, " ")
         .trim();
 }
 
-function uniqueSupportSummaryValues(values, limit = 5) {
+function uniqueTripsWonderSummaryValues(values, limit = 5) {
     const seen = new Set();
 
     return values
-        .map(cleanSupportSummaryText)
+        .map(cleanTripsWonderSummaryText)
         .filter(value => {
             if (!value) return false;
 
@@ -2480,34 +2481,37 @@ function buildTripsWonderSupportSummary(
     const latestResponder =
         responderMessages[responderMessages.length - 1];
 
+    const latestConcern =
+        cleanTripsWonderSummaryText(latestCustomer?.text);
+
     return {
         clientConcern:
-            cleanSupportSummaryText(latestCustomer?.text) ||
-            cleanSupportSummaryText(
+            latestConcern ||
+            cleanTripsWonderSummaryText(
                 existingSummary?.clientConcern ||
                 existingSummary?.concern
             ),
 
         importantDetails:
-            uniqueSupportSummaryValues(
+            uniqueTripsWonderSummaryValues(
                 customerMessages.map(message => message.text),
                 5
             ),
 
         discussed:
-            uniqueSupportSummaryValues(
+            uniqueTripsWonderSummaryValues(
                 responderMessages.map(message => message.text),
                 5
             ),
 
         pendingItems:
-            latestCustomer
-                ? [cleanSupportSummaryText(latestCustomer.text)].filter(Boolean)
+            latestConcern
+                ? [latestConcern]
                 : [],
 
         lastResolution:
-            cleanSupportSummaryText(latestResponder?.text) ||
-            cleanSupportSummaryText(
+            cleanTripsWonderSummaryText(latestResponder?.text) ||
+            cleanTripsWonderSummaryText(
                 existingSummary?.lastResolution ||
                 existingSummary?.resolution
             ),
@@ -2570,9 +2574,11 @@ function subscribeTripsWonderSupportMode() {
 
             supportHumanMode = nextHumanMode;
 
-            if (!supportHumanMode) {
-                supportNeedsHumanHandoff = false;
-            }
+            // Firestore is the source of truth for the pending handoff option.
+            // This keeps "Talk to a Team Member" visible after refresh/restart.
+            supportNeedsHumanHandoff =
+                !supportHumanMode &&
+                data.handoffAvailable === true;
 
             if (activeMemberTab === "support") {
                 renderTripsWonderSupportList();
@@ -2990,19 +2996,18 @@ async function talkToTripsWonderTeam() {
                 ? currentConversationSnap.data()
                 : {};
 
-        const supportSummary =
-            buildTripsWonderSupportSummary(
-                supportHumanMessages,
-                currentConversation.supportSummary || {}
-            );
-
+        /*
+         * The backend already created the focused handoffBrief.
+         * Do not rebuild a growing conversation summary here.
+         * The admin only needs the unresolved operational check.
+         */
         await setDoc(
             conversationRef,
             {
                 status: "open",
                 supportMode: "human",
                 supportStatus: "active",
-                supportSummary,
+                handoffAvailable: false,
                 handoffRequested: true,
                 handoffRequestedAt:
                     serverTimestamp(),
@@ -3306,6 +3311,8 @@ async function writeTripsWonderOnlineReply(reply) {
                 "online",
             supportStatus:
                 "active",
+            handoffAvailable:
+                false,
             updatedAt:
                 serverTimestamp()
         },
@@ -3327,7 +3334,9 @@ async function submitTripsWonderSupportMessage(text) {
 
     if (!cleanText || !state.user) return;
 
-    supportNeedsHumanHandoff = false;
+    // Do not clear a previously offered human handoff here.
+    // It remains available until the customer accepts it
+    // or an automated reply succeeds.
 
     if (memberChatInput) {
         memberChatInput.disabled = true;
@@ -3390,7 +3399,42 @@ async function submitTripsWonderSupportMessage(text) {
 
         await writeTripsWonderOnlineReply(reply);
 
-        supportNeedsHumanHandoff = false;
+        const needsHuman =
+            response?.data?.needsHuman === true ||
+            String(response?.data?.status || "")
+                .trim()
+                .toLowerCase() === "needs_human";
+
+        supportNeedsHumanHandoff = needsHuman;
+
+        /*
+         * writeTripsWonderOnlineReply() normally clears a previous
+         * handoff after a successful answer. If the backend specifically
+         * determined that an operational fact needs admin verification,
+         * restore the handoff flag. The focused handoffBrief itself was
+         * already saved securely by the Firebase Function.
+         */
+        if (needsHuman) {
+            const conversationId =
+                await ensureTripsWonderSupportThread();
+
+            if (conversationId) {
+                await setDoc(
+                    doc(
+                        db,
+                        "conversations",
+                        conversationId
+                    ),
+                    {
+                        handoffAvailable: true,
+                        updatedAt: serverTimestamp()
+                    },
+                    {
+                        merge: true
+                    }
+                );
+            }
+        }
 
     } catch (error) {
         console.error(
@@ -3404,6 +3448,34 @@ async function submitTripsWonderSupportMessage(text) {
          * pollute the official support history.
          */
         supportNeedsHumanHandoff = true;
+
+        // Persist the option so refresh/restart does not remove it.
+        try {
+            const conversationId =
+                await ensureTripsWonderSupportThread();
+
+            if (conversationId) {
+                await setDoc(
+                    doc(
+                        db,
+                        "conversations",
+                        conversationId
+                    ),
+                    {
+                        handoffAvailable: true,
+                        updatedAt: serverTimestamp()
+                    },
+                    {
+                        merge: true
+                    }
+                );
+            }
+        } catch (handoffError) {
+            console.error(
+                "TRIPS WONDER HANDOFF PERSIST ERROR:",
+                handoffError
+            );
+        }
 
     } finally {
         typing?.remove();
