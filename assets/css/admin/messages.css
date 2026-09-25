@@ -777,3 +777,33 @@ body.admin-shared-nav-page {
 #detailsContent[hidden] {
     display: none !important;
 }
+
+/* =========================================================
+   ADMIN MESSAGE COMPOSER — LAYOUT FIX
+   Keeps the reply composer visible at the bottom.
+========================================================= */
+
+.chat-panel {
+    min-height: 0;
+    overflow: hidden;
+}
+
+.active-chat {
+    height: 100%;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.message-stream {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+}
+
+.message-composer {
+    flex: 0 0 auto;
+    position: relative;
+    z-index: 2;
+}
