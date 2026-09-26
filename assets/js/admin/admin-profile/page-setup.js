@@ -123,6 +123,12 @@ const defaultPageSetupSettings = {
     supportPhoto:
         "../../assets/images/logo.png",
 
+    supportPersona: {
+        name: "Spark",
+        title: "Trips Wonder Support",
+        meaning: "Support for Planning Adventures, Reservations & Knowledge"
+    },
+
     holidaySettings: {
         enabled: true,
         holidays: []
@@ -1372,6 +1378,81 @@ function ensurePageSetupMarkup() {
 
 
                 <!-- =====================================
+                     SUPPORT PERSONA
+                ====================================== -->
+
+                <div class="page-setup-block">
+
+                    <div class="page-setup-block-header">
+
+                        <div class="page-setup-block-icon">
+                            <i class="fa-solid fa-sparkles"></i>
+                        </div>
+
+                        <div>
+                            <h3>Support Persona</h3>
+                            <p>
+                                Configure the consultant identity used for
+                                automated Trips Wonder support messages.
+                            </p>
+                        </div>
+
+                    </div>
+
+                    <div class="page-setup-grid">
+
+                        <div class="form-group">
+                            <label for="supportPersonaName">
+                                Persona Name
+                            </label>
+
+                            <input
+                                type="text"
+                                id="supportPersonaName"
+                                name="supportPersonaName"
+                                placeholder="Spark"
+                                autocomplete="off"
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label for="supportPersonaTitle">
+                                Persona Title
+                            </label>
+
+                            <input
+                                type="text"
+                                id="supportPersonaTitle"
+                                name="supportPersonaTitle"
+                                placeholder="Trips Wonder Support"
+                                autocomplete="off"
+                            >
+                        </div>
+
+                        <div class="form-group form-group-full">
+                            <label for="supportPersonaMeaning">
+                                Persona Meaning
+                            </label>
+
+                            <input
+                                type="text"
+                                id="supportPersonaMeaning"
+                                name="supportPersonaMeaning"
+                                placeholder="Support for Planning Adventures, Reservations & Knowledge"
+                                autocomplete="off"
+                            >
+
+                            <small>
+                                Internal brand meaning. You can change the persona later without editing code.
+                            </small>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =====================================
                      PAYMENT METHOD SETTINGS
                 ====================================== -->
 
@@ -1796,6 +1877,21 @@ function collectPageSetupElements() {
                 "changeSupportPhotoButton"
             ),
 
+        supportPersonaName:
+            document.getElementById(
+                "supportPersonaName"
+            ),
+
+        supportPersonaTitle:
+            document.getElementById(
+                "supportPersonaTitle"
+            ),
+
+        supportPersonaMeaning:
+            document.getElementById(
+                "supportPersonaMeaning"
+            ),
+
         resetButton:
             document.getElementById(
                 "resetPageSetupButton"
@@ -2187,7 +2283,12 @@ async function loadFirestoreSettings() {
 
             ...defaultPageSetupSettings,
 
-            ...firestoreData
+            ...firestoreData,
+
+            supportPersona: {
+                ...defaultPageSetupSettings.supportPersona,
+                ...(firestoreData.supportPersona || {})
+            }
 
         };
 
@@ -2254,6 +2355,11 @@ function getLocalSettings() {
             ...defaultPageSetupSettings,
 
             ...parsed,
+
+            supportPersona: {
+                ...defaultPageSetupSettings.supportPersona,
+                ...(parsed.supportPersona || {})
+            },
 
             paymentSettings: {
                 ...defaultPageSetupSettings.paymentSettings,
@@ -2487,6 +2593,26 @@ function populatePageSetupForm(
     }
 
 
+    const supportPersona = {
+        ...defaultPageSetupSettings.supportPersona,
+        ...(settings.supportPersona || {})
+    };
+
+    if (pageSetupElements.supportPersonaName) {
+        pageSetupElements.supportPersonaName.value =
+            supportPersona.name || "";
+    }
+
+    if (pageSetupElements.supportPersonaTitle) {
+        pageSetupElements.supportPersonaTitle.value =
+            supportPersona.title || "";
+    }
+
+    if (pageSetupElements.supportPersonaMeaning) {
+        pageSetupElements.supportPersonaMeaning.value =
+            supportPersona.meaning || "";
+    }
+
 
     const paymentSettings = {
         ...defaultPageSetupSettings.paymentSettings,
@@ -2671,6 +2797,26 @@ function collectPageSetupSettings() {
             pageSetupElements.supportPhotoPreview
                 ?.src ||
             defaultPageSetupSettings.supportPhoto,
+
+        supportPersona: {
+            name:
+                pageSetupElements.supportPersonaName
+                    ?.value
+                    ?.trim() ||
+                defaultPageSetupSettings.supportPersona.name,
+
+            title:
+                pageSetupElements.supportPersonaTitle
+                    ?.value
+                    ?.trim() ||
+                defaultPageSetupSettings.supportPersona.title,
+
+            meaning:
+                pageSetupElements.supportPersonaMeaning
+                    ?.value
+                    ?.trim() ||
+                defaultPageSetupSettings.supportPersona.meaning
+        },
 
         paymentSettings:
             collectPaymentSettings(),

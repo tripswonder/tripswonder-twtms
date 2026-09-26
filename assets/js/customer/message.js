@@ -64,7 +64,10 @@ const state = {
     supportProfile: {
         supportName: "Trips Wonder Support",
         supportStatus: "We’re here to help",
-        supportPhoto: "../../assets/images/logo.png"
+        supportPhoto: "../../assets/images/logo.png",
+        supportPersonaName: "Spark",
+        supportPersonaTitle: "Trips Wonder Support",
+        supportPersonaMeaning: "Support for Planning Adventures, Reservations & Knowledge"
     },
     currentMessages: [],
     notifications: [],
@@ -279,10 +282,19 @@ function subscribeSupportProfile() {
         doc(db, "systemSettings", "general"),
         snapshot => {
             const settings = snapshot.exists() ? snapshot.data() : {};
+            const persona =
+                settings.supportPersona &&
+                typeof settings.supportPersona === "object"
+                    ? settings.supportPersona
+                    : {};
+
             state.supportProfile = {
                 supportName: String(settings.supportName || "Trips Wonder Support").trim() || "Trips Wonder Support",
                 supportStatus: String(settings.supportStatus || "We’re here to help").trim() || "We’re here to help",
-                supportPhoto: String(settings.supportPhoto || settings.businessLogo || "../../assets/images/logo.png").trim() || "../../assets/images/logo.png"
+                supportPhoto: String(settings.supportPhoto || settings.businessLogo || "../../assets/images/logo.png").trim() || "../../assets/images/logo.png",
+                supportPersonaName: String(persona.name || "Spark").trim() || "Spark",
+                supportPersonaTitle: String(persona.title || "Trips Wonder Support").trim() || "Trips Wonder Support",
+                supportPersonaMeaning: String(persona.meaning || "Support for Planning Adventures, Reservations & Knowledge").trim() || "Support for Planning Adventures, Reservations & Knowledge"
             };
             applySupportProfile();
             renderCurrentMessages();
@@ -2323,7 +2335,14 @@ memberChatForm?.addEventListener("submit", async event => {
 
 const SUPPORT_NAME = "Trips Wonder Support";
 const SUPPORT_STATUS = "We’re here to help";
-const AUTOMATED_SUPPORT_LABEL = "Travel Consultant Support";
+const DEFAULT_SUPPORT_PERSONA_NAME = "Spark";
+
+function getSupportPersonaName() {
+    return String(
+        state.supportProfile?.supportPersonaName ||
+        DEFAULT_SUPPORT_PERSONA_NAME
+    ).trim() || DEFAULT_SUPPORT_PERSONA_NAME;
+}
 
 function getTripsWonderSupportProfile() {
     const profile = state.supportProfile || {};
@@ -2382,7 +2401,7 @@ function getSupportMessageSenderLabel(message = {}) {
         return getAdminSupportLabel(message);
     }
 
-    return AUTOMATED_SUPPORT_LABEL;
+    return getSupportPersonaName();
 }
 
 function renderTripsWonderSupportAvatar(target) {
@@ -2624,7 +2643,7 @@ function renderTripsWonderSupportList() {
             </span>
 
             <span class="tw-support-online">
-                ${supportHumanMode ? "Team" : "Online"}
+                Online
             </span>
         </button>
     `;
@@ -2723,9 +2742,7 @@ function openTripsWonderSupportConversation() {
     if (memberChatInput) {
         memberChatInput.disabled = false;
         memberChatInput.placeholder =
-            supportHumanMode
-                ? "Message the Trips Wonder team..."
-                : "Ask Trips Wonder Support...";
+            "Ask Trips Wonder Support...";
     }
 
     if (memberChatSend) {
@@ -2914,37 +2931,6 @@ function renderTripsWonderUnifiedMessages() {
             })
             .join("");
 
-    if (
-        !supportHumanMode &&
-        supportNeedsHumanHandoff
-    ) {
-        const handoffHost =
-            document.createElement("div");
-
-        handoffHost.className =
-            "tw-support-suggestions";
-
-        const teamButton =
-            document.createElement("button");
-
-        teamButton.type = "button";
-        teamButton.className =
-            "tw-support-suggestion";
-
-        teamButton.innerHTML = `
-            <i class="fa-solid fa-headset"></i>
-            Talk to a Team Member
-        `;
-
-        teamButton.addEventListener(
-            "click",
-            talkToTripsWonderTeam
-        );
-
-        handoffHost.appendChild(teamButton);
-        memberChatMessages.appendChild(handoffHost);
-    }
-
     scrollTripsWonderSupportToBottom();
 }
 
@@ -2963,143 +2949,6 @@ function renderTripsWonderHumanMessages() {
    HUMAN SUPPORT HANDOFF
    ========================================================== */
 
-async function talkToTripsWonderTeam() {
-    if (!state.user) return;
-
-    if (memberChatInput) {
-        memberChatInput.disabled = true;
-    }
-
-    if (memberChatSend) {
-        memberChatSend.disabled = true;
-    }
-
-    try {
-        const conversationId =
-            await ensureTripsWonderSupportThread();
-
-        supportHumanMode = true;
-        supportNeedsHumanHandoff = false;
-
-        const conversationRef =
-            doc(
-                db,
-                "conversations",
-                conversationId
-            );
-
-        const currentConversationSnap =
-            await getDoc(conversationRef);
-
-        const currentConversation =
-            currentConversationSnap.exists()
-                ? currentConversationSnap.data()
-                : {};
-
-        /*
-         * Prefer the focused handoffBrief created by the backend.
-         * If the automated support request failed before the backend
-         * could create one, create a small fallback brief from the
-         * latest customer question. Never rebuild the old growing
-         * supportSummary.
-         */
-        const existingBrief =
-            currentConversation?.handoffBrief || {};
-
-        const hasExistingBrief =
-            Boolean(
-                cleanTripsWonderSummaryText(
-                    existingBrief?.clientQuestion
-                ) ||
-                cleanTripsWonderSummaryText(
-                    existingBrief?.needsAdminCheck
-                ) ||
-                cleanTripsWonderSummaryText(
-                    existingBrief?.currentSystemStatus
-                ) ||
-                cleanTripsWonderSummaryText(
-                    existingBrief?.adminActionNeeded
-                )
-            );
-
-        const latestCustomerMessage =
-            [...(supportHumanMessages || [])]
-                .reverse()
-                .find(message =>
-                    String(message?.senderRole || "")
-                        .trim()
-                        .toLowerCase() === "customer" &&
-                    cleanTripsWonderSummaryText(message?.text)
-                );
-
-        const latestCustomerQuestion =
-            cleanTripsWonderSummaryText(
-                latestCustomerMessage?.text ||
-                currentConversation?.lastMessage ||
-                "Customer requested help from the Trips Wonder team."
-            );
-
-        const handoffData = {
-            status: "open",
-            supportMode: "human",
-            supportStatus: "active",
-            handoffAvailable: false,
-            handoffRequested: true,
-            handoffRequestedAt: serverTimestamp(),
-            updatedAt: serverTimestamp()
-        };
-
-        if (!hasExistingBrief) {
-            handoffData.handoffBrief = {
-                clientQuestion: latestCustomerQuestion,
-                needsAdminCheck:
-                    "Customer requested assistance from the Trips Wonder team.",
-                currentSystemStatus:
-                    "Travel Consultant could not verify the requested information.",
-                adminActionNeeded:
-                    "Review the customer's latest question and verify the required information in TWTMS.",
-                createdAt: serverTimestamp(),
-                updatedAt: serverTimestamp()
-            };
-        }
-
-        await setDoc(
-            conversationRef,
-            handoffData,
-            {
-                merge: true
-            }
-        );
-
-        renderTripsWonderSupportList();
-        openTripsWonderSupportConversation();
-
-    } catch (error) {
-        console.error(
-            "TRIPS WONDER TEAM HANDOFF ERROR:",
-            error
-        );
-
-        supportHumanMode = false;
-
-        window.alert(
-            "Unable to connect you with a Trips Wonder team member right now. Please try again."
-        );
-
-        renderTripsWonderUnifiedMessages();
-
-    } finally {
-        if (memberChatInput) {
-            memberChatInput.disabled = false;
-        }
-
-        if (memberChatSend) {
-            memberChatSend.disabled = false;
-        }
-
-        memberChatInput?.focus();
-    }
-}
 
 
 /* ==========================================================
@@ -3294,7 +3143,7 @@ async function markTripsWonderHumanMessagesRead() {
    WRITE AN ONLINE-SUPPORT REPLY TO THE SAME THREAD
    ========================================================== */
 
-async function writeTripsWonderOnlineReply(reply) {
+async function writeTripsWonderOnlineReply(reply, options = {}) {
     if (
         !reply ||
         !state.conversationId
@@ -3317,12 +3166,16 @@ async function writeTripsWonderOnlineReply(reply) {
             ? latestSnap.data()
             : {};
 
+    const keepHumanMode =
+        options?.keepHumanMode === true;
+
     /*
      * If an admin took over while the callable was running,
      * do not post an automated reply.
      */
     if (
-        normalizeTripsWonderSupportMode(latest) === "human"
+        normalizeTripsWonderSupportMode(latest) === "human" &&
+        !keepHumanMode
     ) {
         return;
     }
@@ -3338,7 +3191,7 @@ async function writeTripsWonderOnlineReply(reply) {
             senderRole:
                 "support",
             senderName:
-                AUTOMATED_SUPPORT_LABEL,
+                getSupportPersonaName(),
             text:
                 reply,
             createdAt:
@@ -3360,11 +3213,15 @@ async function writeTripsWonderOnlineReply(reply) {
                     latest.unreadCustomer || 0
                 ) + 1,
             supportMode:
-                "online",
+                keepHumanMode
+                    ? "human"
+                    : "online",
             supportStatus:
                 "active",
             handoffAvailable:
                 false,
+            handoffRequested:
+                keepHumanMode,
             updatedAt:
                 serverTimestamp()
         },
@@ -3449,44 +3306,28 @@ async function submitTripsWonderSupportMessage(text) {
             );
         }
 
-        await writeTripsWonderOnlineReply(reply);
-
         const needsHuman =
             response?.data?.needsHuman === true ||
             String(response?.data?.status || "")
                 .trim()
                 .toLowerCase() === "needs_human";
 
-        supportNeedsHumanHandoff = needsHuman;
+        if (needsHuman) {
+            /*
+             * Server-side function owns the human handoff and holding reply.
+             * Do not write privileged support state from the customer browser.
+             * The realtime Firestore listeners will receive both updates.
+             */
+            supportNeedsHumanHandoff = false;
+            return;
+        }
 
         /*
-         * writeTripsWonderOnlineReply() normally clears a previous
-         * handoff after a successful answer. If the backend specifically
-         * determined that an operational fact needs admin verification,
-         * restore the handoff flag. The focused handoffBrief itself was
-         * already saved securely by the Firebase Function.
+         * Normal verified answers are still returned by the callable.
+         * Persist the answer in the official thread.
          */
-        if (needsHuman) {
-            const conversationId =
-                await ensureTripsWonderSupportThread();
-
-            if (conversationId) {
-                await setDoc(
-                    doc(
-                        db,
-                        "conversations",
-                        conversationId
-                    ),
-                    {
-                        handoffAvailable: true,
-                        updatedAt: serverTimestamp()
-                    },
-                    {
-                        merge: true
-                    }
-                );
-            }
-        }
+        await writeTripsWonderOnlineReply(reply);
+        supportNeedsHumanHandoff = false;
 
     } catch (error) {
         console.error(
@@ -3495,40 +3336,11 @@ async function submitTripsWonderSupportMessage(text) {
         );
 
         /*
-         * Keep the customer's message in Firestore.
-         * The temporary failure text is UI-only so it does not
-         * pollute the official support history.
+         * The callable handles API/service failures server-side by placing
+         * the conversation in Human Support and saving a holding reply.
+         * Nothing privileged is written from the customer browser here.
          */
-        supportNeedsHumanHandoff = true;
-
-        // Persist the option so refresh/restart does not remove it.
-        try {
-            const conversationId =
-                await ensureTripsWonderSupportThread();
-
-            if (conversationId) {
-                await setDoc(
-                    doc(
-                        db,
-                        "conversations",
-                        conversationId
-                    ),
-                    {
-                        handoffAvailable: true,
-                        updatedAt: serverTimestamp()
-                    },
-                    {
-                        merge: true
-                    }
-                );
-            }
-        } catch (handoffError) {
-            console.error(
-                "TRIPS WONDER HANDOFF PERSIST ERROR:",
-                handoffError
-            );
-        }
-
+        supportNeedsHumanHandoff = false;
     } finally {
         typing?.remove();
 

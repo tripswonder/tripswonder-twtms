@@ -19,6 +19,54 @@ const db = getFirestore();
 const resendApiKey = defineSecret("RESEND_API_KEY");
 const openaiApiKey = defineSecret("OPENAI_API_KEY");
 
+async function getSupportPersonaSettings() {
+  try {
+    const settingsDoc = await db
+        .collection("systemSettings")
+        .doc("general")
+        .get();
+
+    const settings = settingsDoc.exists ?
+      settingsDoc.data() :
+      {};
+
+    const persona =
+      settings.supportPersona &&
+      typeof settings.supportPersona === "object" ?
+        settings.supportPersona :
+        {};
+
+    return {
+      name:
+        String(persona.name || "Spark").trim() ||
+        "Spark",
+      title:
+        String(
+            persona.title ||
+            "Trips Wonder Support",
+        ).trim() ||
+        "Trips Wonder Support",
+      meaning:
+        String(
+            persona.meaning ||
+            "Support for Planning Adventures, Reservations & Knowledge",
+        ).trim() ||
+        "Support for Planning Adventures, Reservations & Knowledge",
+    };
+  } catch (error) {
+    console.warn(
+        "Unable to load support persona settings:",
+        error,
+    );
+
+    return {
+      name: "Spark",
+      title: "Trips Wonder Support",
+      meaning:
+        "Support for Planning Adventures, Reservations & Knowledge",
+    };
+  }
+}
 
 // ======================================================
 // VERIFY USER ACCESS
@@ -122,7 +170,6 @@ async function verifyAccess(
   );
 }
 
-
 // ======================================================
 // VERIFY OWNER
 // ======================================================
@@ -181,7 +228,6 @@ async function verifyOwner(request) {
   };
 }
 
-
 // ======================================================
 // CREATE ADMIN ACCOUNT
 // ======================================================
@@ -205,7 +251,6 @@ exports.createAdminAccount = onCall(
       const owner =
       await verifyOwner(request);
 
-
       // ==================================================
       // GET REQUEST DATA
       // ==================================================
@@ -216,7 +261,6 @@ exports.createAdminAccount = onCall(
         password,
         permissions,
       } = request.data || {};
-
 
       // ==================================================
       // VALIDATION
@@ -233,20 +277,16 @@ exports.createAdminAccount = onCall(
         );
       }
 
-
       const cleanName =
       String(name).trim();
-
 
       const cleanEmail =
       String(email)
           .trim()
           .toLowerCase();
 
-
       const cleanPassword =
       String(password);
-
 
       // ==================================================
       // VALIDATE NAME
@@ -259,7 +299,6 @@ exports.createAdminAccount = onCall(
         );
       }
 
-
       // ==================================================
       // VALIDATE PASSWORD
       // ==================================================
@@ -270,7 +309,6 @@ exports.createAdminAccount = onCall(
             "Password must be at least 6 characters.",
         );
       }
-
 
       // ==================================================
       // VALIDATE EMAIL
@@ -287,7 +325,6 @@ exports.createAdminAccount = onCall(
         );
       }
 
-
       // ==================================================
       // ALLOWED TASK PERMISSIONS
       // ==================================================
@@ -303,7 +340,6 @@ exports.createAdminAccount = onCall(
         "reports",
       ];
 
-
       // ==================================================
       // NORMALIZE PERMISSIONS
       // ==================================================
@@ -314,9 +350,7 @@ exports.createAdminAccount = onCall(
         permissions :
         {};
 
-
       const cleanPermissions = {};
-
 
       for (
         const permission of allowedPermissions
@@ -324,7 +358,6 @@ exports.createAdminAccount = onCall(
         cleanPermissions[permission] =
         submittedPermissions[permission] === true;
       }
-
 
       // ==================================================
       // AT LEAST ONE ACCESS REQUIRED
@@ -337,14 +370,12 @@ exports.createAdminAccount = onCall(
           (value) => value === true,
       );
 
-
       if (!hasPermission) {
         throw new HttpsError(
             "invalid-argument",
             "At least one task access permission is required.",
         );
       }
-
 
       // ==================================================
       // SPLIT ADMIN NAME
@@ -353,22 +384,18 @@ exports.createAdminAccount = onCall(
       const nameParts =
       cleanName.split(/\s+/);
 
-
       const firstName =
       nameParts.shift() ||
       cleanName;
 
-
       const lastName =
       nameParts.join(" ");
-
 
       // ==================================================
       // CREATE USER VARIABLE
       // ==================================================
 
       let newUser = null;
-
 
       try {
         // ==================================================
@@ -381,7 +408,6 @@ exports.createAdminAccount = onCall(
         password: cleanPassword,
         displayName: cleanName,
       });
-
 
         // ==================================================
         // CREATE FIRESTORE USER PROFILE
@@ -412,7 +438,6 @@ exports.createAdminAccount = onCall(
           owner.uid,
             });
 
-
         // ==================================================
         // SUCCESS
         // ==================================================
@@ -423,7 +448,6 @@ exports.createAdminAccount = onCall(
             "by owner:",
             owner.uid,
         );
-
 
         return {
           success: true,
@@ -456,7 +480,6 @@ exports.createAdminAccount = onCall(
             error,
         );
 
-
         // ==================================================
         // CLEANUP AUTH ACCOUNT
         //
@@ -477,7 +500,6 @@ exports.createAdminAccount = onCall(
             );
           }
         }
-
 
         // ==================================================
         // DUPLICATE EMAIL
@@ -539,7 +561,6 @@ exports.updateAdminAccount = onCall(
       const owner =
         await verifyOwner(request);
 
-
       // ==================================================
       // REQUEST DATA
       // ==================================================
@@ -553,7 +574,6 @@ exports.updateAdminAccount = onCall(
         permissions,
       } = request.data || {};
 
-
       // ==================================================
       // REQUIRED UID
       // ==================================================
@@ -565,10 +585,8 @@ exports.updateAdminAccount = onCall(
         );
       }
 
-
       const cleanUid =
         String(uid).trim();
-
 
       // ==================================================
       // PREVENT OWNER SELF-EDIT THROUGH PAGE ACCESS
@@ -581,7 +599,6 @@ exports.updateAdminAccount = onCall(
         );
       }
 
-
       // ==================================================
       // LOAD TARGET USER
       // ==================================================
@@ -591,10 +608,8 @@ exports.updateAdminAccount = onCall(
             .collection("users")
             .doc(cleanUid);
 
-
       const adminDoc =
         await adminRef.get();
-
 
       if (!adminDoc.exists) {
         throw new HttpsError(
@@ -603,10 +618,8 @@ exports.updateAdminAccount = onCall(
         );
       }
 
-
       const existingAdmin =
         adminDoc.data();
-
 
       // ==================================================
       // TARGET MUST BE ADMIN
@@ -623,7 +636,6 @@ exports.updateAdminAccount = onCall(
         );
       }
 
-
       // ==================================================
       // CLEAN NAME
       // ==================================================
@@ -631,10 +643,8 @@ exports.updateAdminAccount = onCall(
       const cleanFirstName =
         String(firstName || "").trim();
 
-
       const cleanLastName =
         String(lastName || "").trim();
-
 
       if (!cleanFirstName) {
         throw new HttpsError(
@@ -643,14 +653,12 @@ exports.updateAdminAccount = onCall(
         );
       }
 
-
       if (!cleanLastName) {
         throw new HttpsError(
             "invalid-argument",
             "Last name is required.",
         );
       }
-
 
       // ==================================================
       // CLEAN PHONE
@@ -660,7 +668,6 @@ exports.updateAdminAccount = onCall(
         phone ?
           String(phone).trim() :
           "";
-
 
       // ==================================================
       // VALIDATE STATUS
@@ -673,12 +680,10 @@ exports.updateAdminAccount = onCall(
             .trim()
             .toLowerCase();
 
-
       const allowedStatuses = [
         "active",
         "inactive",
       ];
-
 
       if (
         !allowedStatuses.includes(
@@ -690,7 +695,6 @@ exports.updateAdminAccount = onCall(
             "Invalid administrator account status.",
         );
       }
-
 
       // ==================================================
       // ALLOWED ADMIN MODULES
@@ -716,7 +720,6 @@ exports.updateAdminAccount = onCall(
         "reports",
       ];
 
-
       // ==================================================
       // NORMALIZE PERMISSIONS
       // ==================================================
@@ -727,9 +730,7 @@ exports.updateAdminAccount = onCall(
           permissions :
           {};
 
-
       const cleanPermissions = {};
-
 
       for (
         const permission of allowedPermissions
@@ -737,7 +738,6 @@ exports.updateAdminAccount = onCall(
         cleanPermissions[permission] =
           submittedPermissions[permission] === true;
       }
-
 
       // ==================================================
       // REQUIRE AT LEAST ONE MODULE
@@ -750,14 +750,12 @@ exports.updateAdminAccount = onCall(
             (value) => value === true,
         );
 
-
       if (!hasPermission) {
         throw new HttpsError(
             "invalid-argument",
             "At least one module access permission is required.",
         );
       }
-
 
       // ==================================================
       // DISPLAY NAME
@@ -767,7 +765,6 @@ exports.updateAdminAccount = onCall(
         `${cleanFirstName} ${cleanLastName}`
             .trim();
 
-
       try {
         // ==================================================
         // VERIFY AUTH ACCOUNT EXISTS
@@ -776,7 +773,6 @@ exports.updateAdminAccount = onCall(
         await auth.getUser(
             cleanUid,
         );
-
 
         // ==================================================
         // UPDATE FIREBASE AUTH
@@ -790,7 +786,6 @@ exports.updateAdminAccount = onCall(
                 cleanStatus === "inactive",
             },
         );
-
 
         // ==================================================
         // UPDATE FIRESTORE PROFILE
@@ -824,7 +819,6 @@ exports.updateAdminAccount = onCall(
 
         });
 
-
         // ==================================================
         // SUCCESS
         // ==================================================
@@ -835,7 +829,6 @@ exports.updateAdminAccount = onCall(
             "by owner:",
             owner.uid,
         );
-
 
         return {
 
@@ -867,7 +860,6 @@ exports.updateAdminAccount = onCall(
             error,
         );
 
-
         // ==================================================
         // AUTH USER NOT FOUND
         // ==================================================
@@ -882,7 +874,6 @@ exports.updateAdminAccount = onCall(
           );
         }
 
-
         // ==================================================
         // PRESERVE HTTPS ERRORS
         // ==================================================
@@ -892,7 +883,6 @@ exports.updateAdminAccount = onCall(
         ) {
           throw error;
         }
-
 
         // ==================================================
         // GENERAL ERROR
@@ -927,7 +917,6 @@ exports.createClientAccount = onCall(
           "customers",
       );
 
-
       // ==================================================
       // GET REQUEST DATA
       // ==================================================
@@ -939,7 +928,6 @@ exports.createClientAccount = onCall(
         lastName,
         phone,
       } = request.data || {};
-
 
       // ==================================================
       // VALIDATION
@@ -957,7 +945,6 @@ exports.createClientAccount = onCall(
         );
       }
 
-
       // ==================================================
       // CLEAN DATA
       // ==================================================
@@ -967,24 +954,19 @@ exports.createClientAccount = onCall(
           .trim()
           .toLowerCase();
 
-
       const cleanPassword =
       String(password);
-
 
       const cleanFirstName =
       String(firstName).trim();
 
-
       const cleanLastName =
       String(lastName).trim();
-
 
       const cleanPhone =
       phone ?
         String(phone).trim() :
         "";
-
 
       // ==================================================
       // PASSWORD VALIDATION
@@ -997,13 +979,11 @@ exports.createClientAccount = onCall(
         );
       }
 
-
       // ==================================================
       // CREATE USER VARIABLE
       // ==================================================
 
       let newUser = null;
-
 
       try {
       // ================================================
@@ -1020,7 +1000,6 @@ exports.createClientAccount = onCall(
           displayName:
             `${cleanFirstName} ${cleanLastName}`,
         });
-
 
         // ================================================
         // CREATE FIRESTORE USER PROFILE
@@ -1060,7 +1039,6 @@ exports.createClientAccount = onCall(
 
             });
 
-
         // ================================================
         // SUCCESS
         // ================================================
@@ -1071,7 +1049,6 @@ exports.createClientAccount = onCall(
             "by:",
             request.auth.uid,
         );
-
 
         return {
 
@@ -1095,7 +1072,6 @@ exports.createClientAccount = onCall(
             error,
         );
 
-
         // ================================================
         // CLEANUP AUTH ACCOUNT
         //
@@ -1116,7 +1092,6 @@ exports.createClientAccount = onCall(
           }
         }
 
-
         // ================================================
         // DUPLICATE EMAIL
         // ================================================
@@ -1130,7 +1105,6 @@ exports.createClientAccount = onCall(
               "An account with this email already exists.",
           );
         }
-
 
         // ================================================
         // GENERAL ERROR
@@ -2181,7 +2155,6 @@ exports.notifyCustomerOnBookingUpdate = onDocumentUpdated(
     },
 );
 
-
 // ======================================================
 // EXACT CUSTOMER MEMBER SEARCH
 // ======================================================
@@ -2772,7 +2745,6 @@ exports.sendClientVerificationEmail = onCall(
 // customers can verify their email later from Profile.
 // ======================================================
 
-
 /**
  * Normalizes a customer email address.
  *
@@ -2785,7 +2757,6 @@ function normalizeCustomerEmail(value) {
       .toLowerCase();
 }
 
-
 /**
  * Validates an email address.
  *
@@ -2795,7 +2766,6 @@ function normalizeCustomerEmail(value) {
 function isValidCustomerEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
-
 
 /**
  * Splits the booking customer name into first and last name.
@@ -2823,7 +2793,6 @@ function splitBookingCustomerName(value) {
   };
 }
 
-
 /**
  * Returns a Firebase Auth user by email, or null.
  *
@@ -2841,7 +2810,6 @@ async function getAuthUserByEmailOrNull(email) {
     throw error;
   }
 }
-
 
 /**
  * Loads and validates the booking used for an account action.
@@ -2915,7 +2883,6 @@ async function getBookingForAccountAction(
   };
 }
 
-
 // ======================================================
 // CHECK BOOKING ACCOUNT STATUS
 // ======================================================
@@ -2972,7 +2939,6 @@ exports.checkBookingAccount = onCall(
       };
     },
 );
-
 
 // ======================================================
 // CREATE ACCOUNT FROM GUEST BOOKING
@@ -3223,7 +3189,6 @@ exports.createAccountFromBooking = onCall(
       }
     },
 );
-
 
 // ======================================================
 // SEND EXISTING-ACCOUNT BOOKING CONNECTION EMAIL
@@ -3526,7 +3491,6 @@ exports.sendBookingConnectEmail = onCall(
     },
 );
 
-
 // ======================================================
 // FINALIZE EXISTING-ACCOUNT BOOKING CONNECTION
 // ======================================================
@@ -3752,7 +3716,7 @@ function getSupportMessageRole(data) {
     return "Trips Wonder Team";
   }
 
-  return "Travel Consultant Support";
+  return "Support Consultant";
 }
 
 function parseTripsWonderSupportDecision(rawText) {
@@ -3843,6 +3807,87 @@ function parseTripsWonderSupportDecision(rawText) {
     status: "needs_human",
     reply: reply,
     handoffBrief: handoffBrief,
+  };
+}
+
+async function activateServerSideSupportHandoff(
+    conversationRef,
+    customerQuestion,
+    handoffBrief
+) {
+  const supportPersona =
+    await getSupportPersonaSettings();
+
+  const cleanQuestion =
+    cleanSupportText(customerQuestion, 500) ||
+    "Customer requested help from Trips Wonder Support.";
+
+  const brief = handoffBrief || {};
+
+  const finalBrief = {
+    clientQuestion:
+      cleanSupportText(brief.clientQuestion, 500) ||
+      cleanQuestion,
+    needsAdminCheck:
+      cleanSupportText(brief.needsAdminCheck, 300) ||
+      "Customer needs a Trips Wonder team member to verify this request.",
+    currentSystemStatus:
+      cleanSupportText(brief.currentSystemStatus, 700) ||
+      "Travel Consultant could not safely verify the requested information.",
+    adminActionNeeded:
+      cleanSupportText(brief.adminActionNeeded, 500) ||
+      "Review the customer's latest question and verify the required information in TWTMS.",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  };
+
+  const holdingReply =
+    "Let me verify that for you po. One moment please.";
+
+  const conversationDoc = await conversationRef.get();
+  const current = conversationDoc.exists ?
+    conversationDoc.data() :
+    {};
+
+  const unreadCustomer =
+    Number(current.unreadCustomer || 0) + 1;
+
+  const batch = db.batch();
+  const replyRef = conversationRef
+      .collection("messages")
+      .doc();
+
+  batch.set(replyRef, {
+    senderRole: "support",
+    senderName: supportPersona.name,
+    text: holdingReply,
+    createdAt: new Date(),
+  });
+
+  batch.set(
+      conversationRef,
+      {
+        status: "open",
+        supportMode: "human",
+        supportStatus: "active",
+        handoffAvailable: false,
+        handoffRequested: true,
+        handoffRequestedAt: new Date(),
+        handoffBrief: finalBrief,
+        lastMessage: holdingReply,
+        lastMessageAt: new Date(),
+        lastSenderRole: "support",
+        unreadCustomer: unreadCustomer,
+        updatedAt: new Date(),
+      },
+      {merge: true},
+  );
+
+  await batch.commit();
+
+  return {
+    holdingReply: holdingReply,
+    handoffBrief: finalBrief,
   };
 }
 
@@ -4060,6 +4105,9 @@ exports.askTripsWonderSupport = onCall(
           apiKey: openaiApiKey.value(),
         });
 
+        const supportPersona =
+          await getSupportPersonaSettings();
+
         // ===============================================
         // ASK TRAVEL CONSULTANT SUPPORT
         // ===============================================
@@ -4069,7 +4117,7 @@ exports.askTripsWonderSupport = onCall(
             model: "gpt-5-mini",
 
             instructions: `
-You are Travel Consultant Support for Trips Wonder Travel and Tours.
+You are ${supportPersona.name}, the ${supportPersona.title} consultant for Trips Wonder Travel and Tours.
 
 Your purpose is to answer customers using the LIVE TWTMS data supplied to you.
 The TWTMS package data is the operational source of truth for package-specific
@@ -4097,6 +4145,8 @@ IMPORTANT RULES:
    the supplied TWTMS data, return status "needs_human". Examples include a
    room/slot whose remaining availability is not represented, a schedule that
    requires manual confirmation, or capacity that an admin may need to reopen.
+   The handoff is INTERNAL. Do not tell the customer that they are being
+   transferred, handed off, or connected to another person.
 10. Do NOT use needs_human merely because the customer asks a normal question.
     Use it only when a specific required fact cannot be safely verified.
 11. When needs_human is required, create a SHORT operational handoff brief.
@@ -4125,7 +4175,7 @@ For a normal answer:
 For a required human check:
 {
   "status": "needs_human",
-  "reply": "short customer-facing message explaining that the Trips Wonder team needs to verify this",
+  "reply": "short natural holding message, for example: Let me verify that for you po. One moment please.",
   "handoffBrief": {
     "clientQuestion": "current question only",
     "needsAdminCheck": "specific operational item",
@@ -4160,37 +4210,26 @@ ${message}
         // ===============================================
 
         if (decision.status === "needs_human") {
-          await conversationRef.set(
-              {
-                handoffAvailable: true,
-                handoffBrief: {
-                  clientQuestion:
-                    decision.handoffBrief.clientQuestion,
-                  needsAdminCheck:
-                    decision.handoffBrief.needsAdminCheck,
-                  currentSystemStatus:
-                    decision.handoffBrief.currentSystemStatus,
-                  adminActionNeeded:
-                    decision.handoffBrief.adminActionNeeded,
-                  createdAt: new Date(),
-                },
-                updatedAt: new Date(),
-              },
-              {merge: true},
-          );
+          const handoff =
+            await activateServerSideSupportHandoff(
+                conversationRef,
+                message,
+                decision.handoffBrief,
+            );
 
           return {
             success: true,
             status: "needs_human",
             needsHuman: true,
-            reply: decision.reply,
-            handoffBrief: decision.handoffBrief,
+            reply: handoff.holdingReply,
+            handoffBrief: handoff.handoffBrief,
           };
         }
 
         await conversationRef.set(
             {
               handoffAvailable: false,
+                handoffRequested: false,
               handoffBrief: null,
               updatedAt: new Date(),
             },
@@ -4214,11 +4253,37 @@ ${message}
           throw error;
         }
 
-        throw new HttpsError(
-            "internal",
-            "Trips Wonder Support is temporarily unavailable.",
-        );
+        /*
+         * OpenAI/API/service failures must not leave the customer waiting
+         * without acknowledgement. The server creates the same internal
+         * Human Support handoff and persists the holding reply.
+         */
+        try {
+          const handoff =
+            await activateServerSideSupportHandoff(
+                conversationRef,
+                message,
+                null,
+            );
+
+          return {
+            success: true,
+            status: "needs_human",
+            needsHuman: true,
+            reply: handoff.holdingReply,
+            handoffBrief: handoff.handoffBrief,
+          };
+        } catch (handoffError) {
+          console.error(
+              "Trips Wonder server-side handoff error:",
+              handoffError,
+          );
+
+          throw new HttpsError(
+              "internal",
+              "Trips Wonder Support is temporarily unavailable.",
+          );
+        }
       }
     },
 );
-
