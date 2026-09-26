@@ -1,217 +1,467 @@
 <!DOCTYPE html>
+
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Messages | Trips Wonder Admin</title>
 
+
+
     <link rel="stylesheet" href="../../assets/css/shared/variables.css">
+
     <link rel="stylesheet" href="../../assets/css/shared/global.css">
+
     <link rel="stylesheet" href="../../assets/css/admin/messages.css">
+
     <link rel="stylesheet" href="../../assets/css/shared/admin-nav.css">
 
+
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
+
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
 </head>
+
+
 
 <body class="twtms-page-loading admin-shared-nav-page">
 
+
+
 <div class="admin-wrapper">
+
     <aside id="adminSidebar" class="admin-sidebar"></aside>
 
+
+
     <main class="main messages-main">
+
         <div class="messages-page">
+
+
 
             <section class="messages-workspace">
 
+
+
                 <aside class="conversation-panel">
+
                     <div class="conversation-panel-head">
+
                         <div class="conversation-title-row">
+
                             <div>
+
                                 <h2>Messages</h2>
+
                                 <span id="conversationCount">0 conversations</span>
+
                             </div>
+
                             <span class="unread-total" id="adminUnreadTotal">0</span>
+
                         </div>
+
+
 
                         <label class="conversation-search">
+
                             <i class="fa-solid fa-magnifying-glass"></i>
+
                             <input id="conversationSearch" type="search" placeholder="Search customer...">
+
                         </label>
 
+
+
                         <div class="conversation-filters" id="conversationFilters">
+
                             <button type="button" class="filter-btn active" data-filter="all">All</button>
+
                             <button type="button" class="filter-btn" data-filter="unread">Unread</button>
+
                             <button type="button" class="filter-btn" data-filter="booking">Booking</button>
+
                             <button type="button" class="filter-btn" data-filter="inquiry">Inquiry</button>
+
                         </div>
+
                     </div>
+
+
 
                     <div class="conversation-list" id="conversationList">
+
                         <div class="panel-state">
+
                             <i class="fa-regular fa-comments"></i>
+
                             <strong>Loading conversations...</strong>
+
                         </div>
+
                     </div>
+
                 </aside>
 
+
+
                 <section class="chat-panel">
+
                     <div class="empty-chat" id="emptyChat">
+
                         <div class="empty-chat-icon">
+
                             <i class="fa-regular fa-comments"></i>
+
                         </div>
+
                         <h2>Select a conversation</h2>
+
                         <p>Choose a customer from the inbox to view and reply.</p>
+
                     </div>
 
+
+
                     <div class="active-chat" id="activeChat" hidden>
+
                         <header class="chat-header">
+
                             <div class="chat-customer">
+
                                 <div class="customer-avatar" id="chatAvatar">TW</div>
+
                                 <div>
+
                                     <h2 id="chatCustomerName">Customer</h2>
+
                                     <p id="chatCustomerMeta">Trips Wonder customer</p>
+
                                 </div>
+
                             </div>
 
+
+
                             <button type="button" class="mobile-details-btn" id="mobileDetailsButton" aria-label="Customer details">
+
                                 <i class="fa-solid fa-circle-info"></i>
+
                             </button>
+
                         </header>
+
+
 
                         <div class="message-stream" id="messageStream"></div>
 
+
+
                         <form class="message-composer" id="adminMessageForm">
-                            <textarea
+
+
+
+                            <button
+
+                                type="button"
+
+                                class="saved-reply-btn"
+
+                                id="adminGreetingButton"
+
+                                hidden>
+
+                                <i class="fa-solid fa-headset"></i>
+
+                                Accept Support
+
+                            </button>
+
+
+
+                            <div class="saved-replies-wrap" id="savedRepliesWrap" hidden>
+    <button type="button" class="saved-replies-trigger" id="savedRepliesButton" aria-expanded="false" aria-label="Saved replies"><i class="fa-regular fa-message"></i><span>Saved Replies</span></button>
+    <section class="saved-replies-menu" id="savedRepliesMenu" hidden aria-label="Saved Replies">
+        <div class="saved-replies-header"><strong>Saved Replies</strong><button type="button" class="saved-replies-add" id="savedReplyAddButton"><i class="fa-solid fa-plus"></i> Add New</button></div>
+        <div class="saved-replies-tools">
+            <label class="saved-replies-search"><i class="fa-solid fa-magnifying-glass"></i><input id="savedRepliesSearch" type="search" placeholder="Search saved replies..."></label>
+            <select id="savedRepliesSort" class="saved-replies-sort" aria-label="Sort saved replies"><option value="frequent">Frequently Used</option><option value="recent">Recently Updated</option><option value="az">A–Z</option></select>
+        </div>
+        <div class="saved-replies-list" id="savedRepliesList"></div><div class="saved-replies-empty" id="savedRepliesEmpty" hidden>No saved replies found.</div>
+    </section>
+</div>
+
+<textarea
+
                                 id="adminMessageInput"
+
                                 rows="1"
+
                                 maxlength="2000"
+
                                 placeholder="Type a message..."
+
                                 required></textarea>
 
+
+
                             <button type="submit" id="adminSendButton" aria-label="Send message">
+
                                 <i class="fa-solid fa-paper-plane"></i>
+
                             </button>
+
                         </form>
+
                     </div>
+
                 </section>
 
+
+
                 <aside class="customer-details-panel" id="customerDetailsPanel">
+
                     <div class="details-empty" id="detailsEmpty">
+
                         <i class="fa-regular fa-user"></i>
+
                         <p>Customer details will appear here.</p>
+
                     </div>
+
+
 
                     <div id="detailsContent" hidden>
+
                         <div class="details-profile">
+
                             <div class="details-avatar" id="detailsAvatar">TW</div>
+
                             <h3 id="detailsName">Customer</h3>
+
                             <p id="detailsEmail">—</p>
+
                         </div>
 
+
+
                         <div class="details-card">
+
                             <span>Contact</span>
+
                             <strong id="detailsContact">—</strong>
+
                         </div>
 
+
+
                         <div class="details-card">
+
                             <span>Conversation Type</span>
+
                             <strong id="detailsType">Inquiry</strong>
+
                         </div>
 
+
+
                         <div class="details-card">
+
                             <span>Booking</span>
+
                             <strong id="detailsBooking">No linked booking</strong>
+
                         </div>
 
+
+
                         <div class="details-card">
+
                             <span>Travel Date</span>
+
                             <strong id="detailsTravelDate">—</strong>
+
                         </div>
+
+
 
                         <div class="details-actions">
+
                             <button type="button" id="viewCustomerButton">
+
                                 <i class="fa-regular fa-user"></i>
+
                                 View Customer
+
                             </button>
+
                             <button type="button" id="viewBookingButton">
+
                                 <i class="fa-solid fa-suitcase"></i>
+
                                 View Booking
+
                             </button>
+
                         </div>
+
                         <div class="support-management">
+
     <div class="support-management-header">
+
         <div>
+
             <span class="support-management-label">Support Management</span>
+
             <h4 id="supportPersonaLabel">Spark Trips Wonder Support</h4>
+
         </div>
+
+
 
         <span class="support-mode-badge" id="supportModeBadge">
+
             Online
+
         </span>
+
     </div>
+
+
 
     <div class="support-assignment" id="supportAssignment" hidden>
+
         <span>Assigned Support</span>
+
         <strong id="supportAssignedAdmin">Travel Consultant Support</strong>
+
     </div>
+
+
 
     <div class="support-summary handoff-brief">
+
         <div class="support-summary-header">
+
             <div>
+
                 <h5>Handoff Brief</h5>
+
                 <span id="handoffBriefUpdated">No active handoff</span>
+
             </div>
+
         </div>
 
+
+
         <div id="handoffBriefDetails" hidden>
+
     <div class="support-summary-item">
+
         <span>Client Question</span>
+
         <p id="handoffClientQuestion">—</p>
+
     </div>
 
+
+
     <div class="support-summary-item">
+
         <span>Needs Admin Check</span>
+
         <p id="handoffNeedsCheck">—</p>
+
     </div>
 
+
+
     <div class="support-summary-item">
+
         <span>Current System Status</span>
+
         <p id="handoffSystemStatus">—</p>
+
     </div>
 
+
+
     <div class="support-summary-item">
+
         <span>Admin Action Needed</span>
+
         <p id="handoffAdminAction">—</p>
+
     </div>
+
 </div>
+
+
 
     <button
+
         type="button"
+
         class="return-support-btn"
+
         id="returnToSupportButton"
+
         hidden>
+
         <i class="fa-solid fa-arrow-rotate-left"></i>
+
         Return to Support
+
     </button>
 
+
+
     <p class="support-action-note" id="supportActionNote" hidden>
+
     Support will resume this conversation using the latest TWTMS data.
+
 </p>
 
+
+
 </div>
+
                     </div>
+
                 </aside>
+
+
 
             </section>
 
+
+
         </div>
+
     </main>
+
 </div>
 
+
+
+<div class="saved-reply-modal" id="savedReplyModal" hidden><div class="saved-reply-modal-backdrop" data-close-saved-reply-modal></div><section class="saved-reply-dialog" role="dialog" aria-modal="true" aria-labelledby="savedReplyModalTitle"><div class="saved-reply-dialog-head"><div><span>Trips Wonder Support</span><h3 id="savedReplyModalTitle">Add Saved Reply</h3></div><button type="button" class="saved-reply-modal-close" id="savedReplyModalClose" aria-label="Close"><i class="fa-solid fa-xmark"></i></button></div><form id="savedReplyForm" class="saved-reply-form"><input type="hidden" id="savedReplyId"><label><span>Title</span><input id="savedReplyTitle" type="text" maxlength="80" placeholder="e.g. Checking Availability" required></label><label><span>Reply Message</span><textarea id="savedReplyText" rows="6" maxlength="2000" placeholder="Type the saved reply..." required></textarea></label><div class="saved-reply-form-actions"><button type="button" class="saved-reply-delete" id="savedReplyDelete" hidden>Delete</button><span></span><button type="button" class="saved-reply-cancel" id="savedReplyCancel">Cancel</button><button type="submit" class="saved-reply-save" id="savedReplySave">Save Reply</button></div></form></section></div>
+
 <script type="module" src="../../assets/js/admin/messages.js"></script>
+
 <script type="module" src="../../assets/js/shared/admin-nav.js"></script>
+
 </body>
+
 </html>
