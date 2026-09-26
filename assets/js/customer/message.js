@@ -2997,23 +2997,75 @@ async function talkToTripsWonderTeam() {
                 : {};
 
         /*
-         * The backend already created the focused handoffBrief.
-         * Do not rebuild a growing conversation summary here.
-         * The admin only needs the unresolved operational check.
+         * Prefer the focused handoffBrief created by the backend.
+         * If the automated support request failed before the backend
+         * could create one, create a small fallback brief from the
+         * latest customer question. Never rebuild the old growing
+         * supportSummary.
          */
+        const existingBrief =
+            currentConversation?.handoffBrief || {};
+
+        const hasExistingBrief =
+            Boolean(
+                cleanTripsWonderSummaryText(
+                    existingBrief?.clientQuestion
+                ) ||
+                cleanTripsWonderSummaryText(
+                    existingBrief?.needsAdminCheck
+                ) ||
+                cleanTripsWonderSummaryText(
+                    existingBrief?.currentSystemStatus
+                ) ||
+                cleanTripsWonderSummaryText(
+                    existingBrief?.adminActionNeeded
+                )
+            );
+
+        const latestCustomerMessage =
+            [...(supportHumanMessages || [])]
+                .reverse()
+                .find(message =>
+                    String(message?.senderRole || "")
+                        .trim()
+                        .toLowerCase() === "customer" &&
+                    cleanTripsWonderSummaryText(message?.text)
+                );
+
+        const latestCustomerQuestion =
+            cleanTripsWonderSummaryText(
+                latestCustomerMessage?.text ||
+                currentConversation?.lastMessage ||
+                "Customer requested help from the Trips Wonder team."
+            );
+
+        const handoffData = {
+            status: "open",
+            supportMode: "human",
+            supportStatus: "active",
+            handoffAvailable: false,
+            handoffRequested: true,
+            handoffRequestedAt: serverTimestamp(),
+            updatedAt: serverTimestamp()
+        };
+
+        if (!hasExistingBrief) {
+            handoffData.handoffBrief = {
+                clientQuestion: latestCustomerQuestion,
+                needsAdminCheck:
+                    "Customer requested assistance from the Trips Wonder team.",
+                currentSystemStatus:
+                    "Travel Consultant could not verify the requested information.",
+                adminActionNeeded:
+                    "Review the customer's latest question and verify the required information in TWTMS.",
+                createdAt: serverTimestamp(),
+                updatedAt: serverTimestamp()
+            };
+        }
+
         await setDoc(
             conversationRef,
-            {
-                status: "open",
-                supportMode: "human",
-                supportStatus: "active",
-                handoffAvailable: false,
-                handoffRequested: true,
-                handoffRequestedAt:
-                    serverTimestamp(),
-                updatedAt:
-                    serverTimestamp()
-            },
+            handoffData,
             {
                 merge: true
             }
