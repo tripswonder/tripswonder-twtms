@@ -5552,8 +5552,12 @@ function showMemberInbox() {
 memberMessageTrigger?.addEventListener("click", event => {
     event.preventDefault();
     event.stopPropagation();
-    if (memberMessengerPanel?.hidden) openMemberMessenger();
-    else closeMemberMessenger();
+
+    if (!requireCustomerLogin()) {
+        return;
+    }
+
+    window.location.href = "message.html";
 });
 
 memberMessengerPanel?.addEventListener("click", event => event.stopPropagation());
