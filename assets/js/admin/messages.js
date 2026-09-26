@@ -264,6 +264,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         supportAssignedAdmin: $("supportAssignedAdmin"),
         handoffBriefUpdated: $("handoffBriefUpdated"),
+        handoffBriefDetails: $("handoffBriefDetails"),
         handoffClientQuestion: $("handoffClientQuestion"),
         handoffNeedsCheck: $("handoffNeedsCheck"),
         handoffSystemStatus: $("handoffSystemStatus"),
@@ -1602,35 +1603,71 @@ function renderSupportManagement(c) {
     }
 
     el.supportModeBadge.textContent = label;
-    el.supportModeBadge.className = `support-mode-badge ${badgeClass}`;
+    el.supportModeBadge.className =
+        `support-mode-badge ${badgeClass}`;
 
-    const assignedName = String(c.assignedAdminName || "").trim();
+    const assignedName =
+        String(c.assignedAdminName || "").trim();
+
     el.supportAssignment.hidden = !assignedName;
-    el.supportAssignedAdmin.textContent = assignedName || "—";
+    el.supportAssignedAdmin.textContent =
+        assignedName || "—";
 
-    el.handoffClientQuestion.textContent =
-        brief.clientQuestion || "No active handoff.";
+    // =========================================
+    // HANDOFF BRIEF
+    // =========================================
 
-    el.handoffNeedsCheck.textContent =
-        brief.needsAdminCheck || "—";
+    const hasActiveBrief = Boolean(
+        brief.clientQuestion ||
+        brief.needsAdminCheck ||
+        brief.currentSystemStatus ||
+        brief.adminActionNeeded
+    );
 
-    el.handoffSystemStatus.textContent =
-        brief.currentSystemStatus || "—";
+    if (el.handoffBriefDetails) {
+        el.handoffBriefDetails.hidden = !hasActiveBrief;
+    }
 
-    el.handoffAdminAction.textContent =
-        brief.adminActionNeeded || "—";
+    if (hasActiveBrief) {
+        el.handoffClientQuestion.textContent =
+            brief.clientQuestion || "—";
 
-    el.handoffBriefUpdated.textContent =
-        brief.updatedAt
-            ? `Updated ${formatRelative(brief.updatedAt)}`
-            : "No active handoff";
+        el.handoffNeedsCheck.textContent =
+            brief.needsAdminCheck || "—";
+
+        el.handoffSystemStatus.textContent =
+            brief.currentSystemStatus || "—";
+
+        el.handoffAdminAction.textContent =
+            brief.adminActionNeeded || "—";
+
+        el.handoffBriefUpdated.textContent =
+            brief.updatedAt
+                ? `Updated ${formatRelative(brief.updatedAt)}`
+                : "Active handoff";
+    } else {
+        el.handoffClientQuestion.textContent = "—";
+        el.handoffNeedsCheck.textContent = "—";
+        el.handoffSystemStatus.textContent = "—";
+        el.handoffAdminAction.textContent = "—";
+
+        el.handoffBriefUpdated.textContent =
+            "No active handoff";
+    }
+
+    // =========================================
+    // RETURN TO SUPPORT
+    // =========================================
 
     const canReturn =
         mode === "human" ||
         mode === "needs_support";
 
     el.returnToSupport.hidden = !canReturn;
-    el.supportActionNote.hidden = !canReturn;
+
+    if (el.supportActionNote) {
+        el.supportActionNote.hidden = !canReturn;
+    }
 }
 
 

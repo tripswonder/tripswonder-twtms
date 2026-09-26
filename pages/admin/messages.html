@@ -24,25 +24,13 @@
     <main class="main messages-main">
         <div class="messages-page">
 
-            <header class="messages-page-header">
-                <div>
-                    <h1>Messages</h1>
-                    <p>Manage live customer conversations and inquiries.</p>
-                </div>
-
-                <div class="message-status-pill">
-                    <span class="status-dot"></span>
-                    Live Inbox
-                </div>
-            </header>
-
             <section class="messages-workspace">
 
                 <aside class="conversation-panel">
                     <div class="conversation-panel-head">
                         <div class="conversation-title-row">
                             <div>
-                                <h2>Inbox</h2>
+                                <h2>Messages</h2>
                                 <span id="conversationCount">0 conversations</span>
                             </div>
                             <span class="unread-total" id="adminUnreadTotal">0</span>
@@ -178,26 +166,27 @@
             </div>
         </div>
 
-        <div class="support-summary-item">
-            <span>Client Question</span>
-            <p id="handoffClientQuestion">No active handoff.</p>
-        </div>
-
-        <div class="support-summary-item">
-            <span>Needs Admin Check</span>
-            <p id="handoffNeedsCheck">—</p>
-        </div>
-
-        <div class="support-summary-item">
-            <span>Current System Status</span>
-            <p id="handoffSystemStatus">—</p>
-        </div>
-
-        <div class="support-summary-item">
-            <span>Admin Action Needed</span>
-            <p id="handoffAdminAction">—</p>
-        </div>
+        <div id="handoffBriefDetails" hidden>
+    <div class="support-summary-item">
+        <span>Client Question</span>
+        <p id="handoffClientQuestion">—</p>
     </div>
+
+    <div class="support-summary-item">
+        <span>Needs Admin Check</span>
+        <p id="handoffNeedsCheck">—</p>
+    </div>
+
+    <div class="support-summary-item">
+        <span>Current System Status</span>
+        <p id="handoffSystemStatus">—</p>
+    </div>
+
+    <div class="support-summary-item">
+        <span>Admin Action Needed</span>
+        <p id="handoffAdminAction">—</p>
+    </div>
+</div>
 
     <button
         type="button"
