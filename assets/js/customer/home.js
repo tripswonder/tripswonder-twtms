@@ -1821,6 +1821,10 @@ async function publishCustomerPost() {
 
 function startCustomerPostsListener() {
 
+        if (!currentUser) {
+        return;
+    }
+
     if (customerPostsUnsubscribe) {
         customerPostsUnsubscribe();
     }
@@ -4899,49 +4903,72 @@ function renderCustomerPackages() {
 
 async function loadCustomerBookings() {
 
+    /*
+     * Capture the authenticated user at the start.
+     * This prevents auth-transition issues while
+     * registration is signing the new account out.
+     */
+    const user =
+        currentUser;
+
+    if (
+        !user?.uid ||
+        !user?.email
+    ) {
+
+        customerBookings = [];
+
+        return;
+    }
+
     const email =
         normalizeText(
-            currentUser?.email ||
-            currentProfile?.email ||
-            ""
+            user.email
         );
-
 
     if (!email) {
 
-        customerBookings =
-            [];
+        customerBookings = [];
 
         return;
-
     }
-
 
     console.log(
         "HOME: Loading bookings for:",
         email
     );
 
-
     const customerBookingQuery =
-    query(
-        collection(
-            db,
-            "bookings"
-        ),
-        where(
-            "customerUid",
-            "==",
-            currentUser.uid
-        )
-    );
-
+        query(
+            collection(
+                db,
+                "bookings"
+            ),
+            where(
+                "customerUid",
+                "==",
+                user.uid
+            )
+        );
 
     const snapshot =
         await getDocs(
             customerBookingQuery
         );
 
+    /*
+     * The user may have signed out while
+     * Firestore was processing the request.
+     */
+    if (
+        !currentUser ||
+        currentUser.uid !== user.uid
+    ) {
+
+        customerBookings = [];
+
+        return;
+    }
 
     customerBookings =
         snapshot.docs.map(
@@ -4954,7 +4981,6 @@ async function loadCustomerBookings() {
 
             })
         );
-
 
     console.log(
         "HOME CUSTOMER BOOKINGS:",
@@ -6283,6 +6309,16 @@ onAuthStateChanged(
                 "HOME: Guest visitor mode."
             );
 
+            if (memberConversationUnsubscribe) {
+    memberConversationUnsubscribe();
+    memberConversationUnsubscribe = null;
+}
+
+if (customerPostsUnsubscribe) {
+    customerPostsUnsubscribe();
+    customerPostsUnsubscribe = null;
+}
+
             currentUser = null;
             currentProfile = null;
             customerBookings = [];
@@ -6358,10 +6394,50 @@ onAuthStateChanged(
         "HOME: Customer profile is not ready yet. Waiting for profile creation."
     );
 
-    currentProfile = null;
+    // Registration / social sign-in may still be creating users/{uid}.
+    // Retry briefly instead of treating the authenticated user as invalid.
+    for (let attempt = 1; attempt <= 10; attempt += 1) {
 
-    return;
-}
+        await new Promise(
+            resolve => setTimeout(resolve, 300)
+        );
+
+        // Stop if the authenticated account changed while waiting.
+        if (
+            !auth.currentUser ||
+            auth.currentUser.uid !== user.uid
+        ) {
+            return;
+        }
+
+        currentProfile =
+            await loadCurrentProfile(
+                user
+            );
+
+        if (currentProfile) {
+
+            console.log(
+                "HOME: Customer profile is now ready.",
+                {
+                    uid: user.uid,
+                    attempt
+                }
+            );
+
+            break;
+        }
+    }
+
+    if (!currentProfile) {
+
+        console.warn(
+            "HOME: Customer profile was not created after waiting."
+        );
+
+        return;
+    }
+}   
 
 
             /* Show the actual customer's first name in the Home profile */

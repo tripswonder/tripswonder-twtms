@@ -1779,7 +1779,7 @@ function ensureSharedGuestAuthModal() {
                     </span>
                 </div>
 
-<div id="sharedGuestSignInView">
+<form id="sharedGuestSignInView">
 
                 <label
     class="shared-guest-auth-label"
@@ -1875,9 +1875,9 @@ function ensureSharedGuestAuthModal() {
     </button>
 </div>
 
-</div>
+</form>
 
-<div
+<form
     class="shared-guest-register-form"
     id="sharedGuestRegisterForm"
     hidden
@@ -1981,7 +1981,7 @@ function ensureSharedGuestAuthModal() {
             Sign in
         </button>
     </div>
-</div>
+</form>
 
 <p class="shared-guest-auth-note">
     You can continue browsing and booking as a guest.
@@ -2712,7 +2712,34 @@ async function performSharedGuestRegistration() {
             }
         );
 
-        closeSharedGuestAuthModal();
+        await signOut(auth);
+
+registerForm.hidden = true;
+signInView.hidden = false;
+
+if (authTitle) {
+    authTitle.textContent =
+        "Sign in / register";
+}
+
+if (emailInput) {
+    emailInput.value = email;
+}
+
+if (passwordInput) {
+    passwordInput.value = "";
+}
+
+registerPassword.value = "";
+registerConfirmPassword.value = "";
+
+showSharedGuestAuthError(
+    "Account created successfully. Please sign in to continue."
+);
+
+requestAnimationFrame(() => {
+    passwordInput?.focus();
+});
 
     } catch (error) {
         console.error(
