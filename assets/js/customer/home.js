@@ -6354,14 +6354,14 @@ onAuthStateChanged(
              */
             if (!currentProfile) {
 
-                console.warn(
-                    "HOME: Missing customer profile. Returning to Guest View."
-                );
+    console.warn(
+        "HOME: Customer profile is not ready yet. Waiting for profile creation."
+    );
 
-                await signOut(auth);
-                return;
+    currentProfile = null;
 
-            }
+    return;
+}
 
 
             /* Show the actual customer's first name in the Home profile */

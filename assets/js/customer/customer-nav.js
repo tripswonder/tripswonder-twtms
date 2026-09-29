@@ -13,12 +13,11 @@ import {
     db
 } from "../firebase/firebase-config.js";
 
-import {
-    loginWithFacebook
-} from "../firebase/firebase-auth.js";
 
 import {
     GoogleAuthProvider,
+    createUserWithEmailAndPassword,
+    updateProfile,
     onAuthStateChanged,
     signInWithEmailAndPassword,
     signInWithPopup,
@@ -29,7 +28,7 @@ import {
     collection,
     doc,
     getDoc,
-    onSnapshot,
+    onSnapshot, 
     query,
     serverTimestamp,
     setDoc,
@@ -1389,6 +1388,124 @@ function ensureSharedGuestAuthModal() {
             background: #e2e8f0;
         }
 
+        .shared-guest-register-form {
+    width: 100%;
+}
+
+.shared-guest-register-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.shared-guest-register-form .shared-guest-auth-field {
+    width: 100%;
+    margin-bottom: 14px;
+}
+
+.shared-guest-register-form .shared-guest-auth-field label {
+    display: block;
+    margin-bottom: 7px;
+    color: #0f172a;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.shared-guest-register-form .shared-guest-auth-field input {
+    width: 100%;
+    height: 48px;
+    padding: 0 16px;
+    border: 1px solid #d7e0ec;
+    border-radius: 10px;
+    outline: none;
+    background: #ffffff;
+    color: #0f172a;
+    font: inherit;
+    font-size: 14px;
+    box-sizing: border-box;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.shared-guest-register-form .shared-guest-auth-field input::placeholder {
+    color: #94a3b8;
+}
+
+.shared-guest-register-form .shared-guest-auth-field input:focus {
+    border-color: #176de4;
+    box-shadow: 0 0 0 3px rgba(23, 109, 228, 0.12);
+}
+
+#sharedGuestRegisterSubmit {
+    width: 100%;
+    min-height: 50px;
+    margin-top: 2px;
+    border: 0;
+    border-radius: 10px;
+    background: #176de4;
+    color: #ffffff;
+    font: inherit;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition:
+        transform 0.15s ease,
+        opacity 0.15s ease;
+}
+
+#sharedGuestRegisterSubmit:hover {
+    opacity: 0.94;
+}
+
+#sharedGuestRegisterSubmit:active {
+    transform: translateY(1px);
+}
+
+#sharedGuestRegisterSubmit:disabled {
+    cursor: not-allowed;
+    opacity: 0.65;
+}
+
+@media (max-width: 640px) {
+    .shared-guest-register-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    .shared-guest-register-form .shared-guest-auth-field {
+        margin-bottom: 12px;
+    }
+
+    .shared-guest-register-form .shared-guest-auth-field input {
+        height: 46px;
+    }
+}
+
+        .shared-guest-register-option {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    margin-top: 16px;
+    color: #64748b;
+    font-size: 12px;
+}
+
+.shared-guest-register-link {
+    padding: 0;
+    color: #176de4;
+    background: transparent;
+    border: 0;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.shared-guest-register-link:hover {
+    text-decoration: underline;
+}
+
         .shared-guest-auth-note {
             margin: 20px 0 0;
             color: #718096;
@@ -1662,6 +1779,8 @@ function ensureSharedGuestAuthModal() {
                     </span>
                 </div>
 
+<div id="sharedGuestSignInView">
+
                 <label
     class="shared-guest-auth-label"
     for="sharedGuestAuthEmail"
@@ -1742,21 +1861,133 @@ function ensureSharedGuestAuthModal() {
                     <i class="fa-brands fa-google"></i>
                     <span>Continue with Google</span>
                 </button>
+            
 
-                <button
-                    type="button"
-                    class="shared-guest-auth-social"
-                    id="sharedGuestFacebookSignIn"
-                >
-                    <i class="fa-brands fa-facebook"></i>
-                    <span>Continue with Facebook</span>
-                </button>
+                <div class="shared-guest-register-option">
+    <span>New to Trips Wonder?</span>
 
-                <p class="shared-guest-auth-note">
-                    You can continue browsing and booking as a guest.
-                    Sign in only when you want to access member features
-                    or manage your account.
-                </p>
+    <button
+        type="button"
+        class="shared-guest-register-link"
+        id="sharedGuestCreateAccount"
+    >
+        Create account
+    </button>
+</div>
+
+</div>
+
+<div
+    class="shared-guest-register-form"
+    id="sharedGuestRegisterForm"
+    hidden
+>
+    <div class="shared-guest-register-row">
+        <div class="shared-guest-auth-field">
+            <label for="sharedGuestRegisterFirstName">
+                First Name
+            </label>
+
+            <input
+                type="text"
+                id="sharedGuestRegisterFirstName"
+                placeholder="Enter first name"
+                autocomplete="given-name"
+            >
+        </div>
+
+        <div class="shared-guest-auth-field">
+            <label for="sharedGuestRegisterLastName">
+                Last Name
+            </label>
+
+            <input
+                type="text"
+                id="sharedGuestRegisterLastName"
+                placeholder="Enter last name"
+                autocomplete="family-name"
+            >
+        </div>
+    </div>
+
+    <div class="shared-guest-auth-field">
+        <label for="sharedGuestRegisterEmail">
+            Email address
+        </label>
+
+        <input
+            type="email"
+            id="sharedGuestRegisterEmail"
+            placeholder="Enter your email address"
+            autocomplete="email"
+        >
+    </div>
+
+    <div class="shared-guest-auth-field">
+        <label for="sharedGuestRegisterMobile">
+            Mobile Number
+        </label>
+
+        <input
+            type="tel"
+            id="sharedGuestRegisterMobile"
+            placeholder="09XXXXXXXXX"
+            autocomplete="tel"
+        >
+    </div>
+
+    <div class="shared-guest-auth-field">
+        <label for="sharedGuestRegisterPassword">
+            Password
+        </label>
+
+        <input
+            type="password"
+            id="sharedGuestRegisterPassword"
+            placeholder="Create a password"
+            autocomplete="new-password"
+        >
+    </div>
+
+    <div class="shared-guest-auth-field">
+        <label for="sharedGuestRegisterConfirmPassword">
+            Confirm Password
+        </label>
+
+        <input
+            type="password"
+            id="sharedGuestRegisterConfirmPassword"
+            placeholder="Confirm your password"
+            autocomplete="new-password"
+        >
+    </div>
+
+    <button
+        type="button"
+        class="shared-guest-auth-submit"
+        id="sharedGuestRegisterSubmit"
+    >
+        Create Account
+    </button>
+
+    <div class="shared-guest-register-option">
+        <span>Already have an account?</span>
+
+        <button
+            type="button"
+            class="shared-guest-register-link"
+            id="sharedGuestBackToSignIn"
+        >
+            Sign in
+        </button>
+    </div>
+</div>
+
+<p class="shared-guest-auth-note">
+    You can continue browsing and booking as a guest.
+    Sign in only when you want to access member features
+    or manage your account.
+</p>
             </div>
 
             <div class="shared-guest-auth-right">
@@ -1858,9 +2089,64 @@ const googleSignInButton =
         "#sharedGuestGoogleSignIn"
     );
 
-const facebookSignInButton =
+    const createAccountButton =
     modal.querySelector(
-        "#sharedGuestFacebookSignIn"
+        "#sharedGuestCreateAccount"
+    );
+
+    const signInView =
+    modal.querySelector(
+        "#sharedGuestSignInView"
+    );
+
+const registerForm =
+    modal.querySelector(
+        "#sharedGuestRegisterForm"
+    );
+
+const backToSignInButton =
+    modal.querySelector(
+        "#sharedGuestBackToSignIn"
+    );
+
+const authTitle =
+    modal.querySelector(
+        "#sharedGuestAuthTitle"
+    );
+
+const registerFirstName =
+    modal.querySelector(
+        "#sharedGuestRegisterFirstName"
+    );
+
+const registerLastName =
+    modal.querySelector(
+        "#sharedGuestRegisterLastName"
+    );
+
+const registerEmail =
+    modal.querySelector(
+        "#sharedGuestRegisterEmail"
+    );
+
+const registerMobile =
+    modal.querySelector(
+        "#sharedGuestRegisterMobile"
+    );
+
+const registerPassword =
+    modal.querySelector(
+        "#sharedGuestRegisterPassword"
+    );
+
+const registerConfirmPassword =
+    modal.querySelector(
+        "#sharedGuestRegisterConfirmPassword"
+    );
+
+const registerSubmitButton =
+    modal.querySelector(
+        "#sharedGuestRegisterSubmit"
     );
 
 
@@ -1910,7 +2196,6 @@ passwordToggle?.addEventListener(
     }
 );
 
-
 async function ensureCustomerProfileForSocial(
     user,
     authProvider = "social"
@@ -1923,14 +2208,28 @@ async function ensureCustomerProfileForSocial(
             user.uid
         );
 
+    console.log(
+        "SOCIAL PROFILE READ:",
+        profileReference.path,
+        user.uid,
+        auth.currentUser?.uid
+    );
+
     const profileSnapshot =
         await getDoc(
             profileReference
         );
 
     if (profileSnapshot.exists()) {
+
+        console.log(
+            "SOCIAL PROFILE EXISTS:",
+            profileReference.path
+        );
+
         return profileSnapshot.data() || {};
     }
+
 
     const displayName =
         String(
@@ -1939,33 +2238,67 @@ async function ensureCustomerProfileForSocial(
             "Trips Wonder Member"
         ).trim();
 
+
     const nameParts =
         displayName
             .split(/\s+/)
             .filter(Boolean);
 
+
     const firstName =
         nameParts.shift() ||
         displayName;
 
+
     const lastName =
         nameParts.join(" ");
 
+
     const profile = {
+
         uid: user.uid,
-        email: user.email || "",
+
+        email:
+            user.email || "",
+
         firstName,
+
         lastName,
+
         displayName,
-        photoURL: user.photoURL || "",
+
+        photoURL:
+            user.photoURL || "",
+
         role: "client",
+
         status: "active",
+
         emailVerified:
             user.emailVerified === true,
-        authProvider: String(authProvider || "social"),
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp()
+
+        authProvider:
+            String(
+                authProvider ||
+                "social"
+            ),
+
+        createdAt:
+            serverTimestamp(),
+
+        updatedAt:
+            serverTimestamp()
+
     };
+
+
+    console.log(
+        "SOCIAL PROFILE CREATE:",
+        profileReference.path,
+        user.uid,
+        auth.currentUser?.uid
+    );
+
 
     await setDoc(
         profileReference,
@@ -1975,7 +2308,14 @@ async function ensureCustomerProfileForSocial(
         }
     );
 
-    return profile;
+
+    console.log(
+    "SOCIAL PROFILE CREATED SUCCESSFULLY:",
+    profileReference.path
+);
+
+window.location.reload();
+return profile;
 }
 
 
@@ -2214,6 +2554,216 @@ async function performSharedGuestSignIn() {
     }
 }
 
+async function performSharedGuestRegistration() {
+    console.log("CREATE ACCOUNT BUTTON CLICKED");
+
+    if (
+        !auth ||
+        !registerSubmitButton ||
+        !registerFirstName ||
+        !registerLastName ||
+        !registerEmail ||
+        !registerMobile ||
+        !registerPassword ||
+        !registerConfirmPassword
+    ) {
+        return;
+    }
+
+    showSharedGuestAuthError("");
+
+    const firstName =
+        registerFirstName.value.trim();
+
+    const lastName =
+        registerLastName.value.trim();
+
+    const email =
+        registerEmail.value
+            .trim()
+            .toLowerCase();
+
+    const mobile =
+        registerMobile.value
+            .trim()
+            .replace(/\s+/g, "");
+
+    const password =
+        registerPassword.value;
+
+    const confirmPassword =
+        registerConfirmPassword.value;
+
+    if (
+        !firstName ||
+        !lastName ||
+        !email ||
+        !mobile ||
+        !password ||
+        !confirmPassword
+    ) {
+        showSharedGuestAuthError(
+            "Please complete all required fields."
+        );
+
+        return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        showSharedGuestAuthError(
+            "Please enter a valid email address."
+        );
+
+        registerEmail.focus();
+
+        return;
+    }
+
+    if (!/^09\d{9}$/.test(mobile)) {
+        showSharedGuestAuthError(
+            "Please enter a valid 11-digit Philippine mobile number."
+        );
+
+        registerMobile.focus();
+
+        return;
+    }
+
+    if (password.length < 6) {
+        showSharedGuestAuthError(
+            "Password must be at least 6 characters."
+        );
+
+        registerPassword.focus();
+
+        return;
+    }
+
+    if (password !== confirmPassword) {
+        showSharedGuestAuthError(
+            "Passwords do not match."
+        );
+
+        registerConfirmPassword.focus();
+
+        return;
+    }
+
+    const originalButtonHTML =
+        registerSubmitButton.innerHTML;
+
+    registerSubmitButton.disabled = true;
+
+    registerSubmitButton.innerHTML = `
+        <i class="fa-solid fa-spinner fa-spin"></i>
+        <span>Creating account...</span>
+    `;
+
+    try {
+        const userCredential =
+            await createUserWithEmailAndPassword(
+                auth,
+                email,
+                password
+            );
+
+        const user =
+            userCredential.user;
+
+        const fullName =
+            `${firstName} ${lastName}`
+                .replace(/\s+/g, " ")
+                .trim();
+
+        await updateProfile(
+            user,
+            {
+                displayName: fullName
+            }
+        );
+
+        await setDoc(
+            doc(
+                db,
+                "users",
+                user.uid
+            ),
+            {
+                uid: user.uid,
+                firstName,
+                lastName,
+                fullName,
+                displayName: fullName,
+                email,
+                mobile,
+                contactNumber: mobile,
+                role: "client",
+                status: "active",
+                authProvider: "email",
+                photoURL:
+                    user.photoURL || "",
+                createdAt:
+                    serverTimestamp(),
+                updatedAt:
+                    serverTimestamp()
+            },
+            {
+                merge: true
+            }
+        );
+
+        closeSharedGuestAuthModal();
+
+    } catch (error) {
+        console.error(
+            "CUSTOMER REGISTRATION ERROR:",
+            error
+        );
+
+        const errorCode =
+            String(
+                error?.code || ""
+            );
+
+        if (
+            errorCode ===
+            "auth/email-already-in-use"
+        ) {
+            showSharedGuestAuthError(
+                "This email address already has an account. Please sign in instead."
+            );
+
+        } else if (
+            errorCode ===
+            "auth/invalid-email"
+        ) {
+            showSharedGuestAuthError(
+                "Please enter a valid email address."
+            );
+
+        } else if (
+            errorCode ===
+            "auth/weak-password"
+        ) {
+            showSharedGuestAuthError(
+                "Please use a stronger password."
+            );
+
+        } else {
+            showSharedGuestAuthError(
+                "Unable to create your account. Please try again."
+            );
+        }
+
+    } finally {
+        registerSubmitButton.disabled =
+            false;
+
+        registerSubmitButton.innerHTML =
+            originalButtonHTML;
+    }
+}
+
 
 async function performSharedGuestGoogleSignIn() {
 
@@ -2342,131 +2892,55 @@ async function performSharedGuestGoogleSignIn() {
     }
 }
 
-
-async function performSharedGuestFacebookSignIn() {
-
-    if (
-        !auth ||
-        !facebookSignInButton
-    ) {
-        return;
-    }
-
-    showSharedGuestAuthError("");
-
-    const originalButtonHTML =
-        facebookSignInButton.innerHTML;
-
-    facebookSignInButton.disabled =
-        true;
-
-    facebookSignInButton.innerHTML =
-        `
-            <i class="fa-solid fa-spinner fa-spin"></i>
-            <span>Connecting to Facebook...</span>
-        `;
-
-    try {
-
-        const userCredential =
-            await loginWithFacebook();
-
-        await routeSignedInUser(
-            userCredential.user,
-            {
-                createCustomerIfMissing: true,
-                authProvider: "facebook"
-            }
-        );
-
-    } catch (error) {
-
-        if (
-            error?.code ===
-            "auth/popup-closed-by-user" ||
-            error?.code ===
-            "auth/cancelled-popup-request"
-        ) {
+createAccountButton?.addEventListener(
+    "click",
+    () => {
+        if (!signInView || !registerForm) {
             return;
         }
 
-        console.error(
-            "CUSTOMER FACEBOOK SIGN IN ERROR:",
-            error
-        );
+        signInView.hidden = true;
+        registerForm.hidden = false;
 
-        let message =
-            "Unable to sign in with Facebook. Please try again.";
-
-        if (
-            error?.code ===
-            "auth/popup-blocked"
-        ) {
-            message =
-                "Facebook sign-in popup was blocked. Please allow popups and try again.";
+        if (authTitle) {
+            authTitle.textContent =
+                "Create your account";
         }
 
-        if (
-            error?.code ===
-            "auth/unauthorized-domain"
-        ) {
-            message =
-                "This website domain is not authorized for Facebook sign-in yet.";
-        }
+        showSharedGuestAuthError("");
 
-        if (
-            error?.code ===
-            "auth/operation-not-allowed"
-        ) {
-            message =
-                "Facebook sign-in is not enabled yet.";
-        }
-
-        if (
-            error?.code ===
-            "auth/account-exists-with-different-credential"
-        ) {
-            message =
-                "An account already exists with this email using another sign-in method.";
-        }
-
-        if (
-            error?.code ===
-            "auth/network-request-failed"
-        ) {
-            message =
-                "Network error. Please check your connection and try again.";
-        }
-
-        if (
-            error?.message ===
-            "ACCOUNT_INACTIVE"
-        ) {
-            message =
-                "This account is currently inactive. Please contact Trips Wonder support.";
-        }
-
-        if (
-            error?.message ===
-            "INVALID_ACCOUNT_ROLE"
-        ) {
-            message =
-                "This account role is not configured correctly.";
-        }
-
-        showSharedGuestAuthError(
-            message
-        );
-
-    } finally {
-
-        facebookSignInButton.disabled =
-            false;
-
-        facebookSignInButton.innerHTML =
-            originalButtonHTML;
+        requestAnimationFrame(() => {
+            modal
+                .querySelector(
+                    "#sharedGuestRegisterFirstName"
+                )
+                ?.focus();
+        });
     }
-}
+);
+
+backToSignInButton?.addEventListener(
+    "click",
+    () => {
+        if (!signInView || !registerForm) {
+            return;
+        }
+
+        registerForm.hidden = true;
+        signInView.hidden = false;
+
+        if (authTitle) {
+            authTitle.textContent =
+                "Sign in / register";
+        }
+
+        showSharedGuestAuthError("");
+
+        requestAnimationFrame(() => {
+            emailInput?.focus();
+        });
+    }
+);
 
 
 googleSignInButton?.addEventListener(
@@ -2474,11 +2948,10 @@ googleSignInButton?.addEventListener(
     performSharedGuestGoogleSignIn
 );
 
-facebookSignInButton?.addEventListener(
+registerSubmitButton?.addEventListener(
     "click",
-    performSharedGuestFacebookSignIn
+    performSharedGuestRegistration
 );
-
 
 signInButton?.addEventListener(
     "click",
