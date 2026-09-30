@@ -492,7 +492,48 @@ function bindSharedHeader() {
         document.getElementById(
             "customerSharedSearchClear"
         );
+// ======================================================
+// SHARED SEARCH — CLICK / FOCUS FIX
+// ======================================================
 
+const searchBox =
+    form?.querySelector(
+        ".customer-shared-search"
+    ) ||
+    form;
+
+const searchIcon =
+    form?.querySelector(
+        ".fa-magnifying-glass"
+    );
+
+
+searchIcon?.addEventListener(
+    "click",
+    event => {
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        input?.focus();
+    }
+);
+
+
+form?.addEventListener(
+    "click",
+    event => {
+
+        if (
+            event.target === clear ||
+            clear?.contains(event.target)
+        ) {
+            return;
+        }
+
+        input?.focus();
+    }
+);
 
     if (
         getCurrentFileName() ===
@@ -641,7 +682,7 @@ function bindSharedHeader() {
 
 
 /* ==========================================================
-   BRANDING
+   BRANDING/FAVICON
 ========================================================== */
 
 function applyCustomerFavicon(

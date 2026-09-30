@@ -2334,3 +2334,45 @@ button {
         min-height: 68px;
     }
 }
+
+/* ==========================================================
+   MESSAGE — MOBILE VIEWPORT / COMPOSER FIX
+========================================================== */
+
+@media (max-width: 899px) {
+
+    .messenger-page {
+        height: calc(
+            100dvh
+            - 60px
+            - 68px
+            - env(safe-area-inset-bottom)
+        ) !important;
+
+        min-height: 0 !important;
+        overflow: hidden !important;
+    }
+
+    .messenger-shell,
+    .messenger-conversation-column,
+    .tw-chat-view {
+        height: 100% !important;
+        min-height: 0 !important;
+        overflow: hidden !important;
+    }
+
+    .tw-chat-messages {
+        flex: 1 1 auto !important;
+        min-height: 0 !important;
+        overflow-y: auto !important;
+        overscroll-behavior: contain;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .tw-chat-composer {
+        flex: 0 0 auto !important;
+        position: relative;
+        z-index: 5;
+        background: #ffffff;
+    }
+}

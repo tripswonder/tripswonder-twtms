@@ -316,6 +316,90 @@
         </section>
     </div>
 
+    <!-- ==========================================================
+     GLOBAL SEARCH
+========================================================== -->
+
+<div class="tw-global-search" id="globalSearchPanel" hidden>
+
+    <div class="tw-global-search-backdrop" id="globalSearchBackdrop"></div>
+
+    <section class="tw-global-search-panel">
+
+        <header class="tw-global-search-header">
+
+            <button
+                type="button"
+                class="tw-global-search-back"
+                id="globalSearchBack"
+                aria-label="Close search"
+            >
+                <i class="fa-solid fa-arrow-left"></i>
+            </button>
+
+            <div class="tw-global-search-field">
+                <i class="fa-solid fa-magnifying-glass"></i>
+
+                <input
+                    type="search"
+                    id="globalSearchInput"
+                    placeholder="Search people or tours..."
+                    autocomplete="off"
+                >
+
+                <button
+                    type="button"
+                    id="globalSearchClear"
+                    aria-label="Clear search"
+                    hidden
+                >
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+        </header>
+
+        <div class="tw-global-search-body">
+
+            <div
+                class="tw-global-search-empty"
+                id="globalSearchEmpty"
+            >
+                <i class="fa-solid fa-magnifying-glass"></i>
+
+                <strong>Search Trips Wonder</strong>
+
+                <span>
+                    Find other travelers and tour packages.
+                </span>
+            </div>
+
+            <section
+                class="tw-global-search-group"
+                id="globalSearchPeopleGroup"
+                hidden
+            >
+                <h3>People</h3>
+
+                <div id="globalSearchPeople"></div>
+            </section>
+
+            <section
+                class="tw-global-search-group"
+                id="globalSearchToursGroup"
+                hidden
+            >
+                <h3>Tours</h3>
+
+                <div id="globalSearchTours"></div>
+            </section>
+
+        </div>
+
+    </section>
+
+</div>
+
     <!-- Compatibility nodes preserve the existing working booking/package logic -->
     <div class="home-compatibility" aria-hidden="true">
         <section id="searchSection"></section>
@@ -531,41 +615,6 @@
                 "1"
             );
         }
-    );
-
-
-    const protectedSelectors = [
-        "#memberMessageTrigger",
-        ".tw-account-mini",
-        ".tw-bell",
-        "#openPostComposer",
-        "#openPostPhoto",
-        '.tw-left-menu a[href="my-trip.html"]'
-    ];
-
-
-    document.addEventListener(
-        "click",
-        event => {
-
-            const target =
-                event.target.closest(
-                    protectedSelectors.join(",")
-                );
-
-            if (
-                !target ||
-                !isGuest()
-            ) {
-                return;
-            }
-
-            event.preventDefault();
-            event.stopImmediatePropagation();
-
-            openSharedAuth();
-        },
-        true
     );
 
 

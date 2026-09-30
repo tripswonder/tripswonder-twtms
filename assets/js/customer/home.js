@@ -713,54 +713,75 @@ function renderCustomerProfile() {
 
 function openSearch() {
 
-    if (!searchSection) {
+    const panel =
+        document.getElementById(
+            "globalSearchPanel"
+        );
+
+    const input =
+        document.getElementById(
+            "globalSearchInput"
+        );
+
+    if (!panel) {
         return;
     }
 
+    panel.hidden = false;
 
-    searchSection.hidden =
-        false;
-
+    document.body.classList.add(
+        "tw-global-search-open"
+    );
 
     requestAnimationFrame(
         () => {
-
-            searchInput?.focus();
-
+            input?.focus();
         }
     );
-
 }
 
 
 function closeSearch() {
 
-    if (!searchSection) {
+    const panel =
+        document.getElementById(
+            "globalSearchPanel"
+        );
+
+    const input =
+        document.getElementById(
+            "globalSearchInput"
+        );
+
+    if (!panel) {
         return;
     }
 
+    panel.hidden = true;
 
-    searchSection.hidden =
-        true;
+    document.body.classList.remove(
+        "tw-global-search-open"
+    );
 
-
-    if (
-        searchInput
-    ) {
-
-        searchInput.value =
-            "";
-
+    if (input) {
+        input.value = "";
     }
-
-
-    currentSearch =
-        "";
-
-
-    renderCustomerPackages();
-
 }
+
+document
+    .getElementById("globalSearchBack")
+    ?.addEventListener(
+        "click",
+        closeSearch
+    );
+
+
+document
+    .getElementById("globalSearchBackdrop")
+    ?.addEventListener(
+        "click",
+        closeSearch
+    );
 
 
 headerSearchButton

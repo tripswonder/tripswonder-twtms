@@ -2156,11 +2156,30 @@ exports.notifyCustomerOnBookingUpdate = onDocumentUpdated(
 );
 
 // ======================================================
-// EXACT CUSTOMER MEMBER SEARCH
+// CUSTOMER MEMBER DIRECTORY SEARCH
+// ======================================================
+//
+// Partial search for customer-to-customer messaging.
+//
+// Searchable values:
+// - First name
+// - Last name
+// - Full/profile name
+// - Username
+// - Email
+//
+// Returns a maximum of 10 active customer accounts.
+// The currently logged-in customer is excluded.
+//
 // ======================================================
 
 exports.searchMemberExact = onCall(
     async (request) => {
+
+      // ==================================================
+      // AUTHENTICATION
+      // ==================================================
+
       if (!request.auth) {
         throw new HttpsError(
             "unauthenticated",
@@ -2168,28 +2187,36 @@ exports.searchMemberExact = onCall(
         );
       }
 
+      // ==================================================
+      // SEARCH TEXT
+      // ==================================================
+
       const search =
-  String(
-      (
-        request.data &&
-        request.data.search
-      ) || "",
-  )
-      .trim()
-      .toLowerCase();
+        String(
+            (
+              request.data &&
+              request.data.search
+            ) || "",
+        )
+            .trim()
+            .toLowerCase();
 
       if (
-        search.length < 2 ||
+        search.length < 1 ||
         search.length > 120
       ) {
         throw new HttpsError(
             "invalid-argument",
-            "Enter a valid username or email.",
+            "Enter a valid member name, username or email.",
         );
       }
 
       const requesterUid =
         request.auth.uid;
+
+      // ==================================================
+      // VERIFY REQUESTING CUSTOMER
+      // ==================================================
 
       const requesterDoc =
         await db
@@ -2224,153 +2251,293 @@ exports.searchMemberExact = onCall(
         );
       }
 
-      let matchedDoc = null;
+      // ==================================================
+      // LOAD CUSTOMER DIRECTORY
+      // ==================================================
+      //
+      // Server-side only.
+      //
+      // The client does NOT receive the complete users
+      // collection. Only matching active customers are
+      // returned.
+      //
+      // ==================================================
 
-      if (search.includes("@")) {
-        const snapshot =
-          await db
-              .collection("users")
-              .where(
-                  "email",
-                  "==",
-                  search,
-              )
-              .limit(5)
-              .get();
+      const usersSnapshot =
+        await db
+            .collection("users")
+            .where(
+                "status",
+                "==",
+                "active",
+            )
+            .get();
 
-        matchedDoc =
-          snapshot.docs.find(
-              (item) =>
-                item.id !== requesterUid,
-          ) || null;
-      } else {
-        const fields = [
-          "username",
-          "displayName",
-          "fullName",
-          "name",
-          "customerName",
-        ];
+      const matches = [];
 
-        for (const field of fields) {
-          const snapshot =
-            await db
-                .collection("users")
-                .where(
-                    field,
-                    "==",
-                    search,
-                )
-                .limit(5)
-                .get();
+      // ==================================================
+      // SEARCH ACTIVE CUSTOMERS
+      // ==================================================
 
-          const candidate =
-            snapshot.docs.find(
-                (item) =>
-                  item.id !== requesterUid,
-            );
+      for (const userDoc of usersSnapshot.docs) {
 
-          if (candidate) {
-            matchedDoc = candidate;
-            break;
-          }
+        // Do not show the logged-in customer.
+        if (userDoc.id === requesterUid) {
+          continue;
         }
-      }
 
-      if (!matchedDoc) {
-        return {
-          member: null,
-        };
-      }
+        const profile =
+          userDoc.data() || {};
 
-      const profile =
-        matchedDoc.data() || {};
+        const role =
+          String(
+              profile.role || "client",
+          )
+              .trim()
+              .toLowerCase();
 
-      const role =
-        String(
-            profile.role || "client",
-        )
-            .trim()
-            .toLowerCase();
-
-      const status =
-        String(
-            profile.status || "active",
-        )
-            .trim()
-            .toLowerCase();
-
-      if (
-        (
+        // Customer accounts only.
+        if (
           role !== "client" &&
           role !== "customer"
-        ) ||
-        status !== "active"
-      ) {
-        return {
-          member: null,
-        };
-      }
+        ) {
+          continue;
+        }
 
-      const firstName =
-        String(
-            profile.firstName ||
-            profile.firstname ||
-            "",
-        ).trim();
+        // ==================================================
+        // PROFILE VALUES
+        // ==================================================
 
-      const lastName =
-        String(
-            profile.lastName ||
-            profile.lastname ||
-            "",
-        ).trim();
+        const firstName =
+          String(
+              profile.firstName ||
+              profile.firstname ||
+              "",
+          ).trim();
 
-      const displayName =
-        [firstName, lastName]
+        const lastName =
+          String(
+              profile.lastName ||
+              profile.lastname ||
+              "",
+          ).trim();
+
+        const username =
+          String(
+              profile.username || "",
+          ).trim();
+
+        const email =
+          String(
+              profile.email || "",
+          ).trim();
+
+        const storedDisplayName =
+          String(
+              profile.displayName ||
+              profile.fullName ||
+              profile.name ||
+              profile.customerName ||
+              "",
+          ).trim();
+
+        const fullName =
+          [firstName, lastName]
+              .filter(Boolean)
+              .join(" ")
+              .trim();
+
+        const displayName =
+          fullName ||
+          storedDisplayName ||
+          username ||
+          "Trips Wonder Member";
+
+        // ==================================================
+        // SEARCHABLE TEXT
+        // ==================================================
+
+        const searchableValues = [
+          firstName,
+          lastName,
+          fullName,
+          storedDisplayName,
+          username,
+          email,
+        ]
             .filter(Boolean)
-            .join(" ")
-            .trim() ||
-        String(
-            profile.displayName ||
-            profile.fullName ||
-            profile.name ||
-            profile.customerName ||
-            profile.username ||
-            "Trips Wonder Member",
-        ).trim();
+            .map(
+                (value) =>
+                  String(value)
+                      .trim()
+                      .toLowerCase(),
+            );
 
-      const avatar =
-        String(
-            profile.profilePhotoUrl ||
-            profile.profilePhoto ||
-            profile.photoURL ||
-            profile.photoUrl ||
-            profile.avatarUrl ||
-            profile.avatar ||
-            profile.imageUrl ||
-            "",
-        ).trim();
+        // Partial matching.
+        const isMatch =
+          searchableValues.some(
+              (value) =>
+                value.includes(search),
+          );
 
-      return {
-        member: {
-          uid: matchedDoc.id,
+        if (!isMatch) {
+          continue;
+        }
+
+        // ==================================================
+        // PROFILE PHOTO
+        // ==================================================
+
+        const avatar =
+          String(
+              profile.profilePhotoUrl ||
+              profile.profilePhoto ||
+              profile.photoURL ||
+              profile.photoUrl ||
+              profile.avatarUrl ||
+              profile.avatar ||
+              profile.imageUrl ||
+              "",
+          ).trim();
+
+        // ==================================================
+        // ADD RESULT
+        // ==================================================
+
+        matches.push({
+          uid: userDoc.id,
           firstName,
           lastName,
           displayName,
-          username:
-            String(
-                profile.username || "",
-            ).trim(),
-          email:
-            String(
-                profile.email || "",
-            ).trim(),
-          profilePhotoUrl:
-            avatar,
-          role:
-            "client",
-        },
+          username,
+          email,
+          profilePhotoUrl: avatar,
+          role: "client",
+        });
+      }
+
+      // ==================================================
+      // SORT RESULTS
+      // ==================================================
+      //
+      // Priority:
+      // 1. Exact first name / username
+      // 2. Starts with search
+      // 3. Contains search
+      //
+      // ==================================================
+
+      matches.sort(
+          (a, b) => {
+
+            const aFirst =
+              String(a.firstName || "")
+                  .toLowerCase();
+
+            const bFirst =
+              String(b.firstName || "")
+                  .toLowerCase();
+
+            const aUsername =
+              String(a.username || "")
+                  .toLowerCase();
+
+            const bUsername =
+              String(b.username || "")
+                  .toLowerCase();
+
+            const aName =
+              String(a.displayName || "")
+                  .toLowerCase();
+
+            const bName =
+              String(b.displayName || "")
+                  .toLowerCase();
+
+            const aEmail =
+              String(a.email || "")
+                  .toLowerCase();
+
+            const bEmail =
+              String(b.email || "")
+                  .toLowerCase();
+
+            const getScore = (
+                firstName,
+                username,
+                name,
+                email,
+            ) => {
+
+              if (
+                firstName === search ||
+                username === search
+              ) {
+                return 0;
+              }
+
+              if (
+                firstName.startsWith(search) ||
+                username.startsWith(search)
+              ) {
+                return 1;
+              }
+
+              if (name.startsWith(search)) {
+                return 2;
+              }
+
+              if (email.startsWith(search)) {
+                return 3;
+              }
+
+              return 4;
+            };
+
+            const scoreA =
+              getScore(
+                  aFirst,
+                  aUsername,
+                  aName,
+                  aEmail,
+              );
+
+            const scoreB =
+              getScore(
+                  bFirst,
+                  bUsername,
+                  bName,
+                  bEmail,
+              );
+
+            if (scoreA !== scoreB) {
+              return scoreA - scoreB;
+            }
+
+            return aName.localeCompare(bName);
+          },
+      );
+
+      // ==================================================
+      // MAXIMUM 10 RESULTS
+      // ==================================================
+
+      const members =
+        matches.slice(0, 10);
+
+      // ==================================================
+      // RESPONSE
+      // ==================================================
+
+      return {
+        members,
+
+        // Temporary backward compatibility with the
+        // current message.js until we update it next.
+        member:
+          members.length ?
+            members[0] :
+            null,
       };
     },
 );

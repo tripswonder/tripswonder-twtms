@@ -1551,7 +1551,7 @@ async function searchMemberDirectory(term) {
 
     if (
         !raw ||
-        raw.length < 2 ||
+        raw.length < 1 ||
         !currentUser
     ) {
 
@@ -1593,17 +1593,18 @@ async function searchMemberDirectory(term) {
             );
 
 
-        const member =
-            response?.data?.member ||
-            null;
+        const members =
+    Array.isArray(
+        response?.data?.members
+    )
+        ? response.data.members
+        : [];
 
 
-        renderMemberSearchResults(
-            member
-                ? [member]
-                : [],
-            raw
-        );
+renderMemberSearchResults(
+    members,
+    raw
+);
 
     } catch (error) {
 
