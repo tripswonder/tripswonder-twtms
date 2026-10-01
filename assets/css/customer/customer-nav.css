@@ -1084,3 +1084,44 @@
     }
 }
 
+/* ==========================================================
+   MOBILE HAMBURGER BUTTON
+   ========================================================== */
+
+.customer-mobile-menu-button {
+    display: none;
+
+    width: 32px;
+    height: 32px;
+
+    padding: 0;
+
+    align-items: center;
+    justify-content: center;
+
+    color: #172036;
+    background: transparent;
+
+    border: none;
+    outline: none;
+    box-shadow: none;
+
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.customer-mobile-menu-button:hover,
+.customer-mobile-menu-button:focus,
+.customer-mobile-menu-button:active {
+    background: transparent;
+    border: none;
+    outline: none;
+    box-shadow: none;
+}
+
+@media (max-width: 899px) {
+    .customer-mobile-menu-button {
+        display: inline-flex;
+        flex: 0 0 auto;
+    }
+}

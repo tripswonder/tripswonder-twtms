@@ -3771,33 +3771,33 @@ async function startMemberQRCamera() {
     try {
 
         await memberQRScanner.start(
-            {
-                facingMode:
-                    "environment"
-            },
-            {
-                fps:
-                    10,
+    {
+        facingMode:
+            "user"
+    },
+    {
+        fps:
+            10,
 
-                qrbox: {
-                    width:
-                        240,
+        qrbox: {
+            width:
+                240,
 
-                    height:
-                        240
-                }
-            },
-            decodedText => {
+            height:
+                240
+        }
+    },
+    decodedText => {
 
-                handleMemberQRDetected(
-                    decodedText
-                );
-            },
-            () => {
-                // Normal scan attempts.
-                // Do not log every failed frame.
-            }
+        handleMemberQRDetected(
+            decodedText
         );
+    },
+    () => {
+        // Normal scan attempts.
+        // Do not log every failed frame.
+    }
+);
 
 
         memberQRScannerRunning =

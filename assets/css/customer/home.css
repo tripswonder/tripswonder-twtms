@@ -6899,3 +6899,80 @@ body.tw-global-search-open {
         grid-column: auto;
     }
 }
+
+/* ==========================================================
+   MOBILE SIDEBAR DRAWER
+   ========================================================== */
+
+.customer-mobile-sidebar-backdrop {
+    display: none;
+}
+
+@media (max-width: 899px) {
+
+    .tw-left-rail {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 5001;
+
+        width: min(285px, 84vw);
+        min-height: 100dvh;
+
+        display: block;
+
+        padding: 20px 18px 28px;
+
+        overflow-x: hidden;
+        overflow-y: auto;
+
+        background: #ffffff;
+        border-right: 1px solid #e2e7ef;
+
+        box-shadow:
+            12px 0 35px rgba(15, 23, 42, 0.16);
+
+        transform: translateX(-105%);
+        visibility: hidden;
+
+        transition:
+            transform 0.25s ease,
+            visibility 0.25s ease;
+    }
+
+    .tw-left-rail.customer-mobile-sidebar-visible {
+        transform: translateX(0);
+        visibility: visible;
+    }
+
+    .customer-mobile-sidebar-backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 5000;
+
+        display: block;
+
+        padding: 0;
+
+        background: rgba(15, 23, 42, 0.42);
+        border: 0;
+
+        opacity: 0;
+        visibility: hidden;
+
+        transition:
+            opacity 0.25s ease,
+            visibility 0.25s ease;
+    }
+
+    body.customer-mobile-sidebar-open
+    .customer-mobile-sidebar-backdrop {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    body.customer-mobile-sidebar-open {
+        overflow: hidden;
+    }
+}

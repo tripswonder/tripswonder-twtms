@@ -8399,3 +8399,136 @@ document.addEventListener(
         }
     }
 );
+
+/* ==========================================================
+   HOME — MOBILE SIDEBAR DRAWER
+========================================================== */
+
+const customerMobileMenuTrigger =
+    document.getElementById(
+        "customerMobileMenuTrigger"
+    );
+
+const customerMobileSidebar =
+    document.querySelector(
+        ".tw-left-rail"
+    );
+
+
+function ensureHomeMobileSidebarBackdrop() {
+
+    let backdrop =
+        document.getElementById(
+            "customerMobileSidebarBackdrop"
+        );
+
+    if (backdrop) {
+        return backdrop;
+    }
+
+    backdrop =
+        document.createElement(
+            "button"
+        );
+
+    backdrop.type = "button";
+
+    backdrop.id =
+        "customerMobileSidebarBackdrop";
+
+    backdrop.className =
+        "customer-mobile-sidebar-backdrop";
+
+    backdrop.setAttribute(
+        "aria-label",
+        "Close menu"
+    );
+
+    document.body.appendChild(
+        backdrop
+    );
+
+    backdrop.addEventListener(
+        "click",
+        closeHomeMobileSidebar
+    );
+
+    return backdrop;
+}
+
+
+function openHomeMobileSidebar() {
+
+    if (!customerMobileSidebar) {
+        return;
+    }
+
+    ensureHomeMobileSidebarBackdrop();
+
+    customerMobileSidebar.classList.add(
+        "customer-mobile-sidebar-visible"
+    );
+
+    document.body.classList.add(
+        "customer-mobile-sidebar-open"
+    );
+
+    customerMobileMenuTrigger?.setAttribute(
+        "aria-expanded",
+        "true"
+    );
+}
+
+
+function closeHomeMobileSidebar() {
+
+    customerMobileSidebar?.classList.remove(
+        "customer-mobile-sidebar-visible"
+    );
+
+    document.body.classList.remove(
+        "customer-mobile-sidebar-open"
+    );
+
+    customerMobileMenuTrigger?.setAttribute(
+        "aria-expanded",
+        "false"
+    );
+}
+
+
+customerMobileMenuTrigger?.addEventListener(
+    "click",
+    event => {
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        const isOpen =
+            document.body.classList.contains(
+                "customer-mobile-sidebar-open"
+            );
+
+        if (isOpen) {
+            closeHomeMobileSidebar();
+        } else {
+            openHomeMobileSidebar();
+        }
+    }
+);
+
+
+document.addEventListener(
+    "keydown",
+    event => {
+
+        if (
+            event.key === "Escape" &&
+            document.body.classList.contains(
+                "customer-mobile-sidebar-open"
+            )
+        ) {
+            closeHomeMobileSidebar();
+        }
+    }
+);

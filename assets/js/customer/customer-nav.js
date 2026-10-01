@@ -313,11 +313,24 @@ function createDesktopHeader() {
 
             <div class="customer-shared-header-left">
 
-                <a
-                    href="home.html"
-                    class="customer-shared-brand"
-                    aria-label="Trips Wonder Home"
-                >
+    <button
+        type="button"
+        class="customer-mobile-menu-button"
+        id="customerMobileMenuButton"
+        aria-label="Open menu"
+        aria-expanded="false"
+    >
+        <i
+            class="fa-solid fa-bars"
+            aria-hidden="true"
+        ></i>
+    </button>
+
+    <a
+        href="home.html"
+        class="customer-shared-brand"
+        aria-label="Trips Wonder Home"
+    >
                     <img
                         id="sharedCustomerBusinessLogo"
                         src="${DEFAULT_CUSTOMER_BRANDING.businessLogo}"
@@ -493,14 +506,164 @@ function renderCustomerNav(
 
 
     bindSharedHeader();
-    applyCustomerBranding(
-        state.branding
-    );
+bindCustomerMobileSidebar();
+
+applyCustomerBranding(
+    state.branding
+);
+
     applyCustomerProfile(
         state.profile
     );
 }
 
+/* ==========================================================
+   MOBILE CUSTOMER SIDEBAR
+========================================================== */
+
+function getCustomerMobileSidebar() {
+    return document.querySelector(
+        ".tw-left-rail"
+    );
+}
+
+function getCustomerMobileMenuButton() {
+    return (
+        document.getElementById(
+            "customerMobileMenuButton"
+        ) ||
+        document.getElementById(
+            "customerMobileMenuTrigger"
+        )
+    );
+}
+
+function ensureCustomerMobileSidebarBackdrop() {
+
+    let backdrop =
+        document.getElementById(
+            "customerMobileSidebarBackdrop"
+        );
+
+    if (backdrop) {
+        return backdrop;
+    }
+
+    backdrop =
+        document.createElement(
+            "button"
+        );
+
+    backdrop.type = "button";
+
+    backdrop.id =
+        "customerMobileSidebarBackdrop";
+
+    backdrop.className =
+        "customer-mobile-sidebar-backdrop";
+
+    backdrop.setAttribute(
+        "aria-label",
+        "Close menu"
+    );
+
+    document.body.appendChild(
+        backdrop
+    );
+
+    backdrop.addEventListener(
+        "click",
+        closeCustomerMobileSidebar
+    );
+
+    return backdrop;
+}
+
+function openCustomerMobileSidebar() {
+
+    const sidebar =
+        getCustomerMobileSidebar();
+
+    const button =
+        getCustomerMobileMenuButton();
+
+    if (!sidebar) {
+        return;
+    }
+
+    ensureCustomerMobileSidebarBackdrop();
+
+    document.body.classList.add(
+        "customer-mobile-sidebar-open"
+    );
+
+    sidebar.classList.add(
+        "customer-mobile-sidebar-visible"
+    );
+
+    button?.setAttribute(
+        "aria-expanded",
+        "true"
+    );
+}
+
+function closeCustomerMobileSidebar() {
+
+    const sidebar =
+        getCustomerMobileSidebar();
+
+    const button =
+        getCustomerMobileMenuButton();
+
+    document.body.classList.remove(
+        "customer-mobile-sidebar-open"
+    );
+
+    sidebar?.classList.remove(
+        "customer-mobile-sidebar-visible"
+    );
+
+    button?.setAttribute(
+        "aria-expanded",
+        "false"
+    );
+}
+
+function bindCustomerMobileSidebar() {
+
+    const button =
+        getCustomerMobileMenuButton();
+
+    button?.addEventListener(
+        "click",
+        event => {
+
+            event.preventDefault();
+            event.stopPropagation();
+
+            const isOpen =
+                document.body.classList.contains(
+                    "customer-mobile-sidebar-open"
+                );
+
+            if (isOpen) {
+                closeCustomerMobileSidebar();
+            } else {
+                openCustomerMobileSidebar();
+            }
+        }
+    );
+
+    document.addEventListener(
+        "keydown",
+        event => {
+
+            if (event.key === "Escape") {
+                closeCustomerMobileSidebar();
+            }
+        }
+    );
+}
 
 /* ==========================================================
    SEARCH

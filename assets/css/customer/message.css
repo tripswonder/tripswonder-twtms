@@ -2860,3 +2860,80 @@ button {
     color: #8b98aa;
     font-size: 9px;
 }
+
+/* ==========================================================
+   MEMBER QR — FORCE CAMERA FULL FRAME
+   ========================================================== */
+
+.tw-member-qr-reader {
+    overflow: hidden !important;
+    border: 0 !important;
+}
+
+.tw-member-qr-reader > div {
+    width: 100% !important;
+    height: 100% !important;
+    padding: 0 !important;
+    border: 0 !important;
+}
+
+.tw-member-qr-reader video {
+    position: absolute !important;
+    inset: 0 !important;
+
+    width: 100% !important;
+    height: 100% !important;
+
+    object-fit: cover !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    border-radius: 20px !important;
+}
+
+.tw-member-qr-reader__scan_region,
+.tw-member-qr-reader__dashboard {
+    width: 100% !important;
+}
+
+.tw-member-qr-camera-placeholder {
+    visibility: hidden;
+}
+
+/* ==========================================================
+   MEMBER QR — FULL CAMERA AREA FIX
+   ========================================================== */
+
+#memberQRReader.tw-member-qr-reader {
+    position: absolute !important;
+    inset: 0 !important;
+
+    width: 100% !important;
+    height: 100% !important;
+
+    max-width: none !important;
+    min-width: 100% !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    overflow: hidden !important;
+    border: 0 !important;
+    border-radius: inherit !important;
+}
+
+#memberQRReader.tw-member-qr-reader video {
+    position: absolute !important;
+    inset: 0 !important;
+
+    width: 100% !important;
+    height: 100% !important;
+
+    max-width: none !important;
+
+    object-fit: cover !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+}
