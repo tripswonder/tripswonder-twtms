@@ -520,6 +520,238 @@ applyCustomerBranding(
 /* ==========================================================
    MOBILE CUSTOMER SIDEBAR
 ========================================================== */
+function ensureSharedCustomerMobileSidebar() {
+
+    /*
+     * Home already has its own sidebar.
+     * Do not create another one.
+     */
+    const existingSidebar =
+        document.querySelector(
+            ".tw-left-rail"
+        );
+
+    if (existingSidebar) {
+        return existingSidebar;
+    }
+
+
+    const sidebar =
+        document.createElement(
+            "aside"
+        );
+
+    sidebar.className =
+        "tw-left-rail customer-shared-mobile-sidebar";
+
+    sidebar.id =
+        "customerSharedMobileSidebar";
+
+
+    sidebar.innerHTML = `
+        <a
+            href="home.html"
+            class="tw-left-brand"
+            aria-label="Trips Wonder Home"
+        >
+            <img
+                src="${DEFAULT_CUSTOMER_BRANDING.businessLogo}"
+                alt="${DEFAULT_CUSTOMER_BRANDING.businessName}"
+                data-shared-sidebar-logo
+            >
+
+            <span>
+                <strong>
+                    ${DEFAULT_CUSTOMER_BRANDING.businessName}
+                </strong>
+
+                <small>Travel & Tours</small>
+            </span>
+        </a>
+
+
+        <div class="tw-left-divider"></div>
+
+
+        <a
+            href="account.html"
+            class="tw-sidebar-profile"
+            aria-label="Open account"
+        >
+            <span
+                class="tw-sidebar-profile-avatar"
+                data-shared-sidebar-avatar
+            >
+                <i class="fa-solid fa-user"></i>
+            </span>
+
+            <span class="tw-sidebar-profile-info">
+                <strong data-shared-sidebar-name>
+                    Traveler
+                </strong>
+
+                <small>
+                    View Profile
+                </small>
+            </span>
+
+            <i
+                class="fa-solid fa-chevron-right tw-sidebar-profile-arrow"
+                aria-hidden="true"
+            ></i>
+        </a>
+
+
+        <div class="tw-left-divider"></div>
+
+
+        <section class="tw-sidebar-tools">
+
+            <span class="tw-sidebar-tools-label">
+                QUICK ACCESS
+            </span>
+
+
+            <a
+                href="home.html?open=about"
+                class="tw-sidebar-tool"
+            >
+                <span class="tw-sidebar-tool-icon about">
+                    <i class="fa-solid fa-circle-info"></i>
+                </span>
+
+                <span class="tw-sidebar-tool-copy">
+                    <strong>About Us</strong>
+                    <small>Know more about Trips Wonder</small>
+                </span>
+
+                <i class="fa-solid fa-chevron-right tw-sidebar-tool-arrow"></i>
+            </a>
+
+
+            <a
+                href="home.html?open=feedback"
+                class="tw-sidebar-tool"
+            >
+                <span class="tw-sidebar-tool-icon feedback">
+                    <i class="fa-regular fa-message"></i>
+                </span>
+
+                <span class="tw-sidebar-tool-copy">
+                    <strong>Feedback</strong>
+                    <small>Share your travel experience</small>
+                </span>
+
+                <i class="fa-solid fa-chevron-right tw-sidebar-tool-arrow"></i>
+            </a>
+
+
+            <a
+                href="home.html?open=qr"
+                class="tw-sidebar-tool"
+            >
+                <span class="tw-sidebar-tool-icon qr">
+                    <i class="fa-solid fa-qrcode"></i>
+                </span>
+
+                <span class="tw-sidebar-tool-copy">
+                    <strong>My QR Code</strong>
+                    <small>View and share your QR code</small>
+                </span>
+
+                <i class="fa-solid fa-chevron-right tw-sidebar-tool-arrow"></i>
+            </a>
+
+        </section>
+
+
+        <div class="tw-left-divider tw-sidebar-tools-divider"></div>
+
+
+        <section class="tw-shortcuts">
+
+            <h3>Explore</h3>
+
+            <div class="tw-shortcut-list">
+
+                <a
+                    href="tours.html"
+                    class="tw-shared-sidebar-link"
+                >
+                    <span class="tw-shortcut-image">
+                        <i class="fa-solid fa-map-location-dot"></i>
+                    </span>
+
+                    <span>
+                        <strong>Explore Tours</strong>
+                        <small>Find your next destination</small>
+                    </span>
+                </a>
+
+
+                <a
+                    href="mytrip.html"
+                    class="tw-shared-sidebar-link"
+                >
+                    <span class="tw-shortcut-image">
+                        <i class="fa-solid fa-suitcase-rolling"></i>
+                    </span>
+
+                    <span>
+                        <strong>My Trip</strong>
+                        <small>View your bookings</small>
+                    </span>
+                </a>
+
+
+                <a
+                    href="promo.html"
+                    class="tw-shared-sidebar-link"
+                >
+                    <span class="tw-shortcut-image">
+                        <i class="fa-solid fa-tags"></i>
+                    </span>
+
+                    <span>
+                        <strong>Promos</strong>
+                        <small>See available offers</small>
+                    </span>
+                </a>
+
+            </div>
+
+        </section>
+
+
+        <section class="tw-left-cta">
+
+            <h3>
+                Let’s make<br>
+                your next trip<br>
+                unforgettable!
+            </h3>
+
+            <a href="tours.html">
+                Explore Tours
+                <i class="fa-solid fa-chevron-right"></i>
+            </a>
+
+            <i
+                class="fa-solid fa-umbrella-beach tw-left-cta-art"
+                aria-hidden="true"
+            ></i>
+
+        </section>
+    `;
+
+
+    document.body.appendChild(
+        sidebar
+    );
+
+
+    return sidebar;
+}
 
 function getCustomerMobileSidebar() {
     return document.querySelector(
@@ -630,6 +862,8 @@ function closeCustomerMobileSidebar() {
 }
 
 function bindCustomerMobileSidebar() {
+
+ensureSharedCustomerMobileSidebar();
 
     const button =
         getCustomerMobileMenuButton();
