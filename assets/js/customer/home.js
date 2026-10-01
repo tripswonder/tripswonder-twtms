@@ -783,6 +783,620 @@ document
         closeSearch
     );
 
+    // =========================================================
+// GLOBAL SEARCH — PEOPLE + TOURS
+// =========================================================
+
+const globalSearchInput =
+    document.getElementById(
+        "globalSearchInput"
+    );
+
+const globalSearchClear =
+    document.getElementById(
+        "globalSearchClear"
+    );
+
+const globalSearchEmpty =
+    document.getElementById(
+        "globalSearchEmpty"
+    );
+
+const globalSearchPeopleGroup =
+    document.getElementById(
+        "globalSearchPeopleGroup"
+    );
+
+const globalSearchPeople =
+    document.getElementById(
+        "globalSearchPeople"
+    );
+
+const globalSearchToursGroup =
+    document.getElementById(
+        "globalSearchToursGroup"
+    );
+
+const globalSearchTours =
+    document.getElementById(
+        "globalSearchTours"
+    );
+
+
+let globalSearchTimer =
+    null;
+
+let globalSearchRequestId =
+    0;
+
+
+// =========================================================
+// MEMBER DISPLAY HELPERS
+// =========================================================
+
+function globalMemberName(
+    member
+) {
+
+    const first =
+        String(
+            member?.firstName ||
+            member?.firstname ||
+            member?.givenName ||
+            ""
+        ).trim();
+
+    const last =
+        String(
+            member?.lastName ||
+            member?.lastname ||
+            member?.surname ||
+            ""
+        ).trim();
+
+    const fullName =
+        [first, last]
+            .filter(Boolean)
+            .join(" ")
+            .trim();
+
+    return (
+        fullName ||
+        String(
+            member?.displayName ||
+            member?.fullName ||
+            member?.name ||
+            member?.customerName ||
+            member?.username ||
+            member?.email ||
+            "Trips Wonder Member"
+        ).trim()
+    );
+}
+
+
+function globalMemberAvatar(
+    member
+) {
+
+    return String(
+        member?.profilePhotoUrl ||
+        member?.profilePhoto ||
+        member?.photoURL ||
+        member?.photoUrl ||
+        member?.avatarUrl ||
+        member?.avatar ||
+        ""
+    ).trim();
+}
+
+
+// =========================================================
+// TOUR SEARCH
+// =========================================================
+
+function getGlobalTourResults(
+    term
+) {
+
+    const search =
+        normalizeText(
+            term
+        );
+
+    if (!search) {
+        return [];
+    }
+
+    return customerPackages
+        .filter(
+            packageItem => {
+
+                const searchable =
+                    normalizeText(
+                        [
+                            packageItem?.name,
+                            packageItem?.location,
+                            packageItem?.category,
+                            packageItem?.duration,
+                            packageItem?.code,
+                            packageItem?.description
+                        ].join(" ")
+                    );
+
+                return searchable.includes(
+                    search
+                );
+            }
+        )
+        .slice(
+            0,
+            10
+        );
+}
+
+
+// =========================================================
+// RENDER PEOPLE
+// =========================================================
+
+function renderGlobalPeople(
+    members
+) {
+
+    if (
+        !globalSearchPeople ||
+        !globalSearchPeopleGroup
+    ) {
+        return;
+    }
+
+    if (!members.length) {
+
+        globalSearchPeople.innerHTML = "";
+
+        globalSearchPeopleGroup.hidden =
+            true;
+
+        return;
+    }
+
+
+    globalSearchPeopleGroup.hidden =
+        false;
+
+    globalSearchPeople.innerHTML =
+        "";
+
+
+    members.forEach(
+        member => {
+
+            const button =
+                document.createElement(
+                    "button"
+                );
+
+            button.type =
+                "button";
+
+            button.className =
+                "tw-global-result-row";
+
+            const avatar =
+                globalMemberAvatar(
+                    member
+                );
+
+            const name =
+                globalMemberName(
+                    member
+                );
+
+            const secondary =
+                String(
+                    member?.username ||
+                    member?.email ||
+                    "Trips Wonder member"
+                ).trim();
+
+
+            button.innerHTML = `
+                <span class="tw-global-result-avatar">
+                    ${
+                        avatar
+                            ? `
+                                <img
+                                    src="${escapeHtml(avatar)}"
+                                    alt=""
+                                    loading="lazy">
+                              `
+                            : `
+                                <i class="fa-solid fa-user"></i>
+                              `
+                    }
+                </span>
+
+                <span class="tw-global-result-copy">
+                    <strong>
+                        ${escapeHtml(name)}
+                    </strong>
+
+                    <small>
+                        ${escapeHtml(secondary)}
+                    </small>
+                </span>
+
+                <i class="fa-solid fa-chevron-right tw-global-result-arrow"></i>
+            `;
+
+
+            button.addEventListener(
+    "click",
+    () => {
+
+        if (!member?.uid) {
+            console.error(
+                "GLOBAL SEARCH MEMBER UID MISSING:",
+                member
+            );
+            return;
+        }
+
+        sessionStorage.setItem(
+            "tripswonder:open-member",
+            JSON.stringify(member)
+        );
+
+        window.location.href =
+            `message.html?member=${encodeURIComponent(member.uid)}`;
+
+    }
+);
+
+
+            globalSearchPeople.appendChild(
+                button
+            );
+
+        }
+    );
+}
+
+
+// =========================================================
+// RENDER TOURS
+// =========================================================
+
+function renderGlobalTours(
+    packages
+) {
+
+    if (
+        !globalSearchTours ||
+        !globalSearchToursGroup
+    ) {
+        return;
+    }
+
+    if (!packages.length) {
+
+        globalSearchTours.innerHTML = "";
+
+        globalSearchToursGroup.hidden =
+            true;
+
+        return;
+    }
+
+
+    globalSearchToursGroup.hidden =
+        false;
+
+    globalSearchTours.innerHTML =
+        "";
+
+
+    packages.forEach(
+        packageItem => {
+
+            const button =
+                document.createElement(
+                    "button"
+                );
+
+            button.type =
+                "button";
+
+            button.className =
+                "tw-global-result-row";
+
+
+            const image =
+                getPackageImage(
+                    packageItem
+                );
+
+            const name =
+                String(
+                    packageItem?.name ||
+                    "Tour Package"
+                ).trim();
+
+            const location =
+                String(
+                    packageItem?.location ||
+                    packageItem?.category ||
+                    "Philippines"
+                ).trim();
+
+
+            button.innerHTML = `
+                <span class="tw-global-result-avatar tw-global-result-tour">
+                    ${
+                        image
+                            ? `
+                                <img
+                                    src="${escapeHtml(image)}"
+                                    alt=""
+                                    loading="lazy">
+                              `
+                            : `
+                                <i class="fa-solid fa-location-dot"></i>
+                              `
+                    }
+                </span>
+
+                <span class="tw-global-result-copy">
+                    <strong>
+                        ${escapeHtml(name)}
+                    </strong>
+
+                    <small>
+                        ${escapeHtml(location)}
+                        ${
+                            packageItem?.price
+                                ? ` · ₱${formatMoney(packageItem.price)}`
+                                : ""
+                        }
+                    </small>
+                </span>
+
+                <i class="fa-solid fa-chevron-right tw-global-result-arrow"></i>
+            `;
+
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    closeSearch();
+
+                    openPackageDetails(
+                        packageItem
+                    );
+
+                }
+            );
+
+
+            globalSearchTours.appendChild(
+                button
+            );
+
+        }
+    );
+}
+
+
+// =========================================================
+// RUN GLOBAL SEARCH
+// =========================================================
+
+async function runGlobalSearch(
+    term
+) {
+
+    const raw =
+        String(
+            term ||
+            ""
+        ).trim();
+
+    const requestId =
+        ++globalSearchRequestId;
+
+
+    if (!raw) {
+
+        renderGlobalPeople(
+            []
+        );
+
+        renderGlobalTours(
+            []
+        );
+
+        if (globalSearchEmpty) {
+            globalSearchEmpty.hidden =
+                false;
+        }
+
+        return;
+    }
+
+
+    if (globalSearchEmpty) {
+        globalSearchEmpty.hidden =
+            true;
+    }
+
+
+    // -----------------------------------------
+    // TOURS — LOCAL / IMMEDIATE
+    // -----------------------------------------
+
+    const tours =
+        getGlobalTourResults(
+            raw
+        );
+
+    renderGlobalTours(
+        tours
+    );
+
+
+    // -----------------------------------------
+    // PEOPLE — LOGIN REQUIRED
+    // -----------------------------------------
+
+    if (
+        !currentUser &&
+        !auth.currentUser
+    ) {
+
+        renderGlobalPeople(
+            []
+        );
+
+        return;
+    }
+
+
+    try {
+
+        const response =
+            await searchMemberExactCallable({
+                search:
+                    raw
+            });
+
+
+        if (
+            requestId !==
+            globalSearchRequestId
+        ) {
+            return;
+        }
+
+
+        const members =
+            Array.isArray(
+                response?.data?.members
+            )
+                ? response.data.members
+                : (
+                    response?.data?.member
+                        ? [response.data.member]
+                        : []
+                );
+
+
+        renderGlobalPeople(
+            members
+        );
+
+
+    } catch (error) {
+
+        if (
+            requestId !==
+            globalSearchRequestId
+        ) {
+            return;
+        }
+
+
+        console.error(
+            "GLOBAL MEMBER SEARCH ERROR:",
+            error
+        );
+
+
+        renderGlobalPeople(
+            []
+        );
+
+    }
+
+}
+
+
+// =========================================================
+// GLOBAL SEARCH INPUT
+// =========================================================
+
+globalSearchInput
+    ?.addEventListener(
+        "input",
+        event => {
+
+            const value =
+                String(
+                    event.target.value ||
+                    ""
+                );
+
+
+            if (globalSearchClear) {
+
+                globalSearchClear.hidden =
+                    !value.trim();
+
+            }
+
+
+            clearTimeout(
+                globalSearchTimer
+            );
+
+
+            globalSearchTimer =
+                setTimeout(
+                    () => {
+
+                        runGlobalSearch(
+                            value
+                        );
+
+                    },
+                    300
+                );
+
+        }
+    );
+
+
+// =========================================================
+// CLEAR GLOBAL SEARCH
+// =========================================================
+
+globalSearchClear
+    ?.addEventListener(
+        "click",
+        () => {
+
+            if (globalSearchInput) {
+
+                globalSearchInput.value =
+                    "";
+
+                globalSearchInput.focus();
+
+            }
+
+
+            globalSearchClear.hidden =
+                true;
+
+
+            runGlobalSearch(
+                ""
+            );
+
+        }
+    );
+
 
 headerSearchButton
     ?.addEventListener(
@@ -803,19 +1417,42 @@ searchInput
         "input",
         event => {
 
-            currentSearch =
-                normalizeText(
-                    event.target.value
+            const value =
+                String(
+                    event.target.value ||
+                    ""
                 );
 
-
-            renderCustomerPackages();
-
-            renderApprovedHomeMockup();
-
             if (twSearchClear) {
-                twSearchClear.hidden = !currentSearch;
+                twSearchClear.hidden =
+                    !value.trim();
             }
+
+            openSearch();
+
+            if (globalSearchInput) {
+                globalSearchInput.value =
+                    value;
+            }
+
+            if (globalSearchClear) {
+                globalSearchClear.hidden =
+                    !value.trim();
+            }
+
+            clearTimeout(
+                globalSearchTimer
+            );
+
+            globalSearchTimer =
+                setTimeout(
+                    () => {
+                        runGlobalSearch(
+                            value
+                        );
+                    },
+                    300
+                );
 
         }
     );
@@ -6517,14 +7154,17 @@ if (customerPostsUnsubscribe) {
             }
 
 
-            startCustomerPostsListener();
+           startCustomerPostsListener();
 
 
-            try {
+/* ==========================================================
+   HOME DATA — PARALLEL LOADING
+========================================================== */
 
-                await loadCustomerPackages();
-
-            } catch (packageError) {
+const packagesPromise =
+    loadCustomerPackages()
+        .catch(
+            packageError => {
 
                 console.error(
                     "HOME PACKAGE ERROR:",
@@ -6565,15 +7205,20 @@ if (customerPostsUnsubscribe) {
                 }
 
             }
+        );
 
 
-            try {
-
-                await loadCustomerBookings();
+const bookingsPromise =
+    loadCustomerBookings()
+        .then(
+            () => {
 
                 renderUpcomingTrip();
 
-            } catch (bookingError) {
+            }
+        )
+        .catch(
+            bookingError => {
 
                 console.error(
                     "HOME BOOKING ERROR:",
@@ -6581,19 +7226,30 @@ if (customerPostsUnsubscribe) {
                 );
 
 
-                upcomingTripCard.hidden =
-                    true;
+                if (upcomingTripCard) {
+                    upcomingTripCard.hidden =
+                        true;
+                }
 
 
-                noUpcomingTrip.hidden =
-                    false;
+                if (noUpcomingTrip) {
+                    noUpcomingTrip.hidden =
+                        false;
+                }
 
             }
+        );
 
 
-            console.log(
-                "CUSTOMER HOME READY"
-            );
+await Promise.all([
+    packagesPromise,
+    bookingsPromise
+]);
+
+
+console.log(
+    "CUSTOMER HOME READY"
+);
 
 
         } catch (error) {

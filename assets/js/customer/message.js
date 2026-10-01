@@ -196,9 +196,11 @@ onAuthStateChanged(auth, async user => {
         // Admin > Page Setup > Customer Support Profile.
         subscribeSupportProfile();
 
-        startMemberMessenger();
-        subscribeNotifications();
-        syncMessageRoute();
+        loadPendingMemberDeepLink();
+
+startMemberMessenger();
+subscribeNotifications();
+syncMessageRoute();
 
     } catch (error) {
         console.error(
@@ -1178,6 +1180,72 @@ let activeMemberProfile = null;
 let activeMemberTab = "chats";
 let memberSearchTimer = null;
 
+// =========================================================
+// MEMBER DEEP LINK
+// =========================================================
+
+let pendingMemberDeepLink = null;
+
+
+function loadPendingMemberDeepLink() {
+
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
+
+    const memberUid =
+        String(
+            params.get("member") ||
+            ""
+        ).trim();
+
+    if (!memberUid) {
+        return;
+    }
+
+
+    try {
+
+        const stored =
+            sessionStorage.getItem(
+                "tripswonder:open-member"
+            );
+
+        if (!stored) {
+            return;
+        }
+
+
+        const profile =
+            JSON.parse(
+                stored
+            );
+
+
+        if (
+            !profile?.uid ||
+            profile.uid !== memberUid
+        ) {
+            return;
+        }
+
+
+        pendingMemberDeepLink =
+            profile;
+
+
+    } catch (error) {
+
+        console.warn(
+            "MEMBER DEEP LINK ERROR:",
+            error
+        );
+
+    }
+
+}
+
 function memberConversationState(conversation) {
     return String(conversation?.requestState || "").trim().toLowerCase();
 }
@@ -1975,6 +2043,42 @@ function subscribeMemberConversations() {
             updateMemberMessengerBadges();
 
             renderMemberConversationList();
+
+            if (pendingMemberDeepLink) {
+
+    const profile =
+        pendingMemberDeepLink;
+
+    pendingMemberDeepLink =
+        null;
+
+
+    sessionStorage.removeItem(
+        "tripswonder:open-member"
+    );
+
+
+    const cleanUrl =
+        new URL(
+            window.location.href
+        );
+
+    cleanUrl.searchParams.delete(
+        "member"
+    );
+
+    window.history.replaceState(
+        {},
+        "",
+        cleanUrl
+    );
+
+
+    openMemberConversationWith(
+        profile
+    );
+
+}
 
             if (activeMemberConversation) {
                 const fresh = memberConversations.find(item => item.id === activeMemberConversation.id);

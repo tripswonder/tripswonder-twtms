@@ -2376,3 +2376,29 @@ button {
         background: #ffffff;
     }
 }
+
+/* ==========================================================
+   MOBILE — SHARED HEADER CLICK LAYER FIX
+   ========================================================== */
+
+@media (max-width: 899px) {
+
+    #customerBottomNav {
+        position: relative;
+        z-index: 1000;
+    }
+
+    .customer-shared-header {
+        position: relative;
+        z-index: 1000;
+        pointer-events: auto;
+    }
+
+    .customer-shared-actions,
+    .customer-shared-action,
+    .customer-shared-profile {
+        position: relative;
+        z-index: 1001;
+        pointer-events: auto;
+    }
+}

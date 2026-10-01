@@ -76,6 +76,59 @@ const DEFAULT_CUSTOMER_BRANDING = {
     businessTagline: "Travel & Tours"
 };
 
+const CUSTOMER_BRANDING_CACHE_KEY =
+    "tripswonder:business-logo";
+
+
+function getCachedBusinessLogo() {
+
+    try {
+
+        return String(
+            localStorage.getItem(
+                CUSTOMER_BRANDING_CACHE_KEY
+            ) || ""
+        ).trim();
+
+    } catch (error) {
+
+        return "";
+
+    }
+}
+
+
+function cacheBusinessLogo(
+    logoUrl
+) {
+
+    const value =
+        String(
+            logoUrl || ""
+        ).trim();
+
+
+    if (!value) {
+        return;
+    }
+
+
+    try {
+
+        localStorage.setItem(
+            CUSTOMER_BRANDING_CACHE_KEY,
+            value
+        );
+
+    } catch (error) {
+
+        console.warn(
+            "CUSTOMER NAV: Unable to cache business logo.",
+            error
+        );
+
+    }
+}
 
 const state = {
     user: null,
@@ -425,29 +478,6 @@ function renderCustomerNav(
     }
 
 
-    /*
-     * HOME PROTECTION
-     *
-     * Home already has its approved own desktop header / rail.
-     * We only keep the existing shared mobile bottom nav there.
-     */
-    if (isHomeModule()) {
-
-        document.body.classList.add(
-            "customer-home-nav-protected"
-        );
-
-        document.body.classList.remove(
-            "customer-shared-nav-page"
-        );
-
-        container.innerHTML =
-            createMobileNav();
-
-        return;
-    }
-
-
     document.body.classList.add(
         "customer-shared-nav-page"
     );
@@ -773,14 +803,33 @@ function applyCustomerBranding(
         ).trim();
 
 
-    const defaultSrc =
+    /*
+     * Save the confirmed Page Setup logo.
+     */
+    if (businessLogo) {
+
+        cacheBusinessLogo(
+            businessLogo
+        );
+
+    }
+
+
+    /*
+     * Priority:
+     * 1. Current Page Setup logo
+     * 2. Last confirmed Page Setup logo
+     * 3. Local fallback only if no logo was ever cached
+     */
+    const resolvedLogo =
+        businessLogo ||
+        getCachedBusinessLogo() ||
         logo.dataset.defaultSrc ||
         DEFAULT_CUSTOMER_BRANDING.businessLogo;
 
 
     logo.src =
-        businessLogo ||
-        defaultSrc;
+        resolvedLogo;
 
 
     logo.alt =
@@ -794,8 +843,10 @@ function applyCustomerBranding(
                 null;
 
             logo.src =
-                defaultSrc;
+                DEFAULT_CUSTOMER_BRANDING.businessLogo;
+
         };
+
 }
 
 
@@ -3253,21 +3304,14 @@ function initCustomerAuthState() {
             subscribeCustomerBranding();
 
 
-            if (
-                isHomeModule()
-            ) {
-                return;
-            }
+subscribeCustomerProfile(
+    user
+);
 
 
-            subscribeCustomerProfile(
-                user
-            );
-
-
-            subscribeHeaderBadges(
-                user
-            );
+subscribeHeaderBadges(
+    user
+);
         }
     );
 }

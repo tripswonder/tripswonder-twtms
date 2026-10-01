@@ -4675,3 +4675,196 @@ body.tw-guest-auth-open { overflow: hidden; }
 body.tw-global-search-open {
     overflow: hidden;
 }
+
+/* ==========================================================
+   GLOBAL SEARCH RESULTS
+========================================================== */
+
+.tw-global-result-row {
+    width: 100%;
+    min-height: 62px;
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 8px 4px;
+    color: #172036;
+    text-align: left;
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid #eef1f5;
+    cursor: pointer;
+}
+
+.tw-global-result-row:last-child {
+    border-bottom: 0;
+}
+
+.tw-global-result-avatar {
+    width: 44px;
+    height: 44px;
+    flex: 0 0 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    color: #667085;
+    background: #eef2f6;
+    border-radius: 50%;
+}
+
+.tw-global-result-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.tw-global-result-tour {
+    border-radius: 10px;
+}
+
+.tw-global-result-copy {
+    min-width: 0;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.tw-global-result-copy strong {
+    overflow: hidden;
+    color: #172036;
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.tw-global-result-copy small {
+    overflow: hidden;
+    color: #667085;
+    font-size: 11px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.tw-global-result-arrow {
+    flex: 0 0 auto;
+    margin-right: 4px;
+    color: #98a2b3;
+    font-size: 11px;
+}
+
+/* ==========================================================
+   GLOBAL SEARCH — DESKTOP DROPDOWN
+========================================================== */
+
+@media (min-width: 900px) {
+
+    .tw-global-search {
+        position: fixed;
+        inset: 0;
+        z-index: 5000;
+
+        pointer-events: none;
+    }
+
+    /* Remove modal/dimmed background on desktop */
+    .tw-global-search-backdrop {
+        display: none !important;
+    }
+
+    /* Search results dropdown */
+    .tw-global-search-panel {
+        position: absolute;
+
+        top: 64px;
+        left: calc(285px + 32px);
+
+        width: min(
+            765px,
+            calc(100vw - 285px - 32px - 250px)
+        );
+
+        height: auto;
+        max-height: min(620px, calc(100vh - 90px));
+
+        margin: 0;
+
+        display: flex;
+        flex-direction: column;
+
+        overflow: hidden;
+
+        background: #ffffff;
+
+        border: 1px solid #e3e8ef;
+        border-radius: 14px;
+
+        box-shadow:
+            0 14px 35px rgba(15, 23, 42, 0.14);
+
+        pointer-events: auto;
+    }
+
+    /* We already have the real search bar in desktop header */
+    .tw-global-search-header {
+        display: none !important;
+    }
+
+    .tw-global-search-body {
+        flex: 0 1 auto;
+
+        max-height: min(
+            560px,
+            calc(100vh - 110px)
+        );
+
+        overflow-y: auto;
+
+        padding: 14px 16px 18px;
+    }
+
+    .tw-global-search-empty {
+        min-height: 150px;
+    }
+
+    .tw-global-search-group {
+        margin-bottom: 14px;
+    }
+
+    .tw-global-search-group:last-child {
+        margin-bottom: 0;
+    }
+
+    .tw-global-result-row {
+        border-radius: 9px;
+        padding-left: 8px;
+        padding-right: 8px;
+    }
+
+    .tw-global-result-row:hover {
+        background: #f6f8fb;
+    }
+
+    /* Desktop should remain scrollable */
+    body.tw-global-search-open {
+        overflow: auto;
+    }
+}
+
+
+/* ==========================================================
+   GLOBAL SEARCH — DESKTOP / SMALL SIDEBAR ALIGNMENT
+========================================================== */
+
+@media (min-width: 900px) and (max-width: 1280px) {
+
+    .tw-global-search-panel {
+        left: calc(235px + 32px);
+
+        width: min(
+            650px,
+            calc(100vw - 235px - 32px - 180px)
+        );
+    }
+}
