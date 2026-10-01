@@ -3855,7 +3855,7 @@ async function stopMemberQRCamera() {
    MEMBER QR — DETECTION
 ========================================================== */
 
-function handleMemberQRDetected(
+async function handleMemberQRDetected(
     decodedText
 ) {
 
@@ -3910,8 +3910,7 @@ function handleMemberQRDetected(
         "MEMBER QR DETECTED:",
         {
             memberUid,
-            raw:
-                value
+            raw: value
         }
     );
 
@@ -3932,18 +3931,167 @@ function handleMemberQRDetected(
     }
 
 
-    console.log(
-        "MEMBER QR VALID CUSTOMER UID:",
-        memberUid
+    try {
+
+        console.log(
+            "MEMBER QR: Looking up member...",
+            memberUid
+        );
+
+
+        const response =
+            await searchMemberExactCallable({
+                uid: memberUid
+            });
+
+
+        const data =
+            response?.data || {};
+
+
+        const member =
+            data.member ||
+            data.members?.[0] ||
+            null;
+
+
+        if (!member) {
+
+            console.warn(
+                "MEMBER QR: Member not found.",
+                memberUid
+            );
+
+            memberQRScanLocked =
+                false;
+
+            return;
+        }
+
+
+        console.log(
+            "MEMBER QR MEMBER FOUND:",
+            member
+        );
+
+        closeMemberQRScanner();
+
+await openMemberConversationWith(
+    member
+);
+
+memberQRScanLocked = false;
+
+
+        /*
+         * NEXT STEP:
+         * Show the scanned member inside
+         * the QR scanner before connecting.
+         */
+
+    } catch (error) {
+
+        console.error(
+            "MEMBER QR LOOKUP ERROR:",
+            error
+        );
+
+        memberQRScanLocked =
+            false;
+    }
+}
+
+/* ==========================================================
+   MEMBER QR — UPLOAD IMAGE
+========================================================== */
+
+const memberQRUploadButton =
+    document.getElementById(
+        "memberQRUploadButton"
+    );
+
+const memberQRImageInput =
+    document.getElementById(
+        "memberQRImageInput"
     );
 
 
-    /*
-     * NEXT STEP:
-     * Resolve this UID to an existing
-     * Trips Wonder member account.
-     */
-}
+memberQRUploadButton
+    ?.addEventListener(
+        "click",
+        () => {
+
+            memberQRImageInput?.click();
+        }
+    );
+
+
+memberQRImageInput
+    ?.addEventListener(
+        "change",
+        async event => {
+
+            const file =
+                event.target.files?.[0];
+
+            if (!file) {
+                return;
+            }
+
+
+            try {
+
+                /*
+                 * Use a separate scanner instance
+                 * for uploaded images.
+                 */
+
+                const uploadScanner =
+                    new window.Html5Qrcode(
+                        "memberQRReader"
+                    );
+
+
+                const decodedText =
+                    await uploadScanner.scanFile(
+                        file,
+                        false
+                    );
+
+
+                console.log(
+                    "MEMBER QR IMAGE DETECTED:",
+                    decodedText
+                );
+
+
+                handleMemberQRDetected(
+                    decodedText
+                );
+
+
+                await uploadScanner.clear();
+
+
+            } catch (error) {
+
+                console.error(
+                    "MEMBER QR IMAGE ERROR:",
+                    error
+                );
+
+            } finally {
+
+                /*
+                 * Allow selecting the same
+                 * image again.
+                 */
+
+                event.target.value =
+                    "";
+            }
+        }
+    );
 
 async function openMemberQRScanner() {
 

@@ -2201,15 +2201,36 @@ exports.searchMemberExact = onCall(
             .trim()
             .toLowerCase();
 
-      if (
+// ==================================================
+// QR MEMBER UID
+// ==================================================
+
+const memberUid =
+    String(
+        (
+            request.data &&
+            request.data.uid
+        ) || "",
+    )
+        .trim();
+
+      const isUidLookup =
+    memberUid.length > 0;
+
+
+if (
+    !isUidLookup &&
+    (
         search.length < 1 ||
         search.length > 120
-      ) {
-        throw new HttpsError(
-            "invalid-argument",
-            "Enter a valid member name, username or email.",
-        );
-      }
+    )
+) {
+
+    throw new HttpsError(
+        "invalid-argument",
+        "Search is required.",
+    );
+}
 
       const requesterUid =
         request.auth.uid;
@@ -2262,6 +2283,112 @@ exports.searchMemberExact = onCall(
       // returned.
       //
       // ==================================================
+// ==================================================
+// QR MEMBER — EXACT UID LOOKUP
+// ==================================================
+
+if (isUidLookup) {
+
+    // Do not allow looking up your own account
+    if (memberUid === requesterUid) {
+
+        throw new HttpsError(
+            "failed-precondition",
+            "You cannot connect with your own account.",
+        );
+    }
+
+
+    const memberDoc =
+        await db
+            .collection("users")
+            .doc(memberUid)
+            .get();
+
+
+    if (!memberDoc.exists) {
+
+        return {
+            members: [],
+            member: null,
+        };
+    }
+
+
+    const memberData =
+        memberDoc.data() || {};
+
+
+    const memberRole =
+        String(
+            memberData.role || "",
+        )
+            .trim()
+            .toLowerCase();
+
+    const memberStatus =
+        String(
+            memberData.status || "",
+        )
+            .trim()
+            .toLowerCase();
+
+
+    // Only active customer/client accounts can connect
+    if (
+        !["customer", "client"].includes(
+            memberRole,
+        ) ||
+        memberStatus !== "active"
+    ) {
+
+        return {
+            members: [],
+            member: null,
+        };
+    }
+
+
+    const member = {
+        uid:
+            memberDoc.id,
+
+        firstName:
+            memberData.firstName || "",
+
+        lastName:
+            memberData.lastName || "",
+
+        displayName:
+            memberData.displayName ||
+            memberData.fullName ||
+            [
+                memberData.firstName,
+                memberData.lastName,
+            ]
+                .filter(Boolean)
+                .join(" ")
+                .trim(),
+
+        username:
+            memberData.username || "",
+
+        email:
+            memberData.email || "",
+
+        photoURL:
+            memberData.photoURL ||
+            memberData.photoUrl ||
+            memberData.profilePhoto ||
+            "",
+    };
+
+
+    return {
+        members: [member],
+        member,
+    };
+}
 
       const usersSnapshot =
         await db
