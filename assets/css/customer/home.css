@@ -4868,3 +4868,2034 @@ body.tw-global-search-open {
         );
     }
 }
+
+/* ==========================================================
+   HOME SIDEBAR — CUSTOMER PROFILE
+   ========================================================== */
+
+.tw-sidebar-profile {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr) 18px;
+    align-items: center;
+    gap: 11px;
+
+    margin-top: 22px;
+    padding: 11px 12px;
+
+    color: #172036;
+    background: #f7f9fc;
+    border: 1px solid #e1e7ef;
+    border-radius: 12px;
+
+    text-decoration: none;
+
+    transition:
+        background .18s ease,
+        border-color .18s ease,
+        transform .18s ease;
+}
+
+.tw-sidebar-profile:hover {
+    background: #eef5ff;
+    border-color: #cfe0f7;
+}
+
+.tw-sidebar-profile:active {
+    transform: scale(.985);
+}
+
+
+.tw-sidebar-profile-avatar {
+    width: 44px;
+    height: 44px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    overflow: hidden;
+
+    color: #ffffff;
+    background: linear-gradient(
+        135deg,
+        #5e6b7f,
+        #1d2939
+    );
+
+    border-radius: 50%;
+
+    font-size: 16px;
+}
+
+
+.tw-sidebar-profile-avatar img {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+}
+
+
+.tw-sidebar-profile-info {
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+}
+
+
+.tw-sidebar-profile-info strong {
+    overflow: hidden;
+
+    color: #172036;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    line-height: 1.35;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+.tw-sidebar-profile-info small {
+    margin-top: 2px;
+
+    color: #64748b;
+
+    font-size: 9px;
+    font-weight: 500;
+}
+
+
+.tw-sidebar-profile-arrow {
+    color: #94a3b8;
+
+    font-size: 9px;
+}
+
+/* ==========================================================
+   HOME SIDEBAR — QUICK ACCESS
+   ========================================================== */
+
+.tw-sidebar-tools {
+    width: 100%;
+}
+
+.tw-sidebar-tools-label {
+    display: block;
+    margin: 0 0 8px 6px;
+
+    color: #94a3b8;
+
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: .7px;
+}
+
+
+/* ITEM */
+
+.tw-sidebar-tool {
+    width: 100%;
+    min-height: 55px;
+
+    display: grid;
+    grid-template-columns: 36px minmax(0, 1fr) 14px;
+    align-items: center;
+    gap: 10px;
+
+    padding: 8px 7px;
+
+    color: #172036;
+    text-decoration: none;
+
+    border-radius: 10px;
+
+    transition:
+        background .16s ease,
+        transform .16s ease;
+}
+
+.tw-sidebar-tool:hover {
+    background: #f4f7fb;
+}
+
+.tw-sidebar-tool:active {
+    transform: scale(.985);
+}
+
+
+/* ICON */
+
+.tw-sidebar-tool-icon {
+    width: 36px;
+    height: 36px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
+
+    font-size: 14px;
+}
+
+.tw-sidebar-tool-icon.about {
+    color: #1769e0;
+    background: #eaf2ff;
+}
+
+.tw-sidebar-tool-icon.feedback {
+    color: #7c3aed;
+    background: #f2eaff;
+}
+
+.tw-sidebar-tool-icon.qr {
+    color: #059669;
+    background: #e7f8f1;
+}
+
+
+/* TEXT */
+
+.tw-sidebar-tool-copy {
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.tw-sidebar-tool-copy strong {
+    overflow: hidden;
+
+    color: #172036;
+
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1.3;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.tw-sidebar-tool-copy small {
+    margin-top: 2px;
+
+    overflow: hidden;
+
+    color: #94a3b8;
+
+    font-size: 8px;
+    font-weight: 400;
+    line-height: 1.35;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+/* ARROW */
+
+.tw-sidebar-tool-arrow {
+    color: #b0bac8;
+    font-size: 8px;
+}
+
+
+/* DIVIDER */
+
+.tw-sidebar-tools-divider {
+    margin-top: 12px;
+}
+
+/* ==========================================================
+   ABOUT TRIPS WONDER MODAL
+========================================================== */
+
+.tw-about-modal[hidden] {
+    display: none !important;
+}
+
+.tw-about-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 5000;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+}
+
+
+.tw-about-backdrop {
+    position: absolute;
+    inset: 0;
+
+    background: rgba(15, 23, 42, .48);
+
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+}
+
+
+.tw-about-dialog {
+    position: relative;
+    z-index: 1;
+
+    width: min(100%, 520px);
+    max-height: min(720px, calc(100dvh - 40px));
+
+    overflow-y: auto;
+
+    background: #ffffff;
+
+    border: 1px solid rgba(255, 255, 255, .75);
+    border-radius: 24px;
+
+    box-shadow:
+        0 25px 70px rgba(15, 23, 42, .22);
+}
+
+
+/* CLOSE */
+
+.tw-about-close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    z-index: 5;
+
+    width: 34px;
+    height: 34px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    color: #475569;
+    background: rgba(255, 255, 255, .92);
+
+    border: 1px solid #e2e8f0;
+    border-radius: 50%;
+
+    font-size: 13px;
+}
+
+
+/* HERO */
+
+.tw-about-hero {
+    padding: 30px 28px 26px;
+
+    text-align: center;
+
+    background:
+        linear-gradient(
+            180deg,
+            #eef5ff 0%,
+            #ffffff 100%
+        );
+}
+
+
+.tw-about-logo {
+    width: 76px;
+    height: 76px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin: 0 auto 14px;
+
+    overflow: hidden;
+
+    background: #ffffff;
+
+    border: 1px solid #dce7f5;
+    border-radius: 50%;
+
+    box-shadow:
+        0 8px 22px rgba(23, 105, 224, .12);
+}
+
+
+.tw-about-logo img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: contain;
+}
+
+
+.tw-about-eyebrow {
+    display: block;
+
+    margin-bottom: 6px;
+
+    color: #1769e0;
+
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: .8px;
+}
+
+
+.tw-about-hero h2 {
+    margin: 0;
+
+    color: #102a56;
+
+    font-size: 24px;
+    font-weight: 700;
+}
+
+
+.tw-about-hero p {
+    margin: 7px 0 0;
+
+    color: #64748b;
+
+    font-size: 11px;
+}
+
+
+/* CONTENT */
+
+.tw-about-content {
+    padding: 4px 24px 24px;
+}
+
+
+.tw-about-section {
+    display: grid;
+    grid-template-columns: 42px minmax(0, 1fr);
+    gap: 12px;
+
+    padding: 18px 0;
+}
+
+
+.tw-about-section-icon {
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #1769e0;
+    background: #eaf2ff;
+
+    border-radius: 13px;
+}
+
+
+.tw-about-section h3 {
+    margin: 0;
+
+    color: #172036;
+
+    font-size: 14px;
+}
+
+
+.tw-about-section p {
+    margin: 5px 0 0;
+
+    color: #64748b;
+
+    font-size: 10px;
+    line-height: 1.65;
+}
+
+
+/* SERVICES */
+
+.tw-about-services {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 9px;
+}
+
+
+.tw-about-service {
+    min-width: 0;
+
+    padding: 15px 11px;
+
+    background: #f8fafc;
+
+    border: 1px solid #e5eaf1;
+    border-radius: 14px;
+
+    text-align: center;
+}
+
+
+.tw-about-service i {
+    color: #1769e0;
+
+    font-size: 17px;
+}
+
+
+.tw-about-service strong {
+    display: block;
+
+    margin-top: 8px;
+
+    color: #172036;
+
+    font-size: 10px;
+}
+
+
+.tw-about-service span {
+    display: block;
+
+    margin-top: 4px;
+
+    color: #94a3b8;
+
+    font-size: 8px;
+    line-height: 1.45;
+}
+
+
+/* TRUST */
+
+.tw-about-trust {
+    display: grid;
+    grid-template-columns: 38px minmax(0, 1fr);
+    align-items: center;
+    gap: 11px;
+
+    margin-top: 14px;
+    padding: 13px 14px;
+
+    color: #166534;
+    background: #f0fdf4;
+
+    border: 1px solid #d1fae5;
+    border-radius: 13px;
+}
+
+
+.tw-about-trust > i {
+    text-align: center;
+    font-size: 18px;
+}
+
+
+.tw-about-trust strong,
+.tw-about-trust span {
+    display: block;
+}
+
+
+.tw-about-trust strong {
+    font-size: 10px;
+}
+
+
+.tw-about-trust span {
+    margin-top: 2px;
+
+    color: #4b7560;
+
+    font-size: 8px;
+    line-height: 1.45;
+}
+
+
+/* MOBILE */
+
+@media (max-width: 600px) {
+
+    .tw-about-modal {
+        align-items: flex-end;
+
+        padding:
+            10px
+            10px
+            calc(
+                10px +
+                env(safe-area-inset-bottom)
+            );
+    }
+
+    .tw-about-dialog {
+        width: 100%;
+        max-height: 88dvh;
+
+        border-radius: 22px;
+    }
+
+    .tw-about-hero {
+        padding: 26px 18px 22px;
+    }
+
+    .tw-about-hero h2 {
+        font-size: 21px;
+    }
+
+    .tw-about-content {
+        padding:
+            4px 16px 18px;
+    }
+
+    .tw-about-services {
+        grid-template-columns: 1fr;
+    }
+
+    .tw-about-service {
+        text-align: left;
+    }
+}
+
+/* ==========================================================
+   CUSTOMER FEEDBACK MODAL
+========================================================== */
+
+.tw-feedback-modal[hidden] {
+    display: none !important;
+}
+
+.tw-feedback-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 5000;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+}
+
+.tw-feedback-backdrop {
+    position: absolute;
+    inset: 0;
+
+    background: rgba(15, 23, 42, .48);
+
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+}
+
+.tw-feedback-dialog {
+    position: relative;
+    z-index: 1;
+
+    width: min(100%, 520px);
+    max-height: min(760px, calc(100dvh - 40px));
+
+    overflow-y: auto;
+
+    background: #ffffff;
+    border-radius: 24px;
+
+    box-shadow:
+        0 25px 70px rgba(15, 23, 42, .22);
+}
+
+
+/* CLOSE */
+
+.tw-feedback-close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    z-index: 5;
+
+    width: 34px;
+    height: 34px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    color: #475569;
+    background: #ffffff;
+
+    border: 1px solid #e2e8f0;
+    border-radius: 50%;
+
+    font-size: 13px;
+}
+
+
+/* HEADER */
+
+.tw-feedback-header {
+    padding: 30px 30px 23px;
+
+    text-align: center;
+
+    background:
+        linear-gradient(
+            180deg,
+            #f6f0ff 0%,
+            #ffffff 100%
+        );
+}
+
+.tw-feedback-header-icon {
+    width: 62px;
+    height: 62px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin: 0 auto 12px;
+
+    color: #7c3aed;
+    background: #eee5ff;
+
+    border-radius: 18px;
+
+    font-size: 24px;
+}
+
+.tw-feedback-eyebrow {
+    display: block;
+
+    margin-bottom: 5px;
+
+    color: #7c3aed;
+
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: .8px;
+}
+
+.tw-feedback-header h2 {
+    margin: 0;
+
+    color: #172036;
+
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.tw-feedback-header p {
+    max-width: 360px;
+
+    margin: 7px auto 0;
+
+    color: #64748b;
+
+    font-size: 10px;
+    line-height: 1.55;
+}
+
+
+/* FORM */
+
+.tw-feedback-form {
+    padding: 4px 25px 25px;
+}
+
+.tw-feedback-field {
+    margin-top: 17px;
+}
+
+.tw-feedback-field > label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 7px;
+
+    color: #334155;
+
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.tw-feedback-field > label span {
+    color: #94a3b8;
+
+    font-size: 8px;
+    font-weight: 500;
+}
+
+
+/* STARS */
+
+.tw-feedback-stars {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+
+    padding: 13px;
+
+    background: #f8fafc;
+
+    border: 1px solid #e5eaf1;
+    border-radius: 14px;
+}
+
+.tw-feedback-stars button {
+    width: 39px;
+    height: 39px;
+
+    padding: 0;
+
+    color: #cbd5e1;
+    background: transparent;
+
+    border: 0;
+
+    font-size: 25px;
+
+    transition:
+        color .15s ease,
+        transform .15s ease;
+}
+
+.tw-feedback-stars button:hover,
+.tw-feedback-stars button.active {
+    color: #f59e0b;
+    transform: scale(1.08);
+}
+
+.tw-feedback-rating-label {
+    display: block;
+
+    margin-top: 6px;
+
+    color: #94a3b8;
+
+    text-align: center;
+
+    font-size: 8px;
+}
+
+
+/* INPUT */
+
+.tw-feedback-input-wrap {
+    height: 43px;
+
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    padding: 0 13px;
+
+    background: #f8fafc;
+
+    border: 1px solid #e2e8f0;
+    border-radius: 11px;
+}
+
+.tw-feedback-input-wrap i {
+    color: #94a3b8;
+
+    font-size: 12px;
+}
+
+.tw-feedback-input-wrap input {
+    flex: 1;
+    min-width: 0;
+
+    height: 100%;
+
+    padding: 0;
+
+    color: #172036;
+    background: transparent;
+
+    border: 0;
+    outline: 0;
+
+    font-size: 10px;
+}
+
+
+/* TEXTAREA */
+
+.tw-feedback-field textarea {
+    width: 100%;
+    min-height: 105px;
+
+    display: block;
+
+    padding: 12px 13px;
+
+    resize: vertical;
+
+    color: #172036;
+    background: #f8fafc;
+
+    border: 1px solid #e2e8f0;
+    border-radius: 11px;
+    outline: 0;
+
+    font: inherit;
+    font-size: 10px;
+    line-height: 1.55;
+}
+
+.tw-feedback-input-wrap:focus-within,
+.tw-feedback-field textarea:focus {
+    border-color: #a78bfa;
+
+    box-shadow:
+        0 0 0 3px rgba(124, 58, 237, .08);
+}
+
+.tw-feedback-counter {
+    margin-top: 4px;
+
+    color: #94a3b8;
+
+    text-align: right;
+
+    font-size: 8px;
+}
+
+
+/* RECOMMEND */
+
+.tw-feedback-recommend {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+
+.tw-feedback-recommend button {
+    height: 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+
+    padding: 0 8px;
+
+    color: #64748b;
+    background: #ffffff;
+
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+
+    font-size: 9px;
+    font-weight: 600;
+}
+
+.tw-feedback-recommend button:hover {
+    background: #f8fafc;
+}
+
+.tw-feedback-recommend button.active {
+    color: #6d28d9;
+    background: #f5f0ff;
+    border-color: #c4b5fd;
+}
+
+
+/* SUBMIT */
+
+.tw-feedback-message {
+    min-height: 14px;
+
+    margin: 11px 0 0;
+
+    text-align: center;
+
+    font-size: 9px;
+}
+
+.tw-feedback-submit {
+    width: 100%;
+    height: 44px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    margin-top: 4px;
+
+    color: #ffffff;
+    background: #6d28d9;
+
+    border: 0;
+    border-radius: 11px;
+
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.tw-feedback-submit:hover {
+    background: #5b21b6;
+}
+
+
+/* MOBILE */
+
+@media (max-width: 600px) {
+
+    .tw-feedback-modal {
+        align-items: flex-end;
+
+        padding:
+            10px
+            10px
+            calc(
+                10px +
+                env(safe-area-inset-bottom)
+            );
+    }
+
+    .tw-feedback-dialog {
+        width: 100%;
+        max-height: 88dvh;
+
+        border-radius: 22px;
+    }
+
+    .tw-feedback-header {
+        padding: 25px 18px 19px;
+    }
+
+    .tw-feedback-form {
+        padding: 4px 16px 18px;
+    }
+
+    .tw-feedback-stars {
+        gap: 6px;
+    }
+
+    .tw-feedback-stars button {
+        width: 36px;
+        height: 36px;
+
+        font-size: 22px;
+    }
+}
+
+/* ==========================================================
+   MY QR CODES MODAL
+   ========================================================== */
+
+.tw-qr-modal[hidden] {
+    display: none !important;
+}
+
+.tw-qr-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 24px;
+}
+
+.tw-qr-backdrop {
+    position: absolute;
+    inset: 0;
+
+    background: rgba(15, 23, 42, 0.62);
+    backdrop-filter: blur(5px);
+}
+
+.tw-qr-dialog {
+    position: relative;
+    z-index: 1;
+
+    width: min(100%, 820px);
+    max-height: calc(100vh - 48px);
+
+    overflow-y: auto;
+
+    background: #ffffff;
+    border: 1px solid #e5eaf1;
+    border-radius: 20px;
+
+    box-shadow:
+        0 28px 80px rgba(15, 23, 42, 0.28);
+}
+
+
+/* ==========================================================
+   CLOSE BUTTON
+   ========================================================== */
+
+.tw-qr-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    z-index: 5;
+
+    width: 36px;
+    height: 36px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    color: #64748b;
+    background: #f1f5f9;
+
+    border: 0;
+    border-radius: 50%;
+
+    font-size: 15px;
+}
+
+.tw-qr-close:hover {
+    color: #0f172a;
+    background: #e8edf3;
+}
+
+
+/* ==========================================================
+   HEADER
+   ========================================================== */
+
+.tw-qr-header {
+    padding: 28px 28px 22px;
+
+    text-align: center;
+
+    border-bottom: 1px solid #edf1f5;
+}
+
+.tw-qr-header-icon {
+    width: 54px;
+    height: 54px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    margin-bottom: 12px;
+
+    color: #059669;
+    background: #e7f8f1;
+
+    border-radius: 16px;
+
+    font-size: 22px;
+}
+
+.tw-qr-eyebrow {
+    display: block;
+
+    margin-bottom: 5px;
+
+    color: #059669;
+
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 1.2px;
+}
+
+.tw-qr-header h2 {
+    margin: 0;
+
+    color: #172036;
+
+    font-size: 22px;
+    font-weight: 750;
+}
+
+.tw-qr-header p {
+    margin: 6px 0 0;
+
+    color: #7b8798;
+
+    font-size: 11px;
+    line-height: 1.6;
+}
+
+
+/* ==========================================================
+   CONTENT
+   ========================================================== */
+
+.tw-qr-content {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(250px, .8fr);
+    gap: 16px;
+
+    padding: 20px;
+}
+
+.tw-qr-create-card,
+.tw-qr-preview-card,
+.tw-qr-saved {
+    background: #ffffff;
+
+    border: 1px solid #e5eaf1;
+    border-radius: 15px;
+}
+
+
+/* ==========================================================
+   CREATE QR
+   ========================================================== */
+
+.tw-qr-create-card {
+    padding: 18px;
+}
+
+.tw-qr-section-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+
+    margin-bottom: 16px;
+}
+
+.tw-qr-section-heading > div {
+    min-width: 0;
+}
+
+.tw-qr-section-heading strong,
+.tw-qr-section-heading span {
+    display: block;
+}
+
+.tw-qr-section-heading strong {
+    color: #172036;
+
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.tw-qr-section-heading span {
+    margin-top: 3px;
+
+    color: #8995a7;
+
+    font-size: 9px;
+    line-height: 1.5;
+}
+
+.tw-qr-section-heading > i {
+    color: #059669;
+
+    font-size: 17px;
+}
+
+
+/* ==========================================================
+   QR TYPE
+   ========================================================== */
+
+.tw-qr-type-selector {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 7px;
+
+    padding: 5px;
+
+    background: #f4f7fa;
+    border-radius: 11px;
+}
+
+.tw-qr-type-selector button {
+    min-height: 38px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+
+    padding: 7px 10px;
+
+    color: #718096;
+    background: transparent;
+
+    border: 0;
+    border-radius: 8px;
+
+    font-size: 9px;
+    font-weight: 600;
+}
+
+.tw-qr-type-selector button.active {
+    color: #047857;
+    background: #ffffff;
+
+    box-shadow:
+        0 2px 7px rgba(15, 23, 42, 0.08);
+}
+
+
+/* ==========================================================
+   FIELDS
+   ========================================================== */
+
+.tw-qr-field {
+    display: block;
+
+    margin-top: 14px;
+}
+
+.tw-qr-field > span {
+    display: block;
+
+    margin: 0 0 6px 2px;
+
+    color: #475569;
+
+    font-size: 9px;
+    font-weight: 650;
+}
+
+.tw-qr-field > input,
+.tw-qr-input-wrap {
+    width: 100%;
+    height: 43px;
+
+    background: #f8fafc;
+
+    border: 1px solid #dfe5ec;
+    border-radius: 10px;
+}
+
+.tw-qr-field > input {
+    padding: 0 12px;
+
+    color: #172036;
+
+    outline: none;
+
+    font-size: 10px;
+}
+
+.tw-qr-input-wrap {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+
+    padding: 0 12px;
+}
+
+.tw-qr-input-wrap > i {
+    flex: 0 0 auto;
+
+    color: #8a97a8;
+
+    font-size: 12px;
+}
+
+.tw-qr-input-wrap input {
+    width: 100%;
+    height: 100%;
+
+    padding: 0;
+
+    color: #172036;
+    background: transparent;
+
+    border: 0;
+    outline: 0;
+
+    font-size: 10px;
+}
+
+.tw-qr-field > input:focus,
+.tw-qr-input-wrap:focus-within {
+    background: #ffffff;
+    border-color: #6bc8a7;
+
+    box-shadow:
+        0 0 0 3px rgba(5, 150, 105, 0.08);
+}
+
+.tw-qr-field input::placeholder {
+    color: #a3adba;
+}
+
+
+/* ==========================================================
+   GENERATE
+   ========================================================== */
+
+.tw-qr-generate {
+    width: 100%;
+    height: 43px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    margin-top: 16px;
+
+    color: #ffffff;
+    background: #059669;
+
+    border: 0;
+    border-radius: 10px;
+
+    font-size: 10px;
+    font-weight: 700;
+
+    box-shadow:
+        0 6px 15px rgba(5, 150, 105, 0.18);
+}
+
+.tw-qr-generate:hover {
+    background: #047f5b;
+}
+
+
+/* ==========================================================
+   PREVIEW
+   ========================================================== */
+
+.tw-qr-preview-card {
+    min-height: 320px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    padding: 18px;
+}
+
+.tw-qr-preview-label {
+    align-self: flex-start;
+
+    color: #94a3b8;
+
+    font-size: 8px;
+    font-weight: 800;
+    letter-spacing: .9px;
+}
+
+.tw-qr-preview-box {
+    width: 100%;
+    flex: 1;
+
+    min-height: 220px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    margin-top: 12px;
+    padding: 20px;
+
+    color: #8a97a8;
+    background: #f8fafc;
+
+    border: 1px dashed #cfd8e3;
+    border-radius: 13px;
+
+    text-align: center;
+}
+
+.tw-qr-preview-box > i {
+    margin-bottom: 12px;
+
+    color: #aab5c2;
+
+    font-size: 44px;
+}
+
+.tw-qr-preview-box strong {
+    color: #526074;
+
+    font-size: 10px;
+    font-weight: 650;
+}
+
+.tw-qr-preview-box span {
+    max-width: 190px;
+
+    margin-top: 5px;
+
+    color: #9aa6b5;
+
+    font-size: 8px;
+    line-height: 1.5;
+}
+
+.tw-qr-preview-actions {
+    width: 100%;
+
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 7px;
+
+    margin-top: 10px;
+}
+
+.tw-qr-preview-actions[hidden] {
+    display: none !important;
+}
+
+.tw-qr-preview-actions button {
+    min-height: 38px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+
+    color: #475569;
+    background: #ffffff;
+
+    border: 1px solid #dfe5ec;
+    border-radius: 9px;
+
+    font-size: 9px;
+    font-weight: 650;
+}
+
+
+/* ==========================================================
+   SAVED QR CODES
+   ========================================================== */
+
+.tw-qr-saved {
+    grid-column: 1 / -1;
+
+    padding: 18px;
+}
+
+.tw-qr-saved-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.tw-qr-saved-heading strong,
+.tw-qr-saved-heading span {
+    display: block;
+}
+
+.tw-qr-saved-heading strong {
+    color: #172036;
+
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.tw-qr-saved-heading > div > span {
+    margin-top: 3px;
+
+    color: #8995a7;
+
+    font-size: 9px;
+}
+
+.tw-qr-count {
+    min-width: 27px;
+    height: 27px;
+
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+
+    color: #047857;
+    background: #e7f8f1;
+
+    border-radius: 8px;
+
+    font-size: 9px;
+    font-weight: 700;
+}
+
+.tw-qr-empty {
+    min-height: 120px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    margin-top: 14px;
+    padding: 20px;
+
+    background: #f8fafc;
+
+    border: 1px dashed #d6dee8;
+    border-radius: 12px;
+
+    text-align: center;
+}
+
+.tw-qr-empty > span {
+    width: 36px;
+    height: 36px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin-bottom: 8px;
+
+    color: #059669;
+    background: #e7f8f1;
+
+    border-radius: 10px;
+}
+
+.tw-qr-empty strong {
+    color: #526074;
+
+    font-size: 10px;
+}
+
+.tw-qr-empty small {
+    margin-top: 3px;
+
+    color: #98a4b3;
+
+    font-size: 8px;
+}
+
+.tw-qr-saved-list[hidden] {
+    display: none !important;
+}
+
+
+/* ==========================================================
+   MOBILE
+   ========================================================== */
+
+@media (max-width: 640px) {
+
+    .tw-qr-modal {
+        align-items: flex-end;
+
+        padding: 0;
+    }
+
+    .tw-qr-dialog {
+        width: 100%;
+        max-height: 92vh;
+
+        border-radius: 20px 20px 0 0;
+    }
+
+    .tw-qr-header {
+        padding: 24px 20px 18px;
+    }
+
+    .tw-qr-header-icon {
+        width: 48px;
+        height: 48px;
+
+        font-size: 19px;
+    }
+
+    .tw-qr-header h2 {
+        font-size: 19px;
+    }
+
+    .tw-qr-content {
+        grid-template-columns: 1fr;
+
+        padding: 14px;
+    }
+
+    .tw-qr-saved {
+        grid-column: auto;
+    }
+
+    .tw-qr-preview-card {
+        min-height: 280px;
+    }
+
+    .tw-qr-type-selector button {
+        padding-left: 5px;
+        padding-right: 5px;
+
+        font-size: 8px;
+    }
+}
+
+/* ==========================================================
+   MY QR CODE — CUSTOMER IDENTITY
+========================================================== */
+
+.tw-qr-profile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    padding: 8px 0 18px;
+
+    text-align: center;
+}
+
+.tw-qr-profile-photo {
+    width: 92px;
+    height: 92px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    overflow: hidden;
+
+    color: #64748b;
+    background: #eef2f6;
+
+    border: 4px solid #ffffff;
+    border-radius: 50%;
+
+    box-shadow:
+        0 5px 18px rgba(15, 23, 42, .10);
+
+    font-size: 28px;
+}
+
+.tw-qr-profile-photo img {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+}
+
+.tw-qr-profile-name {
+    margin-top: 11px;
+
+    color: #172036;
+
+    font-size: 16px;
+    font-weight: 750;
+}
+
+.tw-qr-profile-role {
+    margin-top: 2px;
+
+    color: #8995a7;
+
+    font-size: 9px;
+}
+
+
+/* INFORMATION */
+
+.tw-qr-information {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.tw-qr-info-row {
+    min-height: 58px;
+
+    display: grid;
+    grid-template-columns: 38px minmax(0, 1fr) 30px;
+    align-items: center;
+    gap: 10px;
+
+    padding: 8px 10px;
+
+    background: #f7f9fc;
+
+    border: 1px solid #edf1f5;
+    border-radius: 12px;
+}
+
+.tw-qr-info-icon {
+    width: 36px;
+    height: 36px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
+
+    font-size: 13px;
+}
+
+.tw-qr-info-icon.phone {
+    color: #059669;
+    background: #dcfce7;
+}
+
+.tw-qr-info-icon.account {
+    color: #2563eb;
+    background: #dbeafe;
+}
+
+.tw-qr-info-copy {
+    min-width: 0;
+}
+
+.tw-qr-info-copy small,
+.tw-qr-info-copy strong {
+    display: block;
+}
+
+.tw-qr-info-copy small {
+    color: #7b8798;
+
+    font-size: 8px;
+}
+
+.tw-qr-info-copy strong {
+    margin-top: 2px;
+
+    overflow: hidden;
+
+    color: #172036;
+
+    font-size: 10px;
+    font-weight: 700;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.tw-qr-copy-button {
+    width: 30px;
+    height: 30px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    color: #718096;
+    background: transparent;
+
+    border: 0;
+    border-radius: 8px;
+
+    font-size: 11px;
+}
+
+.tw-qr-copy-button:hover {
+    color: #172036;
+    background: #e9eef5;
+}
+
+
+/* ACTUAL QR AREA */
+
+.tw-qr-code-display {
+    width: 205px;
+    height: 205px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin: 10px auto 14px;
+
+    color: #059669;
+    background: #ffffff;
+
+    border: 2px solid #059669;
+    border-radius: 16px;
+
+    font-size: 105px;
+}
+
+.tw-qr-code-display canvas,
+.tw-qr-code-display img {
+    width: 175px !important;
+    height: 175px !important;
+
+    display: block;
+}
+
+
+/* SCAN MESSAGE */
+
+.tw-qr-connect-note {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    padding: 11px 12px;
+
+    background: #ecfdf5;
+
+    border-radius: 11px;
+}
+
+.tw-qr-connect-note > span {
+    width: 34px;
+    height: 34px;
+
+    flex: 0 0 auto;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #059669;
+
+    font-size: 16px;
+}
+
+.tw-qr-connect-note strong,
+.tw-qr-connect-note small {
+    display: block;
+}
+
+.tw-qr-connect-note strong {
+    color: #047857;
+
+    font-size: 9px;
+    font-weight: 700;
+}
+
+.tw-qr-connect-note small {
+    margin-top: 2px;
+
+    color: #648477;
+
+    font-size: 7.5px;
+    line-height: 1.45;
+}
+
+
+/* ACTIONS */
+
+.tw-qr-main-actions {
+    width: 100%;
+
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+
+    margin-top: 12px;
+}
+
+.tw-qr-main-actions button {
+    min-height: 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+
+    color: #475569;
+    background: #ffffff;
+
+    border: 1px solid #dfe5ec;
+    border-radius: 10px;
+
+    font-size: 9px;
+    font-weight: 700;
+}
+
+.tw-qr-main-actions button.primary {
+    color: #ffffff;
+    background: #1677ff;
+
+    border-color: #1677ff;
+}
+
+
+/* HOW IT WORKS */
+
+.tw-qr-how-it-works {
+    grid-column: 1 / -1;
+
+    display: flex;
+    align-items: flex-start;
+    gap: 11px;
+
+    padding: 14px 16px;
+
+    background: #f5f9ff;
+
+    border: 1px solid #e1ebf8;
+    border-radius: 13px;
+}
+
+.tw-qr-how-it-works > span {
+    width: 34px;
+    height: 34px;
+
+    flex: 0 0 auto;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #1677ff;
+    background: #e2efff;
+
+    border-radius: 50%;
+
+    font-size: 13px;
+}
+
+.tw-qr-how-it-works strong {
+    display: block;
+
+    color: #334155;
+
+    font-size: 9px;
+    font-weight: 700;
+}
+
+.tw-qr-how-it-works p {
+    margin: 3px 0 0;
+
+    color: #718096;
+
+    font-size: 8px;
+    line-height: 1.55;
+}
+
+
+/* MOBILE */
+
+@media (max-width: 640px) {
+
+    .tw-qr-profile-photo {
+        width: 82px;
+        height: 82px;
+    }
+
+    .tw-qr-code-display {
+        width: 190px;
+        height: 190px;
+
+        font-size: 95px;
+    }
+
+    .tw-qr-main-actions {
+        grid-template-columns: 1fr;
+    }
+
+    .tw-qr-how-it-works {
+        grid-column: auto;
+    }
+}

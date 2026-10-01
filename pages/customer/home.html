@@ -33,15 +33,102 @@
                 data-business-logo>
         </a>
 
-        <nav class="tw-left-menu" aria-label="Customer navigation">
-            <a class="active" href="home.html"><i class="fa-solid fa-house"></i><span>Home</span></a>
-            <a href="explore.html"><i class="fa-regular fa-compass"></i><span>Explore</span></a>
-            <a href="tours.html"><i class="fa-solid fa-suitcase"></i><span>Tours</span></a>
-            <a href="my-trip.html"><i class="fa-regular fa-calendar-check"></i><span>My Trip</span></a>
-            <a href="promo.html"><i class="fa-solid fa-tag"></i><span>Promos</span></a>
-        </nav>
+        <!-- Customer Profile Card -->
+<a
+    href="account.html"
+    class="tw-sidebar-profile"
+    aria-label="Open account">
+
+    <span
+        class="tw-sidebar-profile-avatar"
+        data-customer-avatar>
+        <i class="fa-solid fa-user"></i>
+    </span>
+
+    <span class="tw-sidebar-profile-info">
+        <strong id="sidebarCustomerFullName">
+            Traveler
+        </strong>
+
+        <small>
+            View Profile
+        </small>
+    </span>
+
+    <i
+        class="fa-solid fa-chevron-right tw-sidebar-profile-arrow"
+        aria-hidden="true">
+    </i>
+
+</a>
+
+        
 
         <div class="tw-left-divider"></div>
+
+        <!-- Sidebar Quick Access -->
+<section class="tw-sidebar-tools">
+
+    <span class="tw-sidebar-tools-label">
+        QUICK ACCESS
+    </span>
+
+    <a
+    href="#"
+    class="tw-sidebar-tool"
+    id="openAboutTripsWonder">
+
+    <span class="tw-sidebar-tool-icon about">
+        <i class="fa-solid fa-circle-info"></i>
+    </span>
+
+    <span class="tw-sidebar-tool-copy">
+        <strong>About Us</strong>
+        <small>Know more about Trips Wonder</small>
+    </span>
+
+    <i class="fa-solid fa-chevron-right tw-sidebar-tool-arrow"></i>
+</a>
+
+
+    <a
+    href="#"
+    class="tw-sidebar-tool"
+    id="openCustomerFeedback">
+
+    <span class="tw-sidebar-tool-icon feedback">
+        <i class="fa-regular fa-message"></i>
+    </span>
+
+    <span class="tw-sidebar-tool-copy">
+        <strong>Feedback</strong>
+        <small>Share your travel experience</small>
+    </span>
+
+    <i class="fa-solid fa-chevron-right tw-sidebar-tool-arrow"></i>
+</a>
+
+
+    <a
+    href="#"
+    class="tw-sidebar-tool"
+    id="openMyQRCodes">
+
+        <span class="tw-sidebar-tool-icon qr">
+            <i class="fa-solid fa-qrcode"></i>
+        </span>
+
+        <span class="tw-sidebar-tool-copy">
+            <strong>My QR Codes</strong>
+            <small>Create and manage QR codes</small>
+        </span>
+
+        <i class="fa-solid fa-chevron-right tw-sidebar-tool-arrow"></i>
+    </a>
+
+</section>
+
+<div class="tw-left-divider tw-sidebar-tools-divider"></div>
 
         <section class="tw-shortcuts">
             <h3>Your Shortcuts</h3>
@@ -538,7 +625,9 @@
             Sign In or Register
         </button>
     </div>
-
+<script
+    src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js">
+</script>
 <script type="module" src="../../assets/js/customer/home.js"></script>
 <script type="module" src="../../assets/js/customer/customer-nav.js"></script>
 
@@ -660,5 +749,644 @@
 
 })();
 </script>
+
+<!-- ==========================================================
+     ABOUT TRIPS WONDER MODAL
+========================================================== -->
+
+<div
+    class="tw-about-modal"
+    id="aboutTripsWonderModal"
+    hidden>
+
+    <div
+        class="tw-about-backdrop"
+        data-close-about>
+    </div>
+
+    <section
+        class="tw-about-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="aboutTripsWonderTitle">
+
+        <button
+            type="button"
+            class="tw-about-close"
+            data-close-about
+            aria-label="Close About Trips Wonder">
+
+            <i class="fa-solid fa-xmark"></i>
+
+        </button>
+
+
+        <div class="tw-about-hero">
+
+            <div class="tw-about-logo">
+                <img
+                    src="../../assets/images/logo.png"
+                    alt="Trips Wonder"
+                    data-business-logo>
+            </div>
+
+            <span class="tw-about-eyebrow">
+                TRIPS WONDER TRAVEL & TOURS
+            </span>
+
+            <h2 id="aboutTripsWonderTitle">
+                Travel. Explore. Discover.
+            </h2>
+
+            <p>
+                Creating Unforgettable Experiences,
+                One Trip at a Time.
+            </p>
+
+        </div>
+
+
+        <div class="tw-about-content">
+
+            <section class="tw-about-section">
+
+                <span class="tw-about-section-icon">
+                    <i class="fa-solid fa-heart"></i>
+                </span>
+
+                <div>
+                    <h3>About Trips Wonder</h3>
+
+                    <p>
+                        Trips Wonder Travel and Tours helps
+                        travelers discover memorable destinations
+                        through carefully organized and enjoyable
+                        travel experiences.
+                    </p>
+                </div>
+
+            </section>
+
+
+            <div class="tw-about-services">
+
+                <div class="tw-about-service">
+                    <i class="fa-solid fa-users"></i>
+
+                    <strong>
+                        Joiner Tours
+                    </strong>
+
+                    <span>
+                        Meet new travelers and explore together.
+                    </span>
+                </div>
+
+
+                <div class="tw-about-service">
+                    <i class="fa-solid fa-people-group"></i>
+
+                    <strong>
+                        Exclusive Tours
+                    </strong>
+
+                    <span>
+                        Private trips for your own group.
+                    </span>
+                </div>
+
+
+                <div class="tw-about-service">
+                    <i class="fa-solid fa-van-shuttle"></i>
+
+                    <strong>
+                        Van Rental
+                    </strong>
+
+                    <span>
+                        Convenient transportation for your trip.
+                    </span>
+                </div>
+
+            </div>
+
+
+            <section class="tw-about-trust">
+
+                <i class="fa-solid fa-shield-heart"></i>
+
+                <div>
+                    <strong>
+                        Travel with confidence
+                    </strong>
+
+                    <span>
+                        Trips Wonder Travel and Tours is
+                        DTI registered and operates with
+                        a valid business permit.
+                    </span>
+                </div>
+
+            </section>
+
+        </div>
+
+    </section>
+
+</div>
+
+<!-- ==========================================================
+     CUSTOMER FEEDBACK MODAL
+========================================================== -->
+
+<div
+    class="tw-feedback-modal"
+    id="customerFeedbackModal"
+    hidden>
+
+    <div
+        class="tw-feedback-backdrop"
+        data-close-feedback>
+    </div>
+
+    <section
+        class="tw-feedback-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="customerFeedbackTitle">
+
+        <button
+            type="button"
+            class="tw-feedback-close"
+            data-close-feedback
+            aria-label="Close feedback">
+
+            <i class="fa-solid fa-xmark"></i>
+
+        </button>
+
+
+        <header class="tw-feedback-header">
+
+            <span class="tw-feedback-header-icon">
+                <i class="fa-regular fa-message"></i>
+            </span>
+
+            <span class="tw-feedback-eyebrow">
+                WE VALUE YOUR FEEDBACK
+            </span>
+
+            <h2 id="customerFeedbackTitle">
+                How was your experience?
+            </h2>
+
+            <p>
+                Your feedback helps us create better
+                travel experiences for everyone.
+            </p>
+
+        </header>
+
+
+        <form
+            class="tw-feedback-form"
+            id="customerFeedbackForm">
+
+
+            <!-- RATING -->
+
+            <section class="tw-feedback-field">
+
+                <label>
+                    Overall Experience
+                </label>
+
+                <div
+                    class="tw-feedback-stars"
+                    id="customerFeedbackStars"
+                    role="radiogroup"
+                    aria-label="Overall experience">
+
+                    <button
+                        type="button"
+                        data-rating="1"
+                        aria-label="1 star">
+                        <i class="fa-regular fa-star"></i>
+                    </button>
+
+                    <button
+                        type="button"
+                        data-rating="2"
+                        aria-label="2 stars">
+                        <i class="fa-regular fa-star"></i>
+                    </button>
+
+                    <button
+                        type="button"
+                        data-rating="3"
+                        aria-label="3 stars">
+                        <i class="fa-regular fa-star"></i>
+                    </button>
+
+                    <button
+                        type="button"
+                        data-rating="4"
+                        aria-label="4 stars">
+                        <i class="fa-regular fa-star"></i>
+                    </button>
+
+                    <button
+                        type="button"
+                        data-rating="5"
+                        aria-label="5 stars">
+                        <i class="fa-regular fa-star"></i>
+                    </button>
+
+                </div>
+
+                <small
+                    class="tw-feedback-rating-label"
+                    id="customerFeedbackRatingLabel">
+                    Tap a star to rate your experience.
+                </small>
+
+            </section>
+
+
+            <!-- DESTINATION -->
+
+            <section class="tw-feedback-field">
+
+                <label for="customerFeedbackTour">
+                    Tour or Destination
+                    <span>Optional</span>
+                </label>
+
+                <div class="tw-feedback-input-wrap">
+
+                    <i class="fa-solid fa-location-dot"></i>
+
+                    <input
+                        type="text"
+                        id="customerFeedbackTour"
+                        maxlength="100"
+                        placeholder="Example: Jomalig Island">
+
+                </div>
+
+            </section>
+
+
+            <!-- REVIEW -->
+
+            <section class="tw-feedback-field">
+
+                <label for="customerFeedbackMessage">
+                    Tell us about your trip
+                </label>
+
+                <textarea
+                    id="customerFeedbackMessage"
+                    maxlength="1000"
+                    rows="5"
+                    placeholder="Share your experience with Trips Wonder..."></textarea>
+
+                <div class="tw-feedback-counter">
+                    <span id="customerFeedbackCount">0</span>/1000
+                </div>
+
+            </section>
+
+
+            <!-- RECOMMEND -->
+
+            <section class="tw-feedback-field">
+
+                <label>
+                    Would you recommend Trips Wonder?
+                </label>
+
+                <div
+                    class="tw-feedback-recommend"
+                    id="customerFeedbackRecommend">
+
+                    <button type="button" data-recommend="yes">
+                        <i class="fa-regular fa-face-smile"></i>
+                        Yes
+                    </button>
+
+                    <button type="button" data-recommend="maybe">
+                        <i class="fa-regular fa-face-meh"></i>
+                        Maybe
+                    </button>
+
+                    <button type="button" data-recommend="no">
+                        <i class="fa-regular fa-face-frown"></i>
+                        No
+                    </button>
+
+                </div>
+
+            </section>
+
+
+            <p
+                class="tw-feedback-message"
+                id="customerFeedbackStatus"
+                aria-live="polite">
+            </p>
+
+
+            <button
+                type="submit"
+                class="tw-feedback-submit">
+
+                <i class="fa-regular fa-paper-plane"></i>
+
+                Submit Feedback
+
+            </button>
+
+        </form>
+
+    </section>
+
+</div>
+
+<!-- ==========================================================
+     MY QR CODE MODAL
+========================================================== -->
+
+<div
+    class="tw-qr-modal"
+    id="myQRCodesModal"
+    hidden>
+
+    <div
+        class="tw-qr-backdrop"
+        data-close-qr>
+    </div>
+
+    <section
+        class="tw-qr-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="myQRCodesTitle">
+
+        <button
+            type="button"
+            class="tw-qr-close"
+            data-close-qr
+            aria-label="Close My QR Code">
+
+            <i class="fa-solid fa-xmark"></i>
+
+        </button>
+
+
+        <!-- HEADER -->
+
+        <header class="tw-qr-header">
+
+            <span class="tw-qr-header-icon">
+                <i class="fa-solid fa-qrcode"></i>
+            </span>
+
+            <span class="tw-qr-eyebrow">
+                MY QR CODES
+            </span>
+
+            <h2 id="myQRCodesTitle">
+                My QR Code
+            </h2>
+
+            <p>
+                Share your QR code for quick and easy connection.
+            </p>
+
+        </header>
+
+
+        <div class="tw-qr-content">
+
+
+            <!-- CUSTOMER INFORMATION -->
+
+            <section class="tw-qr-create-card">
+
+                <div class="tw-qr-section-heading">
+
+                    <div>
+                        <strong>Your Information</strong>
+
+                        <span>
+                            This information is linked to your QR code.
+                        </span>
+                    </div>
+
+                </div>
+
+
+                <div class="tw-qr-profile">
+
+                    <div
+                        class="tw-qr-profile-photo"
+                        id="myQRProfilePhoto">
+
+                        <i class="fa-solid fa-user"></i>
+
+                    </div>
+
+                    <strong
+                        class="tw-qr-profile-name"
+                        id="myQRProfileName">
+                        Traveler
+                    </strong>
+
+                    <span class="tw-qr-profile-role">
+                        My QR Code
+                    </span>
+
+                </div>
+
+
+                <div class="tw-qr-information">
+
+
+                    <!-- MOBILE -->
+
+                    <div class="tw-qr-info-row">
+
+                        <span class="tw-qr-info-icon phone">
+                            <i class="fa-solid fa-phone"></i>
+                        </span>
+
+                        <div class="tw-qr-info-copy">
+
+                            <small>
+                                Mobile Number
+                            </small>
+
+                            <strong id="myQRMobileNumber">
+                                —
+                            </strong>
+
+                        </div>
+
+                        <button
+                            type="button"
+                            class="tw-qr-copy-button"
+                            data-copy-qr-field="mobile"
+                            aria-label="Copy mobile number">
+
+                            <i class="fa-regular fa-copy"></i>
+
+                        </button>
+
+                    </div>
+
+
+                    <!-- ACCOUNT ID -->
+
+                    <div class="tw-qr-info-row">
+
+                        <span class="tw-qr-info-icon account">
+                            <i class="fa-solid fa-user"></i>
+                        </span>
+
+                        <div class="tw-qr-info-copy">
+
+                            <small>
+                                Account ID
+                            </small>
+
+                            <strong id="myQRAccountId">
+                                —
+                            </strong>
+
+                        </div>
+
+                        <button
+                            type="button"
+                            class="tw-qr-copy-button"
+                            data-copy-qr-field="account"
+                            aria-label="Copy account ID">
+
+                            <i class="fa-regular fa-copy"></i>
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- QR CODE -->
+
+            <section class="tw-qr-preview-card">
+
+                <div class="tw-qr-section-heading">
+
+                    <div>
+                        <strong>Your QR Code</strong>
+
+                        <span>
+                            Let others scan your QR code to connect with you instantly.
+                        </span>
+                    </div>
+
+                </div>
+
+
+                <div
+                    class="tw-qr-code-display"
+                    id="myQRCodeDisplay">
+
+                    <i class="fa-solid fa-qrcode"></i>
+
+                </div>
+
+
+                <div class="tw-qr-connect-note">
+
+                    <span>
+                        <i class="fa-solid fa-qrcode"></i>
+                    </span>
+
+                    <div>
+                        <strong>
+                            Scan to connect with me
+                        </strong>
+
+                        <small>
+                            This QR code contains your unique
+                            Trips Wonder account ID.
+                        </small>
+                    </div>
+
+                </div>
+
+
+                <div class="tw-qr-main-actions">
+
+                    <button
+                        type="button"
+                        class="primary"
+                        id="downloadMyQRCode">
+
+                        <i class="fa-solid fa-download"></i>
+
+                        Download QR
+
+                    </button>
+
+                    <button
+                        type="button"
+                        id="shareMyQRCode">
+
+                        <i class="fa-solid fa-share-nodes"></i>
+
+                        Share QR
+
+                    </button>
+
+                </div>
+
+            </section>
+
+
+            <!-- HOW IT WORKS -->
+
+            <section class="tw-qr-how-it-works">
+
+                <span>
+                    <i class="fa-solid fa-circle-info"></i>
+                </span>
+
+                <div>
+
+                    <strong>
+                        How it works?
+                    </strong>
+
+                    <p>
+                        When someone scans your QR code, they can
+                        quickly connect with you inside Trips Wonder.
+                        Our team can also use it to find your account
+                        and booking details faster.
+                    </p>
+
+                </div>
+
+            </section>
+
+        </div>
+
+    </section>
+
+</div>
+
 </body>
 </html>

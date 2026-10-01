@@ -682,26 +682,184 @@ function renderCustomerProfile() {
 
     renderCustomerAvatars();
 
-    if (
-        customerName
-    ) {
+
+    /* ======================================================
+       CUSTOMER FULL NAME
+       ====================================================== */
+
+    const firstName =
+        String(
+            currentProfile?.firstName ||
+            currentProfile?.firstname ||
+            ""
+        ).trim();
+
+    const lastName =
+        String(
+            currentProfile?.lastName ||
+            currentProfile?.lastname ||
+            currentProfile?.surname ||
+            ""
+        ).trim();
+
+    const fullName =
+        [firstName, lastName]
+            .filter(Boolean)
+            .join(" ")
+            .trim();
+
+    const displayName =
+        fullName ||
+        currentProfile?.displayName ||
+        currentProfile?.fullName ||
+        currentUser?.displayName ||
+        getDisplayName(
+            currentUser,
+            currentProfile
+        );
+
+
+    /* ======================================================
+       SIDEBAR PROFILE
+       ====================================================== */
+
+    const sidebarCustomerFullName =
+        document.getElementById(
+            "sidebarCustomerFullName"
+        );
+
+    if (sidebarCustomerFullName) {
+
+        sidebarCustomerFullName.textContent =
+            displayName;
+    }
+
+
+    /* ======================================================
+       HOME PROFILE
+       ====================================================== */
+
+    if (customerName) {
 
         customerName.textContent =
             getDisplayName(
                 currentUser,
                 currentProfile
             );
-
     }
 
 
-    if (
-        customerGreeting
-    ) {
+    if (customerGreeting) {
 
         customerGreeting.textContent =
             "Ready for your next adventure?";
+    }
 
+
+    /* ======================================================
+       MY QR CODE — CUSTOMER INFORMATION
+       ====================================================== */
+
+    const myQRProfileName =
+        document.getElementById(
+            "myQRProfileName"
+        );
+
+    const myQRMobileNumber =
+        document.getElementById(
+            "myQRMobileNumber"
+        );
+
+    const myQRAccountId =
+        document.getElementById(
+            "myQRAccountId"
+        );
+
+    const myQRProfilePhoto =
+        document.getElementById(
+            "myQRProfilePhoto"
+        );
+
+
+    /* NAME */
+
+    if (myQRProfileName) {
+
+        myQRProfileName.textContent =
+            displayName ||
+            "Traveler";
+    }
+
+
+    /* MOBILE NUMBER */
+
+    const mobileNumber =
+        String(
+            currentProfile?.mobileNumber ||
+            currentProfile?.mobile ||
+            currentProfile?.phoneNumber ||
+            currentProfile?.phone ||
+            currentUser?.phoneNumber ||
+            ""
+        ).trim();
+
+    if (myQRMobileNumber) {
+
+        myQRMobileNumber.textContent =
+            mobileNumber ||
+            "Not provided";
+    }
+
+
+    /* ACCOUNT ID */
+
+    const accountId =
+        String(
+            currentProfile?.accountId ||
+            currentProfile?.customerId ||
+            currentProfile?.customerID ||
+            currentUser?.uid ||
+            ""
+        ).trim();
+
+    if (myQRAccountId) {
+
+        myQRAccountId.textContent =
+            accountId ||
+            "—";
+    }
+
+
+    /* PROFILE PHOTO */
+
+    const profilePhoto =
+        String(
+            currentProfile?.photoURL ||
+            currentProfile?.photoUrl ||
+            currentProfile?.profilePhoto ||
+            currentProfile?.profilePhotoURL ||
+            currentProfile?.avatarUrl ||
+            currentUser?.photoURL ||
+            ""
+        ).trim();
+
+    if (myQRProfilePhoto) {
+
+        if (profilePhoto) {
+
+            myQRProfilePhoto.innerHTML = `
+                <img
+                    src="${profilePhoto}"
+                    alt="${displayName || "Customer"}"
+                >
+            `;
+
+        } else {
+
+            myQRProfilePhoto.innerHTML = `
+                <i class="fa-solid fa-user"></i>
+            `;
+        }
     }
 
 }
@@ -7299,5 +7457,945 @@ twSearchClear?.addEventListener(
 
         searchInput.focus();
 
+    }
+);
+
+/* ==========================================================
+   ABOUT TRIPS WONDER MODAL
+========================================================== */
+
+const openAboutTripsWonder =
+    document.getElementById(
+        "openAboutTripsWonder"
+    );
+
+const aboutTripsWonderModal =
+    document.getElementById(
+        "aboutTripsWonderModal"
+    );
+
+
+function openAboutModal() {
+
+    if (!aboutTripsWonderModal) {
+        return;
+    }
+
+    aboutTripsWonderModal.hidden =
+        false;
+
+    document.body.style.overflow =
+        "hidden";
+}
+
+
+function closeAboutModal() {
+
+    if (!aboutTripsWonderModal) {
+        return;
+    }
+
+    aboutTripsWonderModal.hidden =
+        true;
+
+    document.body.style.overflow =
+        "";
+}
+
+
+openAboutTripsWonder
+    ?.addEventListener(
+        "click",
+        event => {
+
+            event.preventDefault();
+
+            openAboutModal();
+        }
+    );
+
+
+document
+    .querySelectorAll(
+        "[data-close-about]"
+    )
+    .forEach(
+        element => {
+
+            element.addEventListener(
+                "click",
+                closeAboutModal
+            );
+        }
+    );
+
+
+document.addEventListener(
+    "keydown",
+    event => {
+
+        if (
+            event.key === "Escape" &&
+            aboutTripsWonderModal &&
+            !aboutTripsWonderModal.hidden
+        ) {
+            closeAboutModal();
+        }
+    }
+);
+
+/* ==========================================================
+   CUSTOMER FEEDBACK MODAL
+========================================================== */
+
+const openCustomerFeedback =
+    document.getElementById(
+        "openCustomerFeedback"
+    );
+
+const customerFeedbackModal =
+    document.getElementById(
+        "customerFeedbackModal"
+    );
+
+const customerFeedbackForm =
+    document.getElementById(
+        "customerFeedbackForm"
+    );
+
+const customerFeedbackStars =
+    document.getElementById(
+        "customerFeedbackStars"
+    );
+
+const customerFeedbackRatingLabel =
+    document.getElementById(
+        "customerFeedbackRatingLabel"
+    );
+
+const customerFeedbackRecommend =
+    document.getElementById(
+        "customerFeedbackRecommend"
+    );
+
+const customerFeedbackMessage =
+    document.getElementById(
+        "customerFeedbackMessage"
+    );
+
+const customerFeedbackCount =
+    document.getElementById(
+        "customerFeedbackCount"
+    );
+
+
+let selectedFeedbackRating =
+    0;
+
+let selectedFeedbackRecommendation =
+    "";
+
+
+/* ==========================================================
+   OPEN / CLOSE
+========================================================== */
+
+function openFeedbackModal() {
+
+    if (!customerFeedbackModal) {
+        return;
+    }
+
+    customerFeedbackModal.hidden =
+        false;
+
+    document.body.style.overflow =
+        "hidden";
+}
+
+
+function closeFeedbackModal() {
+
+    if (!customerFeedbackModal) {
+        return;
+    }
+
+    customerFeedbackModal.hidden =
+        true;
+
+    document.body.style.overflow =
+        "";
+}
+
+
+openCustomerFeedback
+    ?.addEventListener(
+        "click",
+        event => {
+
+            event.preventDefault();
+
+            openFeedbackModal();
+        }
+    );
+
+
+document
+    .querySelectorAll(
+        "[data-close-feedback]"
+    )
+    .forEach(
+        element => {
+
+            element.addEventListener(
+                "click",
+                closeFeedbackModal
+            );
+        }
+    );
+
+
+/* ==========================================================
+   STAR RATING
+========================================================== */
+
+const feedbackRatingLabels = {
+    1: "Poor",
+    2: "Fair",
+    3: "Good",
+    4: "Very Good",
+    5: "Excellent"
+};
+
+
+customerFeedbackStars
+    ?.querySelectorAll(
+        "[data-rating]"
+    )
+    .forEach(
+        button => {
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    selectedFeedbackRating =
+                        Number(
+                            button.dataset.rating
+                        );
+
+                    customerFeedbackStars
+                        .querySelectorAll(
+                            "[data-rating]"
+                        )
+                        .forEach(
+                            star => {
+
+                                const rating =
+                                    Number(
+                                        star.dataset.rating
+                                    );
+
+                                const icon =
+                                    star.querySelector(
+                                        "i"
+                                    );
+
+                                const active =
+                                    rating <=
+                                    selectedFeedbackRating;
+
+                                star.classList.toggle(
+                                    "active",
+                                    active
+                                );
+
+                                icon?.classList.toggle(
+                                    "fa-solid",
+                                    active
+                                );
+
+                                icon?.classList.toggle(
+                                    "fa-regular",
+                                    !active
+                                );
+                            }
+                        );
+
+                    if (
+                        customerFeedbackRatingLabel
+                    ) {
+
+                        customerFeedbackRatingLabel.textContent =
+                            feedbackRatingLabels[
+                                selectedFeedbackRating
+                            ] || "";
+                    }
+                }
+            );
+        }
+    );
+
+
+/* ==========================================================
+   RECOMMENDATION
+========================================================== */
+
+customerFeedbackRecommend
+    ?.querySelectorAll(
+        "[data-recommend]"
+    )
+    .forEach(
+        button => {
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    selectedFeedbackRecommendation =
+                        button.dataset.recommend ||
+                        "";
+
+                    customerFeedbackRecommend
+                        .querySelectorAll(
+                            "[data-recommend]"
+                        )
+                        .forEach(
+                            item => {
+
+                                item.classList.toggle(
+                                    "active",
+                                    item === button
+                                );
+                            }
+                        );
+                }
+            );
+        }
+    );
+
+
+/* ==========================================================
+   CHARACTER COUNTER
+========================================================== */
+
+customerFeedbackMessage
+    ?.addEventListener(
+        "input",
+        () => {
+
+            if (!customerFeedbackCount) {
+                return;
+            }
+
+            customerFeedbackCount.textContent =
+                String(
+                    customerFeedbackMessage
+                        .value
+                        .length
+                );
+        }
+    );
+
+
+/* ==========================================================
+   SUBMIT — UI ONLY FOR NOW
+========================================================== */
+
+customerFeedbackForm
+    ?.addEventListener(
+        "submit",
+        event => {
+
+            event.preventDefault();
+
+        }
+    );
+
+
+/* ==========================================================
+   ESCAPE TO CLOSE
+========================================================== */
+
+document.addEventListener(
+    "keydown",
+    event => {
+
+        if (
+            event.key === "Escape" &&
+            customerFeedbackModal &&
+            !customerFeedbackModal.hidden
+        ) {
+            closeFeedbackModal();
+        }
+    }
+);
+
+/* ==========================================================
+   MY QR CODES MODAL
+========================================================== */
+
+const openMyQRCodes =
+    document.getElementById(
+        "openMyQRCodes"
+    );
+
+const myQRCodesModal =
+    document.getElementById(
+        "myQRCodesModal"
+    );
+
+    /* ==========================================================
+   MY QR CODE — GENERATOR
+========================================================== */
+
+function generateMyCustomerQRCode() {
+
+    const user =
+        currentUser ||
+        auth.currentUser;
+
+    const qrDisplay =
+        document.getElementById(
+            "myQRCodeDisplay"
+        );
+
+    if (
+        !user ||
+        !qrDisplay
+    ) {
+        return;
+    }
+
+
+    if (
+        typeof window.QRCode !==
+        "function"
+    ) {
+
+        console.error(
+            "QR CODE LIBRARY IS NOT AVAILABLE."
+        );
+
+        return;
+    }
+
+
+    const qrPayload =
+        `TWTMS:CUSTOMER:${user.uid}`;
+
+
+    qrDisplay.innerHTML =
+        "";
+
+
+    new window.QRCode(
+        qrDisplay,
+        {
+            text:
+                qrPayload,
+
+            width:
+                175,
+
+            height:
+                175,
+
+            correctLevel:
+                window.QRCode
+                    .CorrectLevel
+                    .H
+        }
+    );
+
+
+    qrDisplay.dataset.qrPayload =
+        qrPayload;
+
+
+    console.log(
+        "MY QR CODE READY:",
+        qrPayload
+    );
+}
+
+function openMyQRCodesModal() {
+
+    if (!myQRCodesModal) {
+        return;
+    }
+
+    if (!requireCustomerLogin()) {
+        return;
+    }
+
+    myQRCodesModal.hidden =
+        false;
+
+    document.body.style.overflow =
+        "hidden";
+
+    generateMyCustomerQRCode();
+}
+
+/* ==========================================================
+   MY QR CODE — DOWNLOAD
+========================================================== */
+
+const downloadMyQRCode =
+    document.getElementById(
+        "downloadMyQRCode"
+    );
+
+
+function getMyQRCodeImageSource() {
+
+    const qrDisplay =
+        document.getElementById(
+            "myQRCodeDisplay"
+        );
+
+    if (!qrDisplay) {
+        return "";
+    }
+
+
+    const qrCanvas =
+        qrDisplay.querySelector(
+            "canvas"
+        );
+
+    if (qrCanvas) {
+
+        return qrCanvas.toDataURL(
+            "image/png"
+        );
+    }
+
+
+    const qrImage =
+        qrDisplay.querySelector(
+            "img"
+        );
+
+    if (qrImage?.src) {
+
+        return qrImage.src;
+    }
+
+
+    return "";
+}
+
+
+downloadMyQRCode
+    ?.addEventListener(
+        "click",
+        async () => {
+
+            const qrDisplay =
+                document.getElementById(
+                    "myQRCodeDisplay"
+                );
+
+            const qrCanvas =
+                qrDisplay?.querySelector(
+                    "canvas"
+                );
+
+            const qrImage =
+                qrDisplay?.querySelector(
+                    "img"
+                );
+
+            if (
+                !qrCanvas &&
+                !qrImage
+            ) {
+
+                console.error(
+                    "MY QR CODE: No generated QR code found."
+                );
+
+                return;
+            }
+
+
+            /* ==============================================
+               CUSTOMER INFORMATION
+            ============================================== */
+
+            const customerName =
+                String(
+                    document
+                        .getElementById(
+                            "myQRProfileName"
+                        )
+                        ?.textContent ||
+                    "Traveler"
+                ).trim();
+
+
+            
+
+
+            /* ==============================================
+               CARD CANVAS
+            ============================================== */
+
+            const canvas =
+                document.createElement(
+                    "canvas"
+                );
+
+            canvas.width =
+                1080;
+
+            canvas.height =
+                1350;
+
+
+            const ctx =
+                canvas.getContext(
+                    "2d"
+                );
+
+
+            /* ==============================================
+               BACKGROUND
+            ============================================== */
+
+            ctx.fillStyle =
+                "#ffffff";
+
+            ctx.fillRect(
+                0,
+                0,
+                canvas.width,
+                canvas.height
+            );
+
+
+            /* ==============================================
+               TOP BRAND AREA
+            ============================================== */
+
+            const headerGradient =
+                ctx.createLinearGradient(
+                    0,
+                    0,
+                    canvas.width,
+                    300
+                );
+
+            headerGradient.addColorStop(
+                0,
+                "#0f5fd7"
+            );
+
+            headerGradient.addColorStop(
+                1,
+                "#1487e8"
+            );
+
+
+            ctx.fillStyle =
+                headerGradient;
+
+            ctx.fillRect(
+                0,
+                0,
+                canvas.width,
+                300
+            );
+
+
+            ctx.textAlign =
+                "center";
+
+
+            ctx.fillStyle =
+                "#ffffff";
+
+            ctx.font =
+                "700 54px Arial";
+
+            ctx.fillText(
+                "TRIPS WONDER",
+                540,
+                115
+            );
+
+
+            ctx.font =
+                "400 25px Arial";
+
+            ctx.fillText(
+                "Travel • Explore • Discover • Belong",
+                540,
+                165
+            );
+
+
+            ctx.font =
+                "600 21px Arial";
+
+            ctx.fillText(
+                "Creating Unforgettable Experiences, One Trip at a Time.",
+                540,
+                220
+            );
+
+
+            /* ==============================================
+               CUSTOMER NAME
+            ============================================== */
+
+            ctx.fillStyle =
+                "#172036";
+
+            ctx.font =
+                "700 42px Arial";
+
+            ctx.fillText(
+                customerName,
+                540,
+                465
+            );
+
+
+            ctx.fillStyle =
+                "#7b8798";
+
+            ctx.font =
+                "400 24px Arial";
+
+            ctx.fillText(
+                "My QR Code",
+                540,
+                510
+            );
+
+
+            /* ==============================================
+               QR CARD
+            ============================================== */
+
+            const qrCardX =
+                275;
+
+            const qrCardY =
+                565;
+
+            const qrCardWidth =
+                530;
+
+            const qrCardHeight =
+                530;
+
+
+            ctx.fillStyle =
+                "#f8fafc";
+
+            ctx.strokeStyle =
+                "#0aa06e";
+
+            ctx.lineWidth =
+                5;
+
+
+            ctx.beginPath();
+
+            ctx.roundRect(
+                qrCardX,
+                qrCardY,
+                qrCardWidth,
+                qrCardHeight,
+                35
+            );
+
+            ctx.fill();
+
+            ctx.stroke();
+
+
+            /* ==============================================
+               DRAW QR
+            ============================================== */
+
+            const qrSize =
+                430;
+
+            const qrX =
+                (canvas.width - qrSize) / 2;
+
+            const qrY =
+                615;
+
+
+            if (qrCanvas) {
+
+                ctx.drawImage(
+                    qrCanvas,
+                    qrX,
+                    qrY,
+                    qrSize,
+                    qrSize
+                );
+
+            } else {
+
+                ctx.drawImage(
+                    qrImage,
+                    qrX,
+                    qrY,
+                    qrSize,
+                    qrSize
+                );
+            }
+
+
+            /* ==============================================
+               SCAN MESSAGE
+            ============================================== */
+
+            ctx.fillStyle =
+                "#008f65";
+
+            ctx.font =
+                "700 30px Arial";
+
+            ctx.fillText(
+                "Scan to connect with me",
+                540,
+                1175
+            );
+
+
+            ctx.fillStyle =
+                "#718096";
+
+            ctx.font =
+                "400 21px Arial";
+
+            ctx.fillText(
+                "Trips Wonder Travel and Tours",
+                540,
+                1220
+            );
+
+
+            ctx.fillStyle =
+                "#a0aec0";
+
+            ctx.font =
+                "400 17px Arial";
+
+            ctx.fillText(
+                "Your QR code is linked securely to your Trips Wonder account.",
+                540,
+                1260
+            );
+
+
+            /* ==============================================
+               DOWNLOAD
+            ============================================== */
+
+            const safeName =
+                customerName
+                    .replace(
+                        /[^a-z0-9]+/gi,
+                        "-"
+                    )
+                    .replace(
+                        /^-+|-+$/g,
+                        ""
+                    );
+
+
+            const downloadLink =
+                document.createElement(
+                    "a"
+                );
+
+
+            downloadLink.href =
+                canvas.toDataURL(
+                    "image/png"
+                );
+
+
+            downloadLink.download =
+                `Trips-Wonder-${safeName}-QR-Card.png`;
+
+
+            document.body.appendChild(
+                downloadLink
+            );
+
+            downloadLink.click();
+
+            downloadLink.remove();
+
+
+            console.log(
+                "MY QR CARD DOWNLOADED."
+            );
+        }
+    );
+
+function closeMyQRCodesModal() {
+
+    if (!myQRCodesModal) {
+        return;
+    }
+
+    myQRCodesModal.hidden =
+        true;
+
+    document.body.style.overflow =
+        "";
+}
+
+
+openMyQRCodes
+    ?.addEventListener(
+        "click",
+        event => {
+
+            event.preventDefault();
+
+            openMyQRCodesModal();
+        }
+    );
+
+
+document
+    .querySelectorAll(
+        "[data-close-qr]"
+    )
+    .forEach(
+        element => {
+
+            element.addEventListener(
+                "click",
+                closeMyQRCodesModal
+            );
+        }
+    );
+
+
+document.addEventListener(
+    "keydown",
+    event => {
+
+        if (
+            event.key === "Escape" &&
+            myQRCodesModal &&
+            !myQRCodesModal.hidden
+        ) {
+            closeMyQRCodesModal();
+        }
     }
 );
