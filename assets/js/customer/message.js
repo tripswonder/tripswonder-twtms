@@ -3699,3 +3699,320 @@ document.addEventListener(
         }
     }
 );
+
+/* ==========================================================
+   MEMBER QR SCANNER MODAL — OPEN / CLOSE
+========================================================== */
+
+const memberQRScanButton =
+    document.getElementById(
+        "memberQRScanButton"
+    );
+
+const memberQRScannerModal =
+    document.getElementById(
+        "memberQRScannerModal"
+    );
+
+/* ==========================================================
+   MEMBER QR — CAMERA
+========================================================== */
+
+let memberQRScanner =
+    null;
+
+let memberQRScannerRunning =
+    false;
+
+let memberQRScanLocked =
+    false;
+
+
+async function startMemberQRCamera() {
+
+    const reader =
+        document.getElementById(
+            "memberQRReader"
+        );
+
+    if (!reader) {
+        return;
+    }
+
+
+    if (
+        typeof window.Html5Qrcode !==
+        "function"
+    ) {
+
+        console.error(
+            "MEMBER QR: Scanner library is not available."
+        );
+
+        return;
+    }
+
+
+    if (memberQRScannerRunning) {
+        return;
+    }
+
+
+    memberQRScanLocked =
+        false;
+
+
+    memberQRScanner =
+        new window.Html5Qrcode(
+            "memberQRReader"
+        );
+
+
+    try {
+
+        await memberQRScanner.start(
+            {
+                facingMode:
+                    "environment"
+            },
+            {
+                fps:
+                    10,
+
+                qrbox: {
+                    width:
+                        240,
+
+                    height:
+                        240
+                }
+            },
+            decodedText => {
+
+                handleMemberQRDetected(
+                    decodedText
+                );
+            },
+            () => {
+                // Normal scan attempts.
+                // Do not log every failed frame.
+            }
+        );
+
+
+        memberQRScannerRunning =
+            true;
+
+
+        console.log(
+            "MEMBER QR CAMERA READY"
+        );
+
+    } catch (error) {
+
+        console.error(
+            "MEMBER QR CAMERA ERROR:",
+            error
+        );
+    }
+}
+
+
+async function stopMemberQRCamera() {
+
+    if (
+        !memberQRScanner ||
+        !memberQRScannerRunning
+    ) {
+        return;
+    }
+
+
+    try {
+
+        await memberQRScanner.stop();
+
+        await memberQRScanner.clear();
+
+    } catch (error) {
+
+        console.warn(
+            "MEMBER QR CAMERA STOP ERROR:",
+            error
+        );
+    }
+
+
+    memberQRScannerRunning =
+        false;
+
+    memberQRScanner =
+        null;
+}
+
+
+/* ==========================================================
+   MEMBER QR — DETECTION
+========================================================== */
+
+function handleMemberQRDetected(
+    decodedText
+) {
+
+    if (memberQRScanLocked) {
+        return;
+    }
+
+
+    const value =
+        String(
+            decodedText || ""
+        ).trim();
+
+
+    const prefix =
+        "TWTMS:CUSTOMER:";
+
+
+    if (
+        !value.startsWith(
+            prefix
+        )
+    ) {
+
+        console.warn(
+            "MEMBER QR: Invalid Trips Wonder QR.",
+            value
+        );
+
+        return;
+    }
+
+
+    const memberUid =
+        value
+            .slice(
+                prefix.length
+            )
+            .trim();
+
+
+    if (!memberUid) {
+        return;
+    }
+
+
+    memberQRScanLocked =
+        true;
+
+
+    console.log(
+        "MEMBER QR DETECTED:",
+        {
+            memberUid,
+            raw:
+                value
+        }
+    );
+
+
+    if (
+        auth.currentUser?.uid ===
+        memberUid
+    ) {
+
+        console.warn(
+            "MEMBER QR: Own QR detected."
+        );
+
+        memberQRScanLocked =
+            false;
+
+        return;
+    }
+
+
+    console.log(
+        "MEMBER QR VALID CUSTOMER UID:",
+        memberUid
+    );
+
+
+    /*
+     * NEXT STEP:
+     * Resolve this UID to an existing
+     * Trips Wonder member account.
+     */
+}
+
+async function openMemberQRScanner() {
+
+    if (!memberQRScannerModal) {
+        return;
+    }
+
+    memberQRScannerModal.hidden =
+        false;
+
+    document.body.style.overflow =
+        "hidden";
+
+    await startMemberQRCamera();
+}
+
+
+function closeMemberQRScanner() {
+
+    if (!memberQRScannerModal) {
+        return;
+    }
+
+    memberQRScannerModal.hidden =
+        true;
+
+    document.body.style.overflow =
+        "";
+}
+
+
+memberQRScanButton
+    ?.addEventListener(
+        "click",
+        event => {
+
+            event.preventDefault();
+
+            openMemberQRScanner();
+        }
+    );
+
+
+document
+    .querySelectorAll(
+        "[data-close-member-qr]"
+    )
+    .forEach(
+        element => {
+
+            element.addEventListener(
+                "click",
+                closeMemberQRScanner
+            );
+        }
+    );
+
+
+document.addEventListener(
+    "keydown",
+    event => {
+
+        if (
+            event.key === "Escape" &&
+            memberQRScannerModal &&
+            !memberQRScannerModal.hidden
+        ) {
+
+            closeMemberQRScanner();
+        }
+    }
+);

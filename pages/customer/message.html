@@ -136,45 +136,42 @@
 
 
 
-                <div class="tw-member-search">
+                <div class="tw-member-search-row">
 
+    <div class="tw-member-search">
 
+        <i class="fa-solid fa-magnifying-glass"></i>
 
-                    <i class="fa-solid fa-magnifying-glass"></i>
+        <input
+            id="memberSearchInput"
+            type="text"
+            placeholder="Search member"
+            autocomplete="off">
 
+        <button
+            type="button"
+            id="memberSearchClear"
+            class="tw-member-search-clear"
+            aria-label="Clear member search"
+            hidden>
 
+            <i class="fa-solid fa-xmark"></i>
+        </button>
 
-                    <input
+    </div>
 
-                        id="memberSearchInput"
+    <button
+        type="button"
+        class="tw-member-qr-scan"
+        id="memberQRScanButton"
+        aria-label="Scan member QR code"
+        title="Scan QR Code">
 
-                        type="text"
+        <i class="fa-solid fa-qrcode"></i>
 
-                        placeholder="Search username or email"
+    </button>
 
-                        autocomplete="off">
-
-
-
-                    <button
-
-                        type="button"
-
-                        id="memberSearchClear"
-
-                        class="tw-member-search-clear"
-
-                        aria-label="Clear member search"
-
-                        hidden>
-
-                        <i class="fa-solid fa-xmark"></i>
-
-                    </button>
-
-
-
-                </div>
+</div>
 
 
 
@@ -1117,7 +1114,112 @@
 
     </script>
 
+    <script
+    src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js">
+</script>
 
+
+<!-- ==========================================================
+     MEMBER QR SCANNER MODAL
+========================================================== -->
+
+<div
+    class="tw-member-qr-modal"
+    id="memberQRScannerModal"
+    hidden>
+
+    <div
+        class="tw-member-qr-backdrop"
+        data-close-member-qr>
+    </div>
+
+    <section
+        class="tw-member-qr-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="memberQRScannerTitle">
+
+        <button
+            type="button"
+            class="tw-member-qr-close"
+            data-close-member-qr
+            aria-label="Close QR scanner">
+
+            <i class="fa-solid fa-xmark"></i>
+
+        </button>
+
+        <header class="tw-member-qr-header">
+
+            <span class="tw-member-qr-icon">
+                <i class="fa-solid fa-qrcode"></i>
+            </span>
+
+            <h2 id="memberQRScannerTitle">
+                Scan Member QR
+            </h2>
+
+            <p>
+                Scan another Trips Wonder member's QR code
+                to connect instantly.
+            </p>
+
+        </header>
+
+        <div class="tw-member-qr-body">
+
+            <div class="tw-member-qr-camera">
+
+                <div
+    id="memberQRReader"
+    class="tw-member-qr-reader">
+</div>
+
+                <div class="tw-member-qr-camera-placeholder">
+
+                    <span>
+                        <i class="fa-solid fa-camera"></i>
+                    </span>
+
+                    <strong>
+                        Camera ready
+                    </strong>
+
+                    <small>
+                        Point your camera at a Trips Wonder QR code
+                    </small>
+
+                </div>
+
+                <div
+                    class="tw-member-qr-frame"
+                    aria-hidden="true">
+
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+
+                </div>
+
+            </div>
+
+            <div class="tw-member-qr-hint">
+
+                <i class="fa-solid fa-circle-info"></i>
+
+                <span>
+                    Only Trips Wonder member QR codes
+                    can be used to connect.
+                </span>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</div>
 
 </body>
 
